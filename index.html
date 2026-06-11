@@ -203,11 +203,25 @@
   .m-copy.copied{border-style:solid;border-color:var(--sea);color:var(--sea-deep)}
   .m-divider{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:18px 0 12px}
   .m-divider::before,.m-divider::after{content:"";flex:1;height:1px;background:var(--sand-dark)}
-  .m-conc{background:var(--sand);border-radius:16px;padding:14px}
-  .m-conc .c-title{font-weight:800;color:var(--olive-deep);font-size:.92rem;display:flex;align-items:center;gap:7px}
-  .m-conc .c-sub{font-size:.74rem;color:var(--ink-soft);margin:3px 0 10px}
-  .m-conc input{width:100%;border:1.5px solid var(--sand-dark);border-radius:10px;padding:9px 12px;font-family:var(--font-body);font-size:.88rem;background:var(--cream);margin-bottom:10px;outline:none}
-  .m-conc input:focus{border-color:var(--olive)}
+  .m-conc{background:linear-gradient(140deg,var(--olive-dark),var(--olive-deep));border-radius:16px;padding:16px;color:var(--cream);box-shadow:var(--shadow)}
+  .m-conc .c-title{font-weight:800;color:var(--cream);font-size:1.02rem;display:flex;align-items:center;gap:7px}
+  .m-conc .c-sub{font-size:.76rem;color:#d9e2bb;margin:4px 0 11px}
+  .m-conc input{width:100%;border:1.5px solid rgba(255,255,255,.25);border-radius:10px;padding:9px 12px;font-family:var(--font-body);font-size:.88rem;background:rgba(255,253,247,.95);margin-bottom:10px;outline:none;color:var(--ink)}
+  .m-conc input:focus{border-color:var(--coral-soft)}
+  .m-conc .c-call{color:#d9e2bb}
+  .m-conc .c-call a{color:var(--coral-soft)}
+
+  /* ---------- Concierge banner + FAB ---------- */
+  .conc-banner{background:linear-gradient(140deg,var(--olive-dark),var(--olive-deep));border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;color:var(--cream);margin-top:16px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+  .conc-banner .cb-icon{font-size:2.6rem;animation:bob 3.5s ease-in-out infinite}
+  .conc-banner .cb-text{flex:1;min-width:220px}
+  .conc-banner .cb-text b{font-family:var(--font-display);font-size:1.2rem;display:block}
+  .conc-banner .cb-text span{font-size:.82rem;color:#d9e2bb}
+  .conc-banner .c-btns{flex-basis:100%}
+  @media(min-width:760px){.conc-banner .c-btns{flex-basis:auto}}
+  .conc-fab{position:fixed;right:16px;bottom:148px;z-index:45;background:linear-gradient(140deg,var(--coral),#d65a3c);color:#fff;border:none;border-radius:99px;padding:13px 17px;font-size:1.15rem;cursor:pointer;box-shadow:var(--shadow-lg);transition:.18s}
+  .conc-fab:hover{transform:scale(1.08)}
+  .conc-fab .fab-label{font-size:.72rem;font-weight:800;font-family:var(--font-body);margin-left:5px;vertical-align:middle}
   .c-btns{display:flex;gap:8px;flex-wrap:wrap}
   .c-btn{flex:1;min-width:130px;border:none;border-radius:99px;padding:11px 14px;font-family:var(--font-body);font-weight:800;font-size:.85rem;cursor:pointer;color:#fff;transition:.16s;text-align:center}
   .c-btn:hover{transform:scale(1.04)}
@@ -366,6 +380,18 @@
       <button class="tile ct-land" data-goto="chat"><span class="t-emoji">💬</span><b>Family Chat</b><span>The Cabo Crew room — live</span></button>
       <button class="tile ct-resort" data-goto="resort"><span class="t-emoji">🏨</span><b>Home Base</b><span>Our Hyatt Ziva cheat sheet</span></button>
       <button class="tile ct-food" data-goto="tools"><span class="t-emoji">🧳</span><b>Tools & Tips</b><span>Money · packing · Spanish</span></button>
+    </div>
+
+    <div class="conc-banner reveal">
+      <div class="cb-icon">🛎️</div>
+      <div class="cb-text">
+        <b>Ziva Concierge — they book it for us</b>
+        <span>Tours, dinner reservations, taxis: one message to the resort and it's handled. Olive writes the message for you.</span>
+      </div>
+      <div class="c-btns">
+        <button class="c-btn c-wa" data-conc="wa">💬 WhatsApp</button>
+        <button class="c-btn c-mail" data-conc="mail">✉️ Email</button>
+      </div>
     </div>
 
     <div class="dice-box reveal">
@@ -590,6 +616,26 @@
   <iframe id="bookFrame" title="Booking" referrerpolicy="no-referrer-when-downgrade"></iframe>
 </div>
 
+<!-- CONCIERGE SHEET -->
+<div class="modal-overlay" id="concOverlay">
+  <div class="modal">
+    <button class="m-close" id="concClose" aria-label="Close">✕</button>
+    <div class="m-emoji">🛎️</div>
+    <h3>Ziva Concierge</h3>
+    <div class="m-operator">Hyatt Ziva Los Cabos · Guest Services</div>
+    <p class="m-desc" style="margin-top:10px">The resort concierge books tours, dinner reservations and taxis for guests — usually charged to the room. Olive writes the message; you just send it. <i>Tip: to request a specific activity with the date pre-filled, open that activity and use the concierge buttons there.</i></p>
+    <div class="m-conc" style="margin-top:14px">
+      <input class="conc-name" maxlength="60" placeholder="Your name & room # (optional — saved on this phone)">
+      <div class="c-btns">
+        <button class="c-btn c-wa" data-conc="wa">💬 WhatsApp</button>
+        <button class="c-btn c-mail" data-conc="mail">✉️ Email</button>
+      </div>
+      <div class="c-call">Prefer to talk? <a href="tel:+526241637730">+52 624 163 7730</a> ext. 4411 (concierge)</div>
+    </div>
+  </div>
+</div>
+
+<button class="conc-fab" id="concFab" aria-label="Ziva concierge">🛎️<span class="fab-label">Concierge</span></button>
 <button class="chat-fab" id="chatFab" aria-label="Family chat">💬<span class="fab-badge" id="fabBadge">0</span></button>
 
 <!-- BUDGET BAR / PLAN DRAWER -->
@@ -888,6 +934,35 @@ const CONC_PHONE="526241637730",CONC_EMAIL="SJDIF-Guest.Service@Hyatt.com";
 const concName=document.getElementById("concName");
 concName.value=store.get("conc-name","");
 concName.addEventListener("input",()=>store.set("conc-name",concName.value));
+/* generic concierge (banner on Home + 🛎️ FAB sheet) */
+function genericConcMsg(){
+ const who=(store.get("conc-name","")||"").trim();
+ return "Hola! We are guests at Hyatt Ziva Los Cabos"+(who?" ("+who+")":"")+
+  ". Could the concierge please help us book activities, dinner reservations or transportation during our stay? ¡Muchas gracias!";
+}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-conc]");if(!b)return;
+ const msg=genericConcMsg();
+ if(b.dataset.conc==="wa"){
+   const u="https://wa.me/"+CONC_PHONE+"?text="+encodeURIComponent(msg);
+   const w=window.open(u,"_blank");if(!w)location.href=u;
+ }else{
+   location.href="mailto:"+CONC_EMAIL+"?subject="+encodeURIComponent("Guest booking request")+"&body="+encodeURIComponent(msg);
+ }
+});
+document.addEventListener("input",e=>{
+ if(e.target.classList&&e.target.classList.contains("conc-name")){
+   store.set("conc-name",e.target.value);concName.value=e.target.value;
+ }
+});
+const concOverlay=document.getElementById("concOverlay");
+document.getElementById("concFab").addEventListener("click",()=>{
+ concOverlay.querySelector(".conc-name").value=store.get("conc-name","");
+ concOverlay.classList.add("open");document.body.style.overflow="hidden";
+});
+function closeConc(){concOverlay.classList.remove("open");document.body.style.overflow=""}
+document.getElementById("concClose").addEventListener("click",closeConc);
+concOverlay.addEventListener("click",e=>{if(e.target===concOverlay)closeConc()});
 function concMessage(){
  const d=document.getElementById("mDate").value||store.get("trip-date","2026-07-04");
  const dateNice=new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
