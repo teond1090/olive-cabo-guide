@@ -184,6 +184,20 @@
   .m-note{font-size:.74rem;color:var(--ink-soft);text-align:center;margin-top:10px}
   .m-close{position:sticky;float:right;top:0;border:none;background:var(--sand);width:34px;height:34px;border-radius:50%;font-size:1rem;cursor:pointer;color:var(--ink-soft)}
   .m-walkup{background:var(--sand);border-left:3px solid var(--sea);padding:12px 14px;border-radius:0 12px 12px 0;font-size:.86rem;margin:16px 0}
+  .m-divider{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:18px 0 12px}
+  .m-divider::before,.m-divider::after{content:"";flex:1;height:1px;background:var(--sand-dark)}
+  .m-conc{background:var(--sand);border-radius:16px;padding:14px}
+  .m-conc .c-title{font-weight:800;color:var(--olive-deep);font-size:.92rem;display:flex;align-items:center;gap:7px}
+  .m-conc .c-sub{font-size:.74rem;color:var(--ink-soft);margin:3px 0 10px}
+  .m-conc input{width:100%;border:1.5px solid var(--sand-dark);border-radius:10px;padding:9px 12px;font-family:var(--font-body);font-size:.88rem;background:var(--cream);margin-bottom:10px;outline:none}
+  .m-conc input:focus{border-color:var(--olive)}
+  .c-btns{display:flex;gap:8px;flex-wrap:wrap}
+  .c-btn{flex:1;min-width:130px;border:none;border-radius:99px;padding:11px 14px;font-family:var(--font-body);font-weight:800;font-size:.85rem;cursor:pointer;color:#fff;transition:.16s;text-align:center}
+  .c-btn:hover{transform:scale(1.04)}
+  .c-wa{background:#25d366}
+  .c-mail{background:var(--olive)}
+  .c-call{font-size:.72rem;color:var(--ink-soft);text-align:center;margin-top:9px}
+  .c-call a{color:var(--sea-deep);font-weight:700;text-decoration:none}
 
   /* ---------- Budget / Plan drawer ---------- */
   .budget-bar{position:fixed;left:0;right:0;bottom:0;background:var(--olive-deep);color:var(--cream);z-index:50;transform:translateY(110%);transition:transform .28s;box-shadow:0 -8px 26px rgba(0,0,0,.25)}
@@ -525,6 +539,17 @@
       <div class="m-walkup" id="mWalkupText"></div>
       <a class="m-cta" id="mMapCta" target="_blank" rel="noopener">Open in Google Maps ↗</a>
     </div>
+    <div class="m-divider">or let the resort handle it</div>
+    <div class="m-conc">
+      <div class="c-title">🛎️ Ziva Concierge, book it for us</div>
+      <div class="c-sub">Olive writes the whole request — you just hit send. The concierge desk arranges tours, transport and dinner reservations for guests.</div>
+      <input id="concName" maxlength="60" placeholder="Your name & room # (optional — saved on this phone)">
+      <div class="c-btns">
+        <button class="c-btn c-wa" id="concWa">💬 WhatsApp</button>
+        <button class="c-btn c-mail" id="concMail">✉️ Email</button>
+      </div>
+      <div class="c-call">Prefer to talk? <a href="tel:+526241637730">+52 624 163 7730</a> ext. 4411 (concierge)</div>
+    </div>
   </div>
 </div>
 
@@ -787,6 +812,28 @@ overlay.addEventListener("click",e=>{if(e.target===overlay)closeModal()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
 document.getElementById("mMinus").addEventListener("click",()=>{mPartyN=Math.max(1,mPartyN-1);document.getElementById("mParty").textContent=mPartyN;mTotalCalc()});
 document.getElementById("mPlus").addEventListener("click",()=>{mPartyN=Math.min(15,mPartyN+1);document.getElementById("mParty").textContent=mPartyN;mTotalCalc()});
+
+/* ---- Ziva Concierge ---- */
+const CONC_PHONE="526241637730",CONC_EMAIL="SJDIF-Guest.Service@Hyatt.com";
+const concName=document.getElementById("concName");
+concName.value=store.get("conc-name","");
+concName.addEventListener("input",()=>store.set("conc-name",concName.value));
+function concMessage(){
+ const d=document.getElementById("mDate").value||store.get("trip-date","2026-07-04");
+ const dateNice=new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
+ const who=concName.value.trim();
+ return "Hola! We are guests at Hyatt Ziva Los Cabos"+(who?" ("+who+")":"")+
+  ". Could the concierge please help us book: "+mAct.emoji+" "+mAct.name+
+  " for "+mPartyN+" people on "+dateNice+"? "+
+  (mAct.operator?"(Operator we found: "+mAct.operator.split("—")[0].trim()+".) ":"")+
+  "¡Muchas gracias!";
+}
+document.getElementById("concWa").addEventListener("click",()=>{
+ window.open("https://wa.me/"+CONC_PHONE+"?text="+encodeURIComponent(concMessage()),"_blank");
+});
+document.getElementById("concMail").addEventListener("click",()=>{
+ location.href="mailto:"+CONC_EMAIL+"?subject="+encodeURIComponent("Guest booking request: "+mAct.name)+"&body="+encodeURIComponent(concMessage());
+});
 
 /* ============ BUDGET + PLAN DRAWER ============ */
 const bar=document.getElementById("budgetBar");
