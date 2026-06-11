@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olive · Cabo San Lucas Family Guide</title>
+<meta name="description" content="Olive — our family's private travel guide for Cabo San Lucas, July 2026. Activities, prices, planning widgets and more.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 72'><path d='M40 16 C46 6 58 4 62 4 C62 10 58 20 46 22 Z' fill='%238a9a5b'/><ellipse cx='30' cy='46' rx='21' ry='24' fill='%239aab62'/><ellipse cx='22' cy='36' rx='6' ry='8' fill='%23c8d49a' opacity='.7'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --olive:#6b7c3f; --olive-dark:#4a5630; --olive-deep:#2f3620;
+    --sand:#f7f1e3; --sand-dark:#efe6d0; --cream:#fffdf7;
+    --coral:#e76f51; --coral-soft:#f4a261; --sea:#2a9d8f; --sea-deep:#1f7a70;
+    --ink:#2b2b23; --ink-soft:#6b6a5c;
+    --radius:18px; --shadow:0 6px 24px rgba(47,54,32,.10);
+    --font-display:"Fraunces",Georgia,serif; --font-body:"Inter",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--font-body);background:var(--sand);color:var(--ink);line-height:1.55}
+  h1,h2,h3{font-family:var(--font-display)}
+  .wrap{max-width:980px;margin:0 auto;padding:0 18px}
+
+  /* ---------- Hero ---------- */
+  header{background:linear-gradient(160deg,var(--olive-deep) 0%,var(--olive-dark) 45%,var(--olive) 100%);color:var(--cream);padding:46px 0 110px;position:relative;overflow:hidden}
+  header::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:70px;background:var(--sand);clip-path:ellipse(75% 100% at 50% 100%)}
+  .hero-eyebrow{letter-spacing:.22em;text-transform:uppercase;font-size:.74rem;font-weight:600;color:#d9e2bb}
+  .hero-title{font-size:clamp(3rem,9vw,5rem);font-weight:700;line-height:1.02;margin:.2em 0 .15em}
+  .olive-glyph{height:.62em;margin-left:.12em;vertical-align:baseline}
+  .hero-sub{font-size:1.05rem;color:#e9eeda;max-width:34em}
+  .sun{position:absolute;top:-60px;right:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,var(--coral-soft),transparent 70%);opacity:.5}
+
+  /* ---------- Countdown ---------- */
+  .countdown-card{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);margin-top:-78px;position:relative;z-index:2;padding:22px;display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+  .cd-units{display:flex;gap:10px}
+  .cd-unit{background:var(--olive-deep);color:var(--cream);border-radius:12px;min-width:74px;padding:10px 8px;text-align:center}
+  .cd-unit b{display:block;font-size:1.9rem;font-family:var(--font-display);line-height:1.1}
+  .cd-unit span{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:#cdd6ad}
+  .cd-meta{flex:1;min-width:200px}
+  .cd-meta h2{font-size:1.25rem;color:var(--olive-dark)}
+  .cd-meta input[type=date]{margin-top:6px;border:1.5px solid var(--sand-dark);background:var(--sand);border-radius:9px;padding:7px 10px;font-family:var(--font-body);font-size:.9rem;color:var(--ink)}
+
+  /* ---------- Sections ---------- */
+  section{padding:42px 0 10px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sec-head h2{font-size:1.8rem;color:var(--olive-deep)}
+  .sec-head .tag{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;background:var(--olive);color:var(--cream);padding:4px 10px;border-radius:99px}
+  .sec-blurb{color:var(--ink-soft);max-width:46em;margin-bottom:20px}
+
+  /* ---------- Weather ---------- */
+  .weather-grid{display:grid;grid-template-columns:1.1fr 2fr;gap:16px}
+  @media(max-width:720px){.weather-grid{grid-template-columns:1fr}}
+  .weather-now{background:linear-gradient(150deg,var(--sea) 0%,var(--sea-deep) 100%);color:#eafffb;border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+  .weather-now .temp{font-size:3.2rem;font-family:var(--font-display);font-weight:700;line-height:1}
+  .weather-now .cond{font-size:1rem;margin-top:4px}
+  .weather-now .note{font-size:.78rem;opacity:.85;margin-top:12px}
+  .forecast{background:var(--cream);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);display:flex;gap:8px;overflow-x:auto}
+  .fc-day{flex:1;min-width:84px;text-align:center;padding:8px 4px;border-radius:12px;background:var(--sand)}
+  .fc-day .d{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--olive-dark)}
+  .fc-day .e{font-size:1.5rem;margin:4px 0}
+  .fc-day .hi{font-weight:700}
+  .fc-day .lo{color:var(--ink-soft);font-size:.85rem}
+  .fc-day .rain{font-size:.7rem;color:var(--sea-deep);margin-top:2px}
+  .july-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:16px}
+  .fact{background:var(--cream);border-radius:14px;padding:14px;box-shadow:var(--shadow);text-align:center}
+  .fact b{display:block;font-size:1.35rem;font-family:var(--font-display);color:var(--coral)}
+  .fact span{font-size:.78rem;color:var(--ink-soft)}
+
+  /* ---------- Rhythm ---------- */
+  .rhythm{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .rhythm-card{border-radius:var(--radius);padding:20px;color:var(--cream);box-shadow:var(--shadow)}
+  .rhythm-card h3{font-size:1.15rem;margin-bottom:6px}
+  .rhythm-card p{font-size:.88rem;opacity:.93}
+  .r-morning{background:linear-gradient(150deg,#f4a261,#e76f51)}
+  .r-midday{background:linear-gradient(150deg,#2a9d8f,#1f7a70)}
+  .r-evening{background:linear-gradient(150deg,#4a5630,#2f3620)}
+
+  /* ---------- Activities ---------- */
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .chip{border:1.5px solid var(--olive);background:transparent;color:var(--olive-dark);font-family:var(--font-body);font-weight:600;font-size:.82rem;padding:7px 15px;border-radius:99px;cursor:pointer;transition:.15s}
+  .chip.active,.chip:hover{background:var(--olive);color:var(--cream)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+  .card{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;display:flex;flex-direction:column;gap:8px;position:relative;transition:transform .15s}
+  .card:hover{transform:translateY(-3px)}
+  .card .emoji{font-size:2rem}
+  .card h3{font-size:1.12rem;color:var(--olive-deep)}
+  .card .price{font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:var(--coral)}
+  .card .meta{font-size:.74rem;color:var(--ink-soft);display:flex;gap:10px;flex-wrap:wrap}
+  .card .desc{font-size:.86rem;color:var(--ink)}
+  .card .tip{font-size:.78rem;background:var(--sand);border-left:3px solid var(--olive);padding:8px 10px;border-radius:0 8px 8px 0;color:var(--ink-soft)}
+  .card .row{display:flex;gap:8px;margin-top:auto;align-items:center;flex-wrap:wrap}
+  .vote-btn{border:none;background:var(--sand);border-radius:99px;padding:7px 13px;font-family:var(--font-body);font-weight:600;font-size:.82rem;cursor:pointer;color:var(--coral);transition:.15s}
+  .vote-btn:hover{background:#fde6dd}
+  .vote-btn.voted{background:var(--coral);color:#fff}
+  .plan-btn{border:1.5px solid var(--olive);background:transparent;border-radius:99px;padding:6px 13px;font-family:var(--font-body);font-weight:600;font-size:.82rem;cursor:pointer;color:var(--olive-dark);transition:.15s}
+  .plan-btn.in{background:var(--olive);color:var(--cream)}
+  .book-btn{background:var(--coral);color:#fff;border-radius:99px;padding:7px 14px;font-weight:600;font-size:.82rem;text-decoration:none;transition:.15s}
+  .book-btn:hover{background:#d65a3c}
+  .map-link{font-size:.8rem;color:var(--sea-deep);font-weight:600;text-decoration:none;margin-left:auto}
+  .map-link:hover{text-decoration:underline}
+  .free-badge{position:absolute;top:14px;right:14px;background:var(--sea);color:#fff;font-size:.64rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:99px}
+
+  /* ---------- Budget bar ---------- */
+  .budget-bar{position:fixed;left:0;right:0;bottom:0;background:var(--olive-deep);color:var(--cream);padding:12px 16px;z-index:50;transform:translateY(110%);transition:transform .25s;box-shadow:0 -6px 20px rgba(0,0,0,.18)}
+  .budget-bar.show{transform:translateY(0)}
+  .budget-inner{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .budget-inner .total{font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--coral-soft)}
+  .stepper{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border-radius:99px;padding:4px 8px}
+  .stepper button{border:none;background:var(--cream);color:var(--olive-deep);width:26px;height:26px;border-radius:50%;font-weight:800;cursor:pointer;font-size:1rem;line-height:1}
+  .stepper span{font-size:.85rem;font-weight:600;min-width:88px;text-align:center}
+  .budget-note{font-size:.72rem;opacity:.75;flex-basis:100%}
+
+  /* ---------- Two-col widgets ---------- */
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.two-col{grid-template-columns:1fr}}
+  .widget{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+  .widget h3{color:var(--olive-deep);font-size:1.2rem;margin-bottom:12px}
+
+  /* Currency */
+  .fx-row{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+  .fx-row input{flex:1;border:1.5px solid var(--sand-dark);border-radius:10px;padding:10px 12px;font-size:1.05rem;font-family:var(--font-body);background:var(--sand);min-width:0}
+  .fx-row label{font-weight:700;font-size:.85rem;width:42px;color:var(--olive-dark)}
+  .fx-rate{font-size:.76rem;color:var(--ink-soft)}
+  .fx-rate input{width:64px;border:1px solid var(--sand-dark);border-radius:6px;padding:2px 6px;font-size:.76rem;background:#fff}
+
+  /* Tipping */
+  .tip-table{width:100%;border-collapse:collapse;font-size:.86rem}
+  .tip-table td{padding:8px 4px;border-bottom:1px dashed var(--sand-dark)}
+  .tip-table td:last-child{text-align:right;font-weight:700;color:var(--coral)}
+
+  /* Packing */
+  .pack-progress{height:10px;background:var(--sand);border-radius:99px;overflow:hidden;margin-bottom:14px}
+  .pack-progress div{height:100%;width:0;background:linear-gradient(90deg,var(--olive),var(--sea));border-radius:99px;transition:width .3s}
+  .pack-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px 18px}
+  .pack-item{display:flex;align-items:center;gap:9px;font-size:.88rem;padding:5px 0;cursor:pointer;user-select:none}
+  .pack-item input{accent-color:var(--olive);width:17px;height:17px;cursor:pointer}
+  .pack-item.done span{text-decoration:line-through;color:var(--ink-soft)}
+
+  /* Phrases */
+  .phrase-card{background:linear-gradient(150deg,var(--coral),var(--coral-soft));color:#fff;border-radius:var(--radius);padding:26px;text-align:center;cursor:pointer;box-shadow:var(--shadow);user-select:none;min-height:150px;display:flex;flex-direction:column;justify-content:center}
+  .phrase-card .es{font-family:var(--font-display);font-size:1.5rem;font-weight:700}
+  .phrase-card .en{font-size:.95rem;opacity:.92;margin-top:6px}
+  .phrase-card .hint{font-size:.7rem;opacity:.75;margin-top:14px;letter-spacing:.1em;text-transform:uppercase}
+
+  /* Footer */
+  footer{margin-top:50px;padding:34px 0 120px;background:var(--olive-deep);color:#cdd6ad;text-align:center;font-size:.82rem}
+  footer .logo{font-family:var(--font-display);font-size:1.5rem;color:var(--cream)}
+
+  /* Nav */
+  nav{position:sticky;top:0;background:rgba(247,241,227,.92);backdrop-filter:blur(8px);z-index:40;border-bottom:1px solid var(--sand-dark)}
+  nav .wrap{display:flex;gap:4px;overflow-x:auto;padding:10px 18px}
+  nav a{white-space:nowrap;text-decoration:none;color:var(--olive-dark);font-size:.82rem;font-weight:600;padding:6px 12px;border-radius:99px}
+  nav a:hover{background:var(--sand-dark)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="sun"></div>
+  <div class="wrap">
+    <div class="hero-eyebrow">Family Edition · Cabo San Lucas · July 2026</div>
+    <h1 class="hero-title">Olive<svg class="olive-glyph" viewBox="0 0 64 72" aria-hidden="true"><path d="M40 16 C46 6 58 4 62 4 C62 10 58 20 46 22 Z" fill="#8a9a5b"/><path d="M42 18 Q52 10 60 6" stroke="#4a5630" stroke-width="2" fill="none"/><ellipse cx="30" cy="46" rx="21" ry="24" fill="#9aab62"/><ellipse cx="30" cy="46" rx="21" ry="24" fill="none" stroke="#4a5630" stroke-width="2.5"/><ellipse cx="22" cy="36" rx="6" ry="8" fill="#c8d49a" opacity=".7"/></svg></h1>
+    <p class="hero-sub">Our private little travel guide for the best week of the summer. Home base: the Hyatt Ziva Los Cabos. Real activities, real prices, booking links and the family game plan — all in one place. Vote for what you want to do most!</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="countdown-card">
+    <div class="cd-meta">
+      <h2>✈️ Countdown to Cabo</h2>
+      <label style="font-size:.78rem;color:var(--ink-soft)">Trip date:
+        <input type="date" id="tripDate">
+      </label>
+    </div>
+    <div class="cd-units">
+      <div class="cd-unit"><b id="cdDays">–</b><span>days</span></div>
+      <div class="cd-unit"><b id="cdHours">–</b><span>hours</span></div>
+      <div class="cd-unit"><b id="cdMins">–</b><span>mins</span></div>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <div class="wrap">
+    <a href="#weather">☀️ Weather</a>
+    <a href="#rhythm">🕐 Daily Rhythm</a>
+    <a href="#resort">🏨 Home Base</a>
+    <a href="#activities">🏄 Activities & Prices</a>
+    <a href="#money">💵 Money</a>
+    <a href="#packing">🧳 Packing</a>
+    <a href="#spanish">🗣️ Spanish</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- WEATHER -->
+  <section id="weather">
+    <div class="sec-head"><h2>Cabo Right Now</h2><span class="tag">Live</span></div>
+    <p class="sec-blurb">Live conditions in Cabo San Lucas, plus what July always brings: hot sunny days, bathwater ocean, and the year's best snorkeling visibility.</p>
+    <div class="weather-grid">
+      <div class="weather-now">
+        <div class="temp" id="wTemp">—°</div>
+        <div class="cond" id="wCond">Loading live weather…</div>
+        <div class="note">📍 Cabo San Lucas, B.C.S. · updates every time you open Olive</div>
+      </div>
+      <div class="forecast" id="forecast"></div>
+    </div>
+    <div class="july-facts">
+      <div class="fact"><b>91°F</b><span>typical July high</span></div>
+      <div class="fact"><b>78–81°F</b><span>ocean temperature 🌊</span></div>
+      <div class="fact"><b>77°F</b><span>warm nights</span></div>
+      <div class="fact"><b>SPF 50</b><span>non-negotiable ☀️</span></div>
+    </div>
+  </section>
+
+  <!-- RHYTHM -->
+  <section id="rhythm">
+    <div class="sec-head"><h2>The July Rhythm</h2></div>
+    <p class="sec-blurb">July in Cabo has a rhythm — locals swear by it. Follow this and the heat never wins.</p>
+    <div class="rhythm">
+      <div class="rhythm-card r-morning"><h3>🌅 Mornings · 7–11 am</h3><p>Glass-calm water and the best visibility. Book every boat, snorkel, and adventure tour in this window. The sea is at its absolute best before noon.</p></div>
+      <div class="rhythm-card r-midday"><h3>😎 Midday · 12–4 pm</h3><p>Heat peaks near 91–96°F. This is pool time, shaded-lunch time, siesta time. Air conditioning is a Cabo activity. Drink more water than you think you need.</p></div>
+      <div class="rhythm-card r-evening"><h3>🌇 Evenings · 5 pm+</h3><p>The town comes alive. Sunset cruises, marina strolls, dinner with toes in the sand. Quick July rain showers (if any) pass in under an hour.</p></div>
+    </div>
+  </section>
+
+  <!-- RESORT -->
+  <section id="resort">
+    <div class="sec-head"><h2>Home Base: Hyatt Ziva Los Cabos</h2><span class="tag">All-inclusive</span></div>
+    <p class="sec-blurb">Our beachfront all-inclusive in San José del Cabo — freshly renovated in 2025. Half the vacation is already paid for the moment we walk in.</p>
+    <div class="two-col">
+      <div class="widget" style="background:linear-gradient(150deg,var(--olive-dark),var(--olive-deep));color:var(--cream)">
+        <h3 style="color:var(--cream)">✅ Already Included</h3>
+        <ul style="font-size:.9rem;padding-left:20px;display:flex;flex-direction:column;gap:8px">
+          <li><b>7 restaurants</b> — Mexican, Italian, Asian & more, no bill ever arrives</li>
+          <li><b>4 pools + 2 hot tubs</b>, including an adults-only pool</li>
+          <li><b>KidZ Club</b> (ages 4–12) with a 5-slide mini waterpark, plus the new <b>Teen Club</b></li>
+          <li><b>Non-motorized water sports</b>, bubble parties & daily activities</li>
+          <li>24-hour room service & all drinks</li>
+        </ul>
+        <p style="font-size:.78rem;margin-top:12px;opacity:.85">🌊 Heads-up: the resort beach is gorgeous for walks but <b>not swimmable</b> (strong waves). Pools are the swim zone at home base — Chileno Bay and Medano Beach are our ocean-swimming spots.</p>
+      </div>
+      <div class="widget">
+        <h3>🚕 Getting to the Fun</h3>
+        <table class="tip-table">
+          <tr><td>Downtown San José del Cabo</td><td>~10 min</td></tr>
+          <tr><td>Airport (SJD)</td><td>~20 min</td></tr>
+          <tr><td>Cabo San Lucas marina / Medano</td><td>~30–40 min</td></tr>
+          <tr><td>Taxi to Cabo San Lucas</td><td>~$30–50 each way</td></tr>
+        </table>
+        <p style="font-size:.78rem;color:var(--ink-soft);margin-top:10px">💡 Agree on the taxi fare <i>before</i> getting in, or use Uber (it works in Los Cabos). Better yet: most tour operators include <b>free hotel pickup</b> at or near the Ziva — always ask when booking.</p>
+        <p style="font-size:.78rem;color:var(--ink-soft);margin-top:8px">🍽️ Popular specialty restaurants can fill up — ask the concierge (or the Hyatt app) about dinner reservations in the morning.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACTIVITIES -->
+  <section id="activities">
+    <div class="sec-head"><h2>Activities & Prices</h2><span class="tag">Vote!</span></div>
+    <p class="sec-blurb">Tap ❤️ to vote for your favorites and <b>＋ Plan</b> to add them to the family budget builder at the bottom of the screen. Prices are typical per-person rates — booking direct or a few days ahead often beats walk-up prices.</p>
+    <div class="filters" id="filters"></div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <!-- MONEY -->
+  <section id="money">
+    <div class="sec-head"><h2>Money Stuff</h2></div>
+    <div class="two-col">
+      <div class="widget">
+        <h3>💱 Peso Converter</h3>
+        <div class="fx-row"><label>USD</label><input type="number" id="fxUsd" value="100" inputmode="decimal"></div>
+        <div class="fx-row"><label>MXN</label><input type="number" id="fxMxn" inputmode="decimal"></div>
+        <div class="fx-rate">Rate: 1 USD = <input type="number" id="fxRate" value="18.5" step="0.1"> MXN · USD is accepted nearly everywhere in Cabo, but pesos often get you better prices from vendors and taxis.</div>
+      </div>
+      <div class="widget">
+        <h3>🤝 Tipping Cheat Sheet</h3>
+        <table class="tip-table">
+          <tr><td>Restaurants</td><td>15–20%</td></tr>
+          <tr><td>Tour guides & boat crew</td><td>10–15% of tour</td></tr>
+          <tr><td>Beach vendors / chair setup</td><td>$2–5</td></tr>
+          <tr><td>Hotel housekeeping</td><td>$3–5 / day</td></tr>
+          <tr><td>Grocery baggers</td><td>10–20 pesos</td></tr>
+        </table>
+        <p style="font-size:.76rem;color:var(--ink-soft);margin-top:10px">⚠️ Check if your restaurant bill already includes "propina" (tip) — some tourist spots add it automatically.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PACKING -->
+  <section id="packing">
+    <div class="sec-head"><h2>The July Packing List</h2><span class="tag">Saves itself</span></div>
+    <p class="sec-blurb">Built for Cabo in July — hot, humid, and wet in the best way. Check things off as you pack; Olive remembers.</p>
+    <div class="widget">
+      <div class="pack-progress"><div id="packBar"></div></div>
+      <div class="pack-cols" id="packList"></div>
+    </div>
+  </section>
+
+  <!-- SPANISH -->
+  <section id="spanish">
+    <div class="sec-head"><h2>Vacation Spanish</h2><span class="tag">Tap to shuffle</span></div>
+    <p class="sec-blurb">One phrase a day keeps the awkward pointing away. Tap the card for a new one.</p>
+    <div class="two-col">
+      <div class="phrase-card" id="phraseCard">
+        <div class="es" id="phraseEs">¡Hola!</div>
+        <div class="en" id="phraseEn">Hello!</div>
+        <div class="hint">tap for another phrase</div>
+      </div>
+      <div class="widget">
+        <h3>🛟 Good-to-Knows</h3>
+        <ul style="font-size:.88rem;padding-left:20px;display:flex;flex-direction:column;gap:8px">
+          <li><b>Swim where locals swim.</b> Medano Beach & Chileno Bay are calm and swimmable; the Pacific-side beaches are beautiful but have strong currents — look for the flag system.</li>
+          <li><b>Drink bottled or filtered water.</b> Resorts filter their ice; street ice is usually fine at established spots, but bottled is the easy rule.</li>
+          <li><b>Negotiate kindly.</b> Water taxis and beach vendors expect a friendly haggle — start around 60–70% of the first price, with a smile.</li>
+          <li><b>July = baby sea-turtle season is coming.</b> Nests start appearing on beaches — give marked nests space. 🐢</li>
+          <li><b>Emergency number is 911,</b> same as home.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- BUDGET BAR -->
+<div class="budget-bar" id="budgetBar">
+  <div class="budget-inner">
+    <div>🧺 <b id="planCount">0</b> in plan</div>
+    <div class="stepper">
+      <button id="travMinus">−</button>
+      <span id="travLabel">4 travelers</span>
+      <button id="travPlus">+</button>
+    </div>
+    <div class="total" id="planTotal">$0</div>
+    <div class="budget-note">Estimated from typical per-person prices · free activities count as $0 · taxes/tips not included</div>
+  </div>
+</div>
+
+<footer>
+  <div class="logo">Olive 🌴</div>
+  <p>Made with love for the best travel crew there is.<br>Cabo San Lucas · July 2026 · prices researched June 2026 — confirm when booking.</p>
+</footer>
+
+<script>
+/* ============ DATA ============ */
+const ACTIVITIES=[
+ {id:"arch",emoji:"⛵",name:"Water Taxi to the Arch (El Arco)",cat:"water",price:20,priceLabel:"$15–25 pp round trip",dur:"45–60 min",ages:"All ages",
+  desc:"Glass-bottom boat from Medano Beach past the sea lion colony, Pelican Rock and Lover's Beach to Cabo's famous Arch at Land's End. Kids watch fish through the glass hull.",
+  tip:"Book right on Medano Beach (cheaper than the marina) and ask for a Lover's Beach drop-off with a pickup 2 hours later.",map:"El Arco de Cabo San Lucas",
+  book:"https://www.viator.com/searchResults/all?text=Cabo%20San%20Lucas%20water%20taxi%20arch%20glass%20bottom"},
+ {id:"chileno",emoji:"🤿",name:"Snorkeling at Chileno Bay",cat:"water",price:18,priceLabel:"Free beach · gear ~$15–20",dur:"Half morning",ages:"Confident swimmers 6+",
+  desc:"A calm, crescent-shaped cove that's basically a natural saltwater pool full of tropical fish and the occasional sea turtle. One of Cabo's few truly swimmable beaches.",
+  tip:"Go before 10 am — July mornings have glass-calm water and the best visibility of the whole year.",map:"Chileno Beach Los Cabos"},
+ {id:"snorkeltour",emoji:"🐠",name:"Snorkel Cruise + Land's End Combo",cat:"water",price:89,priceLabel:"$45–99 pp",dur:"3–4 hrs",ages:"6+",
+  desc:"Guided boat trip combining the Arch sights with a guided snorkel stop (usually Pelican Rock or Santa Maria), gear, snacks and drinks included.",
+  tip:"Morning departures only in July. Hotel pickup at the Ziva is usually included — ask when booking.",map:"Cabo San Lucas Marina",
+  book:"https://www.cabo-adventures.com/en/tour/snorkel-and-sea-adventure"},
+ {id:"sunset",emoji:"🌅",name:"Sunset Cruise",cat:"water",price:90,priceLabel:"$75–110 pp",dur:"2 hrs",ages:"All ages",
+  desc:"Sail past the Arch at golden hour with dinner or appetizers and drinks. The pirate ship version (Buccaneer Queen, ~$99) adds sword fights and shows the kids will talk about for weeks.",
+  tip:"Book the pirate ship for the kids' night, the quiet catamaran for the grown-ups' night.",map:"Cabo San Lucas Marina",
+  book:"https://www.viator.com/searchResults/all?text=Cabo%20San%20Lucas%20sunset%20cruise%20Buccaneer%20Queen"},
+ {id:"banana",emoji:"🍌",name:"Banana Boat at Medano Beach",cat:"water",price:22,priceLabel:"~$20–25 pp",dur:"20–30 min",ages:"5+",
+  desc:"The whole family bounces around Medano Bay on a giant inflatable banana. Maximum laughs per dollar of the entire trip.",
+  tip:"Vendors walk the beach all day — easy to haggle a family rate on the spot.",map:"Medano Beach Cabo San Lucas"},
+ {id:"parasail",emoji:"🪂",name:"Parasailing over Medano Bay",cat:"water",price:80,priceLabel:"$70–90 pp",dur:"~1 hr (10–12 min flight)",ages:"Usually 8+",
+  desc:"Float 300 feet above the bay with a postcard view of the Arch, the beach and the whole town. Tandem flights let two ride together.",
+  tip:"Morning flights = calmer wind and smoother rides.",map:"Medano Beach Cabo San Lucas",
+  book:"https://www.viator.com/searchResults/all?text=Cabo%20San%20Lucas%20parasailing"},
+ {id:"camel",emoji:"🐪",name:"Camel Ride + Tequila Tasting Combo",cat:"land",price:109,priceLabel:"$99–119 pp",dur:"3–4 hrs",ages:"6+",
+  desc:"Ride camels along a Pacific beach, then a Mexican lunch and (for the adults) a tequila tasting. Many combos add an ATV or UTV hour in the desert.",
+  tip:"The camel+ATV combo (~$119) is the best value if the crew wants both. Pickup near the Ziva is usually offered.",map:"Wild Canyon Los Cabos",
+  book:"https://wildcanyon.com.mx/products/camel-ride-cabo"},
+ {id:"atv",emoji:"🏜️",name:"ATV Desert & Beach Tour",cat:"land",price:99,priceLabel:"$69–129 pp",dur:"2–3 hrs",ages:"Drivers 16+, passengers ~6+",
+  desc:"Tear through desert canyons and along Pacific beaches on ATVs or side-by-sides. Goggles and bandanas provided — you will get gloriously dusty.",
+  tip:"Book the earliest slot; the desert gets seriously hot by 11 am in July.",map:"Migrino Beach Cabo",
+  book:"https://www.getyourguide.com/s/?q=Cabo%20San%20Lucas%20ATV%20tour"},
+ {id:"zip",emoji:"🦅",name:"Zipline Canyon Adventure",cat:"land",price:95,priceLabel:"$65–130 pp",dur:"3–4 hrs",ages:"~8+ (weight limits apply)",
+  desc:"Fly across desert canyons on multi-line zip courses (Wild Canyon's eco-adventure is the classic). Some parks add a glass-floor gondola and a giant swing.",
+  tip:"Closed-toe shoes required. Go early-morning for cooler air in July.",map:"Wild Canyon Los Cabos",
+  book:"https://www.getyourguide.com/s/?q=Wild%20Canyon%20zipline%20Cabo"},
+ {id:"dolphin",emoji:"🐬",name:"Dolphin Encounter",cat:"water",price:139,priceLabel:"$99–169 pp",dur:"~1 hr in water",ages:"4+ with adult",
+  desc:"Meet, touch and swim with dolphins in a marine center near the marina. The splurge the kids will never forget.",
+  tip:"Photo packages are pricey ($40+) — designate one family photographer from the viewing area instead.",map:"Cabo Dolphins Marina",
+  book:"https://www.getyourguide.com/s/?q=Cabo%20San%20Lucas%20dolphin%20encounter"},
+ {id:"fishing",emoji:"🎣",name:"Family Fishing Charter",cat:"water",price:150,priceLabel:"$400–800 per boat (split it!)",dur:"Half day",ages:"All ages on calm days",
+  desc:"Cabo is the marlin capital of the world and July kicks off the season. A private half-day panga or cruiser fits the whole family; crews fillet your catch for dinner.",
+  tip:"Many marina restaurants will cook your catch — ask the crew which ones. Price above estimates a family share.",map:"Cabo San Lucas Marina",
+  book:"https://www.viator.com/searchResults/all?text=Cabo%20San%20Lucas%20family%20fishing%20charter"},
+ {id:"lovers",emoji:"💘",name:"Lover's Beach Picnic",cat:"free",price:0,priceLabel:"Free (water taxi to get there)",dur:"2–3 hrs",ages:"All ages",
+  desc:"A wild, gorgeous beach right at Land's End, reachable only by boat. Sea of Cortez side is swimmable; the Pacific side ('Divorce Beach') is look-don't-swim.",
+  tip:"No vendors or shade — bring water, snacks and an umbrella. Combine with your Arch water taxi.",map:"Lovers Beach Cabo San Lucas"},
+ {id:"medano",emoji:"🏖️",name:"Medano Beach Day",cat:"free",price:0,priceLabel:"Free · loungers $25–50/pair",dur:"As long as you like",ages:"All ages",
+  desc:"Cabo's two-mile main beach: calm swimmable water, Arch views, and beach clubs where lunch arrives at your lounger.",
+  tip:"Towel on the sand is free anywhere. The swim zone is roped off and calm — perfect for kids.",map:"Medano Beach Cabo San Lucas"},
+ {id:"marina",emoji:"⚓",name:"Marina Sunset Stroll & Ice Cream",cat:"free",price:0,priceLabel:"Free (ice cream extra 🍦)",dur:"~1 hr",ages:"All ages",
+  desc:"A pedestrian boardwalk of mega-yachts, pelicans, street performers and shops. The classic easy evening when nobody wants a big plan.",
+  tip:"Walk it around 6–7 pm when the heat breaks and the boats come back in with their flags flying.",map:"Cabo San Lucas Marina"},
+ {id:"artwalk",emoji:"🎨",name:"San José del Cabo Old Town Evening",cat:"free",price:0,priceLabel:"Free to wander",dur:"Half evening",ages:"All ages",
+  desc:"Cabo's quieter sister town, 30 min away: a historic plaza, gallery district, church square and family-run taquerías. A lovely change of pace.",
+  tip:"Thursday evenings the gallery district comes alive — check locally if the Art Walk is running in July.",map:"San Jose del Cabo Gallery District"},
+ {id:"flora",emoji:"🥗",name:"Dinner at Flora Farms",cat:"food",price:50,priceLabel:"~$30–60 pp entrées",dur:"Evening",ages:"All ages — kids love the grounds",
+  desc:"A magical working farm in the San José foothills: farm-to-table dinner, wood-fired pizza, fairy lights and grounds the kids can explore.",
+  tip:"Reserve well ahead — it books out. Go before sunset to wander the farm first. Only ~20 min from the Ziva!",map:"Flora Farms San Jose del Cabo",
+  book:"https://www.google.com/search?q=Flora+Farms+San+Jose+del+Cabo+reservations"},
+ {id:"office",emoji:"🦶",name:"Toes-in-the-Sand Dinner at The Office",cat:"food",price:35,priceLabel:"~$20–45 pp",dur:"Evening",ages:"All ages",
+  desc:"The iconic Medano Beach restaurant where tables sit literally on the sand. Touristy? Yes. Worth one sunset dinner? Absolutely.",
+  tip:"Ask for a front-row sand table at sunset and order the fish tacos.",map:"The Office on the Beach Cabo",
+  book:"https://www.google.com/search?q=The+Office+on+the+Beach+Cabo+reservations"},
+ {id:"tacos",emoji:"🌮",name:"Family Taco Crawl",cat:"food",price:12,priceLabel:"$8–15 pp, stuffed",dur:"Lunch or dinner",ages:"All ages",
+  desc:"Skip one resort meal for the real thing: Tacos Gardenias and Las Guacamayas are local legends. Fish tacos, al pastor off the spit, and aguas frescas.",
+  tip:"A busy taco spot with locals in line is always the right answer.",map:"Tacos Gardenias Cabo San Lucas"},
+ {id:"kidz",emoji:"🛝",name:"KidZ Club & Mini Waterpark",cat:"resort",price:0,priceLabel:"Included in our stay",dur:"Drop-in all day",ages:"4–12 · new Teen Club too",
+  desc:"Five waterslides, a kids' pool, sanded playground, games and supervised arts & crafts — all part of the Ziva's all-inclusive, fresh from the 2025 renovation.",
+  tip:"Perfect midday-heat move: kids at the KidZ Club, grown-ups at the adults-only pool.",map:"Hyatt Ziva Los Cabos"},
+ {id:"zivapool",emoji:"🏊",name:"Ziva Pool & Beach-Walk Day",cat:"resort",price:0,priceLabel:"Included in our stay",dur:"All day",ages:"All ages",
+  desc:"Four pools, two hot tubs, included non-motorized water sports and bubble parties. Remember: the resort beach is for walking, not swimming — strong waves.",
+  tip:"Sunrise beach walk = the prettiest 30 minutes of the day, and the only cool ones in July.",map:"Hyatt Ziva Los Cabos"},
+ {id:"zivadinner",emoji:"🍽️",name:"Specialty Restaurant Night at the Ziva",cat:"resort",price:0,priceLabel:"Included · 7 restaurants",dur:"Evening",ages:"All ages",
+  desc:"Seven all-inclusive restaurants — Mexican, Italian, Asian and more. Every night can be a different country without leaving home base.",
+  tip:"Ask the concierge (or Hyatt app) in the morning to reserve the popular specialty spots — they fill up by evening.",map:"Hyatt Ziva Los Cabos"},
+];
+
+const CATS=[["all","🌵 Everything"],["water","🌊 On the Water"],["land","🏜️ Adventure"],["resort","🏨 At the Ziva"],["free","🆓 Free & Chill"],["food","🌮 Food"]];
+
+const PHRASES=[
+ ["¿Cuánto cuesta?","How much does it cost?"],["La cuenta, por favor","The check, please"],
+ ["¿Dónde está la playa?","Where is the beach?"],["Una mesa para cinco, por favor","A table for five, please"],
+ ["Sin picante, por favor","Not spicy, please"],["¡Está delicioso!","It's delicious!"],
+ ["Agua embotellada, por favor","Bottled water, please"],["¿Habla inglés?","Do you speak English?"],
+ ["Mucho gusto","Nice to meet you"],["¿Me da un descuento?","Can you give me a discount?"],
+ ["¡Salud!","Cheers!"],["Gracias, muy amable","Thank you, very kind"],
+ ["¿Dónde está el baño?","Where is the bathroom?"],["Más despacio, por favor","Slower, please"]
+];
+
+const PACKING=[
+ "Reef-safe sunscreen SPF 50+","Swimsuits (2 each — one's always wet)","Rash guards for the kids","Sun hats & sunglasses",
+ "Water shoes (rocky snorkel spots)","Snorkel masks (or rent there)","Light, breathable clothes","One nice dinner outfit each",
+ "Sandals + closed-toe shoes (ATV/zipline)","Refillable water bottles","Small dry bag for boat days","Aloe vera / after-sun gel",
+ "Bug spray (July evenings)","Travel meds + motion-sickness tabs","Passports (valid 6+ months!)","Pesos / small USD bills for tips",
+ "Phone waterproof pouch","Portable charger","Beach games / cards","Downloaded movies for the flight"
+];
+
+/* ============ STORAGE ============ */
+const store={
+ get(k,d){try{const v=localStorage.getItem("olive-"+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+ set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
+};
+
+/* ============ COUNTDOWN ============ */
+const tripInput=document.getElementById("tripDate");
+tripInput.value=store.get("trip-date","2026-07-04");
+tripInput.addEventListener("change",()=>{store.set("trip-date",tripInput.value);tick()});
+function tick(){
+ const target=new Date(tripInput.value+"T08:00:00");
+ let ms=target-new Date();
+ const past=ms<0; ms=Math.abs(ms);
+ const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);
+ document.getElementById("cdDays").textContent=d;
+ document.getElementById("cdHours").textContent=h;
+ document.getElementById("cdMins").textContent=m;
+ document.querySelector(".cd-meta h2").textContent=past?"🌴 We're in Cabo mode!":"✈️ Countdown to Cabo";
+}
+tick();setInterval(tick,30000);
+
+/* ============ WEATHER ============ */
+const WMO={0:["☀️","Clear"],1:["🌤️","Mostly clear"],2:["⛅","Partly cloudy"],3:["☁️","Cloudy"],45:["🌫️","Foggy"],48:["🌫️","Foggy"],
+ 51:["🌦️","Drizzle"],53:["🌦️","Drizzle"],55:["🌦️","Drizzle"],61:["🌧️","Light rain"],63:["🌧️","Rain"],65:["🌧️","Heavy rain"],
+ 80:["🌦️","Showers"],81:["🌦️","Showers"],82:["⛈️","Heavy showers"],95:["⛈️","Thunderstorm"],96:["⛈️","Thunderstorm"],99:["⛈️","Thunderstorm"]};
+function wmo(c){return WMO[c]||["🌞","Sunny-ish"]}
+fetch("https://api.open-meteo.com/v1/forecast?latitude=22.89&longitude=-109.91&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&temperature_unit=fahrenheit&timezone=America%2FMazatlan&forecast_days=6")
+ .then(r=>r.json()).then(j=>{
+   const[e,label]=wmo(j.current.weather_code);
+   document.getElementById("wTemp").textContent=Math.round(j.current.temperature_2m)+"°F";
+   document.getElementById("wCond").textContent=e+" "+label;
+   const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+   document.getElementById("forecast").innerHTML=j.daily.time.map((t,i)=>{
+     const dt=new Date(t+"T12:00:00");const[de]=wmo(j.daily.weather_code[i]);
+     return `<div class="fc-day"><div class="d">${i===0?"Today":days[dt.getDay()]}</div><div class="e">${de}</div>
+       <div class="hi">${Math.round(j.daily.temperature_2m_max[i])}°</div><div class="lo">${Math.round(j.daily.temperature_2m_min[i])}°</div>
+       <div class="rain">💧${j.daily.precipitation_probability_max[i]}%</div></div>`;
+   }).join("");
+ }).catch(()=>{
+   document.getElementById("wTemp").textContent="91°F";
+   document.getElementById("wCond").textContent="☀️ Typical July day (live data offline)";
+   document.getElementById("forecast").innerHTML='<div style="padding:14px;font-size:.85rem;color:var(--ink-soft)">Forecast unavailable offline — but it\'s July in Cabo: hot, sunny, maybe a quick evening shower. 😎</div>';
+ });
+
+/* ============ ACTIVITIES ============ */
+let votes=store.get("votes",{}),plan=store.get("plan",[]),travelers=store.get("travelers",4),activeCat="all";
+const cardsEl=document.getElementById("cards"),filtersEl=document.getElementById("filters");
+
+filtersEl.innerHTML=CATS.map(([k,l])=>`<button class="chip${k==="all"?" active":""}" data-cat="${k}">${l}</button>`).join("");
+filtersEl.addEventListener("click",e=>{
+ const b=e.target.closest(".chip");if(!b)return;
+ activeCat=b.dataset.cat;
+ filtersEl.querySelectorAll(".chip").forEach(c=>c.classList.toggle("active",c===b));
+ renderCards();
+});
+
+function renderCards(){
+ cardsEl.innerHTML=ACTIVITIES.filter(a=>activeCat==="all"||a.cat===activeCat).map(a=>{
+  const v=votes[a.id]||0,inPlan=plan.includes(a.id);
+  return `<div class="card">
+   ${a.price===0?`<div class="free-badge">${a.cat==="resort"?"Included":"Free"}</div>`:""}
+   <div class="emoji">${a.emoji}</div>
+   <h3>${a.name}</h3>
+   <div class="price">${a.priceLabel}</div>
+   <div class="meta"><span>⏱ ${a.dur}</span><span>👨‍👩‍👧‍👦 ${a.ages}</span></div>
+   <div class="desc">${a.desc}</div>
+   <div class="tip">💡 ${a.tip}</div>
+   <div class="row">
+     <button class="vote-btn${v?" voted":""}" data-vote="${a.id}">❤️ ${v||"Vote"}</button>
+     <button class="plan-btn${inPlan?" in":""}" data-plan="${a.id}">${inPlan?"✓ In plan":"＋ Plan"}</button>
+     ${a.book?`<a class="book-btn" target="_blank" href="${a.book}">Book ↗</a>`:""}
+     <a class="map-link" target="_blank" href="https://www.google.com/maps/search/${encodeURIComponent(a.map)}">Map ↗</a>
+   </div>
+  </div>`;
+ }).join("");
+}
+cardsEl.addEventListener("click",e=>{
+ const vb=e.target.closest("[data-vote]"),pb=e.target.closest("[data-plan]");
+ if(vb){const id=vb.dataset.vote;votes[id]=(votes[id]||0)+1;store.set("votes",votes);renderCards()}
+ if(pb){const id=pb.dataset.plan;plan=plan.includes(id)?plan.filter(x=>x!==id):[...plan,id];store.set("plan",plan);renderCards();renderBudget()}
+});
+
+/* ============ BUDGET ============ */
+const bar=document.getElementById("budgetBar");
+function renderBudget(){
+ const items=ACTIVITIES.filter(a=>plan.includes(a.id));
+ bar.classList.toggle("show",items.length>0);
+ document.getElementById("planCount").textContent=items.length;
+ document.getElementById("travLabel").textContent=travelers+" traveler"+(travelers>1?"s":"");
+ const total=items.reduce((s,a)=>s+a.price*travelers,0);
+ document.getElementById("planTotal").textContent="$"+total.toLocaleString();
+}
+document.getElementById("travMinus").onclick=()=>{travelers=Math.max(1,travelers-1);store.set("travelers",travelers);renderBudget()};
+document.getElementById("travPlus").onclick=()=>{travelers=Math.min(15,travelers+1);store.set("travelers",travelers);renderBudget()};
+renderCards();renderBudget();
+
+/* ============ CURRENCY ============ */
+const fxUsd=document.getElementById("fxUsd"),fxMxn=document.getElementById("fxMxn"),fxRate=document.getElementById("fxRate");
+function u2m(){fxMxn.value=(parseFloat(fxUsd.value||0)*parseFloat(fxRate.value||18.5)).toFixed(0)}
+function m2u(){fxUsd.value=(parseFloat(fxMxn.value||0)/parseFloat(fxRate.value||18.5)).toFixed(2)}
+fxUsd.addEventListener("input",u2m);fxMxn.addEventListener("input",m2u);fxRate.addEventListener("input",u2m);u2m();
+
+/* ============ PACKING ============ */
+let packed=store.get("packed",[]);
+const packEl=document.getElementById("packList");
+packEl.innerHTML=PACKING.map((p,i)=>`<label class="pack-item${packed.includes(i)?" done":""}"><input type="checkbox" data-i="${i}" ${packed.includes(i)?"checked":""}><span>${p}</span></label>`).join("");
+function packBar(){document.getElementById("packBar").style.width=(packed.length/PACKING.length*100)+"%"}
+packEl.addEventListener("change",e=>{
+ const i=+e.target.dataset.i;
+ packed=e.target.checked?[...packed,i]:packed.filter(x=>x!==i);
+ store.set("packed",packed);
+ e.target.closest(".pack-item").classList.toggle("done",e.target.checked);
+ packBar();
+});
+packBar();
+
+/* ============ PHRASES ============ */
+let pIdx=0;
+const shuffled=[...PHRASES].sort(()=>0.5-((Date.now()%97)/97));
+function showPhrase(){
+ const[es,en]=PHRASES[pIdx%PHRASES.length];
+ document.getElementById("phraseEs").textContent=es;
+ document.getElementById("phraseEn").textContent=en;
+}
+document.getElementById("phraseCard").addEventListener("click",()=>{pIdx++;showPhrase()});
+showPhrase();
+</script>
+</body>
+</html>
