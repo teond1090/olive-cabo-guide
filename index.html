@@ -223,10 +223,22 @@
   .conc-fab:hover{transform:scale(1.08)}
   .conc-fab .fab-label{font-size:.72rem;font-weight:800;font-family:var(--font-body);margin-left:5px;vertical-align:middle}
   .c-btns{display:flex;gap:8px;flex-wrap:wrap}
-  .c-btn{flex:1;min-width:130px;border:none;border-radius:99px;padding:11px 14px;font-family:var(--font-body);font-weight:800;font-size:.85rem;cursor:pointer;color:#fff;transition:.16s;text-align:center}
+  .c-btn{flex:1;min-width:110px;border:none;border-radius:99px;padding:11px 14px;font-family:var(--font-body);font-weight:800;font-size:.85rem;cursor:pointer;color:#fff;transition:.16s;text-align:center;text-decoration:none;display:inline-block}
   .c-btn:hover{transform:scale(1.04)}
   .c-wa{background:#25d366}
-  .c-mail{background:var(--olive)}
+  .c-mail{background:var(--coral)}
+  .c-tel{background:var(--sea)}
+
+  /* ---------- Activities search ---------- */
+  .search-row{margin-bottom:12px}
+  .search-row input{width:100%;border:2px solid var(--sand-dark);border-radius:99px;padding:13px 20px;font-family:var(--font-body);font-size:.95rem;background:var(--cream);outline:none;box-shadow:var(--shadow);transition:border-color .15s}
+  .search-row input:focus{border-color:var(--olive)}
+  .more-box{margin-top:16px;background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;font-size:.86rem}
+  .more-box b{color:var(--olive-deep)}
+  .more-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .more-links a{text-decoration:none;border:1.5px solid var(--olive);color:var(--olive-dark);font-weight:700;font-size:.8rem;padding:7px 14px;border-radius:99px;transition:.15s}
+  .more-links a:hover{background:var(--olive);color:var(--cream)}
+  .no-match{grid-column:1/-1;text-align:center;color:var(--ink-soft);font-size:.9rem;padding:26px 10px}
   .c-call{font-size:.72rem;color:var(--ink-soft);text-align:center;margin-top:9px}
   .c-call a{color:var(--sea-deep);font-weight:700;text-decoration:none}
 
@@ -389,8 +401,9 @@
         <span>Tours, dinner reservations, taxis: one message to the resort and it's handled. Olive writes the message for you.</span>
       </div>
       <div class="c-btns">
-        <button class="c-btn c-wa" data-conc="wa">💬 WhatsApp</button>
         <button class="c-btn c-mail" data-conc="mail">✉️ Email</button>
+        <a class="c-btn c-tel" href="tel:+526241637730">📞 Call</a>
+        <button class="c-btn c-wa" data-conc="wa">💬 WhatsApp</button>
       </div>
     </div>
 
@@ -472,8 +485,12 @@
   <section id="activities">
     <div class="sec-head reveal"><h2>Activities & Prices</h2><span class="tag">Book from Olive</span></div>
     <p class="sec-blurb reveal">Tap any activity to see details, vote ❤️, add it to the family budget, and <b>book</b> — Olive opens the operator's real checkout, or writes the concierge request for you. Prices are typical per-person rates.</p>
+    <div class="search-row reveal">
+      <input id="actSearch" type="search" placeholder="🔎 Search activities — snorkel, dinner, kids…" autocomplete="off">
+    </div>
     <div class="filters reveal" id="filters"></div>
     <div class="cards" id="cards"></div>
+    <div class="more-box reveal" id="moreBox"></div>
   </section>
 
   </div>
@@ -597,8 +614,9 @@
       <div class="c-sub">Olive writes the whole request — you just hit send. The concierge desk arranges tours, transport and dinner reservations for guests.</div>
       <input id="concName" maxlength="60" placeholder="Your name & room # (optional — saved on this phone)">
       <div class="c-btns">
-        <button class="c-btn c-wa" id="concWa">💬 WhatsApp</button>
         <button class="c-btn c-mail" id="concMail">✉️ Email</button>
+        <a class="c-btn c-tel" href="tel:+526241637730">📞 Call</a>
+        <button class="c-btn c-wa" id="concWa">💬 WhatsApp</button>
       </div>
       <div class="c-call">Prefer to talk? <a href="tel:+526241637730">+52 624 163 7730</a> ext. 4411 (concierge)</div>
     </div>
@@ -627,8 +645,9 @@
     <div class="m-conc" style="margin-top:14px">
       <input class="conc-name" maxlength="60" placeholder="Your name & room # (optional — saved on this phone)">
       <div class="c-btns">
-        <button class="c-btn c-wa" data-conc="wa">💬 WhatsApp</button>
         <button class="c-btn c-mail" data-conc="mail">✉️ Email</button>
+        <a class="c-btn c-tel" href="tel:+526241637730">📞 Call</a>
+        <button class="c-btn c-wa" data-conc="wa">💬 WhatsApp</button>
       </div>
       <div class="c-call">Prefer to talk? <a href="tel:+526241637730">+52 624 163 7730</a> ext. 4411 (concierge)</div>
     </div>
@@ -824,8 +843,34 @@ filtersEl.addEventListener("click",e=>{
  renderCards();
 });
 
+let query="";
+const searchEl=document.getElementById("actSearch");
+searchEl.addEventListener("input",()=>{query=searchEl.value.trim().toLowerCase();renderCards()});
+function matchesQuery(a){
+ if(!query)return true;
+ const hay=(a.name+" "+a.desc+" "+a.tip+" "+a.priceLabel+" "+a.cat+" "+a.ages).toLowerCase();
+ return query.split(/\s+/).every(w=>hay.includes(w));
+}
+function renderMore(){
+ const q=query||"things to do";
+ const enc=encodeURIComponent(q+" Cabo San Lucas");
+ document.getElementById("moreBox").innerHTML=
+  `<b>🌐 Want more options?</b> Search the web for “${query||"more things to do"}” in Cabo — these open trusted travel sites in a new tab:
+   <div class="more-links">
+     <a target="_blank" rel="noopener" href="https://www.google.com/search?q=${enc}+booking">Google</a>
+     <a target="_blank" rel="noopener" href="https://www.tripadvisor.com/Search?q=${enc}">Tripadvisor</a>
+     <a target="_blank" rel="noopener" href="https://www.getyourguide.com/s/?q=${enc}">GetYourGuide</a>
+     <a target="_blank" rel="noopener" href="https://www.viator.com/searchResults/all?text=${enc}">Viator</a>
+   </div>`;
+}
 function renderCards(){
- cardsEl.innerHTML=ACTIVITIES.filter(a=>activeCat==="all"||a.cat===activeCat).map((a,i)=>{
+ const list=ACTIVITIES.filter(a=>(activeCat==="all"||a.cat===activeCat)&&matchesQuery(a));
+ renderMore();
+ if(!list.length){
+  cardsEl.innerHTML=`<div class="no-match">🌵 Nothing in our list matches “${query}”.<br>Try the web search below — or ask the 🛎️ concierge, they know everything.</div>`;
+  return;
+ }
+ cardsEl.innerHTML=list.map((a,i)=>{
   const v=votes[a.id]||0,inPlan=plan.includes(a.id);
   const badge=a.price===0?(a.cat==="resort"?"INC":"FREE"):"";
   return `<button class="card" data-open="${a.id}" style="animation-delay:${Math.min(i*30,300)}ms">
@@ -940,16 +985,34 @@ function genericConcMsg(){
  return "Hola! We are guests at Hyatt Ziva Los Cabos"+(who?" ("+who+")":"")+
   ". Could the concierge please help us book activities, dinner reservations or transportation during our stay? ¡Muchas gracias!";
 }
+/* WhatsApp: the resort publishes NO official WhatsApp line — its landline isn't on
+   WhatsApp. The front desk gives guests their WhatsApp number at check-in; we save
+   it once (per device) and the button works for the rest of the trip. */
+function concWaNumber(){return (store.get("conc-wa","")||"").replace(/\D/g,"")}
+function refreshWaLabels(){
+ const has=!!concWaNumber();
+ document.querySelectorAll(".c-wa").forEach(b=>{b.textContent=has?"💬 WhatsApp":"💬 WhatsApp (add # at check-in)"});
+}
+function sendWa(msg){
+ let n=concWaNumber();
+ if(!n){
+   const inp=prompt("The Ziva doesn't publish an official WhatsApp line (their phone number isn't registered on WhatsApp — that's why it wasn't connecting).\n\nThe front desk gives guests their WhatsApp number at check-in. Paste it here once you have it (with country code, e.g. +52 624 ...) and Olive will remember it:\n\nUntil then, the ✉️ Email button works right now.");
+   const digits=(inp||"").replace(/\D/g,"");
+   if(digits.length>=10){n=digits;store.set("conc-wa",n);refreshWaLabels()}
+   else return;
+ }
+ const u="https://wa.me/"+n+"?text="+encodeURIComponent(msg);
+ const w=window.open(u,"_blank");if(!w)location.href=u;
+}
 document.addEventListener("click",e=>{
  const b=e.target.closest("[data-conc]");if(!b)return;
  const msg=genericConcMsg();
- if(b.dataset.conc==="wa"){
-   const u="https://wa.me/"+CONC_PHONE+"?text="+encodeURIComponent(msg);
-   const w=window.open(u,"_blank");if(!w)location.href=u;
- }else{
+ if(b.dataset.conc==="wa"){sendWa(msg)}
+ else{
    location.href="mailto:"+CONC_EMAIL+"?subject="+encodeURIComponent("Guest booking request")+"&body="+encodeURIComponent(msg);
  }
 });
+refreshWaLabels();
 document.addEventListener("input",e=>{
  if(e.target.classList&&e.target.classList.contains("conc-name")){
    store.set("conc-name",e.target.value);concName.value=e.target.value;
@@ -973,11 +1036,7 @@ function concMessage(){
   (mAct.operator?"(Operator we found: "+mAct.operator.split("—")[0].trim()+".) ":"")+
   "¡Muchas gracias!";
 }
-document.getElementById("concWa").addEventListener("click",()=>{
- const u="https://wa.me/"+CONC_PHONE+"?text="+encodeURIComponent(concMessage());
- const w=window.open(u,"_blank");
- if(!w)location.href=u; // popup blocked (in-app browsers) -> same tab
-});
+document.getElementById("concWa").addEventListener("click",()=>sendWa(concMessage()));
 document.getElementById("mCopy").addEventListener("click",()=>{
  const u=mAct&&mAct.book?mAct.book:"";
  if(!u)return;
