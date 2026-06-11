@@ -129,25 +129,23 @@
   .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
   .chip{border:1.5px solid var(--olive);background:transparent;color:var(--olive-dark);font-family:var(--font-body);font-weight:600;font-size:.84rem;padding:8px 16px;border-radius:99px;cursor:pointer;transition:.18s}
   .chip.active,.chip:hover{background:var(--olive);color:var(--cream);transform:translateY(-2px)}
-  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
-  .card{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;position:relative;transition:transform .2s,box-shadow .2s;animation:cardIn .4s ease both}
-  @keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-  .card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
-  .card-top{padding:13px 18px 10px;display:flex;align-items:center;justify-content:space-between;color:#fff}
-  .card-top .emoji{font-size:2.05rem;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
-  .card-top .badge{background:rgba(255,255,255,.22);backdrop-filter:blur(4px);font-size:.64rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:99px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  @media(min-width:720px){.cards{grid-template-columns:repeat(auto-fill,minmax(168px,1fr))}}
+  .card{background:var(--cream);border:none;border-radius:16px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;position:relative;transition:transform .18s,box-shadow .18s;animation:cardIn .35s ease both;cursor:pointer;padding:0;font-family:var(--font-body);text-align:left}
+  @keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .card:hover{transform:translateY(-4px) scale(1.02);box-shadow:var(--shadow-lg)}
+  .card .ct{height:56px;display:flex;align-items:center;justify-content:center;font-size:1.85rem;position:relative}
+  .card .c-badge{position:absolute;top:7px;right:7px;background:rgba(255,255,255,.28);backdrop-filter:blur(3px);color:#fff;font-size:.56rem;font-weight:800;letter-spacing:.07em;padding:3px 7px;border-radius:99px}
   .ct-water{background:linear-gradient(140deg,#2a9d8f,#1f7a70)}
   .ct-land{background:linear-gradient(140deg,#e76f51,#c4502f)}
   .ct-resort{background:linear-gradient(140deg,#8a9a5b,#6b7c3f)}
   .ct-free{background:linear-gradient(140deg,#4a8fb5,#2f6e93)}
   .ct-food{background:linear-gradient(140deg,#f4a261,#e76f51)}
-  .card-body{padding:13px 18px 17px;display:flex;flex-direction:column;gap:7px;flex:1}
-  .card h3{font-size:1.13rem;color:var(--olive-deep)}
-  .card .price{font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:var(--coral)}
-  .card .meta{font-size:.74rem;color:var(--ink-soft);display:flex;gap:10px;flex-wrap:wrap}
-  .card .desc{font-size:.86rem}
-  .card .tip{font-size:.78rem;background:var(--sand);border-left:3px solid var(--olive);padding:8px 10px;border-radius:0 10px 10px 0;color:var(--ink-soft)}
-  .card .row{display:flex;gap:8px;margin-top:auto;align-items:center;flex-wrap:wrap;padding-top:6px}
+  .card .cb{padding:9px 11px 11px;display:flex;flex-direction:column;gap:3px;flex:1}
+  .card h3{font-size:.83rem;line-height:1.25;color:var(--olive-deep);font-family:var(--font-body);font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.1em}
+  .card .c-price{font-size:.74rem;font-weight:700;color:var(--coral)}
+  .card .cf{display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--ink-soft);margin-top:auto;padding-top:3px}
+  .card .c-in{color:var(--olive);font-weight:800}
   .vote-btn{border:none;background:var(--sand);border-radius:99px;padding:8px 14px;font-family:var(--font-body);font-weight:700;font-size:.82rem;cursor:pointer;color:var(--coral);transition:.15s}
   .vote-btn:hover{background:#fde6dd}
   .vote-btn.pop .hb{display:inline-block;animation:pop .4s ease}
@@ -169,7 +167,11 @@
   .modal h3{font-size:1.35rem;color:var(--olive-deep);margin:4px 0 2px}
   .modal .m-price{font-family:var(--font-display);font-weight:700;color:var(--coral);font-size:1.05rem}
   .modal .m-operator{font-size:.78rem;color:var(--ink-soft);margin-top:2px}
-  .m-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+  .m-metarow{font-size:.76rem;color:var(--ink-soft);display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+  .m-desc{font-size:.88rem;margin-top:8px}
+  .m-tipbox{font-size:.78rem;background:var(--sand);border-left:3px solid var(--olive);padding:8px 10px;border-radius:0 10px 10px 0;color:var(--ink-soft);margin-top:8px}
+  .m-actrow{display:flex;gap:8px;align-items:center;margin-top:12px}
+  .m-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
   .m-field{background:var(--sand);border-radius:14px;padding:12px 14px}
   .m-field label{font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--olive-dark);display:block;margin-bottom:4px}
   .m-field input[type=date]{border:none;background:transparent;font-family:var(--font-body);font-size:.95rem;color:var(--ink);width:100%}
@@ -431,7 +433,7 @@
   <!-- ACTIVITIES -->
   <section id="activities">
     <div class="sec-head reveal"><h2>Activities & Prices</h2><span class="tag">Book from Olive</span></div>
-    <p class="sec-blurb reveal">Tap ❤️ to vote, <b>＋ Plan</b> to build the family budget, and <b>Book</b> to reserve — Olive opens the operator's real checkout with your date and group size ready to go. Prices are typical per-person rates.</p>
+    <p class="sec-blurb reveal">Tap any activity to see details, vote ❤️, add it to the family budget, and <b>book</b> — Olive opens the operator's real checkout, or writes the concierge request for you. Prices are typical per-person rates.</p>
     <div class="filters reveal" id="filters"></div>
     <div class="cards" id="cards"></div>
   </section>
@@ -521,6 +523,14 @@
     <h3 id="mName">Activity</h3>
     <div class="m-price" id="mPrice"></div>
     <div class="m-operator" id="mOperator"></div>
+    <div class="m-metarow" id="mMeta"></div>
+    <p class="m-desc" id="mDesc"></p>
+    <div class="m-tipbox" id="mTip"></div>
+    <div class="m-actrow">
+      <button class="vote-btn" id="mVote"><span class="hb">❤️</span> Vote</button>
+      <button class="plan-btn" id="mPlan">＋ Plan</button>
+      <a class="map-link" id="mMapLink" target="_blank" rel="noopener">Map ↗</a>
+    </div>
     <div id="mBookable">
       <div class="m-grid">
         <div class="m-field">
@@ -748,46 +758,43 @@ filtersEl.addEventListener("click",e=>{
 function renderCards(){
  cardsEl.innerHTML=ACTIVITIES.filter(a=>activeCat==="all"||a.cat===activeCat).map((a,i)=>{
   const v=votes[a.id]||0,inPlan=plan.includes(a.id);
-  const badge=a.price===0?(a.cat==="resort"?"Included":"Free"):a.cat==="resort"?"Included":"";
-  return `<div class="card" style="animation-delay:${Math.min(i*45,400)}ms">
-   <div class="card-top ct-${a.cat}">
-     <span class="emoji">${a.emoji}</span>
-     ${badge?`<span class="badge">${badge}</span>`:`<span class="badge">${CATS.find(c=>c[0]===a.cat)[1].slice(0,2)}</span>`}
-   </div>
-   <div class="card-body">
+  const badge=a.price===0?(a.cat==="resort"?"INC":"FREE"):"";
+  return `<button class="card" data-open="${a.id}" style="animation-delay:${Math.min(i*30,300)}ms">
+   <div class="ct ct-${a.cat}">${a.emoji}${badge?`<span class="c-badge">${badge}</span>`:""}</div>
+   <div class="cb">
      <h3>${a.name}</h3>
-     <div class="price">${a.priceLabel}</div>
-     <div class="meta"><span>⏱ ${a.dur}</span><span>👨‍👩‍👧‍👦 ${a.ages}</span></div>
-     <div class="desc">${a.desc}</div>
-     <div class="tip">💡 ${a.tip}</div>
-     <div class="row">
-       <button class="vote-btn" data-vote="${a.id}"><span class="hb">❤️</span> ${v||"Vote"}</button>
-       <button class="plan-btn${inPlan?" in":""}" data-plan="${a.id}">${inPlan?"✓ In plan":"＋ Plan"}</button>
-       <button class="book-btn" data-book="${a.id}">${a.book?"Book":"How to Go"}</button>
-       <a class="map-link" target="_blank" href="https://www.google.com/maps/search/${encodeURIComponent(a.map)}">Map ↗</a>
-     </div>
+     <div class="c-price">${a.priceLabel}</div>
+     <div class="cf"><span>❤️ ${v}</span>${inPlan?'<span class="c-in">✓ plan</span>':"<span></span>"}</div>
    </div>
-  </div>`;
+  </button>`;
  }).join("");
 }
 cardsEl.addEventListener("click",e=>{
- const vb=e.target.closest("[data-vote]"),pb=e.target.closest("[data-plan]"),bb=e.target.closest("[data-book]");
- if(vb){const id=vb.dataset.vote;votes[id]=(votes[id]||0)+1;store.set("votes",votes);
-   vb.classList.add("pop");vb.innerHTML=`<span class="hb">❤️</span> ${votes[id]}`;
-   setTimeout(()=>{vb.classList.remove("pop")},450);renderBudget();return}
- if(pb){const id=pb.dataset.plan;plan=plan.includes(id)?plan.filter(x=>x!==id):[...plan,id];store.set("plan",plan);renderCards();renderBudget();return}
- if(bb){openModal(bb.dataset.book)}
+ const b=e.target.closest("[data-open]");
+ if(b)openModal(b.dataset.open);
 });
 
 /* ============ BOOKING MODAL ============ */
 const overlay=document.getElementById("modalOverlay");
 let mAct=null,mPartyN=4;
+function syncModalActions(){
+ const v=votes[mAct.id]||0,inPlan=plan.includes(mAct.id);
+ document.getElementById("mVote").innerHTML=`<span class="hb">❤️</span> ${v||"Vote"}`;
+ const p=document.getElementById("mPlan");
+ p.textContent=inPlan?"✓ In plan":"＋ Plan";
+ p.classList.toggle("in",inPlan);
+}
 function openModal(id){
  mAct=ACTIVITIES.find(a=>a.id===id);if(!mAct)return;
  mPartyN=travelers;
  document.getElementById("mEmoji").textContent=mAct.emoji;
  document.getElementById("mName").textContent=mAct.name;
  document.getElementById("mPrice").textContent=mAct.priceLabel;
+ document.getElementById("mMeta").innerHTML=`<span>⏱ ${mAct.dur}</span><span>👨‍👩‍👧‍👦 ${mAct.ages}</span>`;
+ document.getElementById("mDesc").textContent=mAct.desc;
+ document.getElementById("mTip").textContent="💡 "+mAct.tip;
+ document.getElementById("mMapLink").href="https://www.google.com/maps/search/"+encodeURIComponent(mAct.map);
+ syncModalActions();
  const bookable=!!mAct.book;
  document.getElementById("mBookable").style.display=bookable?"block":"none";
  document.getElementById("mWalkup").style.display=bookable?"none":"block";
@@ -811,6 +818,19 @@ function mTotalCalc(){
  const t=mAct.price*mPartyN;
  document.getElementById("mTotal").textContent=mAct.price===0?"$0 — included/free":"≈ $"+t.toLocaleString();
 }
+document.getElementById("mVote").addEventListener("click",()=>{
+ if(!mAct)return;
+ votes[mAct.id]=(votes[mAct.id]||0)+1;store.set("votes",votes);
+ const b=document.getElementById("mVote");
+ b.classList.add("pop");setTimeout(()=>b.classList.remove("pop"),450);
+ syncModalActions();renderCards();
+});
+document.getElementById("mPlan").addEventListener("click",()=>{
+ if(!mAct)return;
+ plan=plan.includes(mAct.id)?plan.filter(x=>x!==mAct.id):[...plan,mAct.id];
+ store.set("plan",plan);
+ syncModalActions();renderCards();renderBudget();
+});
 document.getElementById("mClose").addEventListener("click",closeModal);
 overlay.addEventListener("click",e=>{if(e.target===overlay)closeModal()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
