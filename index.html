@@ -186,6 +186,18 @@
   .m-note{font-size:.74rem;color:var(--ink-soft);text-align:center;margin-top:10px}
   .m-close{position:sticky;float:right;top:0;border:none;background:var(--sand);width:34px;height:34px;border-radius:50%;font-size:1rem;cursor:pointer;color:var(--ink-soft)}
   .m-walkup{background:var(--sand);border-left:3px solid var(--sea);padding:12px 14px;border-radius:0 12px 12px 0;font-size:.86rem;margin:16px 0}
+  /* ---------- In-Olive booking frame ---------- */
+  .frame-overlay{position:fixed;inset:0;z-index:96;background:var(--olive-deep);display:none;flex-direction:column}
+  .frame-overlay.open{display:flex}
+  .frame-head{display:flex;align-items:center;gap:12px;padding:10px 14px;color:var(--cream)}
+  .frame-head .f-back{border:none;background:rgba(255,255,255,.14);color:var(--cream);border-radius:99px;padding:9px 16px;font-family:var(--font-body);font-weight:800;font-size:.85rem;cursor:pointer}
+  .frame-head .f-back:hover{background:rgba(255,255,255,.25)}
+  .frame-head .f-title{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+  .frame-head .f-new{color:var(--coral-soft);font-size:.78rem;font-weight:700;text-decoration:none;white-space:nowrap}
+  .frame-head .f-new:hover{text-decoration:underline}
+  .frame-overlay iframe{flex:1;border:0;background:#fff;border-radius:14px 14px 0 0}
+  .frame-loading{position:absolute;top:54%;left:50%;transform:translate(-50%,-50%);color:var(--olive-dark);font-size:.9rem;font-weight:600;pointer-events:none}
+
   .m-copy{display:block;width:100%;margin-top:10px;border:1.5px dashed var(--sand-dark);background:transparent;border-radius:99px;padding:10px;font-family:var(--font-body);font-weight:700;font-size:.8rem;color:var(--olive-dark);cursor:pointer;transition:.15s}
   .m-copy:hover{background:var(--sand)}
   .m-copy.copied{border-style:solid;border-color:var(--sea);color:var(--sea-deep)}
@@ -567,6 +579,17 @@
   </div>
 </div>
 
+<!-- IN-OLIVE BOOKING FRAME -->
+<div class="frame-overlay" id="frameOverlay">
+  <div class="frame-head">
+    <button class="f-back" id="frameBack">‹ Back to Olive</button>
+    <div class="f-title" id="frameTitle"></div>
+    <a class="f-new" id="frameNewTab" target="_blank" rel="noopener">Open in tab ↗</a>
+  </div>
+  <div class="frame-loading" id="frameLoading">🫧 Loading the booking system…</div>
+  <iframe id="bookFrame" title="Booking" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+
 <button class="chat-fab" id="chatFab" aria-label="Family chat">💬<span class="fab-badge" id="fabBadge">0</span></button>
 
 <!-- BUDGET BAR / PLAN DRAWER -->
@@ -595,7 +618,7 @@ const ACTIVITIES=[
  {id:"arch",emoji:"⛵",name:"Water Taxi to the Arch (El Arco)",cat:"water",price:20,priceLabel:"$15–25 pp round trip",dur:"45–60 min",ages:"All ages",
   desc:"Glass-bottom boat from Medano Beach past the sea lion colony, Pelican Rock and Lover's Beach to Cabo's famous Arch at Land's End. Kids watch fish through the glass hull.",
   tip:"Booking on Medano Beach is cheaper than the marina — ask for a Lover's Beach drop-off with a pickup 2 hours later.",map:"El Arco de Cabo San Lucas",
-  book:"https://www.cabosanlucastours.net/Glass-Bottom-Boat.htm",operator:"Cabo San Lucas Tours — booking form right on the page"},
+  book:"https://www.cabosanlucastours.net/Glass-Bottom-Boat.htm",operator:"Cabo San Lucas Tours — booking form right on the page",embed:true},
  {id:"chileno",emoji:"🤿",name:"Snorkeling at Chileno Bay",cat:"water",price:18,priceLabel:"Free beach · gear ~$15–20",dur:"Half morning",ages:"Confident swimmers 6+",
   desc:"A calm, crescent-shaped cove that's basically a natural saltwater pool full of tropical fish and the occasional sea turtle. One of Cabo's few truly swimmable beaches.",
   tip:"Go before 10 am — July mornings have glass-calm water and the best visibility of the whole year.",map:"Chileno Beach Los Cabos",
@@ -607,7 +630,7 @@ const ACTIVITIES=[
  {id:"sunset",emoji:"🌅",name:"Buccaneer Queen Sunset Pirate Cruise",cat:"water",price:99,priceLabel:"~$99 pp · dinner + show",dur:"2 hrs",ages:"All ages",
   desc:"Sail past the Arch at golden hour aboard a real replica pirate galleon — sword fights, acrobatics, dinner and open bar. The kids will talk about it for weeks.",
   tip:"Arrive at the marina dock 20–30 minutes early to check in calmly.",map:"Cabo San Lucas Marina",
-  book:"https://fareharbor.com/embeds/book/wildcabotours/?full-items=yes",operator:"Wild Cabo Tours — FareHarbor secure checkout (pick 'Yo Ho Show · Buccaneer Queen')"},
+  book:"https://fareharbor.com/embeds/book/wildcabotours/?full-items=yes",operator:"Wild Cabo Tours — FareHarbor secure checkout (pick 'Yo Ho Show · Buccaneer Queen')",embed:true},
  {id:"banana",emoji:"🍌",name:"Banana Boat at Medano Beach",cat:"water",price:22,priceLabel:"~$20–25 pp",dur:"20–30 min",ages:"5+",
   desc:"The whole family bounces around Medano Bay on a giant inflatable banana. Maximum laughs per dollar of the entire trip.",
   tip:"Vendors walk the beach all day — easy to haggle a family rate on the spot.",map:"Medano Beach Cabo San Lucas",
@@ -615,7 +638,7 @@ const ACTIVITIES=[
  {id:"parasail",emoji:"🪂",name:"Parasailing over Medano Bay",cat:"water",price:80,priceLabel:"$70–90 pp · tandem $125",dur:"~1 hr (10–12 min flight)",ages:"Usually 8+",
   desc:"Float 300 feet above the bay with a postcard view of the Arch, the beach and the whole town. Tandem flights let two ride together — free photos when you book online.",
   tip:"Morning flights = calmer wind and smoother rides.",map:"Medano Beach Cabo San Lucas",
-  book:"https://www.happyflightscabo.com/",operator:"Happy Flights Cabo — Peek booking buttons on the page"},
+  book:"https://www.happyflightscabo.com/",operator:"Happy Flights Cabo — Peek booking buttons on the page",embed:true},
  {id:"camel",emoji:"🐪",name:"Camel Ride + Tequila Tasting Combo",cat:"land",price:109,priceLabel:"$99–119 pp",dur:"3–4 hrs",ages:"6+",
   desc:"Ride camels along a Pacific beach, then a Mexican lunch and (for the adults) a tequila tasting. Combos add an ATV or UTV hour in the desert.",
   tip:"The camel+ATV combo (~$119) is the best value if the crew wants both. Pickup near the Ziva is usually offered.",map:"Wild Canyon Los Cabos",
@@ -623,7 +646,7 @@ const ACTIVITIES=[
  {id:"atv",emoji:"🏜️",name:"ATV Desert & Beach Tour",cat:"land",price:99,priceLabel:"$69–129 pp",dur:"2–3 hrs",ages:"Drivers 16+, passengers ~6+",
   desc:"Tear through desert canyons and along Pacific beaches on ATVs or side-by-sides. Goggles and bandanas provided — you will get gloriously dusty.",
   tip:"Book the earliest slot; the desert gets seriously hot by 11 am in July.",map:"Migrino Beach Cabo",
-  book:"https://www.cabosanlucastours.net/ATV-Tour-Zip-Lines.htm",operator:"Cabo San Lucas Tours — booking form right on the page"},
+  book:"https://www.cabosanlucastours.net/ATV-Tour-Zip-Lines.htm",operator:"Cabo San Lucas Tours — booking form right on the page",embed:true},
  {id:"zip",emoji:"🦅",name:"Zipline Canyon Adventure",cat:"land",price:95,priceLabel:"$65–130 pp",dur:"3–4 hrs",ages:"~8+ (weight limits apply)",
   desc:"Fly across desert canyons on Wild Canyon's multi-line zip courses — plus a glass-floor gondola and a giant canyon swing for the brave.",
   tip:"Closed-toe shoes required. Go early-morning for cooler air in July.",map:"Wild Canyon Los Cabos",
@@ -635,7 +658,7 @@ const ACTIVITIES=[
  {id:"fishing",emoji:"🎣",name:"Family Fishing Charter",cat:"water",price:150,priceLabel:"$400–800 per boat (split it!)",dur:"Half day",ages:"All ages on calm days",
   desc:"Cabo is the marlin capital of the world and July kicks off the season. A private half-day boat fits the whole family; crews fillet your catch for dinner.",
   tip:"Many marina restaurants will cook your catch — ask the crew which ones. Price above estimates a family share.",map:"Cabo San Lucas Marina",
-  book:"https://www.piscessportfishing.com/advanced-booking",operator:"Pisces Sportfishing — online booking page"},
+  book:"https://www.piscessportfishing.com/advanced-booking",operator:"Pisces Sportfishing — online booking page",embed:true},
  {id:"lovers",emoji:"💘",name:"Lover's Beach Picnic",cat:"free",price:0,priceLabel:"Free (water taxi to get there)",dur:"2–3 hrs",ages:"All ages",
   desc:"A wild, gorgeous beach right at Land's End, reachable only by boat. Sea of Cortez side is swimmable; the Pacific side ('Divorce Beach') is look-don't-swim.",
   tip:"No vendors or shade — bring water, snacks and an umbrella. Combine with your Arch water taxi.",map:"Lovers Beach Cabo San Lucas",
@@ -659,7 +682,7 @@ const ACTIVITIES=[
  {id:"office",emoji:"🦶",name:"Toes-in-the-Sand Dinner at The Office",cat:"food",price:35,priceLabel:"~$20–45 pp",dur:"Evening",ages:"All ages",
   desc:"The iconic Medano Beach restaurant where tables sit literally on the sand. Touristy? Yes. Worth one sunset dinner? Absolutely.",
   tip:"Ask for a front-row sand table at sunset and order the fish tacos.",map:"The Office on the Beach Cabo",
-  book:"https://www.theofficeonthebeach.com/reservations/",operator:"The Office on the Beach (official)"},
+  book:"https://www.theofficeonthebeach.com/reservations/",operator:"The Office on the Beach (official)",embed:true},
  {id:"tacos",emoji:"🌮",name:"Family Taco Crawl",cat:"food",price:12,priceLabel:"$8–15 pp, stuffed",dur:"Lunch or dinner",ages:"All ages",
   desc:"Skip one resort meal for the real thing: Tacos Gardenias and Las Guacamayas are local legends. Fish tacos, al pastor off the spit, and aguas frescas.",
   tip:"A busy taco spot with locals in line is always the right answer.",map:"Tacos Gardenias Cabo San Lucas",
@@ -803,7 +826,9 @@ function openModal(id){
    const md=document.getElementById("mDate");
    md.value=store.get("trip-date","2026-07-04");
    document.getElementById("mParty").textContent=mPartyN;
-   document.getElementById("mCta").href=mAct.book;
+   const cta=document.getElementById("mCta");
+   cta.href=mAct.book;
+   cta.textContent=mAct.embed?"📅 Start Reservation — stay in Olive":"Continue to Secure Booking ↗";
    mTotalCalc();
  }else{
    document.getElementById("mOperator").textContent="";
@@ -818,6 +843,27 @@ function mTotalCalc(){
  const t=mAct.price*mPartyN;
  document.getElementById("mTotal").textContent=mAct.price===0?"$0 — included/free":"≈ $"+t.toLocaleString();
 }
+/* ---- In-Olive booking frame ---- */
+const frameOverlay=document.getElementById("frameOverlay"),bookFrame=document.getElementById("bookFrame");
+function openFrame(act){
+ document.getElementById("frameTitle").textContent=act.emoji+" "+act.name;
+ document.getElementById("frameNewTab").href=act.book;
+ document.getElementById("frameLoading").style.display="block";
+ bookFrame.src=act.book;
+ frameOverlay.classList.add("open");
+ document.body.style.overflow="hidden";
+}
+function closeFrame(){
+ frameOverlay.classList.remove("open");
+ bookFrame.src="about:blank";
+ document.body.style.overflow=overlay.classList.contains("open")?"hidden":"";
+}
+bookFrame.addEventListener("load",()=>{if(bookFrame.src!=="about:blank")document.getElementById("frameLoading").style.display="none"});
+document.getElementById("frameBack").addEventListener("click",closeFrame);
+document.getElementById("mCta").addEventListener("click",e=>{
+ if(mAct&&mAct.embed){e.preventDefault();openFrame(mAct)}
+});
+
 document.getElementById("mVote").addEventListener("click",()=>{
  if(!mAct)return;
  votes[mAct.id]=(votes[mAct.id]||0)+1;store.set("votes",votes);
