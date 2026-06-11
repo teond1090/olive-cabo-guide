@@ -519,7 +519,7 @@
       </div>
       <div class="m-total"><span>Estimated total</span><b id="mTotal">$0</b></div>
       <a class="m-cta" id="mCta" target="_blank" rel="noopener">Continue to Secure Booking ↗</a>
-      <p class="m-note" id="mNote">Olive hands you to the operator's official checkout — bring your date & group size above.</p>
+      <p class="m-note" id="mNote">Opens the operator's live calendar — enter the date & group size above and payment happens on their secure checkout.</p>
     </div>
     <div id="mWalkup" style="display:none">
       <div class="m-walkup" id="mWalkupText"></div>
@@ -556,7 +556,7 @@ const ACTIVITIES=[
  {id:"arch",emoji:"⛵",name:"Water Taxi to the Arch (El Arco)",cat:"water",price:20,priceLabel:"$15–25 pp round trip",dur:"45–60 min",ages:"All ages",
   desc:"Glass-bottom boat from Medano Beach past the sea lion colony, Pelican Rock and Lover's Beach to Cabo's famous Arch at Land's End. Kids watch fish through the glass hull.",
   tip:"Booking on Medano Beach is cheaper than the marina — ask for a Lover's Beach drop-off with a pickup 2 hours later.",map:"El Arco de Cabo San Lucas",
-  book:"https://www.cabosanlucastours.net/Glass-Bottom-Boat.htm",operator:"Cabo San Lucas Tours"},
+  book:"https://www.cabosanlucastours.net/Glass-Bottom-Boat.htm",operator:"Cabo San Lucas Tours — booking form right on the page"},
  {id:"chileno",emoji:"🤿",name:"Snorkeling at Chileno Bay",cat:"water",price:18,priceLabel:"Free beach · gear ~$15–20",dur:"Half morning",ages:"Confident swimmers 6+",
   desc:"A calm, crescent-shaped cove that's basically a natural saltwater pool full of tropical fish and the occasional sea turtle. One of Cabo's few truly swimmable beaches.",
   tip:"Go before 10 am — July mornings have glass-calm water and the best visibility of the whole year.",map:"Chileno Beach Los Cabos",
@@ -564,11 +564,11 @@ const ACTIVITIES=[
  {id:"snorkeltour",emoji:"🐠",name:"Snorkel Cruise + Land's End Combo",cat:"water",price:89,priceLabel:"$45–99 pp",dur:"3–4 hrs",ages:"6+",
   desc:"Guided boat trip combining the Arch sights with a guided snorkel stop, gear, snacks and drinks included.",
   tip:"Morning departures only in July. Hotel pickup at the Ziva is usually included — ask when booking.",map:"Cabo San Lucas Marina",
-  book:"https://www.cabo-adventures.com/en/tour/snorkel-and-sea-adventure",operator:"Cabo Adventures (official)"},
+  book:"https://www.cabo-adventures.com/en/tour/snorkel-and-sea-adventure",operator:"Cabo Adventures — date picker on the page"},
  {id:"sunset",emoji:"🌅",name:"Buccaneer Queen Sunset Pirate Cruise",cat:"water",price:99,priceLabel:"~$99 pp · dinner + show",dur:"2 hrs",ages:"All ages",
   desc:"Sail past the Arch at golden hour aboard a real replica pirate galleon — sword fights, acrobatics, dinner and open bar. The kids will talk about it for weeks.",
   tip:"Arrive at the marina dock 20–30 minutes early to check in calmly.",map:"Cabo San Lucas Marina",
-  book:"https://www.wildcabotours.com/cabo-tours/cruises/yo-ho-show-buccaneer-queen/",operator:"Wild Cabo Tours (official)"},
+  book:"https://fareharbor.com/embeds/book/wildcabotours/?full-items=yes",operator:"Wild Cabo Tours — FareHarbor secure checkout (pick 'Yo Ho Show · Buccaneer Queen')"},
  {id:"banana",emoji:"🍌",name:"Banana Boat at Medano Beach",cat:"water",price:22,priceLabel:"~$20–25 pp",dur:"20–30 min",ages:"5+",
   desc:"The whole family bounces around Medano Bay on a giant inflatable banana. Maximum laughs per dollar of the entire trip.",
   tip:"Vendors walk the beach all day — easy to haggle a family rate on the spot.",map:"Medano Beach Cabo San Lucas",
@@ -576,7 +576,7 @@ const ACTIVITIES=[
  {id:"parasail",emoji:"🪂",name:"Parasailing over Medano Bay",cat:"water",price:80,priceLabel:"$70–90 pp · tandem $125",dur:"~1 hr (10–12 min flight)",ages:"Usually 8+",
   desc:"Float 300 feet above the bay with a postcard view of the Arch, the beach and the whole town. Tandem flights let two ride together — free photos when you book online.",
   tip:"Morning flights = calmer wind and smoother rides.",map:"Medano Beach Cabo San Lucas",
-  book:"https://www.happyflightscabo.com/",operator:"Happy Flights Cabo (official)"},
+  book:"https://www.happyflightscabo.com/",operator:"Happy Flights Cabo — Peek booking buttons on the page"},
  {id:"camel",emoji:"🐪",name:"Camel Ride + Tequila Tasting Combo",cat:"land",price:109,priceLabel:"$99–119 pp",dur:"3–4 hrs",ages:"6+",
   desc:"Ride camels along a Pacific beach, then a Mexican lunch and (for the adults) a tequila tasting. Combos add an ATV or UTV hour in the desert.",
   tip:"The camel+ATV combo (~$119) is the best value if the crew wants both. Pickup near the Ziva is usually offered.",map:"Wild Canyon Los Cabos",
@@ -584,19 +584,19 @@ const ACTIVITIES=[
  {id:"atv",emoji:"🏜️",name:"ATV Desert & Beach Tour",cat:"land",price:99,priceLabel:"$69–129 pp",dur:"2–3 hrs",ages:"Drivers 16+, passengers ~6+",
   desc:"Tear through desert canyons and along Pacific beaches on ATVs or side-by-sides. Goggles and bandanas provided — you will get gloriously dusty.",
   tip:"Book the earliest slot; the desert gets seriously hot by 11 am in July.",map:"Migrino Beach Cabo",
-  book:"https://www.cabosanlucastours.net/ATV-Tour-Zip-Lines.htm",operator:"Cabo San Lucas Tours"},
+  book:"https://www.cabosanlucastours.net/ATV-Tour-Zip-Lines.htm",operator:"Cabo San Lucas Tours — booking form right on the page"},
  {id:"zip",emoji:"🦅",name:"Zipline Canyon Adventure",cat:"land",price:95,priceLabel:"$65–130 pp",dur:"3–4 hrs",ages:"~8+ (weight limits apply)",
   desc:"Fly across desert canyons on Wild Canyon's multi-line zip courses — plus a glass-floor gondola and a giant canyon swing for the brave.",
   tip:"Closed-toe shoes required. Go early-morning for cooler air in July.",map:"Wild Canyon Los Cabos",
-  book:"https://wildcanyon.com.mx/",operator:"Wild Canyon (official)"},
+  book:"https://wildcanyon.com.mx/products/zipline-tour-los-cabos",operator:"Wild Canyon — official zipline booking page"},
  {id:"dolphin",emoji:"🐬",name:"Dolphin Encounter",cat:"water",price:139,priceLabel:"$99–169 pp",dur:"~1 hr in water",ages:"4+ with adult",
   desc:"Meet, touch and swim with Pacific bottlenose dolphins at the marina marine center. The splurge the kids will never forget.",
   tip:"Photo packages are pricey ($40+) — designate one family photographer from the viewing area instead.",map:"Cabo Dolphins Marina",
-  book:"https://www.cabo-adventures.com/en/tour/dolphin-encounter-cabo",operator:"Cabo Adventures (official)"},
+  book:"https://www.cabo-adventures.com/en/tour/dolphin-encounter-cabo",operator:"Cabo Adventures — date picker on the page"},
  {id:"fishing",emoji:"🎣",name:"Family Fishing Charter",cat:"water",price:150,priceLabel:"$400–800 per boat (split it!)",dur:"Half day",ages:"All ages on calm days",
   desc:"Cabo is the marlin capital of the world and July kicks off the season. A private half-day boat fits the whole family; crews fillet your catch for dinner.",
   tip:"Many marina restaurants will cook your catch — ask the crew which ones. Price above estimates a family share.",map:"Cabo San Lucas Marina",
-  book:"https://www.piscessportfishing.com/",operator:"Pisces Sportfishing (official)"},
+  book:"https://www.piscessportfishing.com/advanced-booking",operator:"Pisces Sportfishing — online booking page"},
  {id:"lovers",emoji:"💘",name:"Lover's Beach Picnic",cat:"free",price:0,priceLabel:"Free (water taxi to get there)",dur:"2–3 hrs",ages:"All ages",
   desc:"A wild, gorgeous beach right at Land's End, reachable only by boat. Sea of Cortez side is swimmable; the Pacific side ('Divorce Beach') is look-don't-swim.",
   tip:"No vendors or shade — bring water, snacks and an umbrella. Combine with your Arch water taxi.",map:"Lovers Beach Cabo San Lucas",
