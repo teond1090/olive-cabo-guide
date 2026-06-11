@@ -184,6 +184,9 @@
   .m-note{font-size:.74rem;color:var(--ink-soft);text-align:center;margin-top:10px}
   .m-close{position:sticky;float:right;top:0;border:none;background:var(--sand);width:34px;height:34px;border-radius:50%;font-size:1rem;cursor:pointer;color:var(--ink-soft)}
   .m-walkup{background:var(--sand);border-left:3px solid var(--sea);padding:12px 14px;border-radius:0 12px 12px 0;font-size:.86rem;margin:16px 0}
+  .m-copy{display:block;width:100%;margin-top:10px;border:1.5px dashed var(--sand-dark);background:transparent;border-radius:99px;padding:10px;font-family:var(--font-body);font-weight:700;font-size:.8rem;color:var(--olive-dark);cursor:pointer;transition:.15s}
+  .m-copy:hover{background:var(--sand)}
+  .m-copy.copied{border-style:solid;border-color:var(--sea);color:var(--sea-deep)}
   .m-divider{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:18px 0 12px}
   .m-divider::before,.m-divider::after{content:"";flex:1;height:1px;background:var(--sand-dark)}
   .m-conc{background:var(--sand);border-radius:16px;padding:14px}
@@ -534,6 +537,7 @@
       <div class="m-total"><span>Estimated total</span><b id="mTotal">$0</b></div>
       <a class="m-cta" id="mCta" target="_blank" rel="noopener">Continue to Secure Booking ↗</a>
       <p class="m-note" id="mNote">Opens the operator's live calendar — enter the date & group size above and payment happens on their secure checkout.</p>
+      <button class="m-copy" id="mCopy">📋 Copy booking link <span style="opacity:.7;font-weight:400">(if your app blocks links)</span></button>
     </div>
     <div id="mWalkup" style="display:none">
       <div class="m-walkup" id="mWalkupText"></div>
@@ -829,8 +833,25 @@ function concMessage(){
   "¡Muchas gracias!";
 }
 document.getElementById("concWa").addEventListener("click",()=>{
- window.open("https://wa.me/"+CONC_PHONE+"?text="+encodeURIComponent(concMessage()),"_blank");
+ const u="https://wa.me/"+CONC_PHONE+"?text="+encodeURIComponent(concMessage());
+ const w=window.open(u,"_blank");
+ if(!w)location.href=u; // popup blocked (in-app browsers) -> same tab
 });
+document.getElementById("mCopy").addEventListener("click",()=>{
+ const u=mAct&&mAct.book?mAct.book:"";
+ if(!u)return;
+ const btn=document.getElementById("mCopy");
+ const done=()=>{btn.textContent="✓ Copied! Paste it in any browser";btn.classList.add("copied");
+   setTimeout(()=>{btn.innerHTML='📋 Copy booking link <span style="opacity:.7;font-weight:400">(if your app blocks links)</span>';btn.classList.remove("copied")},2500)};
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(u).then(done).catch(()=>fallbackCopy(u,done))}
+ else fallbackCopy(u,done);
+});
+function fallbackCopy(text,done){
+ const ta=document.createElement("textarea");ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
+ document.body.appendChild(ta);ta.select();
+ try{document.execCommand("copy");done()}catch(e){prompt("Copy this booking link:",text)}
+ document.body.removeChild(ta);
+}
 document.getElementById("concMail").addEventListener("click",()=>{
  location.href="mailto:"+CONC_EMAIL+"?subject="+encodeURIComponent("Guest booking request: "+mAct.name)+"&body="+encodeURIComponent(concMessage());
 });
