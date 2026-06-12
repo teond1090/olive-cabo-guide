@@ -33,19 +33,6 @@
   .reveal.on{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
 
-  /* ---------- Family lock ---------- */
-  .lock-screen{position:fixed;inset:0;z-index:200;background:linear-gradient(150deg,#26301a,#4a5630,#6b7c3f);display:none;align-items:center;justify-content:center;padding:20px}
-  .lock-screen.show{display:flex}
-  .lock-card{background:var(--cream);border-radius:24px;box-shadow:var(--shadow-lg);padding:34px 28px;max-width:380px;width:100%;text-align:center}
-  .lock-card h2{font-size:2.2rem;color:var(--olive-deep)}
-  .lock-card p{font-size:.9rem;color:var(--ink-soft);margin:8px 0 18px}
-  .lock-card input{width:100%;border:2px solid var(--sand-dark);border-radius:99px;padding:13px 20px;font-family:var(--font-body);font-size:1rem;background:var(--sand);outline:none;text-align:center}
-  .lock-card input:focus{border-color:var(--olive)}
-  .lock-err{display:none;color:var(--coral);font-size:.8rem;font-weight:700;margin-top:10px}
-  .lock-card button{width:100%;margin-top:14px;border:none;background:linear-gradient(140deg,var(--coral),#d65a3c);color:#fff;font-family:var(--font-body);font-weight:800;font-size:1rem;padding:14px;border-radius:99px;cursor:pointer;transition:.16s}
-  .lock-card button:hover{transform:scale(1.03)}
-  .lock-foot{font-size:.7rem;color:var(--ink-soft);margin-top:14px}
-
   /* ---------- Scroll progress ---------- */
   #scrollbar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--coral),var(--coral-soft),var(--sea));z-index:60;border-radius:0 99px 99px 0;transition:width .1s linear}
 
@@ -377,17 +364,6 @@
 </style>
 </head>
 <body>
-<div id="lockScreen" class="lock-screen">
-  <div class="lock-card">
-    <div style="font-size:3rem">🫒</div>
-    <h2>Olive</h2>
-    <p>Our family travel guide is private.<br>Enter the family code to come in.</p>
-    <input id="lockInput" type="password" placeholder="Family code" autocomplete="off">
-    <div class="lock-err" id="lockErr">That's not it — ask Teon for the family code!</div>
-    <button id="lockBtn">Unlock 🌴</button>
-    <div class="lock-foot">One time per device — Olive remembers you after this.</div>
-  </div>
-</div>
 <div id="scrollbar"></div>
 
 <header>
@@ -461,7 +437,7 @@
     <div class="tiles">
       <button class="tile ct-water" data-goto="activities"><span class="t-emoji">🏄</span><b>Activities & Prices</b><span>Browse, vote & book 21 adventures</span></button>
       <button class="tile ct-free" data-goto="schedule"><span class="t-emoji">📅</span><b>Family Schedule</b><span>What's on today — shared live</span></button>
-      <button class="tile ct-land" data-goto="chat"><span class="t-emoji">💬</span><b>Family Chat</b><span>The Cabo Crew room — live</span></button>
+      <button class="tile ct-land" data-goto="chat"><span class="t-emoji">💬</span><b>Chat Room</b><span>The Cabo Crew — live</span></button>
       <button class="tile ct-resort" data-goto="resort"><span class="t-emoji">🏨</span><b>Home Base</b><span>Our Hyatt Ziva cheat sheet</span></button>
       <button class="tile ct-food" data-goto="tools"><span class="t-emoji">🧳</span><b>Tools & Tips</b><span>Money · packing · Spanish</span></button>
     </div>
@@ -491,8 +467,8 @@
 
   <!-- FAMILY CHAT -->
   <section id="chat">
-    <div class="sec-head reveal"><h2>Family Chat</h2><span class="tag">Live</span></div>
-    <p class="sec-blurb reveal">Our private group chat, right inside Olive. Plan tomorrow, share where you are, argue about tacos. Messages arrive instantly on everyone's phone.</p>
+    <div class="sec-head reveal"><h2>Chat Room</h2><span class="tag">Live</span></div>
+    <p class="sec-blurb reveal">Our family chat room, right inside Olive. Plan tomorrow, share where you are, argue about tacos. Messages arrive instantly for everyone who's joined.</p>
     <div class="chat-shell reveal">
       <div class="chat-head">
         <span class="dot"></span><b>🫧 The Cabo Crew</b>
@@ -511,7 +487,7 @@
         <input id="chatText" maxlength="500" placeholder="Message the fam…" autocomplete="off">
         <button class="chat-send" id="chatSendBtn">Send</button>
       </div>
-      <div class="chat-note">🔒 Private-by-obscurity: only people with Olive's link can find this room. Don't share passwords or card numbers here.</div>
+      <div class="chat-note">🔒 Only people with Olive's link can find this chat room, and only those who join get messages. Don't share passwords or card numbers here.</div>
     </div>
 
     <div class="widget reveal" style="margin-top:14px">
@@ -973,34 +949,13 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v12-2026-06-11";
+const OLIVE_BUILD="v13-2026-06-11";
 
-/* ============ FAMILY ACCESS LOCK ============
-   The chat & schedule room names are DERIVED from the family code (SHA-256),
-   so they never appear in this source code. No code, no rooms. */
-const ROOM_SUFFIX=store.get("room-suffix","");
-const LOCKED=!ROOM_SUFFIX;
-const LOCK_VERIFIER="ab1a0f75";
-async function sha256hex(s){
- const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));
- return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("");
-}
-async function tryUnlock(){
- const code=document.getElementById("lockInput").value.trim();
- if(!code)return;
- if((await sha256hex(code+":verify")).slice(0,8)!==LOCK_VERIFIER){
-  document.getElementById("lockErr").style.display="block";
-  document.getElementById("lockInput").value="";
-  return;
- }
- store.set("room-suffix",(await sha256hex(code)).slice(0,12));
- location.reload();
-}
-if(LOCKED){
- document.getElementById("lockScreen").classList.add("show");
- document.getElementById("lockBtn").addEventListener("click",tryUnlock);
- document.getElementById("lockInput").addEventListener("keydown",e=>{if(e.key==="Enter")tryUnlock()});
-}
+/* ============ ROOMS ============
+   Access model: anyone with Olive's link is family. Only people who joined
+   the chat / subscribed in the ntfy app receive messages & notifications. */
+const ROOM_SUFFIX="d76107420ee9";
+const LOCKED=false;
 
 /* shared event + vote state (synced over ntfy in the Schedule module below) */
 let evMap=new Map(Object.entries(store.get("events",{})));
