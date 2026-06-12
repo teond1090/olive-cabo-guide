@@ -264,6 +264,8 @@
   .more-links a{text-decoration:none;border:1.5px solid var(--olive);color:var(--olive-dark);font-weight:700;font-size:.8rem;padding:7px 14px;border-radius:99px;transition:.15s}
   .more-links a:hover{background:var(--olive);color:var(--cream)}
   .no-match{grid-column:1/-1;text-align:center;color:var(--ink-soft);font-size:.9rem;padding:26px 10px}
+  .more-add{display:block;width:100%;margin-top:12px;border:1.5px dashed var(--olive);background:transparent;border-radius:99px;padding:11px;font-family:var(--font-body);font-weight:700;font-size:.82rem;color:var(--olive-dark);cursor:pointer;transition:.15s}
+  .more-add:hover{background:var(--olive);color:var(--cream)}
   .c-call{font-size:.72rem;color:var(--ink-soft);text-align:center;margin-top:9px}
   .c-call a{color:var(--sea-deep);font-weight:700;text-decoration:none}
 
@@ -910,7 +912,8 @@ function renderMore(){
      <a target="_blank" rel="noopener" href="https://www.tripadvisor.com/Search?q=${enc}">Tripadvisor</a>
      <a target="_blank" rel="noopener" href="https://www.getyourguide.com/s/?q=${enc}">GetYourGuide</a>
      <a target="_blank" rel="noopener" href="https://www.viator.com/searchResults/all?text=${enc}">Viator</a>
-   </div>`;
+   </div>
+   <button class="more-add" id="moreAdd" data-q="${esc(query)}">📅 Booked something out there? Add it to the Family Schedule</button>`;
 }
 function renderCards(){
  const list=ACTIVITIES.filter(a=>(activeCat==="all"||a.cat===activeCat)&&matchesQuery(a));
@@ -1130,6 +1133,19 @@ document.getElementById("planDrawer").addEventListener("click",e=>{
 document.getElementById("travMinus").onclick=e=>{e.stopPropagation();travelers=Math.max(1,travelers-1);store.set("travelers",travelers);renderBudget()};
 document.getElementById("travPlus").onclick=e=>{e.stopPropagation();travelers=Math.min(15,travelers+1);store.set("travelers",travelers);renderBudget()};
 renderCards();renderBudget();
+/* "booked elsewhere" -> prefill the Schedule's custom-plan form with the search */
+document.getElementById("moreBox").addEventListener("click",e=>{
+ const b=e.target.closest(".more-add");if(!b)return;
+ const q=(b.dataset.q||"").trim();
+ location.hash="#/schedule";
+ setTimeout(()=>{
+  const sel=document.getElementById("evAct");sel.value="custom";
+  const ti=document.getElementById("evTitle");ti.style.display="block";
+  ti.value=q?q.charAt(0).toUpperCase()+q.slice(1):"";
+  ti.focus();
+  toast("Fill in the date & time, then tap Add 📅 — the whole family will see it");
+ },300);
+});
 
 /* ============ PERFECT DAY DICE ============ */
 let diceN=0;
