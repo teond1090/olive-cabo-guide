@@ -1,0 +1,16 @@
+name: Olive daily briefing
+
+on:
+  schedule:
+    # 14:00 UTC = 7:00 AM in Cabo (Mazatlan, UTC-7), daily June through August
+    - cron: '0 14 * 6-8 *'
+  workflow_dispatch:
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Post morning briefing + republish schedule snapshot
+        run: python3 scripts/daily_briefing.py
