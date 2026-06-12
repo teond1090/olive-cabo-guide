@@ -148,6 +148,7 @@
   .card .c-in{color:var(--olive);font-weight:800}
   .vote-btn{border:none;background:var(--sand);border-radius:99px;padding:8px 14px;font-family:var(--font-body);font-weight:700;font-size:.82rem;cursor:pointer;color:var(--coral);transition:.15s}
   .vote-btn:hover{background:#fde6dd}
+  .vote-btn.voted{background:#fde6dd;box-shadow:inset 0 0 0 1.5px var(--coral)}
   .vote-btn.pop .hb{display:inline-block;animation:pop .4s ease}
   .plan-btn{border:1.5px solid var(--olive);background:transparent;border-radius:99px;padding:7px 14px;font-family:var(--font-body);font-weight:700;font-size:.82rem;cursor:pointer;color:var(--olive-dark);transition:.15s}
   .plan-btn.in{background:var(--olive);color:var(--cream)}
@@ -860,6 +861,13 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
+/* shared event + vote state (synced over ntfy in the Schedule module below) */
+let evMap=new Map(Object.entries(store.get("events",{})));
+const voterId=(()=>{let v=store.get("voter-id","");if(!v){v="vt"+Math.random().toString(36).slice(2,10);store.set("voter-id",v)}return v})();
+function voteCount(act){let n=0;evMap.forEach(e=>{if(e.k==="vote"&&e.act===act&&e.on&&!e.del)n++});return n}
+function myVote(act){const e=evMap.get("v-"+act+"-"+voterId);return!!(e&&e.on)}
+function toggleVote(act){publishEv({k:"vote",id:"v-"+act+"-"+voterId,act,on:!myVote(act),by:evWho()})}
+
 /* ============ COUNTDOWN ============ */
 const tripInput=document.getElementById("tripDate");
 tripInput.value=store.get("trip-date","2026-07-04");
@@ -900,7 +908,7 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=22.89&longitude=-109.91&c
  });
 
 /* ============ ACTIVITIES ============ */
-let votes=store.get("votes",{}),plan=store.get("plan",[]),travelers=store.get("travelers",4),activeCat="all";
+let plan=store.get("plan",[]),travelers=store.get("travelers",4),activeCat="all";
 const cardsEl=document.getElementById("cards"),filtersEl=document.getElementById("filters");
 
 filtersEl.innerHTML=CATS.map(([k,l])=>`<button class="chip${k==="all"?" active":""}" data-cat="${k}">${l}</button>`).join("");
@@ -940,14 +948,14 @@ function renderCards(){
   return;
  }
  cardsEl.innerHTML=list.map((a,i)=>{
-  const v=votes[a.id]||0,inPlan=plan.includes(a.id);
+  const v=voteCount(a.id),mine=myVote(a.id),inPlan=plan.includes(a.id);
   const badge=a.price===0?(a.cat==="resort"?"INC":"FREE"):"";
   return `<button class="card" data-open="${a.id}" style="animation-delay:${Math.min(i*30,300)}ms">
    <div class="ct ct-${a.cat}">${a.emoji}${badge?`<span class="c-badge">${badge}</span>`:""}</div>
    <div class="cb">
      <h3>${a.name}</h3>
      <div class="c-price">${a.priceLabel}</div>
-     <div class="cf"><span>❤️ ${v}</span>${inPlan?'<span class="c-in">✓ plan</span>':"<span></span>"}</div>
+     <div class="cf"><span>${mine?"❤️":"🤍"} ${v||""}</span>${inPlan?'<span class="c-in">✓ plan</span>':"<span></span>"}</div>
    </div>
   </button>`;
  }).join("");
@@ -961,8 +969,10 @@ cardsEl.addEventListener("click",e=>{
 const overlay=document.getElementById("modalOverlay");
 let mAct=null,mPartyN=4;
 function syncModalActions(){
- const v=votes[mAct.id]||0,inPlan=plan.includes(mAct.id);
- document.getElementById("mVote").innerHTML=`<span class="hb">❤️</span> ${v||"Vote"}`;
+ const v=voteCount(mAct.id),mine=myVote(mAct.id),inPlan=plan.includes(mAct.id);
+ const vb=document.getElementById("mVote");
+ vb.innerHTML=`<span class="hb">${mine?"❤️":"🤍"}</span> ${v||"Vote"}`;
+ vb.classList.toggle("voted",mine);
  const p=document.getElementById("mPlan");
  p.textContent=inPlan?"✓ In plan":"＋ Plan";
  p.classList.toggle("in",inPlan);
@@ -1027,7 +1037,7 @@ document.getElementById("mCta").addEventListener("click",e=>{
 
 document.getElementById("mVote").addEventListener("click",()=>{
  if(!mAct)return;
- votes[mAct.id]=(votes[mAct.id]||0)+1;store.set("votes",votes);
+ toggleVote(mAct.id); // one tap = like, tap again = unlike — synced to the whole family
  const b=document.getElementById("mVote");
  b.classList.add("pop");setTimeout(()=>b.classList.remove("pop"),450);
  syncModalActions();renderCards();
@@ -1261,6 +1271,7 @@ let es=null;
 function chatSubscribe(){
  try{
    es=new EventSource(CHAT_URL+"/sse");
+   es.onopen=chatHistory; // catch anything missed during a connection gap
    es.onmessage=ev=>addMsg(parseNtfy(ev.data),true);
    es.onerror=()=>{es.close();setTimeout(chatSubscribe,5000)};
  }catch(e){}
@@ -1297,7 +1308,7 @@ chatHistory();chatSubscribe();
 
 /* ============ FAMILY SCHEDULE (shared via ntfy.sh) ============ */
 const EV_TOPIC="olive-cabo-events-x9k4t2-2026",EV_URL="https://ntfy.sh/"+EV_TOPIC;
-let evMap=new Map(Object.entries(store.get("events",{})));
+/* evMap + vote helpers are declared up top (storage section) so tiles can render votes early */
 let lastSnapTs=0;
 function evWho(){
  const c=(store.get("chat-name","")||"").trim();
@@ -1318,13 +1329,16 @@ function handleEvMsg(raw){
  let m=null;try{m=JSON.parse(j.message)}catch(e){}
  let changed=false;
  if(m&&m.k==="snap"){lastSnapTs=Math.max(lastSnapTs,m.ts||0);(m.evs||[]).forEach(e=>{if(applyEv(e))changed=true})}
- else if(m&&m.k==="ev"){if(applyEv(m))changed=true}
+ else if(m&&(m.k==="ev"||m.k==="vote")){if(applyEv(m))changed=true}
  else if(!m&&(j.message||j.title)){
   /* plain text on this topic = a forwarded reservation email (ntfy email gateway) */
   const t=((j.title?j.title+" — ":"")+(j.message||"")).replace(/\s+/g," ").trim().slice(0,200);
   if(t&&applyEv({k:"ev",id:"in-"+j.id,inbox:true,t,d:null,by:"forwarded email",ts:(j.time||0)*1000}))changed=true;
  }
- if(changed){saveEvents();renderSchedule()}
+ if(changed){
+  saveEvents();renderSchedule();renderCards();
+  if(mAct&&overlay.classList.contains("open"))syncModalActions();
+ }
 }
 function publishEv(ev){
  ev.ts=Date.now();
@@ -1342,18 +1356,21 @@ function maybeSnapshot(){
   fetch(EV_URL,{method:"POST",body:JSON.stringify({k:"snap",ts:lastSnapTs,evs:[...evMap.values()]})}).catch(()=>{});
  },3000+Math.random()*8000);
 }
-fetch(EV_URL+"/json?poll=1&since=all").then(r=>r.text()).then(t=>{
- t.split("\n").filter(Boolean).forEach(handleEvMsg);maybeSnapshot();
-}).catch(()=>{});
+function evPollHistory(){
+ fetch(EV_URL+"/json?poll=1&since=all").then(r=>r.text()).then(t=>{
+  t.split("\n").filter(Boolean).forEach(handleEvMsg);maybeSnapshot();
+ }).catch(()=>{});
+}
 let evES=null;
 function evSub(){
  try{
   evES=new EventSource(EV_URL+"/sse");
+  evES.onopen=evPollHistory; // catch anything missed during a connection gap
   evES.onmessage=e=>handleEvMsg(e.data);
   evES.onerror=()=>{evES.close();setTimeout(evSub,5000)};
  }catch(e){}
 }
-evSub();
+evPollHistory();evSub();
 
 function renderSchedule(){
  const el=document.getElementById("schedList");if(!el)return;
