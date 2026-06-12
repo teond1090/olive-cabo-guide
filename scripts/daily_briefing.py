@@ -43,8 +43,11 @@ def get(url):
         return r.read().decode("utf-8", "replace")
 
 
-def post(topic, body):
-    req = urllib.request.Request(NTFY + topic, data=body.encode("utf-8"), method="POST",
+def post(topic, body, title=None):
+    # title goes in the query string: full UTF-8/emoji support (headers are latin-1 only)
+    from urllib.parse import quote
+    url = NTFY + topic + (("?title=" + quote(title)) if title else "")
+    req = urllib.request.Request(url, data=body.encode("utf-8"), method="POST",
                                  headers={"User-Agent": "olive-briefing"})
     urllib.request.urlopen(req, timeout=30).read()
 
@@ -76,52 +79,76 @@ def load_events():
     return evs
 
 
+TRIP_START = "2026-07-18"  # countdown anchor (per Teon: vacation starts 7/18)
+
+
+def agenda_for(evs, day):
+    return sorted(
+        [e for e in evs.values()
+         if not e.get("del") and not e.get("inbox") and e.get("k") != "vote" and e.get("d") == day],
+        key=lambda e: str(e.get("tm") or "99:99"),
+    )
+
+
+def fmt(e):
+    t = f"  {e.get('e', '📌')} {e.get('t', '?')}"
+    if e.get("tm"):
+        t += f" at {e['tm']}"
+    if e.get("p"):
+        t += f" ({e['p']} people)"
+    return t
+
+
 def main():
     now = datetime.now(MAZATLAN)
     today = now.strftime("%Y-%m-%d")
+    tomorrow = (now + timedelta(days=1)).strftime("%Y-%m-%d")
     evs = load_events()
 
-    # 1) republish snapshot for durability
+    # always: republish snapshot so the family schedule never expires
     if evs:
         snap = {"k": "snap", "ts": int(now.timestamp() * 1000), "evs": list(evs.values())}
         post(EV_TOPIC, json.dumps(snap))
         print(f"snapshot republished: {len(evs)} entries")
 
-    # 2) today's agenda (live events with today's date)
-    todays = sorted(
-        [e for e in evs.values() if not e.get("del") and not e.get("inbox") and e.get("d") == today],
-        key=lambda e: str(e.get("tm") or "99:99"),
-    )
-
-    # 3) weather
-    wx = ""
-    try:
-        w = json.loads(get("https://api.open-meteo.com/v1/forecast?latitude=22.89&longitude=-109.91"
-                           "&daily=temperature_2m_max,precipitation_probability_max"
-                           "&temperature_unit=fahrenheit&timezone=America%2FMazatlan&forecast_days=1"))
-        hi = round(w["daily"]["temperature_2m_max"][0])
-        rain = w["daily"]["precipitation_probability_max"][0]
-        wx = f"☀️ High of {hi}°F" + (f", {rain}% chance of a quick shower" if rain >= 20 else ", clear skies")
-    except Exception:
+    if now.hour < 12:
+        # ---- 7 AM: morning briefing ----
         wx = "☀️ Another beautiful Cabo day"
-
-    # 4) compose + post briefing to the family chat
-    lines = [f"¡Buenos días, Cabo Crew! {wx}."]
-    if todays:
-        lines.append("📅 Today's plan:")
-        for e in todays:
-            t = f"  {e.get('e', '📌')} {e.get('t', '?')}"
-            if e.get("tm"):
-                t += f" at {e['tm']}"
-            if e.get("p"):
-                t += f" ({e['p']} people)"
-            lines.append(t)
+        try:
+            w = json.loads(get("https://api.open-meteo.com/v1/forecast?latitude=22.89&longitude=-109.91"
+                               "&daily=temperature_2m_max,precipitation_probability_max"
+                               "&temperature_unit=fahrenheit&timezone=America%2FMazatlan&forecast_days=1"))
+            hi = round(w["daily"]["temperature_2m_max"][0])
+            rain = w["daily"]["precipitation_probability_max"][0]
+            wx = f"☀️ High of {hi}°F" + (f", {rain}% chance of a quick shower" if rain >= 20 else ", clear skies")
+        except Exception:
+            pass
+        lines = [f"¡Buenos días, Cabo Crew! {wx}."]
+        days_to_go = (datetime.strptime(TRIP_START, "%Y-%m-%d").date() - now.date()).days
+        if days_to_go > 0:
+            lines.append(f"⏳ {days_to_go} day{'s' if days_to_go > 1 else ''} until Cabo!")
+        todays = agenda_for(evs, today)
+        if todays:
+            lines.append("📅 Today's plan:")
+            lines += [fmt(e) for e in todays]
+        else:
+            lines.append("📅 Nothing scheduled today — pool day? Or open the Activities tab and make a play. 🏄")
+        lines.append("💡 " + TIPS[now.timetuple().tm_yday % len(TIPS)])
+        msg = "\n".join(lines)
+        post(CHAT_TOPIC, msg, title="Olive 🫒")
+        print("morning briefing posted:\n" + msg)
     else:
-        lines.append("📅 Nothing scheduled today — pool day? Or open the Activities tab and make a play. 🏄")
-    lines.append("💡 " + TIPS[now.timetuple().tm_yday % len(TIPS)])
-    msg = "\n".join(lines)
-    post(CHAT_TOPIC, json.dumps({"n": "Olive 🫒", "x": msg}))
-    print("briefing posted:\n" + msg)
+        # ---- 4 PM: tomorrow preview (only when there IS a plan — no noise) ----
+        tmrw = agenda_for(evs, tomorrow)
+        if not tmrw:
+            print("no events tomorrow - evening preview skipped")
+            return
+        lines = ["🌙 Heads up, Cabo Crew — tomorrow's lineup:"]
+        lines += [fmt(e) for e in tmrw]
+        lines.append("Lay out the sunscreen and water bottles tonight. Pickups in Cabo come early! 🌅")
+        msg = "\n".join(lines)
+        post(CHAT_TOPIC, msg, title="Olive 🫒")
+        print("evening preview posted:\n" + msg)
 
 
 if __name__ == "__main__":
