@@ -869,6 +869,10 @@ const ACTIVITIES=[
   desc:"Tear through desert canyons and along Pacific beaches on ATVs or side-by-sides. Goggles and bandanas provided — you will get gloriously dusty.",
   tip:"Book the earliest slot; the desert gets seriously hot by 11 am in July.",map:"Migrino Beach Cabo",
   book:"https://www.cabosanlucastours.net/ATV-Tour-Zip-Lines.htm",operator:"Cabo San Lucas Tours — booking form right on the page",embed:true},
+ {id:"horse",emoji:"🐎",name:"Horseback Riding on the Beach",cat:"land",price:80,priceLabel:"$65–95 pp",dur:"1.5–2 hrs",ages:"~8+ (pony options for littles)",
+  desc:"Ride horses along Pacific sand and desert trails — the sunset rides are the showstopper. Beginner-friendly groups with gentle, well-kept horses.",
+  tip:"Long pants beat shorts in a saddle, and the sunset slot books out first.",map:"Wild Canyon Los Cabos",
+  book:"https://wildcanyon.com.mx/products/horseback-ride",operator:"Wild Canyon — official booking page"},
  {id:"zip",emoji:"🦅",name:"Zipline Canyon Adventure",cat:"land",price:95,priceLabel:"$65–130 pp",dur:"3–4 hrs",ages:"~8+ (weight limits apply)",
   desc:"Fly across desert canyons on Wild Canyon's multi-line zip courses — plus a glass-floor gondola and a giant canyon swing for the brave.",
   tip:"Closed-toe shoes required. Go early-morning for cooler air in July.",map:"Wild Canyon Los Cabos",
@@ -949,7 +953,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v13-2026-06-11";
+const OLIVE_BUILD="v14-2026-06-11";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -1033,6 +1037,11 @@ const searchEl=document.getElementById("actSearch");
  const v=searchEl.value.trim().toLowerCase();
  if(v!==query){query=v;renderCards()}
 }));
+searchEl.addEventListener("keydown",e=>{
+ if(e.key!=="Enter"||!query)return;
+ const local=ACTIVITIES.filter(a=>(activeCat==="all"||a.cat===activeCat)&&matchesQuery(a)).length;
+ if(local===0)window.open("https://www.google.com/search?q="+encodeURIComponent(query+" Cabo San Lucas booking"),"_blank");
+});
 function matchesQuery(a){
  if(!query)return true;
  const hay=(a.name+" "+a.desc+" "+a.tip+" "+a.priceLabel+" "+a.cat+" "+a.ages).toLowerCase();
@@ -1055,7 +1064,10 @@ function renderCards(){
  const list=ACTIVITIES.filter(a=>(activeCat==="all"||a.cat===activeCat)&&matchesQuery(a));
  renderMore();
  if(!list.length){
-  cardsEl.innerHTML=`<div class="no-match">🌵 Nothing in our list matches “${query}”.<br>Try the web search below — or ask the 🛎️ concierge, they know everything.</div>`;
+  const g="https://www.google.com/search?q="+encodeURIComponent(query+" Cabo San Lucas booking");
+  cardsEl.innerHTML=`<div class="no-match">🌵 Not in our list — but Cabo probably has it!<br><br>
+    <a class="book-btn" style="text-decoration:none;font-size:.92rem;padding:12px 22px" target="_blank" rel="noopener" href="${g}">🌐 Search the web for “${esc(query)}” in Cabo</a>
+    <div style="margin-top:10px;font-size:.76rem">…or just press <b>Enter</b> to search Google. More travel sites below ⬇️ Found something? The 🛎️ concierge can book it.</div></div>`;
   return;
  }
  cardsEl.innerHTML=list.map((a,i)=>{
@@ -1498,18 +1510,10 @@ const CABO_JOKES=[
  "I asked a Cabo crab for directions and got a really shellfish answer. 🦀",
  "What's a cactus's favorite dance move? The prickly-prickly. 🌵💃"
 ];
-const ACT_KEYWORDS=[["camel","camel"],["ziplin","zip"],["zip line","zip"],["dolphin","dolphin"],["fishing","fishing"],["parasail","parasail"],["banana","banana"],["water taxi","arch"],["glass.bottom","arch"],["the arch","arch"],["flora","flora"],["the office","office"],["pirate","sunset"],["buccaneer","sunset"],["atv","atv"],["lover","lovers"],["kidz","kidz"],["teen club","kidz"]];
+const ACT_KEYWORDS=[["camel","camel"],["ziplin","zip"],["zip line","zip"],["dolphin","dolphin"],["fishing","fishing"],["parasail","parasail"],["banana","banana"],["water taxi","arch"],["glass.bottom","arch"],["the arch","arch"],["flora","flora"],["the office","office"],["pirate","sunset"],["buccaneer","sunset"],["atv","atv"],["lover","lovers"],["kidz","kidz"],["teen club","kidz"],["horse","horse"]];
 function oliveReply(raw){
  const t=raw.toLowerCase();
- const named=/\bolive\b|🫒/.test(t);
  const wx=window.oliveWx;
- /* obvious questions get answers even without saying "Olive" */
- const obvious=
-   /what('| i)?s the weather|how hot is it|is it going to rain/.test(t)||
-   /where (should|do|can) we eat|what('| i)?s for dinner|where to eat/.test(t)||
-   /what('| i)?s (the |today's )?plan|what are we doing (today|tomorrow)/.test(t)||
-   /how many days (until|till|to)/.test(t);
- if(!named&&!obvious)return null;
  if(/\bhelp\b|what can you do/.test(t))
   return "At your service! Try: “Olive, what's the weather?” · “Olive, where should we eat?” · “Olive, what's today's plan?” · “Olive, I'm bored” · “Olive, how do I say thank you in Spanish?” · “Olive, snorkeling?” 🫒";
  if(/weather|hot|rain|forecast|temperature/.test(t))
@@ -1566,16 +1570,58 @@ function oliveReply(raw){
    if(a)return `${a.emoji} ${a.name}: ${a.priceLabel} · ${a.dur} · ${a.ages}. 💡 ${a.tip} Tap 🏄 Activities to vote, plan or book it.`;
   }
  }
- return "¡Hola! I do weather, food, today's plan, snorkeling, taxis, bookings, every tour's prices, volleyball intel, jokes and emergency Spanish — say “Olive help” for the menu. 🫒";
+ return null; /* no specific intent — the handler falls back to the wit engine */
+}
+/* ---- the wit engine: Olive answers EVERY message ---- */
+const OLIVE_QUIPS=[
+ s=>`“${s}” — noted, logged, and filed in the official Family Lore Archive. 📜`,
+ ()=>"Strong take. The pelicans at the marina agree. 🦤",
+ ()=>"This chat has better plot than streaming. Continue. 🍿",
+ ()=>"I'm just a travel app, but even I felt that. 💀",
+ s=>`Adding “${s}” to the vacation highlight reel. 🎬`,
+ ()=>"Counterpoint: tacos. That's it. That's the counterpoint. 🌮",
+ ()=>"The committee will deliberate over guacamole and report back. 🥑",
+ ()=>"Bold of you to say that with the whole group chat watching. 👀",
+ ()=>"Olive has reviewed this message and stamps it APPROVED. ✅🫒",
+ ()=>"Somewhere in the marina, a mariachi band just played a dramatic sting. 🎺",
+ ()=>"Energy level: vacation. Carry on, Cabo Crew. 🏝️",
+ s=>`“${s}” is exactly the kind of leadership this family needs. 🫡`,
+ ()=>"New rule: whoever sent that buys the churros. 🍩",
+ ()=>"I've seen sunsets less dramatic than this chat. And I track sunsets professionally. 🌇",
+];
+function wittyFallback(raw){
+ const t=raw.toLowerCase();
+ const wx=window.oliveWx;
+ const snip=raw.length>48?raw.slice(0,45)+"…":raw;
+ if(/😂|🤣|\blol\b|haha|lmao/.test(t))return "I just laughed in fourteen languages. Mostly Spanish. 😂";
+ if(/\b(hot|sweat|melting|burning up|heat)\b/.test(t))return "It's not 'hot', it's complimentary sauna mode. Hydrate, mi gente — agua is free and so is the shade. 🥵💧";
+ if(/\b(tired|nap|exhausted|sleepy|worn out)\b/.test(t))return "Permission to nap: GRANTED. Vacation rule #2 — naps officially count as an activity. 😴";
+ if(/\b(margarita|tequila|beer|cerveza|drinks?|cocktail)\b/.test(t))return "Reminder that the all-inclusive bracelet is basically a superpower. Use it responsibly…ish. 🍹";
+ if(/\bpool\b/.test(t))return "Pool status report: still perfect. The adults-only section remains adults-only, OG. 🏊";
+ if(/\b(expensive|pricey|cost|broke)\b/.test(t))return "Everything here is cheaper than therapy and twice as effective. The peso math lives in 🧳 Tools. 💵";
+ if(/\b(photo|pic|selfie|insta)\b/.test(t))return (wx&&wx.sunset?`Golden hour starts about an hour before sunset (${wx.sunset} tonight) — `:"Golden hour is ~an hour before sunset — ")+"schedule the photoshoot accordingly. 📸";
+ if(/\b(love|amazing|beautiful|incredible|best day)\b/.test(t))return "Agreed. Officially logging this as a Core Memory™. 🥹🫒";
+ if(/\b(waiting|hurry|late|where are you|where is everyone)\b/.test(t))return "Family punctuality forecast: 0% chance. Order a snack and accept your fate. ⏳😏";
+ if(/\b(sand|sunburn|jellyfish|wave)\b/.test(t))return "The ocean gives and the ocean takes. Mostly it gives. Reapply the SPF 50 and get back out there. 🌊";
+ if(/\?\s*$/.test(raw))return "Excellent question. My professional tour-guide answer: probably tacos. For real specifics, say “Olive help”. 🌮";
+ let i=store.get("quip-i",0);store.set("quip-i",i+1);
+ const q=OLIVE_QUIPS[i%OLIVE_QUIPS.length];
+ return q(snip);
 }
 document.getElementById("chatSendBtn").addEventListener("click",()=>{
  const inp=document.getElementById("chatText"),v=inp.value.trim();
  if(!v||!chatName)return;
  inp.value="";sendChat(v);
- const reply=oliveReply(v);
- const roast=isOG(chatName)?nextRoast():null;
- if(reply)setTimeout(()=>postOlive(reply),900);
- if(roast)setTimeout(()=>postOlive(roast),reply?2300:1100);
+ /* Olive replies to EVERY message. Real questions get real answers;
+    everything else gets the wit engine — and OG gets the roast treatment. */
+ const intent=oliveReply(v);
+ if(isOG(chatName)){
+  if(intent){setTimeout(()=>postOlive(intent),800);setTimeout(()=>postOlive(nextRoast()),2400)}
+  else setTimeout(()=>postOlive(nextRoast()),900);
+ }else{
+  const reply=intent||wittyFallback(v);
+  setTimeout(()=>postOlive(reply),700+Math.floor(Math.random()*600));
+ }
 });
 document.getElementById("chatText").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("chatSendBtn").click()});
 fab.addEventListener("click",()=>{location.hash="#/chat"});
