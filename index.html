@@ -33,6 +33,19 @@
   .reveal.on{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
 
+  /* ---------- Family lock ---------- */
+  .lock-screen{position:fixed;inset:0;z-index:200;background:linear-gradient(150deg,#26301a,#4a5630,#6b7c3f);display:none;align-items:center;justify-content:center;padding:20px}
+  .lock-screen.show{display:flex}
+  .lock-card{background:var(--cream);border-radius:24px;box-shadow:var(--shadow-lg);padding:34px 28px;max-width:380px;width:100%;text-align:center}
+  .lock-card h2{font-size:2.2rem;color:var(--olive-deep)}
+  .lock-card p{font-size:.9rem;color:var(--ink-soft);margin:8px 0 18px}
+  .lock-card input{width:100%;border:2px solid var(--sand-dark);border-radius:99px;padding:13px 20px;font-family:var(--font-body);font-size:1rem;background:var(--sand);outline:none;text-align:center}
+  .lock-card input:focus{border-color:var(--olive)}
+  .lock-err{display:none;color:var(--coral);font-size:.8rem;font-weight:700;margin-top:10px}
+  .lock-card button{width:100%;margin-top:14px;border:none;background:linear-gradient(140deg,var(--coral),#d65a3c);color:#fff;font-family:var(--font-body);font-weight:800;font-size:1rem;padding:14px;border-radius:99px;cursor:pointer;transition:.16s}
+  .lock-card button:hover{transform:scale(1.03)}
+  .lock-foot{font-size:.7rem;color:var(--ink-soft);margin-top:14px}
+
   /* ---------- Scroll progress ---------- */
   #scrollbar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--coral),var(--coral-soft),var(--sea));z-index:60;border-radius:0 99px 99px 0;transition:width .1s linear}
 
@@ -360,6 +373,17 @@
 </style>
 </head>
 <body>
+<div id="lockScreen" class="lock-screen">
+  <div class="lock-card">
+    <div style="font-size:3rem">🫒</div>
+    <h2>Olive</h2>
+    <p>Our family travel guide is private.<br>Enter the family code to come in.</p>
+    <input id="lockInput" type="password" placeholder="Family code" autocomplete="off">
+    <div class="lock-err" id="lockErr">That's not it — ask Teon for the family code!</div>
+    <button id="lockBtn">Unlock 🌴</button>
+    <div class="lock-foot">One time per device — Olive remembers you after this.</div>
+  </div>
+</div>
 <div id="scrollbar"></div>
 
 <header>
@@ -492,7 +516,7 @@
       <ol style="font-size:.85rem;padding-left:22px;display:flex;flex-direction:column;gap:6px">
         <li>Install the free <b>ntfy</b> app — <a class="map-link" style="margin:0" target="_blank" rel="noopener" href="https://apps.apple.com/app/ntfy/id1625396347">iPhone ↗</a> · <a class="map-link" style="margin:0" target="_blank" rel="noopener" href="https://play.google.com/store/apps/details?id=io.heckel.ntfy">Android ↗</a></li>
         <li>Tap <b>＋</b> → <b>Subscribe to topic</b></li>
-        <li>Paste our room code: <button class="mail-addr" id="copyTopic">olive-cabo-crew-x9k4t2-2026</button> (tap to copy)</li>
+        <li>Paste our room code: <button class="mail-addr" id="copyTopic">…</button> (tap to copy)</li>
       </ol>
       <button class="m-copy" id="notifBtn" style="margin-top:14px">🖥️ Or enable browser alerts on this device (pings while Olive is open in a tab)</button>
     </div>
@@ -516,7 +540,7 @@
         <button class="ev-cancel" id="evCancel">✕ cancel edit</button>
       </div>
       <div class="mail-in">📩 <b>Auto-import:</b> booked something on Google, Tripadvisor, Viator or anywhere else? Forward the confirmation email to
-        <button class="mail-addr" id="copyMail">ntfy-olive-cabo-events-x9k4t2-2026@ntfy.sh</button>
+        <button class="mail-addr" id="copyMail">…</button>
         (tap to copy) — it appears below within seconds for the whole family.</div>
     </div>
     <div id="inboxBox"></div>
@@ -925,6 +949,33 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
+/* ============ FAMILY ACCESS LOCK ============
+   The chat & schedule room names are DERIVED from the family code (SHA-256),
+   so they never appear in this source code. No code, no rooms. */
+const ROOM_SUFFIX=store.get("room-suffix","");
+const LOCKED=!ROOM_SUFFIX;
+const LOCK_VERIFIER="ab1a0f75";
+async function sha256hex(s){
+ const h=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));
+ return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+async function tryUnlock(){
+ const code=document.getElementById("lockInput").value.trim();
+ if(!code)return;
+ if((await sha256hex(code+":verify")).slice(0,8)!==LOCK_VERIFIER){
+  document.getElementById("lockErr").style.display="block";
+  document.getElementById("lockInput").value="";
+  return;
+ }
+ store.set("room-suffix",(await sha256hex(code)).slice(0,12));
+ location.reload();
+}
+if(LOCKED){
+ document.getElementById("lockScreen").classList.add("show");
+ document.getElementById("lockBtn").addEventListener("click",tryUnlock);
+ document.getElementById("lockInput").addEventListener("keydown",e=>{if(e.key==="Enter")tryUnlock()});
+}
+
 /* shared event + vote state (synced over ntfy in the Schedule module below) */
 let evMap=new Map(Object.entries(store.get("events",{})));
 const voterId=(()=>{let v=store.get("voter-id","");if(!v){v="vt"+Math.random().toString(36).slice(2,10);store.set("voter-id",v)}return v})();
@@ -1320,8 +1371,9 @@ document.getElementById("phraseCard").addEventListener("click",()=>{pIdx++;showP
 showPhrase();
 
 /* ============ FAMILY CHAT (ntfy.sh pub/sub) ============ */
-const CHAT_TOPIC="olive-cabo-crew-x9k4t2-2026";
+const CHAT_TOPIC="olive-crew-"+(ROOM_SUFFIX||"locked");
 const CHAT_URL="https://ntfy.sh/"+CHAT_TOPIC;
+document.getElementById("copyTopic").textContent=CHAT_TOPIC;
 let chatName=store.get("chat-name",""),chatCache=store.get("chat-cache",[]),unread=0;
 const seenIds=new Set(chatCache.map(m=>m.id));
 const msgsEl=document.getElementById("chatMsgs"),joinEl=document.getElementById("chatJoin"),inputRow=document.getElementById("chatInputRow");
@@ -1529,10 +1581,11 @@ document.getElementById("notifBtn").addEventListener("click",async()=>{
  toast(p==="granted"?"🔔 Browser alerts ON for this device":"Alerts blocked — the ntfy app is the better option anyway");
 });
 if(chatName)enterChat();
-chatHistory();chatSubscribe();
+if(!LOCKED){chatHistory();chatSubscribe();}
 
 /* ============ FAMILY SCHEDULE (shared via ntfy.sh) ============ */
-const EV_TOPIC="olive-cabo-events-x9k4t2-2026",EV_URL="https://ntfy.sh/"+EV_TOPIC;
+const EV_TOPIC="olive-events-"+(ROOM_SUFFIX||"locked"),EV_URL="https://ntfy.sh/"+EV_TOPIC;
+document.getElementById("copyMail").textContent="ntfy-"+EV_TOPIC+"@ntfy.sh";
 /* evMap + vote helpers are declared up top (storage section) so tiles can render votes early */
 let lastSnapTs=0;
 function evWho(){
@@ -1607,7 +1660,7 @@ function evSub(){
   evES.onerror=()=>{evES.close();setTimeout(evSub,5000)};
  }catch(e){}
 }
-evPollHistory();evSub();
+if(!LOCKED){evPollHistory();evSub();}
 
 function renderSchedule(){
  const el=document.getElementById("schedList");if(!el)return;
