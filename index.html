@@ -485,6 +485,17 @@
       </div>
       <div class="chat-note">🔒 Private-by-obscurity: only people with Olive's link can find this room. Don't share passwords or card numbers here.</div>
     </div>
+
+    <div class="widget reveal" style="margin-top:14px">
+      <h3>🔔 Get every message as a phone notification</h3>
+      <p style="font-size:.85rem;margin-bottom:10px">Three steps, no account, free — then every chat message <i>and Olive's 7am daily briefing</i> pops up on your phone like a text:</p>
+      <ol style="font-size:.85rem;padding-left:22px;display:flex;flex-direction:column;gap:6px">
+        <li>Install the free <b>ntfy</b> app — <a class="map-link" style="margin:0" target="_blank" rel="noopener" href="https://apps.apple.com/app/ntfy/id1625396347">iPhone ↗</a> · <a class="map-link" style="margin:0" target="_blank" rel="noopener" href="https://play.google.com/store/apps/details?id=io.heckel.ntfy">Android ↗</a></li>
+        <li>Tap <b>＋</b> → <b>Subscribe to topic</b></li>
+        <li>Paste our room code: <button class="mail-addr" id="copyTopic">olive-cabo-crew-x9k4t2-2026</button> (tap to copy)</li>
+      </ol>
+      <button class="m-copy" id="notifBtn" style="margin-top:14px">🖥️ Or enable browser alerts on this device (pings while Olive is open in a tab)</button>
+    </div>
   </section>
 
   </div>
@@ -923,7 +934,7 @@ function toggleVote(act){publishEv({k:"vote",id:"v-"+act+"-"+voterId,act,on:!myV
 
 /* ============ COUNTDOWN ============ */
 const tripInput=document.getElementById("tripDate");
-tripInput.value=store.get("trip-date","2026-07-04");
+tripInput.value=store.get("trip-date","2026-07-18");
 tripInput.addEventListener("change",()=>{store.set("trip-date",tripInput.value);tick()});
 function tick(){
  const target=new Date(tripInput.value+"T08:00:00");
@@ -942,6 +953,7 @@ const WMO={0:["☀️","Clear"],1:["🌤️","Mostly clear"],2:["⛅","Partly cl
  51:["🌦️","Drizzle"],53:["🌦️","Drizzle"],55:["🌦️","Drizzle"],61:["🌧️","Light rain"],63:["🌧️","Rain"],65:["🌧️","Heavy rain"],
  80:["🌦️","Showers"],81:["🌦️","Showers"],82:["⛈️","Heavy showers"],95:["⛈️","Thunderstorm"],96:["⛈️","Thunderstorm"],99:["⛈️","Thunderstorm"]};
 function wmo(c){return WMO[c]||["🌞","Sunny-ish"]}
+function loadWeather(){
 fetch("https://api.open-meteo.com/v1/forecast?latitude=22.89&longitude=-109.91&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&temperature_unit=fahrenheit&timezone=America%2FMazatlan&forecast_days=6")
  .then(r=>r.json()).then(j=>{
    const[e,label]=wmo(j.current.weather_code);
@@ -960,6 +972,9 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=22.89&longitude=-109.91&c
    document.getElementById("wCond").textContent="☀️ Typical July day (live data offline)";
    document.getElementById("forecast").innerHTML='<div style="padding:14px;font-size:.85rem;color:var(--ink-soft)">Forecast unavailable offline — but it\'s July in Cabo: hot, sunny, maybe a quick evening shower. 😎</div>';
  });
+}
+loadWeather();
+setInterval(loadWeather,30*60*1000); /* auto-refresh every 30 min while Olive is open */
 
 /* ============ ACTIVITIES ============ */
 let plan=store.get("plan",[]),travelers=store.get("travelers",4),activeCat="all";
@@ -1048,7 +1063,7 @@ function openModal(id){
  if(bookable){
    document.getElementById("mOperator").textContent="Books with: "+mAct.operator;
    const md=document.getElementById("mDate");
-   md.value=store.get("trip-date","2026-07-04");
+   md.value=store.get("trip-date","2026-07-18");
    document.getElementById("mParty").textContent=mPartyN;
    const cta=document.getElementById("mCta");
    cta.href=mAct.book;
@@ -1161,7 +1176,7 @@ function closeConc(){concOverlay.classList.remove("open");document.body.style.ov
 document.getElementById("concClose").addEventListener("click",closeConc);
 concOverlay.addEventListener("click",e=>{if(e.target===concOverlay)closeConc()});
 function concMessage(){
- const d=document.getElementById("mDate").value||store.get("trip-date","2026-07-04");
+ const d=document.getElementById("mDate").value||store.get("trip-date","2026-07-18");
  const dateNice=new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"});
  const who=concName.value.trim();
  return "Hola! We are guests at Hyatt Ziva Los Cabos"+(who?" ("+who+")":"")+
@@ -1337,11 +1352,16 @@ function addMsg(m,live){
  store.set("chat-cache",chatCache);
  renderChat();
  if(live&&m.n!==chatName&&!chatViewActive()){unread++;document.getElementById("fabBadge").textContent=unread;fab.classList.add("unread")}
+ if(live&&m.n!==chatName&&store.get("notif",false)&&document.hidden&&"Notification" in window&&Notification.permission==="granted"){
+  try{new Notification(m.n,{body:m.x.slice(0,140),tag:"olive-chat"})}catch(e){}
+ }
 }
 function parseNtfy(ev){
  try{const j=JSON.parse(ev);if(j.event&&j.event!=="message")return null;
    let n="Fam",x=j.message||"";
-   try{const inner=JSON.parse(j.message);if(inner&&inner.n){n=String(inner.n).slice(0,20);x=String(inner.x||"").slice(0,500)}}catch(e){}
+   let parsed=false;
+   try{const inner=JSON.parse(j.message);if(inner&&inner.n){n=String(inner.n).slice(0,24);x=String(inner.x||"").slice(0,500);parsed=true}}catch(e){}
+   if(!parsed&&j.title)n=String(j.title).slice(0,24); /* new format: Title header = sender */
    if(!x)return null;
    return {id:j.id,t:j.time,n,x};
  }catch(e){return null}
@@ -1381,11 +1401,12 @@ document.getElementById("chatWho").addEventListener("click",()=>{
  document.getElementById("chatWho").textContent="";
 });
 function sendChat(text){
- fetch(CHAT_URL,{method:"POST",body:JSON.stringify({n:chatName,x:text})}).catch(()=>{});
+ /* plain text + title param -> phone notifications read "Name: message" */
+ fetch(CHAT_URL+"?title="+encodeURIComponent(chatName),{method:"POST",body:text}).catch(()=>{});
 }
 /* ---- Olive the tour-guide bot (replies are generated on the SENDER's device,
        so there's exactly one Olive answer no matter how many phones are open) ---- */
-function postOlive(x){fetch(CHAT_URL,{method:"POST",body:JSON.stringify({n:"Olive 🫒",x})}).catch(()=>{})}
+function postOlive(x){fetch(CHAT_URL+"?title="+encodeURIComponent("Olive 🫒"),{method:"POST",body:x}).catch(()=>{})}
 const isOG=n=>/^og\b/i.test((n||"").trim());
 const OG_ROASTS=[
  "OG has spoken, everyone. Same confidence as the 'I don't need sunscreen' speech. We all remember the lobster years. 🦞",
@@ -1409,10 +1430,24 @@ function todayAgendaLine(){
  if(!evs.length)return null;
  return evs.map(e=>`${e.e||"📌"} ${e.t}${e.tm?" at "+e.tm:""}`).join(" · ");
 }
+const CABO_JOKES=[
+ "Why did the fish blush? It saw the ocean's bottom. 🐠",
+ "What does a pirate pay for corn? A buccaneer! ...the sunset cruise has me in pirate mode. 🏴‍☠️",
+ "I asked a Cabo crab for directions and got a really shellfish answer. 🦀",
+ "What's a cactus's favorite dance move? The prickly-prickly. 🌵💃"
+];
+const ACT_KEYWORDS=[["camel","camel"],["ziplin","zip"],["zip line","zip"],["dolphin","dolphin"],["fishing","fishing"],["parasail","parasail"],["banana","banana"],["water taxi","arch"],["glass.bottom","arch"],["the arch","arch"],["flora","flora"],["the office","office"],["pirate","sunset"],["buccaneer","sunset"],["atv","atv"],["lover","lovers"],["kidz","kidz"],["teen club","kidz"]];
 function oliveReply(raw){
  const t=raw.toLowerCase();
- if(!/\bolive\b|🫒/.test(t))return null;
+ const named=/\bolive\b|🫒/.test(t);
  const wx=window.oliveWx;
+ /* obvious questions get answers even without saying "Olive" */
+ const obvious=
+   /what('| i)?s the weather|how hot is it|is it going to rain/.test(t)||
+   /where (should|do|can) we eat|what('| i)?s for dinner|where to eat/.test(t)||
+   /what('| i)?s (the |today's )?plan|what are we doing (today|tomorrow)/.test(t)||
+   /how many days (until|till|to)/.test(t);
+ if(!named&&!obvious)return null;
  if(/\bhelp\b|what can you do/.test(t))
   return "At your service! Try: “Olive, what's the weather?” · “Olive, where should we eat?” · “Olive, what's today's plan?” · “Olive, I'm bored” · “Olive, how do I say thank you in Spanish?” · “Olive, snorkeling?” 🫒";
  if(/weather|hot|rain|forecast|temperature/.test(t))
@@ -1447,7 +1482,29 @@ function oliveReply(raw){
   return "Sunset menu: 🌅 Buccaneer Queen pirate cruise (~$99, kids lose their minds), ⚓ free marina stroll at 6 pm, or 🦶 a sand-table dinner at The Office. You can't pick wrong. 🌇";
  if(/tip|pesos|money|exchange/.test(t))
   return "Money quickies: 15–20% at restaurants, 10–15% for boat crews, $3–5/day housekeeping. USD works everywhere but pesos haggle better. Full cheat sheet in 🧳 Tools & Tips. 💵";
- return "¡Hola! I do weather, food, today's plan, snorkeling, taxis, bookings, volleyball intel and emergency Spanish — say “Olive help” for the menu. 🫒";
+ if(/how many days|countdown|how long (until|till)/.test(t)){
+  const d=Math.max(0,Math.ceil((new Date(store.get("trip-date","2026-07-18")+"T08:00:00")-new Date())/864e5));
+  return d>0?`${d} day${d>1?"s":""} until Cabo! Packing list is in 🧳 Tools & Tips — start with the sunscreen. ⏳`:"Zero. We're HERE (or basically here). Less counting, more swimming! 🌴";
+ }
+ if(/joke|make (us|me) laugh|funny/.test(t)){
+  let i=store.get("joke-i",0);store.set("joke-i",i+1);
+  return CABO_JOKES[i%CABO_JOKES.length];
+ }
+ if(/pack|what (should|do) (i|we) bring|sunscreen/.test(t))
+  return "The big five: reef-safe SPF 50, two swimsuits each (one's always wet), water shoes, hats, and the passports (valid 6+ months!). Full self-saving checklist in 🧳 Tools & Tips. 🧳";
+ if(/^(hola|hi |hey |good morning|buenos)/.test(t)||/\b(hola|good morning|buenos d)/.test(t))
+  return wx?`¡Hola hola! ${wx.now}°F and ${wx.label.toLowerCase()} right now — ${wx.hi}°F later. What are we getting into today? 🌞`:"¡Hola hola! Beautiful day to be the Cabo Crew. What are we getting into today? 🌞";
+ if(/gracias|thank/.test(t))return "¡De nada! Tips accepted in churros. 🫶";
+ if(/emergency|help us|urgent|hospital/.test(t))
+  return "Important: emergencies = dial 911 (works in Mexico). Resort front desk: +52 624 163 7730. For trip stuff, the 🛎️ Concierge button is one tap away.";
+ /* activity-specific smarts: name any tour and Olive knows the details */
+ for(const[kw,id]of ACT_KEYWORDS){
+  if(t.includes(kw)){
+   const a=ACTIVITIES.find(x=>x.id===id);
+   if(a)return `${a.emoji} ${a.name}: ${a.priceLabel} · ${a.dur} · ${a.ages}. 💡 ${a.tip} Tap 🏄 Activities to vote, plan or book it.`;
+  }
+ }
+ return "¡Hola! I do weather, food, today's plan, snorkeling, taxis, bookings, every tour's prices, volleyball intel, jokes and emergency Spanish — say “Olive help” for the menu. 🫒";
 }
 document.getElementById("chatSendBtn").addEventListener("click",()=>{
  const inp=document.getElementById("chatText"),v=inp.value.trim();
@@ -1460,6 +1517,17 @@ document.getElementById("chatSendBtn").addEventListener("click",()=>{
 });
 document.getElementById("chatText").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("chatSendBtn").click()});
 fab.addEventListener("click",()=>{location.hash="#/chat"});
+document.getElementById("copyTopic").addEventListener("click",()=>{
+ const done=()=>toast("🔔 Room code copied — paste it in the ntfy app");
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(CHAT_TOPIC).then(done).catch(()=>fallbackCopy(CHAT_TOPIC,done))}
+ else fallbackCopy(CHAT_TOPIC,done);
+});
+document.getElementById("notifBtn").addEventListener("click",async()=>{
+ if(!("Notification" in window)){toast("This browser doesn't support alerts — use the ntfy app instead");return}
+ const p=await Notification.requestPermission();
+ store.set("notif",p==="granted");
+ toast(p==="granted"?"🔔 Browser alerts ON for this device":"Alerts blocked — the ntfy app is the better option anyway");
+});
 if(chatName)enterChat();
 chatHistory();chatSubscribe();
 
@@ -1474,6 +1542,17 @@ function evWho(){
  return n||"Someone";
 }
 function saveEvents(){store.set("events",Object.fromEntries(evMap))}
+function parseDateFromText(s){
+ s=s.toLowerCase();
+ const months={jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,oct:10,nov:11,dec:12};
+ let d=null,m=s.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+(\d{1,2})\b/);
+ if(m)d="2026-"+String(months[m[1]]).padStart(2,"0")+"-"+String(+m[2]).padStart(2,"0");
+ else{m=s.match(/\b(\d{4})-(\d{2})-(\d{2})\b/);if(m)d=m[0];
+  else{m=s.match(/\b(\d{1,2})\/(\d{1,2})\/(\d{2,4})\b/);if(m)d="2026-"+String(+m[1]).padStart(2,"0")+"-"+String(+m[2]).padStart(2,"0")}}
+ let t=null;const tm=s.match(/\b(\d{1,2}):(\d{2})\s*(am|pm)?/);
+ if(tm){let h=+tm[1];if(tm[3]==="pm"&&h<12)h+=12;if(tm[3]==="am"&&h===12)h=0;if(h<24)t=String(h).padStart(2,"0")+":"+tm[2]}
+ return {d,t};
+}
 function applyEv(ev){
  if(!ev||!ev.id)return false;
  const cur=evMap.get(ev.id);
@@ -1490,7 +1569,8 @@ function handleEvMsg(raw){
  else if(!m&&(j.message||j.title)){
   /* plain text on this topic = a forwarded reservation email (ntfy email gateway) */
   const t=((j.title?j.title+" — ":"")+(j.message||"")).replace(/\s+/g," ").trim().slice(0,200);
-  if(t&&applyEv({k:"ev",id:"in-"+j.id,inbox:true,t,d:null,by:"forwarded email",ts:(j.time||0)*1000}))changed=true;
+  const sug=parseDateFromText(t); /* auto-detect date & time from the confirmation */
+  if(t&&applyEv({k:"ev",id:"in-"+j.id,inbox:true,t,d:null,sd:sug.d,st:sug.t,by:"forwarded email",ts:(j.time||0)*1000}))changed=true;
  }
  if(changed){
   saveEvents();renderSchedule();renderCards();
@@ -1583,7 +1663,7 @@ document.getElementById("schedule").addEventListener("click",e=>{
   editingId=ev.id;pendingInbox=null;
   if(ev.act&&ACTIVITIES.find(a=>a.id===ev.act)){evActSel.value=ev.act;document.getElementById("evTitle").style.display="none"}
   else{evActSel.value="custom";const ti=document.getElementById("evTitle");ti.style.display="block";ti.value=ev.t||""}
-  document.getElementById("evDate").value=ev.d||store.get("trip-date","2026-07-04");
+  document.getElementById("evDate").value=ev.d||store.get("trip-date","2026-07-18");
   document.getElementById("evTime").value=ev.tm||"";
   document.getElementById("evAdd").textContent="💾 Save change";
   document.getElementById("evCancel").style.display="inline";
@@ -1596,12 +1676,13 @@ document.getElementById("schedule").addEventListener("click",e=>{
   editingId=null;pendingInbox=ev.id;
   evActSel.value="custom";
   const ti=document.getElementById("evTitle");ti.style.display="block";
-  ti.value=(ev.t||"").split("—")[0].trim().slice(0,60);
-  document.getElementById("evDate").value=store.get("trip-date","2026-07-04");
+  ti.value=(ev.t||"").split("—")[0].replace(/^fwd:\s*/i,"").trim().slice(0,60);
+  document.getElementById("evDate").value=ev.sd||store.get("trip-date","2026-07-18");
+  document.getElementById("evTime").value=ev.st||"";
   document.getElementById("evAdd").textContent="Add 📅";
   document.querySelector("#schedule .widget").scrollIntoView({behavior:"smooth"});
   ti.focus();
-  toast("Pick the date & time from your confirmation, then Add 📅");
+  toast(ev.sd?"📩 Date auto-detected from the email — double-check it, then Add 📅":"Pick the date & time from your confirmation, then Add 📅");
  }
 });
 /* add-plan form */
@@ -1609,7 +1690,7 @@ const evActSel=document.getElementById("evAct");
 evActSel.innerHTML='<option value="custom">✏️ Custom plan…</option>'+ACTIVITIES.map(a=>`<option value="${a.id}">${a.emoji} ${a.name}</option>`).join("");
 evActSel.addEventListener("change",()=>{document.getElementById("evTitle").style.display=evActSel.value==="custom"?"block":"none"});
 document.getElementById("evTitle").style.display="block";
-document.getElementById("evDate").value=store.get("trip-date","2026-07-04");
+document.getElementById("evDate").value=store.get("trip-date","2026-07-18");
 document.getElementById("evAdd").addEventListener("click",()=>{
  const sel=evActSel.value;
  let t,em,act=null;
@@ -1618,23 +1699,28 @@ document.getElementById("evAdd").addEventListener("click",()=>{
  const d=document.getElementById("evDate").value;
  if(!d){toast("Pick a date first 📅");return}
  const tm=document.getElementById("evTime").value||null;
+ const niceD=new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
  if(editingId){
   const orig=evMap.get(editingId)||{};
   publishEv({...orig,k:"ev",id:editingId,t,e:em,d,tm,act,by:orig.by||evWho()});
+  postOlive(`✏️ ${evWho()} updated the plan: ${em} ${t} → ${niceD}${tm?" at "+tm:""}. Check 📅 Schedule!`);
   toast("Updated — everyone sees the change 📅");
  }else{
   publishEv({k:"ev",id:"ev"+Date.now()+Math.random().toString(36).slice(2,6),t,e:em,d,tm,by:evWho(),act,booked:pendingInbox?true:undefined});
   if(pendingInbox){const ie=evMap.get(pendingInbox);if(ie)publishEv({...ie,k:"ev",del:true})}
+  postOlive(`📅 ${evWho()} put ${em} ${t} on the schedule — ${niceD}${tm?" at "+tm:""}!`);
   toast(pendingInbox?"Reservation scheduled — inbox item cleared 📅":"Added to the family schedule 📅");
  }
  resetEditMode();
 });
 /* auto-add when someone books from Olive */
 function autoSchedule(act){
- const d=document.getElementById("mDate").value||store.get("trip-date","2026-07-04");
+ const d=document.getElementById("mDate").value||store.get("trip-date","2026-07-18");
  const dup=[...evMap.values()].some(ev=>!ev.del&&ev.act===act.id&&ev.d===d);
  if(dup)return;
  publishEv({k:"ev",id:"ev"+Date.now()+Math.random().toString(36).slice(2,6),t:act.name,e:act.emoji,d,tm:null,p:mPartyN,by:evWho(),act:act.id,booked:true});
+ const niceD=new Date(d+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"});
+ postOlive(`📌 ${evWho()} is booking ${act.emoji} ${act.name} for ${mPartyN} on ${niceD} — it's on the 📅 Schedule!`);
  toast("📅 Added to the family Schedule — everyone can see it");
 }
 let toastTimer=null;
