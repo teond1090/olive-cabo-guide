@@ -9,6 +9,7 @@ Olive daily briefing — runs in GitHub Actions every morning (Cabo time).
    to the family chat topic as "Olive".
 """
 import json
+import os
 import sys
 import urllib.request
 from datetime import datetime, timezone, timedelta
@@ -18,8 +19,11 @@ try:
 except Exception:
     pass
 
-EV_TOPIC = "olive-cabo-events-x9k4t2-2026"
-CHAT_TOPIC = "olive-cabo-crew-x9k4t2-2026"
+# room names are private — provided via encrypted GitHub Actions secrets
+EV_TOPIC = os.environ.get("OLIVE_EV_TOPIC", "")
+CHAT_TOPIC = os.environ.get("OLIVE_CHAT_TOPIC", "")
+if not EV_TOPIC or not CHAT_TOPIC:
+    sys.exit("Missing OLIVE_EV_TOPIC / OLIVE_CHAT_TOPIC secrets")
 NTFY = "https://ntfy.sh/"
 MAZATLAN = timezone(timedelta(hours=-7))  # America/Mazatlan (no DST)
 
