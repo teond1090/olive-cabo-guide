@@ -2,8 +2,10 @@ name: Olive daily briefing
 
 on:
   schedule:
-    # 14:00 UTC = 7:00 AM in Cabo (Mazatlan, UTC-7), daily June through August
+    # 14:00 UTC = 7:00 AM in Cabo (Mazatlan, UTC-7): morning briefing
     - cron: '0 14 * 6-8 *'
+    # 23:00 UTC = 4:00 PM in Cabo: tomorrow-preview (posts only if tomorrow has plans)
+    - cron: '0 23 * 6-8 *'
   workflow_dispatch:
 
 jobs:
