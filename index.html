@@ -232,6 +232,18 @@
   .sd-booked{color:var(--sea-deep);font-weight:700}
   .sd-del{border:none;background:var(--sand);color:var(--ink-soft);border-radius:99px;width:26px;height:26px;cursor:pointer;font-size:.8rem;line-height:1;flex-shrink:0}
   .sd-del:hover{background:#fde6dd;color:var(--coral)}
+  .sd-edit{border:none;background:var(--sand);color:var(--olive-dark);border-radius:99px;width:26px;height:26px;cursor:pointer;font-size:.78rem;line-height:1;flex-shrink:0;margin-right:2px}
+  .sd-edit:hover{background:var(--olive);color:var(--cream)}
+  .ev-cancel{border:none;background:transparent;color:var(--coral);font-family:var(--font-body);font-weight:700;font-size:.78rem;cursor:pointer;text-decoration:underline dotted;display:none}
+  .mail-in{margin-top:12px;font-size:.78rem;color:var(--ink-soft);background:var(--sand);border-radius:12px;padding:11px 13px;line-height:1.7}
+  .mail-addr{border:1.5px dashed var(--olive);background:var(--cream);border-radius:8px;padding:3px 9px;font-family:Consolas,monospace;font-size:.74rem;color:var(--olive-dark);cursor:pointer;word-break:break-all}
+  .mail-addr:hover{background:var(--olive);color:var(--cream)}
+  .inbox-box{border-left:4px solid var(--coral);margin-bottom:14px}
+  .ib-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--sand-dark);font-size:.85rem}
+  .ib-item:last-child{border-bottom:none}
+  .ib-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .ib-add{border:none;background:var(--coral);color:#fff;border-radius:99px;padding:7px 13px;font-family:var(--font-body);font-weight:700;font-size:.76rem;cursor:pointer;flex-shrink:0}
+  .ib-add:hover{transform:scale(1.05)}
   .sched-empty{text-align:center;color:var(--ink-soft);padding:36px 16px;background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow)}
   .toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--olive-deep);color:var(--cream);padding:12px 22px;border-radius:99px;font-weight:700;font-size:.88rem;box-shadow:var(--shadow-lg);opacity:0;transition:.3s;z-index:97;pointer-events:none;max-width:90vw;text-align:center}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -487,8 +499,13 @@
         <input type="date" id="evDate">
         <input type="time" id="evTime">
         <button class="chat-send" id="evAdd">Add 📅</button>
+        <button class="ev-cancel" id="evCancel">✕ cancel edit</button>
       </div>
+      <div class="mail-in">📩 <b>Auto-import:</b> booked something on Google, Tripadvisor, Viator or anywhere else? Forward the confirmation email to
+        <button class="mail-addr" id="copyMail">ntfy-olive-cabo-events-x9k4t2-2026@ntfy.sh</button>
+        (tap to copy) — it appears below within seconds for the whole family.</div>
     </div>
+    <div id="inboxBox"></div>
     <div id="schedList"></div>
   </section>
 
@@ -1296,14 +1313,18 @@ function applyEv(ev){
  evMap.set(ev.id,ev);return true;
 }
 function handleEvMsg(raw){
- try{
-  const j=JSON.parse(raw);if(j.event&&j.event!=="message")return;
-  const m=JSON.parse(j.message);
-  let changed=false;
-  if(m.k==="snap"){lastSnapTs=Math.max(lastSnapTs,m.ts||0);(m.evs||[]).forEach(e=>{if(applyEv(e))changed=true})}
-  else if(m.k==="ev"){if(applyEv(m))changed=true}
-  if(changed){saveEvents();renderSchedule()}
- }catch(e){}
+ let j;try{j=JSON.parse(raw)}catch(e){return}
+ if(j.event&&j.event!=="message")return;
+ let m=null;try{m=JSON.parse(j.message)}catch(e){}
+ let changed=false;
+ if(m&&m.k==="snap"){lastSnapTs=Math.max(lastSnapTs,m.ts||0);(m.evs||[]).forEach(e=>{if(applyEv(e))changed=true})}
+ else if(m&&m.k==="ev"){if(applyEv(m))changed=true}
+ else if(!m&&(j.message||j.title)){
+  /* plain text on this topic = a forwarded reservation email (ntfy email gateway) */
+  const t=((j.title?j.title+" — ":"")+(j.message||"")).replace(/\s+/g," ").trim().slice(0,200);
+  if(t&&applyEv({k:"ev",id:"in-"+j.id,inbox:true,t,d:null,by:"forwarded email",ts:(j.time||0)*1000}))changed=true;
+ }
+ if(changed){saveEvents();renderSchedule()}
 }
 function publishEv(ev){
  ev.ts=Date.now();
@@ -1336,7 +1357,14 @@ evSub();
 
 function renderSchedule(){
  const el=document.getElementById("schedList");if(!el)return;
- const list=[...evMap.values()].filter(e=>!e.del&&e.d);
+ /* inbox: forwarded reservation emails waiting to be put on a date */
+ const ib=document.getElementById("inboxBox");
+ const inbox=[...evMap.values()].filter(e=>!e.del&&e.inbox);
+ ib.innerHTML=inbox.length?`<div class="widget inbox-box"><h3>📩 Forwarded reservations — pick a date</h3>
+   ${inbox.map(e=>`<div class="ib-item"><span>📩</span><span class="ib-text">${esc(e.t)}</span>
+     <button class="ib-add" data-inboxadd="${e.id}">📅 Schedule it</button>
+     <button class="sd-del" data-evdel="${e.id}" aria-label="Dismiss">✕</button></div>`).join("")}</div>`:"";
+ const list=[...evMap.values()].filter(e=>!e.del&&e.d&&!e.inbox);
  if(!list.length){el.innerHTML='<div class="sched-empty">🌵 Nothing on the schedule yet.<br>Add a plan above — or book an activity and it appears here automatically.</div>';return}
  const byDate={};
  list.forEach(e=>{(byDate[e.d]=byDate[e.d]||[]).push(e)});
@@ -1353,16 +1381,54 @@ function renderSchedule(){
      <div class="sd-body"><b>${esc(e.t||"")}</b>
        <span class="sd-meta">${e.tm?"🕐 "+esc(e.tm)+" · ":""}${e.p?e.p+" people · ":""}by ${esc(e.by||"?")}${e.booked?' · <span class="sd-booked">📌 booked via Olive</span>':""}</span>
      </div>
-     <button class="sd-del" data-evdel="${e.id}" aria-label="Remove">✕</button>
+     <button class="sd-edit" data-evedit="${e.id}" aria-label="Edit">✏️</button><button class="sd-del" data-evdel="${e.id}" aria-label="Remove">✕</button>
    </div>`).join("")}
   </div>`;
  }).join("");
 }
-document.getElementById("schedList").addEventListener("click",e=>{
- const b=e.target.closest("[data-evdel]");if(!b)return;
- const ev=evMap.get(b.dataset.evdel);if(!ev)return;
- publishEv({...ev,k:"ev",del:true});
- toast("Removed from the schedule");
+let editingId=null,pendingInbox=null;
+function resetEditMode(){
+ editingId=null;pendingInbox=null;
+ document.getElementById("evAdd").textContent="Add 📅";
+ document.getElementById("evCancel").style.display="none";
+ document.getElementById("evTitle").value="";
+ document.getElementById("evTime").value="";
+}
+document.getElementById("evCancel").addEventListener("click",resetEditMode);
+document.getElementById("schedule").addEventListener("click",e=>{
+ const del=e.target.closest("[data-evdel]"),ed=e.target.closest("[data-evedit]"),ia=e.target.closest("[data-inboxadd]");
+ if(del){
+  const ev=evMap.get(del.dataset.evdel);if(!ev)return;
+  if(editingId===ev.id)resetEditMode();
+  publishEv({...ev,k:"ev",del:true});
+  toast("Removed from the schedule");
+  return;
+ }
+ if(ed){
+  const ev=evMap.get(ed.dataset.evedit);if(!ev)return;
+  editingId=ev.id;pendingInbox=null;
+  if(ev.act&&ACTIVITIES.find(a=>a.id===ev.act)){evActSel.value=ev.act;document.getElementById("evTitle").style.display="none"}
+  else{evActSel.value="custom";const ti=document.getElementById("evTitle");ti.style.display="block";ti.value=ev.t||""}
+  document.getElementById("evDate").value=ev.d||store.get("trip-date","2026-07-04");
+  document.getElementById("evTime").value=ev.tm||"";
+  document.getElementById("evAdd").textContent="💾 Save change";
+  document.getElementById("evCancel").style.display="inline";
+  document.querySelector("#schedule .widget").scrollIntoView({behavior:"smooth"});
+  toast("Editing “"+(ev.t||"plan")+"” — change anything, then Save");
+  return;
+ }
+ if(ia){
+  const ev=evMap.get(ia.dataset.inboxadd);if(!ev)return;
+  editingId=null;pendingInbox=ev.id;
+  evActSel.value="custom";
+  const ti=document.getElementById("evTitle");ti.style.display="block";
+  ti.value=(ev.t||"").split("—")[0].trim().slice(0,60);
+  document.getElementById("evDate").value=store.get("trip-date","2026-07-04");
+  document.getElementById("evAdd").textContent="Add 📅";
+  document.querySelector("#schedule .widget").scrollIntoView({behavior:"smooth"});
+  ti.focus();
+  toast("Pick the date & time from your confirmation, then Add 📅");
+ }
 });
 /* add-plan form */
 const evActSel=document.getElementById("evAct");
@@ -1377,9 +1443,17 @@ document.getElementById("evAdd").addEventListener("click",()=>{
  else{const a=ACTIVITIES.find(x=>x.id===sel);t=a.name;em=a.emoji;act=a.id}
  const d=document.getElementById("evDate").value;
  if(!d){toast("Pick a date first 📅");return}
- publishEv({k:"ev",id:"ev"+Date.now()+Math.random().toString(36).slice(2,6),t,e:em,d,tm:document.getElementById("evTime").value||null,by:evWho(),act});
- document.getElementById("evTitle").value="";
- toast("Added to the family schedule 📅");
+ const tm=document.getElementById("evTime").value||null;
+ if(editingId){
+  const orig=evMap.get(editingId)||{};
+  publishEv({...orig,k:"ev",id:editingId,t,e:em,d,tm,act,by:orig.by||evWho()});
+  toast("Updated — everyone sees the change 📅");
+ }else{
+  publishEv({k:"ev",id:"ev"+Date.now()+Math.random().toString(36).slice(2,6),t,e:em,d,tm,by:evWho(),act,booked:pendingInbox?true:undefined});
+  if(pendingInbox){const ie=evMap.get(pendingInbox);if(ie)publishEv({...ie,k:"ev",del:true})}
+  toast(pendingInbox?"Reservation scheduled — inbox item cleared 📅":"Added to the family schedule 📅");
+ }
+ resetEditMode();
 });
 /* auto-add when someone books from Olive */
 function autoSchedule(act){
@@ -1394,6 +1468,12 @@ function toast(msg){
  const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2800);
 }
+document.getElementById("copyMail").addEventListener("click",()=>{
+ const addr="ntfy-"+EV_TOPIC+"@ntfy.sh";
+ const done=()=>toast("📩 Address copied — forward any confirmation email to it");
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(addr).then(done).catch(()=>fallbackCopy(addr,done))}
+ else fallbackCopy(addr,done);
+});
 renderSchedule();
 
 /* ============ SCROLL PROGRESS ============ */
