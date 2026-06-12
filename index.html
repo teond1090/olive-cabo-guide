@@ -155,6 +155,9 @@
   .ct-free{background:linear-gradient(140deg,#4a8fb5,#2f6e93)}
   .ct-food{background:linear-gradient(140deg,#f4a261,#e76f51)}
   .ct-jade{background:linear-gradient(140deg,#c45ba2,#7b3f8f)}
+  .jade-stickers{font-size:1.7rem;letter-spacing:.32em;text-align:center;margin:14px 0 0;filter:drop-shadow(0 2px 3px rgba(123,63,143,.25))}
+  .caption-out{background:rgba(255,255,255,.18);border-radius:14px;padding:16px 14px;font-weight:800;font-size:1.05rem;text-align:center;min-height:3.2em;display:flex;align-items:center;justify-content:center}
+  .gh-time{font-family:var(--font-display);font-size:2.3rem;font-weight:700;color:var(--coral);line-height:1.1;margin-bottom:6px}
   .card .cb{padding:9px 11px 11px;display:flex;flex-direction:column;gap:3px;flex:1}
   .card h3{font-size:.83rem;line-height:1.25;color:var(--olive-deep);font-family:var(--font-body);font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.1em}
   .card .c-price{font-size:.74rem;font-weight:700;color:var(--coral)}
@@ -260,6 +263,7 @@
   .ib-add{border:none;background:var(--coral);color:#fff;border-radius:99px;padding:7px 13px;font-family:var(--font-body);font-weight:700;font-size:.76rem;cursor:pointer;flex-shrink:0}
   .ib-add:hover{transform:scale(1.05)}
   .sched-empty{text-align:center;color:var(--ink-soft);padding:36px 16px;background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .update-bar{display:none;position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:80;border:none;background:var(--coral);color:#fff;font-family:var(--font-body);font-weight:800;font-size:.85rem;padding:12px 22px;border-radius:99px;cursor:pointer;box-shadow:var(--shadow-lg);animation:bob 2.5s ease-in-out infinite;max-width:92vw}
   .toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--olive-deep);color:var(--cream);padding:12px 22px;border-radius:99px;font-weight:700;font-size:.88rem;box-shadow:var(--shadow-lg);opacity:0;transition:.3s;z-index:97;pointer-events:none;max-width:90vw;text-align:center}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
@@ -564,6 +568,25 @@
       <div class="c-btns"><button class="c-btn" style="background:#fff;color:#7b3f8f" data-actopen="medano">📍 Plan a Medano day</button></div>
     </div>
 
+    <div class="jade-stickers reveal">🏐 ✨ 🌅 🐬 🤿 🌮 📸 🫒 🏝️ 💅</div>
+
+    <div class="two-col reveal" style="margin-top:10px">
+      <div class="widget" style="background:linear-gradient(150deg,#c45ba2,#7b3f8f);color:#fff">
+        <h3 style="color:#fff">📸 Caption Generator</h3>
+        <p style="font-size:.8rem;opacity:.92;margin-bottom:12px">Pic's fire but the caption isn't? Spin one:</p>
+        <div class="caption-out" id="captionOut">Catch flights AND volleyballs 🏐✈️</div>
+        <div class="c-btns" style="margin-top:12px">
+          <button class="c-btn" style="background:#fff;color:#7b3f8f" id="captionRoll">🎰 New caption</button>
+          <button class="c-btn" style="background:rgba(255,255,255,.25)" id="captionCopy">📋 Copy</button>
+        </div>
+      </div>
+      <div class="widget">
+        <h3>🌇 Golden Hour Tracker</h3>
+        <div class="gh-time" id="jadeSunset">≈ 7:50 PM</div>
+        <p style="font-size:.8rem;color:var(--ink-soft)">Sunset today, updated live. Best light = the hour before — beach-walk photoshoot, volleyball silhouettes, you know what to do. ✨</p>
+      </div>
+    </div>
+
     <div class="two-col reveal" style="margin-top:14px">
       <div class="widget">
         <h3>😎 Jade's top picks</h3>
@@ -810,6 +833,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<button class="update-bar" id="updateBar" onclick="location.reload()">🫒 A new version of Olive is ready — tap to update</button>
 
 <button class="conc-fab" id="concFab" aria-label="Ziva concierge">🛎️<span class="fab-label">Concierge</span></button>
 <button class="chat-fab" id="chatFab" aria-label="Family chat">💬<span class="fab-badge" id="fabBadge">0</span></button>
@@ -886,7 +910,7 @@ const ACTIVITIES=[
   tip:"No vendors or shade — bring water, snacks and an umbrella. Combine with your Arch water taxi.",map:"Lovers Beach Cabo San Lucas",
   walkup:"Free to visit — just hop any water taxi from Medano Beach or the marina and arrange your pickup time with the captain."},
  {id:"medano",emoji:"🏖️",name:"Medano Beach Day",cat:"free",price:0,priceLabel:"Free · loungers $25–50/pair",dur:"As long as you like",ages:"All ages",
-  desc:"Cabo's two-mile main beach: calm swimmable water, Arch views, and beach clubs where lunch arrives at your lounger.",
+  desc:"Cabo's two-mile main beach: calm swimmable water, Arch views, beach volleyball nets with pickup games, and beach clubs where lunch arrives at your lounger.",
   tip:"Towel on the sand is free anywhere. The roped-off swim zone is calm — perfect for kids.",map:"Medano Beach Cabo San Lucas",
   walkup:"No reservation needed — it's a public beach. For a beach-club day with loungers and service, just walk into any club before 10 am and they'll set you up."},
  {id:"marina",emoji:"⚓",name:"Marina Sunset Stroll & Ice Cream",cat:"free",price:0,priceLabel:"Free (ice cream extra 🍦)",dur:"~1 hr",ages:"All ages",
@@ -949,6 +973,8 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
+const OLIVE_BUILD="v12-2026-06-11";
+
 /* ============ FAMILY ACCESS LOCK ============
    The chat & schedule room names are DERIVED from the family code (SHA-256),
    so they never appear in this source code. No code, no rooms. */
@@ -1000,15 +1026,22 @@ function tick(){
 tick();setInterval(tick,30000);
 
 /* ============ WEATHER ============ */
+function to12h(hm){let[h,m]=hm.split(":").map(Number);const ap=h>=12?"PM":"AM";h=h%12||12;return h+":"+String(m).padStart(2,"0")+" "+ap}
 const WMO={0:["☀️","Clear"],1:["🌤️","Mostly clear"],2:["⛅","Partly cloudy"],3:["☁️","Cloudy"],45:["🌫️","Foggy"],48:["🌫️","Foggy"],
  51:["🌦️","Drizzle"],53:["🌦️","Drizzle"],55:["🌦️","Drizzle"],61:["🌧️","Light rain"],63:["🌧️","Rain"],65:["🌧️","Heavy rain"],
  80:["🌦️","Showers"],81:["🌦️","Showers"],82:["⛈️","Heavy showers"],95:["⛈️","Thunderstorm"],96:["⛈️","Thunderstorm"],99:["⛈️","Thunderstorm"]};
 function wmo(c){return WMO[c]||["🌞","Sunny-ish"]}
 function loadWeather(){
-fetch("https://api.open-meteo.com/v1/forecast?latitude=22.89&longitude=-109.91&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&temperature_unit=fahrenheit&timezone=America%2FMazatlan&forecast_days=6")
+fetch("https://api.open-meteo.com/v1/forecast?latitude=22.89&longitude=-109.91&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code,sunset&temperature_unit=fahrenheit&timezone=America%2FMazatlan&forecast_days=6")
  .then(r=>r.json()).then(j=>{
    const[e,label]=wmo(j.current.weather_code);
    window.oliveWx={now:Math.round(j.current.temperature_2m),label,hi:Math.round(j.daily.temperature_2m_max[0]),rain:j.daily.precipitation_probability_max[0]};
+   if(j.daily.sunset&&j.daily.sunset[0]){
+     const ss=j.daily.sunset[0].slice(11,16);
+     window.oliveWx.sunset=to12h(ss);
+     const gh=document.getElementById("jadeSunset");
+     if(gh)gh.textContent=window.oliveWx.sunset;
+   }
    document.getElementById("wTemp").textContent=Math.round(j.current.temperature_2m)+"°F";
    document.getElementById("wCond").textContent=e+" "+label;
    const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -1041,7 +1074,10 @@ filtersEl.addEventListener("click",e=>{
 
 let query="";
 const searchEl=document.getElementById("actSearch");
-searchEl.addEventListener("input",()=>{query=searchEl.value.trim().toLowerCase();renderCards()});
+["input","search","keyup"].forEach(evt=>searchEl.addEventListener(evt,()=>{
+ const v=searchEl.value.trim().toLowerCase();
+ if(v!==query){query=v;renderCards()}
+}));
 function matchesQuery(a){
  if(!query)return true;
  const hay=(a.name+" "+a.desc+" "+a.tip+" "+a.priceLabel+" "+a.cat+" "+a.ages).toLowerCase();
@@ -1359,6 +1395,25 @@ document.getElementById("view-jade").addEventListener("click",e=>{
  const b=e.target.closest("[data-actopen]");
  if(b)openModal(b.dataset.actopen);
 });
+const CAPTIONS=[
+ "Tan lines & good times 🌅","Salty hair, don't care 🌊","Cabo math: sunscreen + tacos = happiness 🌮",
+ "Living my best vida 🫒","Vitamin SEA loading… 🐠","Golden hour hits different in Cabo ✨",
+ "POV: your office is a beach today 🏖️","Sandy toes, sun-kissed nose ☀️","Main character energy at Land's End 🏝️",
+ "Catch flights AND volleyballs 🏐✈️","Mood: agua fresca & zero notifications 🧋","She believed she could, so she beached 🐚",
+ "Out of office. Into ocean. 🌊","Sunsets > screens 🌇","Serve's up — beach volleyball edition 🏐"
+];
+document.getElementById("captionRoll").addEventListener("click",()=>{
+ let i=store.get("caption-i",Math.floor(Math.random()*CAPTIONS.length));
+ i=(i+1+Math.floor(Math.random()*3))%CAPTIONS.length;
+ store.set("caption-i",i);
+ document.getElementById("captionOut").textContent=CAPTIONS[i];
+});
+document.getElementById("captionCopy").addEventListener("click",()=>{
+ const c=document.getElementById("captionOut").textContent;
+ const done=()=>toast("📋 Caption copied — go post it");
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(c).then(done).catch(()=>fallbackCopy(c,done))}
+ else fallbackCopy(c,done);
+});
 
 /* ============ PHRASES ============ */
 let pIdx=0;
@@ -1530,8 +1585,8 @@ function oliveReply(raw){
   const[es,en]=PHRASES[Math.floor(Math.random()*PHRASES.length)];
   return `Today's Spanish: “${es}” — ${en}. Use it once before sunset, that's the rule. 🗣️`;
  }
- if(/sunset/.test(t))
-  return "Sunset menu: 🌅 Buccaneer Queen pirate cruise (~$99, kids lose their minds), ⚓ free marina stroll at 6 pm, or 🦶 a sand-table dinner at The Office. You can't pick wrong. 🌇";
+ if(/sunset|golden hour/.test(t))
+  return (wx&&wx.sunset?`Sunset tonight: ${wx.sunset} — golden hour starts about an hour before. `:"")+"Sunset menu: 🌅 Buccaneer Queen pirate cruise (~$99, kids lose their minds), ⚓ free marina stroll at 6 pm, or 🦶 a sand-table dinner at The Office. You can't pick wrong. 🌇";
  if(/tip|pesos|money|exchange/.test(t))
   return "Money quickies: 15–20% at restaurants, 10–15% for boat crews, $3–5/day housekeeping. USD works everywhere but pesos haggle better. Full cheat sheet in 🧳 Tools & Tips. 💵";
  if(/how many days|countdown|how long (until|till)/.test(t)){
@@ -1788,6 +1843,16 @@ document.getElementById("copyMail").addEventListener("click",()=>{
  else fallbackCopy(addr,done);
 });
 renderSchedule();
+
+/* ============ AUTO-UPDATE CHECK ============ */
+function checkUpdate(){
+ fetch(location.pathname+"?u="+Date.now(),{cache:"no-store"}).then(r=>r.text()).then(t=>{
+  const m=t.match(/OLIVE_BUILD="([^"]+)"/);
+  if(m&&m[1]!==OLIVE_BUILD)document.getElementById("updateBar").style.display="block";
+ }).catch(()=>{});
+}
+setInterval(checkUpdate,5*60*1000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)checkUpdate()});
 
 /* ============ SCROLL PROGRESS ============ */
 const sb=document.getElementById("scrollbar");
