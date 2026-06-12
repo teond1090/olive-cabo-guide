@@ -211,6 +211,31 @@
   .m-conc .c-call{color:#d9e2bb}
   .m-conc .c-call a{color:var(--coral-soft)}
 
+  /* ---------- Family Schedule ---------- */
+  .ev-form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(min-width:720px){.ev-form{grid-template-columns:2fr 1.2fr 1fr auto}}
+  .ev-form select,.ev-form input{border:1.5px solid var(--sand-dark);border-radius:12px;padding:11px 13px;font-family:var(--font-body);font-size:.9rem;background:var(--sand);min-width:0;outline:none}
+  .ev-form select:focus,.ev-form input:focus{border-color:var(--olive)}
+  .ev-form #evTitle{grid-column:1/-1}
+  .sched-day{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px;margin-bottom:12px}
+  .sched-day.today{border:2px solid var(--coral);box-shadow:0 8px 28px rgba(231,111,81,.18)}
+  .sched-day.past{opacity:.55}
+  .sd-head{font-family:var(--font-display);font-weight:700;font-size:1.05rem;color:var(--olive-deep);margin-bottom:8px;display:flex;align-items:baseline;gap:8px}
+  .sd-head span{font-size:.74rem;color:var(--ink-soft);font-family:var(--font-body)}
+  .sched-day.today .sd-head{color:var(--coral)}
+  .sd-ev{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px dashed var(--sand-dark)}
+  .sd-ev:last-child{border-bottom:none}
+  .sd-emoji{font-size:1.5rem}
+  .sd-body{flex:1;min-width:0}
+  .sd-body b{font-size:.92rem;color:var(--ink);display:block}
+  .sd-meta{font-size:.74rem;color:var(--ink-soft)}
+  .sd-booked{color:var(--sea-deep);font-weight:700}
+  .sd-del{border:none;background:var(--sand);color:var(--ink-soft);border-radius:99px;width:26px;height:26px;cursor:pointer;font-size:.8rem;line-height:1;flex-shrink:0}
+  .sd-del:hover{background:#fde6dd;color:var(--coral)}
+  .sched-empty{text-align:center;color:var(--ink-soft);padding:36px 16px;background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--olive-deep);color:var(--cream);padding:12px 22px;border-radius:99px;font-weight:700;font-size:.88rem;box-shadow:var(--shadow-lg);opacity:0;transition:.3s;z-index:97;pointer-events:none;max-width:90vw;text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
   /* ---------- Concierge banner + FAB ---------- */
   .conc-banner{background:linear-gradient(140deg,var(--olive-dark),var(--olive-deep));border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;color:var(--cream);margin-top:16px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
   .conc-banner .cb-icon{font-size:2.6rem;animation:bob 3.5s ease-in-out infinite}
@@ -357,6 +382,7 @@
     <span class="brand">Olive</span>
     <a href="#/home" data-view="home">🏠 Home</a>
     <a href="#/activities" data-view="activities">🏄 Activities</a>
+    <a href="#/schedule" data-view="schedule">📅 Schedule</a>
     <a href="#/chat" data-view="chat">💬 Chat</a>
     <a href="#/resort" data-view="resort">🏨 Home Base</a>
     <a href="#/tools" data-view="tools">🧳 Tools & Tips</a>
@@ -389,6 +415,7 @@
 
     <div class="tiles">
       <button class="tile ct-water" data-goto="activities"><span class="t-emoji">🏄</span><b>Activities & Prices</b><span>Browse, vote & book 21 adventures</span></button>
+      <button class="tile ct-free" data-goto="schedule"><span class="t-emoji">📅</span><b>Family Schedule</b><span>What's on today — shared live</span></button>
       <button class="tile ct-land" data-goto="chat"><span class="t-emoji">💬</span><b>Family Chat</b><span>The Cabo Crew room — live</span></button>
       <button class="tile ct-resort" data-goto="resort"><span class="t-emoji">🏨</span><b>Home Base</b><span>Our Hyatt Ziva cheat sheet</span></button>
       <button class="tile ct-food" data-goto="tools"><span class="t-emoji">🧳</span><b>Tools & Tips</b><span>Money · packing · Spanish</span></button>
@@ -441,6 +468,26 @@
       </div>
       <div class="chat-note">🔒 Private-by-obscurity: only people with Olive's link can find this room. Don't share passwords or card numbers here.</div>
     </div>
+  </section>
+
+  </div>
+  <!-- ============ VIEW: SCHEDULE ============ -->
+  <div class="view" id="view-schedule">
+
+  <section id="schedule">
+    <div class="sec-head reveal"><h2>Family Schedule</h2><span class="tag">Shared live</span></div>
+    <p class="sec-blurb reveal">One schedule for the whole crew — everyone sees the same plan, updated live on every phone. Book anything from Olive and it lands here automatically. 📌</p>
+    <div class="widget reveal" style="margin-bottom:14px">
+      <h3>➕ Add a plan</h3>
+      <div class="ev-form">
+        <select id="evAct"></select>
+        <input id="evTitle" maxlength="60" placeholder="What's the plan? (e.g. Pool day, Abuela's birthday dinner)" style="display:none">
+        <input type="date" id="evDate">
+        <input type="time" id="evTime">
+        <button class="chat-send" id="evAdd">Add 📅</button>
+      </div>
+    </div>
+    <div id="schedList"></div>
   </section>
 
   </div>
@@ -653,6 +700,8 @@
     </div>
   </div>
 </div>
+
+<div class="toast" id="toast"></div>
 
 <button class="conc-fab" id="concFab" aria-label="Ziva concierge">🛎️<span class="fab-label">Concierge</span></button>
 <button class="chat-fab" id="chatFab" aria-label="Family chat">💬<span class="fab-badge" id="fabBadge">0</span></button>
@@ -952,6 +1001,7 @@ function closeFrame(){
 bookFrame.addEventListener("load",()=>{if(bookFrame.src!=="about:blank")document.getElementById("frameLoading").style.display="none"});
 document.getElementById("frameBack").addEventListener("click",closeFrame);
 document.getElementById("mCta").addEventListener("click",e=>{
+ if(mAct)autoSchedule(mAct); // booked from Olive -> lands on the family Schedule
  if(mAct&&mAct.embed){e.preventDefault();openFrame(mAct)}
 });
 
@@ -1212,6 +1262,124 @@ fab.addEventListener("click",()=>{location.hash="#/chat"});
 if(chatName)enterChat();
 chatHistory();chatSubscribe();
 
+/* ============ FAMILY SCHEDULE (shared via ntfy.sh) ============ */
+const EV_TOPIC="olive-cabo-events-x9k4t2-2026",EV_URL="https://ntfy.sh/"+EV_TOPIC;
+let evMap=new Map(Object.entries(store.get("events",{})));
+let lastSnapTs=0;
+function evWho(){
+ const c=(store.get("chat-name","")||"").trim();
+ if(c)return c;
+ const n=(store.get("conc-name","")||"").split(",")[0].trim();
+ return n||"Someone";
+}
+function saveEvents(){store.set("events",Object.fromEntries(evMap))}
+function applyEv(ev){
+ if(!ev||!ev.id)return false;
+ const cur=evMap.get(ev.id);
+ if(cur&&(cur.ts||0)>=(ev.ts||0))return false;
+ evMap.set(ev.id,ev);return true;
+}
+function handleEvMsg(raw){
+ try{
+  const j=JSON.parse(raw);if(j.event&&j.event!=="message")return;
+  const m=JSON.parse(j.message);
+  let changed=false;
+  if(m.k==="snap"){lastSnapTs=Math.max(lastSnapTs,m.ts||0);(m.evs||[]).forEach(e=>{if(applyEv(e))changed=true})}
+  else if(m.k==="ev"){if(applyEv(m))changed=true}
+  if(changed){saveEvents();renderSchedule()}
+ }catch(e){}
+}
+function publishEv(ev){
+ ev.ts=Date.now();
+ applyEv(ev);saveEvents();renderSchedule();
+ fetch(EV_URL,{method:"POST",body:JSON.stringify(ev)}).catch(()=>{});
+}
+/* keep the topic warm: ntfy only retains ~12h, so any device holding the schedule
+   re-broadcasts a full snapshot if none was seen recently — new phones catch up. */
+function maybeSnapshot(){
+ if(!evMap.size)return;
+ if(Date.now()-lastSnapTs<6*3600e3)return;
+ setTimeout(()=>{
+  if(Date.now()-lastSnapTs<6*3600e3)return;
+  lastSnapTs=Date.now();
+  fetch(EV_URL,{method:"POST",body:JSON.stringify({k:"snap",ts:lastSnapTs,evs:[...evMap.values()]})}).catch(()=>{});
+ },3000+Math.random()*8000);
+}
+fetch(EV_URL+"/json?poll=1&since=all").then(r=>r.text()).then(t=>{
+ t.split("\n").filter(Boolean).forEach(handleEvMsg);maybeSnapshot();
+}).catch(()=>{});
+let evES=null;
+function evSub(){
+ try{
+  evES=new EventSource(EV_URL+"/sse");
+  evES.onmessage=e=>handleEvMsg(e.data);
+  evES.onerror=()=>{evES.close();setTimeout(evSub,5000)};
+ }catch(e){}
+}
+evSub();
+
+function renderSchedule(){
+ const el=document.getElementById("schedList");if(!el)return;
+ const list=[...evMap.values()].filter(e=>!e.del&&e.d);
+ if(!list.length){el.innerHTML='<div class="sched-empty">🌵 Nothing on the schedule yet.<br>Add a plan above — or book an activity and it appears here automatically.</div>';return}
+ const byDate={};
+ list.forEach(e=>{(byDate[e.d]=byDate[e.d]||[]).push(e)});
+ const today=new Date().toLocaleDateString("en-CA");
+ el.innerHTML=Object.keys(byDate).sort().map(d=>{
+  const dt=new Date(d+"T12:00:00");
+  const isToday=d===today,past=d<today;
+  const label=isToday?"🌞 Today":dt.toLocaleDateString("en-US",{weekday:"long",month:"short",day:"numeric"});
+  const evs=byDate[d].sort((a,b)=>String(a.tm||"99:99").localeCompare(String(b.tm||"99:99")));
+  return `<div class="sched-day${isToday?" today":""}${past?" past":""}">
+   <div class="sd-head">${label}<span>${isToday?dt.toLocaleDateString("en-US",{month:"short",day:"numeric"}):""}</span></div>
+   ${evs.map(e=>`<div class="sd-ev">
+     <span class="sd-emoji">${e.e||"📌"}</span>
+     <div class="sd-body"><b>${esc(e.t||"")}</b>
+       <span class="sd-meta">${e.tm?"🕐 "+esc(e.tm)+" · ":""}${e.p?e.p+" people · ":""}by ${esc(e.by||"?")}${e.booked?' · <span class="sd-booked">📌 booked via Olive</span>':""}</span>
+     </div>
+     <button class="sd-del" data-evdel="${e.id}" aria-label="Remove">✕</button>
+   </div>`).join("")}
+  </div>`;
+ }).join("");
+}
+document.getElementById("schedList").addEventListener("click",e=>{
+ const b=e.target.closest("[data-evdel]");if(!b)return;
+ const ev=evMap.get(b.dataset.evdel);if(!ev)return;
+ publishEv({...ev,k:"ev",del:true});
+ toast("Removed from the schedule");
+});
+/* add-plan form */
+const evActSel=document.getElementById("evAct");
+evActSel.innerHTML='<option value="custom">✏️ Custom plan…</option>'+ACTIVITIES.map(a=>`<option value="${a.id}">${a.emoji} ${a.name}</option>`).join("");
+evActSel.addEventListener("change",()=>{document.getElementById("evTitle").style.display=evActSel.value==="custom"?"block":"none"});
+document.getElementById("evTitle").style.display="block";
+document.getElementById("evDate").value=store.get("trip-date","2026-07-04");
+document.getElementById("evAdd").addEventListener("click",()=>{
+ const sel=evActSel.value;
+ let t,em,act=null;
+ if(sel==="custom"){t=document.getElementById("evTitle").value.trim();em="📌";if(!t){toast("Type what the plan is first ✏️");return}}
+ else{const a=ACTIVITIES.find(x=>x.id===sel);t=a.name;em=a.emoji;act=a.id}
+ const d=document.getElementById("evDate").value;
+ if(!d){toast("Pick a date first 📅");return}
+ publishEv({k:"ev",id:"ev"+Date.now()+Math.random().toString(36).slice(2,6),t,e:em,d,tm:document.getElementById("evTime").value||null,by:evWho(),act});
+ document.getElementById("evTitle").value="";
+ toast("Added to the family schedule 📅");
+});
+/* auto-add when someone books from Olive */
+function autoSchedule(act){
+ const d=document.getElementById("mDate").value||store.get("trip-date","2026-07-04");
+ const dup=[...evMap.values()].some(ev=>!ev.del&&ev.act===act.id&&ev.d===d);
+ if(dup)return;
+ publishEv({k:"ev",id:"ev"+Date.now()+Math.random().toString(36).slice(2,6),t:act.name,e:act.emoji,d,tm:null,p:mPartyN,by:evWho(),act:act.id,booked:true});
+ toast("📅 Added to the family Schedule — everyone can see it");
+}
+let toastTimer=null;
+function toast(msg){
+ const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
+ clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),2800);
+}
+renderSchedule();
+
 /* ============ SCROLL PROGRESS ============ */
 const sb=document.getElementById("scrollbar");
 addEventListener("scroll",()=>{
@@ -1225,7 +1393,7 @@ document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
 
 /* ============ VIEW ROUTER (tabs) ============ */
 const navLinks=[...document.querySelectorAll("nav a[data-view]")];
-const VIEWS=["home","activities","chat","resort","tools"];
+const VIEWS=["home","activities","schedule","chat","resort","tools"];
 function showView(v){
  if(!VIEWS.includes(v))v="home";
  document.querySelectorAll(".view").forEach(el=>el.classList.toggle("active",el.id==="view-"+v));
