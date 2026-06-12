@@ -141,6 +141,7 @@
   .ct-resort{background:linear-gradient(140deg,#8a9a5b,#6b7c3f)}
   .ct-free{background:linear-gradient(140deg,#4a8fb5,#2f6e93)}
   .ct-food{background:linear-gradient(140deg,#f4a261,#e76f51)}
+  .ct-jade{background:linear-gradient(140deg,#c45ba2,#7b3f8f)}
   .card .cb{padding:9px 11px 11px;display:flex;flex-direction:column;gap:3px;flex:1}
   .card h3{font-size:.83rem;line-height:1.25;color:var(--olive-deep);font-family:var(--font-body);font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.1em}
   .card .c-price{font-size:.74rem;font-weight:700;color:var(--coral)}
@@ -399,6 +400,7 @@
     <a href="#/activities" data-view="activities">🏄 Activities</a>
     <a href="#/schedule" data-view="schedule">📅 Schedule</a>
     <a href="#/chat" data-view="chat">💬 Chat</a>
+    <a href="#/jade" data-view="jade">🏐 Jade's Corner</a>
     <a href="#/resort" data-view="resort">🏨 Home Base</a>
     <a href="#/tools" data-view="tools">🧳 Tools & Tips</a>
   </div>
@@ -475,7 +477,7 @@
         <br><button class="chat-send" id="chatJoinBtn">Join the Chat</button>
       </div>
       <div class="chat-msgs" id="chatMsgs" style="display:none">
-        <div class="chat-empty" id="chatEmpty">🌵 No messages yet today — say hola!<br><span style="font-size:.74rem;opacity:.8">Your phone keeps the messages it has seen; brand-new devices see the last 12 hours.</span></div>
+        <div class="chat-empty" id="chatEmpty">🌵 No messages yet today — say hola!<br><span style="font-size:.74rem;opacity:.8">Tip: I live in here too — say “Olive help” and I'll be your tour guide. 🫒 Your phone keeps the messages it has seen; brand-new devices see the last 12 hours.</span></div>
       </div>
       <div class="chat-input" id="chatInputRow" style="display:none">
         <input id="chatText" maxlength="500" placeholder="Message the fam…" autocomplete="off">
@@ -508,6 +510,57 @@
     </div>
     <div id="inboxBox"></div>
     <div id="schedList"></div>
+  </section>
+
+  </div>
+  <!-- ============ VIEW: JADE'S CORNER ============ -->
+  <div class="view" id="view-jade">
+
+  <section id="jade">
+    <div class="sec-head reveal"><h2>Jade's Corner</h2><span class="tag" style="background:#c45ba2">VIP · age 14</span></div>
+    <p class="sec-blurb reveal">Cabo, but make it iconic. 🏐 This page is all yours, Jade — and there's a little-sister section so the 8-year-old legend has the best week of her life too.</p>
+
+    <div class="conc-banner reveal" style="background:linear-gradient(140deg,#c45ba2,#7b3f8f)">
+      <div class="cb-icon">🏐</div>
+      <div class="cb-text">
+        <b>Beach volleyball HQ: Medano Beach</b>
+        <span>Public nets and pickup games most afternoons near the beach clubs — locals and visitors mix in, just walk up and call next. Morning games beat the heat; bring water and your A-game. The Ziva also runs beach & pool volleyball on its activities program — ask the activity crew at the palapa.</span>
+      </div>
+      <div class="c-btns"><button class="c-btn" style="background:#fff;color:#7b3f8f" data-actopen="medano">📍 Plan a Medano day</button></div>
+    </div>
+
+    <div class="two-col reveal" style="margin-top:14px">
+      <div class="widget">
+        <h3>😎 Jade's top picks</h3>
+        <div class="more-links" style="margin-top:4px">
+          <a href="javascript:void(0)" data-actopen="parasail">🪂 Parasailing</a>
+          <a href="javascript:void(0)" data-actopen="zip">🦅 Zipline canyon</a>
+          <a href="javascript:void(0)" data-actopen="banana">🍌 Banana boat</a>
+          <a href="javascript:void(0)" data-actopen="snorkeltour">🐠 Snorkel cruise</a>
+          <a href="javascript:void(0)" data-actopen="sunset">🌅 Pirate sunset cruise</a>
+        </div>
+        <p style="font-size:.78rem;color:var(--ink-soft);margin-top:12px">🎉 <b>Teen Club at the Ziva</b> — brand new from the 2025 renovation, made exactly for your age group. Best place on property to find people who aren't your parents.</p>
+        <p style="font-size:.78rem;color:var(--ink-soft);margin-top:8px">📸 <b>Photo-op circuit:</b> Arch selfie from the water taxi · Lover's Beach · the marina sign at golden hour · fairy lights at Flora Farms · sunset silhouettes on the beach walk.</p>
+      </div>
+      <div class="widget">
+        <h3>🦄 Little Sis HQ (age 8)</h3>
+        <ul style="font-size:.86rem;padding-left:20px;display:flex;flex-direction:column;gap:8px">
+          <li><b>KidZ Club mini waterpark</b> — five slides, included, all day 🛝</li>
+          <li><b>Glass-bottom boat</b> — count the fish under your feet on the way to the Arch 🐟</li>
+          <li><b>Banana boat</b> with the whole family (she's over the age-5 minimum) 🍌</li>
+          <li><b>Turtle patrol</b> — July is nesting season; spot the marked nests on a beach walk (look, never touch) 🐢</li>
+          <li><b>Big-sister training:</b> Jade teaches her a volleyball serve at Medano = core memory 🏐</li>
+        </ul>
+        <div class="more-links" style="margin-top:10px"><a href="javascript:void(0)" data-actopen="kidz">🛝 KidZ Club</a><a href="javascript:void(0)" data-actopen="arch">⛵ Glass-bottom boat</a></div>
+      </div>
+    </div>
+
+    <div class="widget reveal" style="margin-top:14px">
+      <h3>🏆 Jade's Cabo Quest <span style="font-size:.72rem;color:var(--ink-soft);font-weight:400">— saves itself on this phone</span></h3>
+      <div class="pack-progress"><div id="jadeBar"></div></div>
+      <div class="pack-pct" id="jadePct">0% legendary</div>
+      <div class="pack-cols" id="jadeList"></div>
+    </div>
   </section>
 
   </div>
@@ -892,6 +945,7 @@ function wmo(c){return WMO[c]||["🌞","Sunny-ish"]}
 fetch("https://api.open-meteo.com/v1/forecast?latitude=22.89&longitude=-109.91&current=temperature_2m,weather_code&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weather_code&temperature_unit=fahrenheit&timezone=America%2FMazatlan&forecast_days=6")
  .then(r=>r.json()).then(j=>{
    const[e,label]=wmo(j.current.weather_code);
+   window.oliveWx={now:Math.round(j.current.temperature_2m),label,hi:Math.round(j.daily.temperature_2m_max[0]),rain:j.daily.precipitation_probability_max[0]};
    document.getElementById("wTemp").textContent=Math.round(j.current.temperature_2m)+"°F";
    document.getElementById("wCond").textContent=e+" "+label;
    const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -1210,6 +1264,36 @@ packEl.addEventListener("change",e=>{
 });
 packBar();
 
+/* ============ JADE'S CORNER ============ */
+const JADE_QUESTS=[
+ "🏐 Spike a volleyball at Medano Beach","🤳 Nail the Arch selfie from the water taxi",
+ "🐠 Spot 5 different fish at Chileno Bay","🗣️ Order in Spanish without pointing",
+ "🧋 Try an agua fresca you can't pronounce","🎉 Make a friend at the Teen Club",
+ "🌇 Golden-hour photoshoot on the beach walk","🪂 Get the parents to approve parasailing",
+ "🐢 Find a marked turtle nest (look, don't touch)","👯 Teach little sis a volleyball serve",
+ "🌮 Win the family taco-ranking debate","💃 Learn one dance move from the resort crew"
+];
+let jadeDone=store.get("jade-quests",[]);
+const jadeEl=document.getElementById("jadeList");
+jadeEl.innerHTML=JADE_QUESTS.map((q,i)=>`<label class="pack-item${jadeDone.includes(i)?" done":""}"><input type="checkbox" data-i="${i}" ${jadeDone.includes(i)?"checked":""}><span>${q}</span></label>`).join("");
+function jadeBar(){
+ const pct=Math.round(jadeDone.length/JADE_QUESTS.length*100);
+ document.getElementById("jadeBar").style.width=pct+"%";
+ document.getElementById("jadePct").textContent=pct===100?"💯 LEGENDARY. Best vacation confirmed. 🏆":pct+"% legendary";
+}
+jadeEl.addEventListener("change",e=>{
+ const i=+e.target.dataset.i;
+ jadeDone=e.target.checked?[...jadeDone,i]:jadeDone.filter(x=>x!==i);
+ store.set("jade-quests",jadeDone);
+ e.target.closest(".pack-item").classList.toggle("done",e.target.checked);
+ jadeBar();
+});
+jadeBar();
+document.getElementById("view-jade").addEventListener("click",e=>{
+ const b=e.target.closest("[data-actopen]");
+ if(b)openModal(b.dataset.actopen);
+});
+
 /* ============ PHRASES ============ */
 let pIdx=0;
 function showPhrase(){
@@ -1286,6 +1370,9 @@ document.getElementById("chatJoinBtn").addEventListener("click",()=>{
  if(!v)return;
  chatName=v;store.set("chat-name",v);enterChat();
  sendChat("👋 "+chatName+" joined the Cabo crew chat!");
+ setTimeout(()=>postOlive(isOG(chatName)
+  ?"Well, well… OG made it. Hide the karaoke mic and somebody guard the tequila. Welcome aboard, legend. 😂"
+  :"¡Bienvenido, "+chatName+"! I'm Olive, your pocket tour guide 🫒 Ask me anything — try “Olive help”."),1300);
 });
 document.getElementById("chatNameInput").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("chatJoinBtn").click()});
 document.getElementById("chatWho").addEventListener("click",()=>{
@@ -1296,10 +1383,80 @@ document.getElementById("chatWho").addEventListener("click",()=>{
 function sendChat(text){
  fetch(CHAT_URL,{method:"POST",body:JSON.stringify({n:chatName,x:text})}).catch(()=>{});
 }
+/* ---- Olive the tour-guide bot (replies are generated on the SENDER's device,
+       so there's exactly one Olive answer no matter how many phones are open) ---- */
+function postOlive(x){fetch(CHAT_URL,{method:"POST",body:JSON.stringify({n:"Olive 🫒",x})}).catch(()=>{})}
+const isOG=n=>/^og\b/i.test((n||"").trim());
+const OG_ROASTS=[
+ "OG has spoken, everyone. Same confidence as the 'I don't need sunscreen' speech. We all remember the lobster years. 🦞",
+ "Noted, OG. Adding it to the pile right next to your plan to 'out-paddle the banana boat.' 😂",
+ "Bold words from the man who's about to call a 30-minute boat ride 'open ocean survival.' ⛵😏",
+ "Everyone heard OG. Nobody panic — the kids are supervising him. 🤭",
+ "Sure, OG. And the marlin you'll catch will be 'this big' 🙆 too, right?",
+ "OG, mi amigo, the tequila tasting is meant to be SIPPED. We will review the rules on the bus. 🥃",
+ "Statement received, OG. The committee (everyone) votes you carry the cooler today. 🧊",
+ "OG talking strategy again — last 'shortcut' added forty minutes and one very confused chicken. 🐔"
+];
+function nextRoast(){
+ let i=store.get("og-roast-i",0);
+ store.set("og-roast-i",i+1);
+ return OG_ROASTS[i%OG_ROASTS.length];
+}
+function todayAgendaLine(){
+ const today=new Date().toLocaleDateString("en-CA");
+ const evs=[...evMap.values()].filter(e=>!e.del&&!e.inbox&&e.k!=="vote"&&e.d===today)
+  .sort((a,b)=>String(a.tm||"99").localeCompare(String(b.tm||"99")));
+ if(!evs.length)return null;
+ return evs.map(e=>`${e.e||"📌"} ${e.t}${e.tm?" at "+e.tm:""}`).join(" · ");
+}
+function oliveReply(raw){
+ const t=raw.toLowerCase();
+ if(!/\bolive\b|🫒/.test(t))return null;
+ const wx=window.oliveWx;
+ if(/\bhelp\b|what can you do/.test(t))
+  return "At your service! Try: “Olive, what's the weather?” · “Olive, where should we eat?” · “Olive, what's today's plan?” · “Olive, I'm bored” · “Olive, how do I say thank you in Spanish?” · “Olive, snorkeling?” 🫒";
+ if(/weather|hot|rain|forecast|temperature/.test(t))
+  return wx?`Right now: ${wx.now}°F and ${wx.label.toLowerCase()}. Today's high ${wx.hi}°F, ${wx.rain}% shower chance. Water in the morning, pool at midday, town at night — trust the rhythm. 🌞`
+   :"Classic July Cabo: ~91°F sunny days, 80°F ocean, maybe a 20-minute evening shower. Mornings on the water, midday in the shade! 🌞";
+ if(/eat|food|dinner|lunch|hungry|restaurant|taco/.test(t))
+  return "Easy fixes for a hungry crew: 🌮 Tacos Gardenias ($8–15, the real thing), 🦶 The Office for a toes-in-sand sunset dinner, 🥗 Flora Farms for the magical farm night (book ahead!) — or stay home, seven Ziva restaurants are already paid for. Want a table? Tap 🛎️ Concierge.";
+ if(/today|plan for|schedule|agenda|tonight/.test(t)){
+  const a=todayAgendaLine();
+  return a?`On the books today: ${a}. Full details in 📅 Schedule!`:"Nothing on the schedule today — that's either a pool day or a chance to be a hero: open 🏄 Activities and make a play. 📅";
+ }
+ if(/snorkel|swim|beach day/.test(t))
+  return "Chileno Bay before 10 am is THE move — calm, clear, sea turtles. Medano is the swimmable town beach with roped-off zones for the kids. Our resort beach = gorgeous walks only, strong waves! 🤿";
+ if(/taxi|uber|get to|how far|transport/.test(t))
+  return "Cabo San Lucas marina/Medano is ~30–40 min: taxi ≈ $30–50 each way (agree on the fare first!) or Uber works here. Most tours pick up free at or near the Ziva — always ask when booking. 🚕";
+ if(/\bbook|reserve|reservation/.test(t))
+  return "Open 🏄 Activities, tap anything, hit Book — most reservations start right inside me. Prefer humans? 🛎️ Concierge writes itself. Booked somewhere else? Forward the confirmation email to my schedule inbox (📅 Schedule tab has the address). 📩";
+ if(/volleyball|jade/.test(t))
+  return "🏐 Jade! Medano Beach has pickup volleyball most afternoons by the beach clubs — walk up and call next. The Ziva runs beach & pool games too, and the new Teen Club is your headquarters. Full plan in 🏐 Jade's Corner!";
+ if(/kid|little one|club/.test(t))
+  return "KidZ Club (ages 4–12): five-slide mini waterpark, games, crafts — included, supervised, gloriously air-conditioned at midday. Teens get their own club too. Drop-off + adults-only pool = parent paradise. 🛝";
+ if(/bored|what should we do|ideas|something fun/.test(t)){
+  const pool=ACTIVITIES.filter(a=>a.cat==="water"||a.cat==="land");
+  const p=pool[Math.floor(Math.random()*pool.length)];
+  return `Bored? In CABO?? Fine: ${p.emoji} ${p.name} (${p.priceLabel}) — morning slot, you'll thank me. Or hit 🎲 Roll a Perfect Day on my Home tab. `;
+ }
+ if(/spanish|how do (you|i|we) say/.test(t)){
+  const[es,en]=PHRASES[Math.floor(Math.random()*PHRASES.length)];
+  return `Today's Spanish: “${es}” — ${en}. Use it once before sunset, that's the rule. 🗣️`;
+ }
+ if(/sunset/.test(t))
+  return "Sunset menu: 🌅 Buccaneer Queen pirate cruise (~$99, kids lose their minds), ⚓ free marina stroll at 6 pm, or 🦶 a sand-table dinner at The Office. You can't pick wrong. 🌇";
+ if(/tip|pesos|money|exchange/.test(t))
+  return "Money quickies: 15–20% at restaurants, 10–15% for boat crews, $3–5/day housekeeping. USD works everywhere but pesos haggle better. Full cheat sheet in 🧳 Tools & Tips. 💵";
+ return "¡Hola! I do weather, food, today's plan, snorkeling, taxis, bookings, volleyball intel and emergency Spanish — say “Olive help” for the menu. 🫒";
+}
 document.getElementById("chatSendBtn").addEventListener("click",()=>{
  const inp=document.getElementById("chatText"),v=inp.value.trim();
  if(!v||!chatName)return;
  inp.value="";sendChat(v);
+ const reply=oliveReply(v);
+ const roast=isOG(chatName)?nextRoast():null;
+ if(reply)setTimeout(()=>postOlive(reply),900);
+ if(roast)setTimeout(()=>postOlive(roast),reply?2300:1100);
 });
 document.getElementById("chatText").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("chatSendBtn").click()});
 fab.addEventListener("click",()=>{location.hash="#/chat"});
@@ -1506,7 +1663,7 @@ document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
 
 /* ============ VIEW ROUTER (tabs) ============ */
 const navLinks=[...document.querySelectorAll("nav a[data-view]")];
-const VIEWS=["home","activities","schedule","chat","resort","tools"];
+const VIEWS=["home","activities","schedule","chat","jade","resort","tools"];
 function showView(v){
  if(!VIEWS.includes(v))v="home";
  document.querySelectorAll(".view").forEach(el=>el.classList.toggle("active",el.id==="view-"+v));
