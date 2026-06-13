@@ -394,6 +394,9 @@
   .chat-join{padding:26px;text-align:center;background:var(--sand)}
   .chat-join input{border:1.5px solid var(--sand-dark);border-radius:99px;padding:12px 18px;font-family:var(--font-body);font-size:1rem;background:var(--cream);width:min(280px,80%);text-align:center;outline:none;margin:12px 0}
   .chat-note{font-size:.72rem;color:var(--ink-soft);padding:10px 18px 14px;background:var(--cream);text-align:center}
+  .chat-chips{display:flex;gap:6px;overflow-x:auto;padding:0 16px 12px;background:var(--cream)}
+  .chat-chips button{border:1.5px solid var(--sand-dark);background:var(--sand);color:var(--olive-dark);border-radius:99px;padding:7px 13px;font-family:var(--font-body);font-weight:700;font-size:.74rem;cursor:pointer;flex-shrink:0;transition:.15s}
+  .chat-chips button:hover{background:var(--olive);border-color:var(--olive);color:var(--cream)}
   .chat-fab{position:fixed;right:16px;bottom:86px;z-index:45;background:linear-gradient(140deg,var(--olive),var(--olive-dark));color:var(--cream);border:none;border-radius:99px;padding:13px 17px;font-size:1.15rem;cursor:pointer;box-shadow:var(--shadow-lg);transition:.18s}
   .chat-fab:hover{transform:scale(1.08)}
   .chat-fab .fab-badge{position:absolute;top:-5px;right:-4px;background:var(--coral);color:#fff;font-size:.66rem;font-weight:800;font-family:var(--font-body);border-radius:99px;min-width:20px;height:20px;display:none;align-items:center;justify-content:center;padding:0 5px}
@@ -523,6 +526,14 @@
       <div class="chat-input" id="chatInputRow" style="display:none">
         <input id="chatText" maxlength="500" placeholder="Message the fam…" autocomplete="off">
         <button class="chat-send" id="chatSendBtn">Send</button>
+      </div>
+      <div class="chat-chips" id="chatChips" style="display:none">
+        <button data-ask="Olive, what's today's plan?">📅 Today</button>
+        <button data-ask="Olive, where should we eat tonight?">🍽️ Eat</button>
+        <button data-ask="Olive, what's the weather?">☀️ Weather</button>
+        <button data-ask="Olive, when is sunset?">🌅 Sunset</button>
+        <button data-ask="Olive, tell us a joke">😂 Joke</button>
+        <button data-ask="Olive, we're bored — surprise us">🎲 Surprise</button>
       </div>
       <div class="chat-note">🔒 Only people with Olive's link can find this chat room, and only those who join get messages. Don't share passwords or card numbers here.</div>
     </div>
@@ -1051,7 +1062,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v16-2026-06-11";
+const OLIVE_BUILD="v17-2026-06-11";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -1805,9 +1816,15 @@ function chatSubscribe(){
 }
 function enterChat(){
  joinEl.style.display="none";msgsEl.style.display="flex";inputRow.style.display="flex";
+ document.getElementById("chatChips").style.display="flex";
  document.getElementById("chatWho").textContent="You are: "+chatName+" ✏️";
  renderChat();
 }
+document.getElementById("chatChips").addEventListener("click",e=>{
+ const b=e.target.closest("[data-ask]");if(!b)return;
+ document.getElementById("chatText").value=b.dataset.ask;
+ document.getElementById("chatSendBtn").click();
+});
 document.getElementById("chatJoinBtn").addEventListener("click",()=>{
  const v=document.getElementById("chatNameInput").value.trim();
  if(!v)return;
@@ -1821,6 +1838,7 @@ document.getElementById("chatNameInput").addEventListener("keydown",e=>{if(e.key
 document.getElementById("chatWho").addEventListener("click",()=>{
  store.set("chat-name","");chatName="";
  msgsEl.style.display="none";inputRow.style.display="none";joinEl.style.display="block";
+ document.getElementById("chatChips").style.display="none";
  document.getElementById("chatWho").textContent="";
 });
 function sendChat(text){
@@ -1865,7 +1883,7 @@ function oliveReply(raw){
  const wx=window.oliveWx;
  if(/\bhelp\b|what can you do/.test(t))
   return "At your service! Try: “Olive, what's the weather?” · “Olive, where should we eat?” · “Olive, what's today's plan?” · “Olive, I'm bored” · “Olive, how do I say thank you in Spanish?” · “Olive, snorkeling?” 🫒";
- if(/weather|hot|rain|forecast|temperature/.test(t))
+ if(/\bweather\b|\bhot\b|\brain(y|ing)?\b|forecast|temperature/.test(t))
   return wx?`Right now: ${wx.now}°F and ${wx.label.toLowerCase()}. Today's high ${wx.hi}°F, ${wx.rain}% shower chance. Water in the morning, pool at midday, town at night — trust the rhythm. 🌞`
    :"Classic July Cabo: ~91°F sunny days, 80°F ocean, maybe a 20-minute evening shower. Mornings on the water, midday in the shade! 🌞";
  if(/eat|food|dinner|lunch|hungry|restaurant|taco/.test(t))
@@ -1882,7 +1900,11 @@ function oliveReply(raw){
   return "Open 🏄 Activities, tap anything, hit Book — most reservations start right inside me. Prefer humans? 🛎️ Concierge writes itself. Booked somewhere else? Forward the confirmation email to my schedule inbox (📅 Schedule tab has the address). 📩";
  if(/volleyball|jade/.test(t))
   return "🏐 Jade! Medano Beach has pickup volleyball most afternoons by the beach clubs — walk up and call next. The Ziva runs beach & pool games too, and the new Teen Club is your headquarters. Full plan in 🏐 Jade's Corner!";
- if(/kid|little one|club/.test(t))
+ if(/how old|age limit|(can|should) (the )?(kids?|littles?)\b/.test(t)){
+  for(const[kw,id]of ACT_KEYWORDS){if(t.includes(kw)){const a=ACTIVITIES.find(x=>x.id===id);if(a)return `${a.emoji} ${a.name}: ages ${a.ages}. 💡 ${a.tip}`}}
+  return "Quick age guide: water tours ~5–6+, zipline ~8+, ATV drivers 16+, dolphins 4+ with an adult, KidZ Club 4–12. Every tile in 🏄 Activities shows its age line. 👶➡️🧓";
+ }
+ if(/kidz|kids? club|little ones?\b|\bclub\b/.test(t))
   return "KidZ Club (ages 4–12): five-slide mini waterpark, games, crafts — included, supervised, gloriously air-conditioned at midday. Teens get their own club too. Drop-off + adults-only pool = parent paradise. 🛝";
  if(/bored|what should we do|ideas|something fun/.test(t)){
   const pool=ACTIVITIES.filter(a=>a.cat==="water"||a.cat==="land");
@@ -1919,7 +1941,55 @@ function oliveReply(raw){
    if(a)return `${a.emoji} ${a.name}: ${a.priceLabel} · ${a.dur} · ${a.ages}. 💡 ${a.tip} Tap 🏄 Activities to vote, plan or book it.`;
   }
  }
- return null; /* no specific intent — the handler falls back to the wit engine */
+ /* question-aware answers */
+ if(/what time is it|current time|time in cabo/.test(t))
+  return "It's "+new Date().toLocaleTimeString("en-US",{timeZone:"America/Mazatlan",hour:"numeric",minute:"2-digit"})+" in Cabo right now (same as Arizona time — no DST games). 🕐";
+ if(/wi-?fi|internet/.test(t))
+  return "Wi-Fi is included at the Ziva — resort-wide, ask the front desk for the network at check-in. Beach clubs at Medano usually have it too. 📶";
+ if(/\batm\b|cash|where.*pesos/.test(t))
+  return "ATMs: resort lobby (easiest) and all over downtown. Cards work almost everywhere; carry small pesos for tips and beach vendors. Avoid the sketchy standalone street ATMs. 💳";
+ if(/pick.?up|what time.*(tour|boat|leave|bus)|meet(ing)? time/.test(t))
+  return "Most tours pick up 7:30–8:30 am at the Ziva lobby — the exact time is on your booking confirmation. Budget 15 extra minutes of family-finding-their-sunglasses time. ⏰";
+ if(/passport|documents/.test(t))
+  return "Passports live in the room safe the whole trip — nobody needs them for tours. Photos of them on your phone = smart backup. 🛂";
+ if(/how old|age limit|(can|should) (the )?(kids|little)/.test(t)){
+  for(const[kw,id]of ACT_KEYWORDS){if(t.includes(kw)){const a=A?A(id):ACTIVITIES.find(x=>x.id===id);if(a)return `${a.emoji} ${a.name}: ages ${a.ages}. 💡 ${a.tip}`}}
+  return "Quick age guide: water tours ~5–6+, zipline ~8+, ATV drivers 16+, dolphins 4+ with an adult, KidZ Club 4–12. Every tile in 🏄 Activities shows its age line. 👶➡️🧓";
+ }
+ if(/how far|distance|how long.*(drive|ride)/.test(t))
+  return "From the Ziva: downtown San José 10 min · airport 20 min · Cabo San Lucas marina/Medano 30–40 min. Taxi to Cabo ≈ $30–50 (agree first) or Uber. 🚗";
+ if(/where('| i)?s |where is /.test(t)){
+  for(const[kw,id]of ACT_KEYWORDS){if(t.includes(kw)){const a=ACTIVITIES.find(x=>x.id===id);if(a)return `${a.emoji} ${a.name} — open it in 🏄 Activities and tap Map ↗ for directions. (Search: ${a.map}.)`}}
+ }
+ return null; /* no specific intent — the handler decides: AI for questions, wit for banter */
+}
+function isQuestion(s){return /\?\s*$/.test(s)||/^(what|when|where|who|why|how|can|could|should|is|are|do|does|will|any)\b/i.test(s.trim())}
+async function oliveAI(userMsg){
+ const wx=window.oliveWx,today=todayAgendaLine();
+ const recent=chatCache.slice(-6).map(m=>m.n+": "+m.x).join("\n");
+ const sys="You are Olive 🫒, the witty, warm, very funny tour-guide bot living inside a family's Cabo San Lucas vacation app. The family ('the Cabo Crew') stays at Hyatt Ziva Los Cabos (all-inclusive, San José del Cabo); trip starts July 18 2026. "
+  +(wx?`Weather now ${wx.now}°F ${wx.label}, high ${wx.hi}°F${wx.sunset?", sunset "+wx.sunset:""}. `:"")
+  +(today?`Today's family schedule: ${today}. `:"Nothing on today's schedule. ")
+  +"Bookable in the app: snorkel cruise $89, pirate sunset cruise $99, parasail $80, camel $109, ATV $99, zipline $95, horseback $80, dolphins $139, fishing charter $400-800/boat. Resort beach is NOT swimmable; swim at Chileno Bay or Medano. Taxi to Cabo $30-50, tours pick up at the resort. One family member is 'OG' — tease him lovingly when relevant. Family-friendly always. Answer the sender by name in under 55 words with personality and emoji. Never invent bookings or prices not listed.";
+ const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),7000);
+ try{
+  const r=await fetch("https://text.pollinations.ai/openai",{method:"POST",signal:ctl.signal,
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({model:"openai",max_tokens:130,messages:[
+    {role:"system",content:sys},
+    {role:"user",content:(recent?"Recent chat:\n"+recent+"\n\n":"")+chatName+" says: "+userMsg}]})});
+  clearTimeout(timer);
+  const j=await r.json();
+  const out=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
+  return out&&out.trim().length>1?out.trim().slice(0,420):null;
+ }catch(e){clearTimeout(timer);return null}
+}
+const HONEST_TIPS=[
+ "morning ocean is calmest before 10am","pesos haggle better than dollars","the concierge can book literally anything",
+ "golden hour is the only photography meeting that matters","hydrate before you celebrate"
+];
+function honestAnswer(){
+ return "Honest answer: that one's not in my guidebook! 📖 The 🛎️ Concierge button knows everything (real humans, fast). Free wisdom meanwhile: "+HONEST_TIPS[Math.floor(Math.random()*HONEST_TIPS.length)]+". 🫒";
 }
 /* ---- the wit engine: Olive answers EVERY message ---- */
 const OLIVE_QUIPS=[
@@ -1961,15 +2031,23 @@ document.getElementById("chatSendBtn").addEventListener("click",()=>{
  const inp=document.getElementById("chatText"),v=inp.value.trim();
  if(!v||!chatName)return;
  inp.value="";sendChat(v);
- /* Olive replies to EVERY message. Real questions get real answers;
-    everything else gets the wit engine — and OG gets the roast treatment. */
+ /* Olive replies to EVERY message:
+    1. known topics -> instant local answer
+    2. other QUESTIONS -> real AI (free, no key) with live trip context; honest fallback if unreachable
+    3. banter -> wit engine. OG always gets the roast treatment on top. */
  const intent=oliveReply(v);
- if(isOG(chatName)){
-  if(intent){setTimeout(()=>postOlive(intent),800);setTimeout(()=>postOlive(nextRoast()),2400)}
-  else setTimeout(()=>postOlive(nextRoast()),900);
+ const og=isOG(chatName);
+ if(intent){
+  setTimeout(()=>postOlive(intent),800);
+  if(og)setTimeout(()=>postOlive(nextRoast()),2500);
+ }else if(isQuestion(v)){
+  oliveAI(v).then(ai=>{
+   postOlive(ai||honestAnswer());
+   if(og)setTimeout(()=>postOlive(nextRoast()),1600);
+  });
  }else{
-  const reply=intent||wittyFallback(v);
-  setTimeout(()=>postOlive(reply),700+Math.floor(Math.random()*600));
+  if(og)setTimeout(()=>postOlive(nextRoast()),900);
+  else setTimeout(()=>postOlive(wittyFallback(v)),700+Math.floor(Math.random()*600));
  }
 });
 document.getElementById("chatText").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("chatSendBtn").click()});
