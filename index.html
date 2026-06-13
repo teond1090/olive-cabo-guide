@@ -143,6 +143,7 @@
   .ct-free{background:linear-gradient(140deg,#4a8fb5,#2f6e93)}
   .ct-food{background:linear-gradient(140deg,#f4a261,#e76f51)}
   .ct-jade{background:linear-gradient(140deg,#c45ba2,#7b3f8f)}
+  #arModels a.ar-on{background:#c45ba2;border-color:#c45ba2;color:#fff}
   .jade-stickers{font-size:1.7rem;letter-spacing:.32em;text-align:center;margin:14px 0 0;filter:drop-shadow(0 2px 3px rgba(123,63,143,.25))}
   .caption-out{background:rgba(255,255,255,.18);border-radius:14px;padding:16px 14px;font-weight:800;font-size:1.05rem;text-align:center;min-height:3.2em;display:flex;align-items:center;justify-content:center}
   .gh-time{font-family:var(--font-display);font-size:2.3rem;font-weight:700;color:var(--coral);line-height:1.1;margin-bottom:6px}
@@ -279,8 +280,16 @@
   .booth-stickers{display:flex;gap:6px;overflow-x:auto;padding:10px 14px;background:#181818}
   .booth-stickers button{border:none;background:#2a2a2a;border-radius:12px;font-size:1.7rem;padding:8px 12px;cursor:pointer;flex-shrink:0;transition:.15s}
   .booth-stickers button:hover{background:#3a3a3a;transform:scale(1.1)}
-  .booth-actions{display:flex;align-items:center;gap:14px;padding:10px 16px 18px;background:#181818;color:#aaa;flex-wrap:wrap}
+  .booth-actions{display:flex;align-items:center;gap:8px;padding:10px 14px 8px;background:#181818;color:#aaa;flex-wrap:wrap}
   .booth-actions .chat-send{margin-left:auto}
+  .booth-actions .bx{border:none;background:#2a2a2a;color:#ddd;border-radius:99px;padding:9px 13px;font-family:var(--font-body);font-weight:700;font-size:.76rem;cursor:pointer;transition:.15s}
+  .booth-actions .bx:hover{background:#3a3a3a}
+  .booth-actions .bx.on{background:var(--coral);color:#fff}
+  .booth-filters{display:flex;gap:6px;overflow-x:auto;padding:10px 14px 4px;background:#181818}
+  .booth-filters button{border:1.5px solid #3a3a3a;background:transparent;color:#ccc;border-radius:99px;padding:7px 14px;font-family:var(--font-body);font-weight:700;font-size:.74rem;cursor:pointer;flex-shrink:0;transition:.15s}
+  .booth-filters button.on{background:var(--coral);border-color:var(--coral);color:#fff}
+  .booth-count{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-family:var(--font-display);font-size:7rem;font-weight:700;color:#fff;text-shadow:0 4px 24px rgba(0,0,0,.6);pointer-events:none}
+  .booth-stage .stk.txt{font-family:var(--font-display);font-weight:700;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.55),0 0 14px rgba(0,0,0,.35);white-space:nowrap;font-size:30px}
 
   /* ---------- Concierge banner + FAB ---------- */
   .conc-banner{background:linear-gradient(140deg,var(--olive-dark),var(--olive-deep));border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;color:var(--cream);margin-top:16px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
@@ -634,13 +643,18 @@
     <div class="two-col reveal">
       <div class="widget" style="padding:14px">
         <h3 style="padding:0 10px">🚀 Drop a 3D friend on the beach</h3>
-        <model-viewer src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
+        <div class="more-links" style="padding:8px 10px 6px" id="arModels">
+          <a href="javascript:void(0)" data-armodel="astro" class="ar-on">👨‍🚀 Astronaut</a>
+          <a href="javascript:void(0)" data-armodel="horse">🐎 Horse</a>
+          <a href="javascript:void(0)" data-armodel="rocket">🚀 Rocket</a>
+        </div>
+        <model-viewer id="arViewer" src="https://modelviewer.dev/shared-assets/models/Astronaut.glb"
           ios-src="https://modelviewer.dev/shared-assets/models/Astronaut.usdz"
           ar ar-modes="webxr scene-viewer quick-look" camera-controls auto-rotate
-          style="width:100%;height:260px;border-radius:14px;background:var(--sand)" alt="3D astronaut">
+          style="width:100%;height:260px;border-radius:14px;background:var(--sand)" alt="3D model">
           <button slot="ar-button" class="book-btn" style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%)">👀 View in YOUR space (AR)</button>
         </model-viewer>
-        <p style="font-size:.74rem;color:var(--ink-soft);padding:8px 10px 0">Spin him with your finger — then tap the AR button on your phone and he stands in the actual room (or on the actual beach) through your camera. Photo-op gold. 📸</p>
+        <p style="font-size:.74rem;color:var(--ink-soft);padding:8px 10px 0">Spin with your finger, then tap the AR button — it stands in the actual room (or on the actual beach) through your camera. Photo-op gold. 📸 <i>(On iPhone the astronaut is the best AR citizen.)</i></p>
       </div>
       <div class="widget" style="background:linear-gradient(150deg,#c45ba2,#7b3f8f);color:#fff;display:flex;flex-direction:column;justify-content:center">
         <h3 style="color:#fff">🤳 AR Photo Booth</h3>
@@ -847,13 +861,18 @@
   <div class="booth-stage" id="boothStage">
     <video id="boothVideo" autoplay playsinline muted></video>
     <div class="booth-msg" id="boothMsg">Allow camera access to start…</div>
+    <div class="booth-count" id="boothCount"></div>
   </div>
+  <div class="booth-filters" id="boothFilters"></div>
   <div class="booth-stickers" id="boothStickers"></div>
   <div class="booth-actions">
-    <span style="font-size:.7rem;opacity:.8">tap a sticker to add · drag to move · double-tap to grow</span>
+    <button class="bx" id="boothText">✍️ Caption</button>
+    <button class="bx" id="boothFrame">🖼️ Frame: off</button>
+    <button class="bx" id="boothTimer">⏱️ 3s</button>
+    <button class="bx" id="boothClear">🧹 Clear</button>
     <button class="chat-send" id="boothSnap">📸 Snap</button>
-    <button class="ev-cancel" id="boothClear" style="display:inline">clear stickers</button>
   </div>
+  <div style="background:#181818;color:#888;font-size:.66rem;text-align:center;padding:0 14px 12px">tap a sticker to add · drag to move · double-tap to grow</div>
 </div>
 
 <!-- IN-OLIVE BOOKING FRAME -->
@@ -1032,7 +1051,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v15-2026-06-11";
+const OLIVE_BUILD="v16-2026-06-11";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -1521,6 +1540,15 @@ jadeBar();
 document.getElementById("view-jade").addEventListener("click",e=>{
  const b=e.target.closest("[data-actopen]");
  if(b)openModal(b.dataset.actopen);
+ const m=e.target.closest("[data-armodel]");
+ if(m){
+  const MV={astro:["Astronaut.glb","Astronaut.usdz"],horse:["Horse.glb",null],rocket:["RocketShip.glb",null]}[m.dataset.armodel];
+  const v=document.getElementById("arViewer");
+  v.src="https://modelviewer.dev/shared-assets/models/"+MV[0];
+  if(MV[1])v.setAttribute("ios-src","https://modelviewer.dev/shared-assets/models/"+MV[1]);
+  else v.removeAttribute("ios-src");
+  document.querySelectorAll("#arModels a").forEach(a=>a.classList.toggle("ar-on",a===m));
+ }
 });
 const CAPTIONS=[
  "Tan lines & good times 🌅","Salty hair, don't care 🌊","Cabo math: sunscreen + tacos = happiness 🌮",
@@ -1543,10 +1571,65 @@ document.getElementById("captionCopy").addEventListener("click",()=>{
 });
 
 /* ============ AR PHOTO BOOTH ============ */
-const BOOTH_STICKERS=["🤠","🕶️","🌮","🏐","🫒","🐬","🦜","🍹","⭐","😎","👑","🔥","🌅","🦞"];
+const BOOTH_STICKERS=["🤠","🕶️","🌮","🏐","🫒","🐬","🦜","🍹","⭐","😎","👑","🔥","🌅","🦞","💖","✌️","🤙","🌺","🦩","🍍","😜","🫶"];
+/* filters: css for live preview; px params for baking on iPhones (no canvas filter support) */
+const BOOTH_FILTERS=[
+ {n:"Normal",css:"none",px:null},
+ {n:"Golden",css:"saturate(1.3) sepia(.2) brightness(1.06)",px:{sat:1.3,sep:.2,bri:1.06}},
+ {n:"Vivid",css:"saturate(1.65) contrast(1.12)",px:{sat:1.65,con:1.12}},
+ {n:"Vintage",css:"sepia(.45) saturate(.85) brightness(1.05)",px:{sep:.45,sat:.85,bri:1.05}},
+ {n:"Noir",css:"grayscale(1) contrast(1.18)",px:{gray:1,con:1.18}},
+ {n:"Cool",css:"saturate(1.12) hue-rotate(-12deg)",px:{sat:1.12,cool:.12}},
+];
+let boothFilter=0,boothFrameOn=false;
 const booth=document.getElementById("booth"),boothVideo=document.getElementById("boothVideo"),boothStage=document.getElementById("boothStage");
 let boothStream=null,boothFacing="user";
 document.getElementById("boothStickers").innerHTML=BOOTH_STICKERS.map(s=>`<button data-stk="${s}">${s}</button>`).join("");
+document.getElementById("boothFilters").innerHTML=BOOTH_FILTERS.map((f,i)=>`<button data-flt="${i}" class="${i===0?"on":""}">${f.n}</button>`).join("");
+document.getElementById("boothFilters").addEventListener("click",e=>{
+ const b=e.target.closest("[data-flt]");if(!b)return;
+ boothFilter=+b.dataset.flt;
+ boothVideo.style.filter=BOOTH_FILTERS[boothFilter].css;
+ document.querySelectorAll("#boothFilters button").forEach(x=>x.classList.toggle("on",x===b));
+});
+document.getElementById("boothFrame").addEventListener("click",e=>{
+ boothFrameOn=!boothFrameOn;
+ e.currentTarget.textContent="🖼️ Frame: "+(boothFrameOn?"ON":"off");
+ e.currentTarget.classList.toggle("on",boothFrameOn);
+});
+document.getElementById("boothText").addEventListener("click",()=>{
+ const sug=CAPTIONS[Math.floor(Math.random()*CAPTIONS.length)];
+ const txt=prompt("Caption for the photo:",sug);
+ if(!txt)return;
+ const el=document.createElement("div");
+ el.className="stk txt";el.textContent=txt.slice(0,40);
+ el.style.left="50%";el.style.top="80%";el.dataset.size="30";el.dataset.type="txt";
+ boothStage.appendChild(el);
+});
+document.getElementById("boothTimer").addEventListener("click",async()=>{
+ const cd=document.getElementById("boothCount");
+ cd.style.display="flex";
+ for(const n of["3","2","1","📸"]){cd.textContent=n;await new Promise(r=>setTimeout(r,800))}
+ cd.style.display="none";
+ document.getElementById("boothSnap").click();
+});
+function applyPixelFilter(ctx,w,h,p){
+ if(!p)return;
+ const img=ctx.getImageData(0,0,w,h),d=img.data;
+ const sat=p.sat??1,bri=p.bri??1,con=p.con??1,sep=p.sep??0,gray=p.gray??0,cool=p.cool??0;
+ for(let i=0;i<d.length;i+=4){
+  let r=d[i],g=d[i+1],b=d[i+2];
+  const l=.299*r+.587*g+.114*b;
+  r=l+(r-l)*sat;g=l+(g-l)*sat;b=l+(b-l)*sat;
+  if(sep){const sr=.393*r+.769*g+.189*b,sg=.349*r+.686*g+.168*b,sb=.272*r+.534*g+.131*b;
+   r=r*(1-sep)+sr*sep;g=g*(1-sep)+sg*sep;b=b*(1-sep)+sb*sep}
+  if(gray){r=g=b=l}
+  if(cool){r*=(1-cool*.5);b*=(1+cool)}
+  r=((r/255-.5)*con+.5)*255*bri;g=((g/255-.5)*con+.5)*255*bri;b=((b/255-.5)*con+.5)*255*bri;
+  d[i]=r<0?0:r>255?255:r;d[i+1]=g<0?0:g>255?255:g;d[i+2]=b<0?0:b>255?255:b;
+ }
+ ctx.putImageData(img,0,0);
+}
 async function boothStart(){
  document.getElementById("boothMsg").style.display="block";
  document.getElementById("boothMsg").textContent="Allow camera access to start…";
@@ -1596,18 +1679,48 @@ document.getElementById("boothSnap").addEventListener("click",async()=>{
  const c=document.createElement("canvas");
  c.width=boothVideo.videoWidth||1280;c.height=boothVideo.videoHeight||720;
  const ctx=c.getContext("2d");
+ /* filter: native canvas filter where supported, pixel math elsewhere (iPhone) */
+ const flt=BOOTH_FILTERS[boothFilter];
+ const nativeFilter=typeof ctx.filter==="string"&&flt.css!=="none";
+ if(nativeFilter)ctx.filter=flt.css;
  ctx.drawImage(boothVideo,0,0,c.width,c.height);
+ ctx.filter="none";
+ if(!nativeFilter&&flt.px)applyPixelFilter(ctx,c.width,c.height,flt.px);
  /* map on-screen sticker positions (object-fit:cover) back onto the video frame */
  const scale=Math.max(r.width/c.width,r.height/c.height);
  const offX=(c.width*scale-r.width)/2,offY=(c.height*scale-r.height)/2;
  boothStage.querySelectorAll(".stk").forEach(s=>{
   const sr=s.getBoundingClientRect();
   const cx=((sr.left+sr.width/2-r.left)+offX)/scale,cy=((sr.top+sr.height/2-r.top)+offY)/scale;
-  ctx.font=(+s.dataset.size/scale)+"px serif";
+  const px=+s.dataset.size/scale;
   ctx.textAlign="center";ctx.textBaseline="middle";
-  ctx.fillText(s.textContent,cx,cy);
+  if(s.dataset.type==="txt"){
+   ctx.font="700 "+px+"px Fraunces, Georgia, serif";
+   ctx.lineWidth=Math.max(2,px/9);ctx.strokeStyle="rgba(0,0,0,.65)";
+   ctx.strokeText(s.textContent,cx,cy);
+   ctx.fillStyle="#fff";ctx.fillText(s.textContent,cx,cy);
+  }else{
+   ctx.font=px+"px serif";
+   ctx.fillText(s.textContent,cx,cy);
+  }
  });
- c.toBlob(async blob=>{
+ /* polaroid frame */
+ let out=c;
+ if(boothFrameOn){
+  const m=Math.round(c.width*.05),bottom=Math.round(c.height*.2);
+  const f=document.createElement("canvas");
+  f.width=c.width+m*2;f.height=c.height+m+bottom;
+  const fx=f.getContext("2d");
+  fx.fillStyle="#fffdf7";fx.fillRect(0,0,f.width,f.height);
+  fx.drawImage(c,m,m);
+  fx.fillStyle="#4a5630";fx.textAlign="center";fx.textBaseline="middle";
+  fx.font="700 "+Math.round(bottom*.34)+"px Fraunces, Georgia, serif";
+  fx.fillText("CABO 2026 🫒",f.width/2,c.height+m+bottom*.42);
+  fx.fillStyle="#9a987f";fx.font=Math.round(bottom*.16)+"px Inter, sans-serif";
+  fx.fillText("shot on Olive · "+new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"}),f.width/2,c.height+m+bottom*.74);
+  out=f;
+ }
+ out.toBlob(async blob=>{
   const file=new File([blob],"olive-cabo-photo.png",{type:"image/png"});
   if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
    try{await navigator.share({files:[file],title:"Cabo 📸"});return}catch(e){}
