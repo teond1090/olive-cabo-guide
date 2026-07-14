@@ -182,7 +182,26 @@
   .ws-word{font-family:var(--font-display);font-size:2.1rem;font-weight:700;letter-spacing:.24em;color:#8a3fae;text-align:center;margin:8px 0}
   .ws-hint{font-size:.86rem;color:var(--ink-soft);text-align:center;margin-bottom:10px}
   .ws-row{display:flex;gap:8px}
-  .ws-row input{flex:1;border:2px solid #e6b8de;border-radius:12px;padding:11px 13px;font-family:var(--font-body);font-size:1rem;text-transform:uppercase;letter-spacing:.1em}
+  .ws-row input{flex:1;border:2px solid #e6b8de;border-radius:12px;padding:11px 13px;font-family:var(--font-body);font-size:1rem;text-transform:uppercase;letter-spacing:.1em;background:#fff;color:#3a2f4a;-webkit-text-fill-color:#3a2f4a}
+
+  /* ---------- Translator ---------- */
+  .xl-box{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+  .xl-in{width:100%;border:2px solid var(--sand-dark);border-radius:14px;padding:13px 14px;font-family:var(--font-body);font-size:1rem;background:#fff;color:var(--ink);-webkit-text-fill-color:var(--ink);resize:vertical;min-height:70px}
+  .xl-in:focus{outline:none;border-color:var(--olive)}
+  .xl-actions{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+  .xl-go{background:var(--olive);color:#fff;border:none;border-radius:99px;padding:11px 20px;font-family:var(--font-body);font-weight:800;font-size:.95rem;cursor:pointer;transition:.15s}
+  .xl-go:hover{background:var(--olive-dark)}
+  .xl-go:disabled{opacity:.6;cursor:default}
+  .xl-out{margin-top:14px;background:linear-gradient(150deg,var(--olive-dark),var(--olive-deep));color:var(--cream);border-radius:14px;padding:16px 15px;min-height:3.2em;display:none}
+  .xl-out.show{display:block}
+  .xl-es{font-family:var(--font-display);font-size:1.4rem;font-weight:700;line-height:1.25}
+  .xl-sub{font-size:.78rem;opacity:.85;margin-top:8px}
+  .xl-tools{display:flex;gap:8px;margin-top:12px}
+  .xl-tools button{background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:99px;padding:8px 13px;font-family:var(--font-body);font-weight:700;font-size:.8rem;cursor:pointer;transition:.15s}
+  .xl-tools button:hover{background:rgba(255,255,255,.32)}
+  .xl-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+  .xl-chips button{background:var(--sand);border:none;border-radius:99px;padding:7px 12px;font-family:var(--font-body);font-size:.8rem;color:var(--olive-deep);font-weight:600;cursor:pointer}
+  .xl-chips button:hover{background:var(--sand-dark)}
   .ws-msg{text-align:center;font-weight:700;margin-top:10px;min-height:1.3em}
   /* bingo / scavenger */
   .bingo{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
@@ -987,6 +1006,28 @@
     </div>
   </section>
 
+  <!-- TRANSLATOR -->
+  <section id="translator">
+    <div class="sec-head reveal"><h2>English → Spanish Translator</h2><span class="tag">Live</span></div>
+    <p class="sec-blurb reveal">Type anything in English and get it in Spanish — then tap 🔊 to hear how it sounds. Great for menus, asking directions, or being polite.</p>
+    <div class="xl-box reveal">
+      <textarea class="xl-in" id="xlIn" placeholder="Type in English…  e.g. Where is the bathroom?" maxlength="500"></textarea>
+      <div class="xl-actions">
+        <button class="xl-go" id="xlGo">Translate →</button>
+        <span id="xlStatus" style="font-size:.82rem;color:var(--ink-soft)"></span>
+      </div>
+      <div class="xl-chips" id="xlChips"></div>
+      <div class="xl-out" id="xlOut">
+        <div class="xl-es" id="xlEs"></div>
+        <div class="xl-sub" id="xlSub"></div>
+        <div class="xl-tools">
+          <button id="xlSpeak">🔊 Hear it</button>
+          <button id="xlCopy">📋 Copy</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   </div><!-- /view-tools -->
 
 </div>
@@ -1249,7 +1290,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v19-2026-07-13";
+const OLIVE_BUILD="v20-2026-07-13";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -2206,6 +2247,51 @@ function showPhrase(){
 document.getElementById("phraseCard").addEventListener("click",()=>{pIdx++;showPhrase()});
 showPhrase();
 
+/* ============ TRANSLATOR (English → Spanish) ============ */
+const XL_CHIPS=["Where is the bathroom?","How much is this?","The check, please","Thank you so much!","Can you help me?","Two waters, please","Where is the beach?","I don't speak Spanish","This is delicious!","One more, please"];
+document.getElementById("xlChips").innerHTML=XL_CHIPS.map(p=>`<button data-xl="${esc(p)}">${esc(p)}</button>`).join("");
+let xlLast="";
+function xlSpeak(t){
+ if(!("speechSynthesis" in window)){toast("This device can't read it aloud");return}
+ const u=new SpeechSynthesisUtterance(t);u.lang="es-MX";u.rate=.95;
+ const v=(speechSynthesis.getVoices()||[]).find(v=>/^es/i.test(v.lang));
+ if(v)u.voice=v;
+ speechSynthesis.cancel();speechSynthesis.speak(u);
+}
+async function translate(text){
+ text=(text||"").trim();if(!text)return;
+ const go=document.getElementById("xlGo"),st=document.getElementById("xlStatus");
+ go.disabled=true;st.textContent="Translating…";
+ try{
+  const r=await fetch("https://api.mymemory.translated.net/get?langpair=en|es&q="+encodeURIComponent(text.slice(0,500)));
+  const j=await r.json();
+  const es=j&&j.responseData&&j.responseData.translatedText;
+  if(!es)throw new Error("no result");
+  xlLast=es;
+  document.getElementById("xlEs").textContent=es;
+  document.getElementById("xlSub").textContent="“"+text+"” in Spanish";
+  document.getElementById("xlOut").classList.add("show");
+  st.textContent="";
+ }catch(e){
+  st.textContent="Couldn't translate right now — check your connection and try again.";
+ }finally{go.disabled=false}
+}
+document.getElementById("xlGo").addEventListener("click",()=>translate(document.getElementById("xlIn").value));
+document.getElementById("xlIn").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();translate(e.target.value)}
+});
+document.getElementById("xlChips").addEventListener("click",e=>{
+ const b=e.target.closest("[data-xl]");if(!b)return;
+ document.getElementById("xlIn").value=b.dataset.xl;translate(b.dataset.xl);
+});
+document.getElementById("xlSpeak").addEventListener("click",()=>{if(xlLast)xlSpeak(xlLast)});
+document.getElementById("xlCopy").addEventListener("click",()=>{
+ if(!xlLast)return;
+ const done=()=>toast("📋 Copied");
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(xlLast).then(done).catch(()=>fallbackCopy(xlLast,done));
+ else fallbackCopy(xlLast,done);
+});
+
 /* ============ FAMILY CHAT (ntfy.sh pub/sub) ============ */
 const CHAT_TOPIC="olive-crew-"+(ROOM_SUFFIX||"locked");
 const CHAT_URL="https://ntfy.sh/"+CHAT_TOPIC;
@@ -2624,7 +2710,11 @@ function renderLocList(){
  const people=[...locPeople.values()].filter(p=>now-p.ts<30*60*1000).sort((a,b)=>b.ts-a.ts);
  if(!people.length){list.innerHTML='<div class="loc-empty">No one is sharing right now. Flip the switch above to put yourself on the map. 🗺️</div>';map.style.display="none";return}
  list.innerHTML=people.map(p=>`<div class="loc-row"><span class="loc-dot" style="background:hsl(${hue(p.by)},60%,45%)"></span><div><div class="ln">${esc(p.by)}${p.id===locDeviceId?" (you)":""}</div><div class="lt">updated ${locAgo(p.ts)}</div></div><a class="lmap" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${p.lat},${p.lng}">📍 Map</a></div>`).join("");
- const f=people[0];map.style.display="block";map.src=`https://maps.google.com/maps?q=${f.lat},${f.lng}&z=14&output=embed`;
+ const f=people[0];map.style.display="block";
+ /* only (re)load the iframe when the focus person or their ~11m-rounded spot changes —
+    otherwise every GPS tick reloads the map and it visibly flickers */
+ const key=f.id+"@"+f.lat.toFixed(4)+","+f.lng.toFixed(4);
+ if(map.dataset.key!==key){map.dataset.key=key;map.src=`https://maps.google.com/maps?q=${f.lat},${f.lng}&z=14&output=embed`}
 }
 function handleLocMsg(raw){
  let j;try{j=JSON.parse(raw)}catch(e){return}
