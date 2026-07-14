@@ -159,19 +159,25 @@
   .caption-out{background:rgba(255,255,255,.18);border-radius:14px;padding:16px 14px;font-weight:800;font-size:1.05rem;text-align:center;min-height:3.2em;display:flex;align-items:center;justify-content:center}
   .gh-time{font-family:var(--font-display);font-size:2.3rem;font-weight:700;color:var(--coral);line-height:1.1;margin-bottom:6px}
 
-  /* ---------- Cabo Blox (Jade's obby) ---------- */
-  .widget.blox-card{background:linear-gradient(160deg,#33364a,#1e2030);color:#fff;border:none;box-shadow:var(--shadow-lg)}
-  .blox-meta{display:flex;gap:18px;font-size:.95rem;margin-bottom:8px}
-  .blox-lab{font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;opacity:.75;margin:14px 0 6px}
-  .blox-shop{display:flex;gap:6px;flex-wrap:wrap}
-  .blox-shop button{border:1.5px solid #4a4e66;background:#2a2d40;color:#eee;border-radius:99px;padding:8px 12px;font-family:var(--font-body);font-weight:700;font-size:.78rem;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.12s}
-  .blox-shop button:hover{background:#3a3e58}
-  .blox-shop button.eq{background:#e2231a;border-color:#e2231a;color:#fff}
-  .blox-shop .sw{width:15px;height:15px;border-radius:4px;display:inline-block}
-  .blox{position:fixed;inset:0;z-index:98;background:#0d2a3d;display:none;flex-direction:column}
-  .blox.open{display:flex}
-  .blox-stage{flex:1;position:relative;overflow:hidden}
-  .blox-stage canvas{position:absolute;inset:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
+  /* ---------- Cabo Volley (Jade's game) ---------- */
+  .widget.vb-card{background:linear-gradient(160deg,#ff9e5e,#e2571e);color:#fff;border:none;box-shadow:var(--shadow-lg)}
+  .vb-card h3{color:#fff}
+  .vb{position:fixed;inset:0;z-index:98;background:#0d2a3d;display:none;flex-direction:column}
+  .vb.open{display:flex}
+  .vb-stage{flex:1;position:relative;overflow:hidden}
+  .vb-stage canvas{position:absolute;inset:0;touch-action:none;-webkit-tap-highlight-color:transparent}
+  .vb-menu,.vb-over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;color:#fff;padding:24px;background:rgba(6,26,40,.5);backdrop-filter:blur(2px)}
+  .vb-menu h2,.vb-over h2{font-family:var(--font-display);font-size:2rem;margin-bottom:2px;text-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .vb-menu p{opacity:.9;font-size:.9rem;max-width:340px}
+  .vb-menu button,.vb-over button{border:none;border-radius:99px;background:#ffd23f;color:#7a3b00;font-family:var(--font-body);font-weight:800;font-size:1.05rem;padding:14px 30px;cursor:pointer;box-shadow:0 4px 0 #d9a400;transition:.1s}
+  .vb-menu button:active,.vb-over button:active{transform:translateY(3px);box-shadow:0 1px 0 #d9a400}
+  .vb-menu button[data-mode="2v2"]{background:#4ad6c8;color:#053b36;box-shadow:0 4px 0 #2ba99c}
+  .vb-tip{font-size:.76rem;opacity:.8;margin-top:6px}
+  .vb-ctrl{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:flex-end;padding:16px 18px;pointer-events:none}
+  .vb-b{pointer-events:auto;width:72px;height:72px;border-radius:50%;border:none;background:rgba(255,255,255,.24);color:#fff;font-size:1.8rem;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(3px);user-select:none;touch-action:none}
+  .vb-b:active{background:rgba(255,255,255,.45)}
+  .vb-move{display:flex;gap:12px}
+  .vb-jump{width:88px;height:88px;background:rgba(255,210,63,.35);font-size:2rem}
 
   /* ---------- Emily's Corner (age 8) ---------- */
   .ct-emily{background:linear-gradient(140deg,#ff8fce,#8a63d2)}
@@ -866,19 +872,15 @@
       </div>
     </div>
 
-    <!-- CABO BLOX OBBY -->
-    <div class="sec-head reveal" style="margin-top:22px"><h2 style="font-size:1.4rem">Cabo Blox 🧱</h2><span class="tag" style="background:#e2231a">Obby!</span></div>
-    <div class="widget reveal blox-card">
-      <div class="blox-meta">
-        <span>🪙 <b id="bloxBank">0</b> coins</span>
-        <span>🏆 Best run: <b id="bloxBestLbl">0m</b></span>
+    <!-- CABO VOLLEY -->
+    <div class="sec-head reveal" style="margin-top:22px"><h2 style="font-size:1.4rem">Cabo Volley 🏐</h2><span class="tag" style="background:#e2571e">Beach game</span></div>
+    <div class="widget reveal vb-card">
+      <div class="blox-meta" style="display:flex;gap:18px;font-size:.95rem;margin-bottom:8px">
+        <span>🏆 Wins: <b id="vbWins">0</b></span>
+        <span>🔥 Best streak: <b id="vbStreakLbl">0</b></span>
       </div>
-      <p style="font-size:.85rem;opacity:.92">Run the beach obby! Jump the gaps, dodge the 🔥 lava blocks, and grab every coin — then spend them on hats and outfit colors for your avatar. Tap to jump, tap again mid-air for a double jump. How far can you get?</p>
-      <button class="c-btn" id="bloxOpen" style="background:#e2231a;color:#fff;font-weight:800;margin-top:8px">▶ Play Cabo Blox</button>
-      <div class="blox-lab">🎩 Hats</div>
-      <div class="blox-shop" id="bloxHats"></div>
-      <div class="blox-lab">👕 Outfit color</div>
-      <div class="blox-shop" id="bloxColors"></div>
+      <p style="font-size:.85rem;opacity:.94">Ultimate beach volleyball! Pick <b>1v1</b> to take on the AI solo, or <b>2v2 doubles</b> with an AI teammate. Move with the on-screen pads, tap ⤒ to jump and spike the ball over the net. First to 7 wins. Bright, bouncy and genuinely competitive — bring a friend and pass the phone! 🌴</p>
+      <button class="c-btn" id="vbOpen" style="background:#fff;color:#e2571e;font-weight:800;margin-top:8px">▶ Play Cabo Volley</button>
     </div>
 
     <!-- CAMERA STUDIOS -->
@@ -1328,14 +1330,35 @@
   <input type="file" id="magicFile" accept="image/*" style="display:none">
 </div>
 
-<!-- CABO BLOX OBBY -->
-<div class="blox" id="blox">
+<!-- CABO VOLLEY -->
+<div class="vb" id="vb">
   <div class="booth-head">
-    <button class="f-back" id="bloxClose">‹ Exit</button>
-    <div class="f-title">🧱 Cabo Blox</div>
-    <div class="f-back" style="pointer-events:none"><span id="bloxDist">0m</span> · <span id="bloxRunCoins">🪙 0</span></div>
+    <button class="f-back" id="vbClose">‹ Exit</button>
+    <div class="f-title">🏐 Cabo Volley</div>
+    <div class="f-back" style="pointer-events:none;font-variant-numeric:tabular-nums" id="vbScore">0 – 0</div>
   </div>
-  <div class="blox-stage" id="bloxStage"><canvas id="bloxCanvas"></canvas></div>
+  <div class="vb-stage" id="vbStage">
+    <canvas id="vbCanvas"></canvas>
+    <div class="vb-menu" id="vbMenu">
+      <h2>🏐 Cabo Volley</h2>
+      <p>Beach volleyball on the sand. First to 7 points wins the match!</p>
+      <button data-mode="1v1">🙋 1v1 — you vs the AI</button>
+      <button data-mode="2v2">👯 2v2 — you + a buddy</button>
+      <div class="vb-tip">◀ ▶ to move · ⤒ to jump &amp; spike · (or ← → keys + Space)</div>
+    </div>
+    <div class="vb-over" id="vbOver" style="display:none">
+      <h2 id="vbWinTxt">You win! 🏆</h2>
+      <button id="vbAgain">↻ Rematch</button>
+      <button id="vbMenuBtn" style="background:#4ad6c8;color:#053b36;box-shadow:0 4px 0 #2ba99c">≡ Change mode</button>
+    </div>
+    <div class="vb-ctrl" id="vbCtrl" style="display:none">
+      <div class="vb-move">
+        <button class="vb-b" id="vbLeft">◀</button>
+        <button class="vb-b" id="vbRight">▶</button>
+      </div>
+      <button class="vb-b vb-jump" id="vbJump">⤒</button>
+    </div>
+  </div>
 </div>
 
 <!-- IN-OLIVE BOOKING FRAME -->
@@ -1514,7 +1537,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v26-2026-07-13";
+const OLIVE_BUILD="v27-2026-07-13";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -2095,173 +2118,277 @@ document.getElementById("jadeChallengeRoll").addEventListener("click",()=>{
 });
 document.getElementById("jadeChallengeShoot").addEventListener("click",()=>document.getElementById("boothOpen").click());
 
-/* ============ CABO BLOX — Jade's obby (Roblox-style runner + avatar shop) ============ */
-const BLOX_HATS=[["none","🚫 No hat",0],["cap","🧢 Cap",25],["flower","🌺 Flower",40],["shades","🕶️ Shades",60],["flamingo","🦩 Flamingo",90],["crown","👑 Crown",150]];
-const BLOX_HAT_E={none:"",cap:"🧢",flower:"🌺",shades:"🕶️",flamingo:"🦩",crown:"👑"};
-const BLOX_COLORS=[["coral","#ff7e6b",0],["teal","#39c5bb",0],["purple","#9b6bff",30],["pink","#ff6bb3",30],["gold","#ffb14e",60],["midnight","#565b78",60]];
-let bloxCoins=store.get("blox-coins",0),bloxBest=store.get("blox-best",0);
-let bloxOwned=store.get("blox-owned",["none","coral","teal"]);
-let bloxHat=store.get("blox-hat","none"),bloxColor=store.get("blox-color","coral");
-function bloxColorHex(){const c=BLOX_COLORS.find(c=>c[0]===bloxColor);return c?c[1]:"#ff7e6b"}
-function bloxSaveMeta(){store.set("blox-coins",bloxCoins);store.set("blox-best",bloxBest);store.set("blox-owned",bloxOwned);store.set("blox-hat",bloxHat);store.set("blox-color",bloxColor)}
-function renderBloxShop(){
- document.getElementById("bloxBank").textContent=bloxCoins;
- document.getElementById("bloxBestLbl").textContent=bloxBest+"m";
- document.getElementById("bloxHats").innerHTML=BLOX_HATS.map(([id,label,cost])=>{
-  const owned=bloxOwned.includes(id);
-  return `<button data-hat="${id}" class="${bloxHat===id?"eq":""}">${label}${owned?"":" · 🪙"+cost}</button>`;
- }).join("");
- document.getElementById("bloxColors").innerHTML=BLOX_COLORS.map(([id,hex,cost])=>{
-  const owned=bloxOwned.includes(id);
-  return `<button data-color="${id}" class="${bloxColor===id?"eq":""}"><span class="sw" style="background:${hex}"></span>${owned?id:"🪙"+cost}</button>`;
- }).join("");
+/* ============ CABO VOLLEY — Jade's beach volleyball (canvas, 1v1 & 2v2 vs AI) ============ */
+const vbEl=document.getElementById("vb"),vbCv=document.getElementById("vbCanvas"),vx=vbCv.getContext("2d");
+let vbOpen=false,vbRAF=null,vbLast=0,VB=null,vbClouds=[];
+let vbWins=store.get("vb-wins",0),vbStreak=store.get("vb-streak",0);
+const vbInput={left:false,right:false,jump:false};
+const WIN_SCORE=7;
+function vbUpdateStats(){document.getElementById("vbWins").textContent=vbWins;document.getElementById("vbStreakLbl").textContent=vbStreak}
+function vbSize(){const s=document.getElementById("vbStage");vbCv.width=s.clientWidth||360;vbCv.height=s.clientHeight||560;if(VB)vbLayout()}
+function vbLayout(){
+ const w=vbCv.width,h=vbCv.height;
+ VB.w=w;VB.h=h;VB.cx=w/2;VB.groundY=h*0.86;
+ VB.rp=Math.max(26,Math.min(w,h)*0.075);   /* player radius */
+ VB.rb=VB.rp*0.42;                           /* ball radius */
+ VB.netH=h*0.30;VB.netW=Math.max(5,w*0.012);
+ VB.G=h*2.7;VB.Gb=h*1.35;
+ VB.MOVE=w*0.62;VB.JUMP=-Math.sqrt(2*VB.G*h*0.30);
+ VB.HIT=Math.min(w,h)*1.75;VB.MAXB=Math.min(w,h)*2.2;
+ VB.players.forEach(p=>{p.y0=VB.groundY-VB.rp;if(p.onGround)p.y=p.y0});
 }
-function bloxBuyEquip(id,cost,label,equip){
- if(!bloxOwned.includes(id)){
-  if(bloxCoins<cost){toast("Need 🪙"+cost+" — run the obby to earn more!");return}
-  bloxCoins-=cost;bloxOwned.push(id);toast("Unlocked "+label+"! 🎉");
+function vbMakePlayers(mode){
+ const arr=[];
+ const mk=(side,team,color,isHuman,homeFrac,skill)=>({side,team,color,isHuman,home:0,homeFrac,skill,x:0,y:0,vx:0,vy:0,onGround:true,y0:0,blink:Math.random()*4});
+ arr.push(mk(-1,0,"#ff6b5c",true,0.25,1));        /* you (left) */
+ if(mode==="2v2")arr.push(mk(-1,0,"#ffb14e",false,0.10,0.82)); /* your buddy */
+ arr.push(mk(1,1,"#8a63d2",false,mode==="2v2"?0.90:0.75,0.88)); /* opponent */
+ if(mode==="2v2")arr.push(mk(1,1,"#4ad6c8",false,0.68,0.82));
+ return arr;
+}
+function vbNew(mode){
+ VB={mode,state:"play",score:{0:0,1:0},server:-1,timer:0,ball:{x:0,y:0,vx:0,vy:0,spin:0},trail:[],parts:[],flash:0,players:vbMakePlayers(mode),t:0,shake:0};
+ vbLayout();
+ VB.players.forEach(p=>{p.home=(p.side<0?p.homeFrac:p.homeFrac)*VB.w;p.x=p.home;p.y=p.y0;});
+ vbServe(-1);
+ vbClouds=[{x:.2,y:.12,s:1},{x:.6,y:.20,s:.8},{x:.85,y:.10,s:1.1}];
+}
+function vbServe(side){
+ VB.server=side;VB.state="play";
+ const b=VB.ball;
+ b.x=side<0?VB.w*0.25:VB.w*0.75;
+ b.y=VB.groundY-VB.h*0.52;b.vx=0;b.vy=0;b.spin=0;
+ VB.trail=[];
+}
+function vbPredictX(p){
+ const b=VB.ball,g=VB.Gb;
+ /* time until ball descends to player's hit height */
+ const hy=p.y0-VB.rp*0.6;
+ let t=0.35;
+ const disc=b.vy*b.vy+2*g*(hy-b.y);
+ if(disc>0)t=(-b.vy+Math.sqrt(disc))/g;
+ t=Math.max(0.1,Math.min(1.2,t));
+ let px=b.x+b.vx*t;
+ return Math.max(VB.rp,Math.min(VB.w-VB.rp,px));
+}
+function vbAI(p,dt){
+ const b=VB.ball,onSide=(p.side<0&&b.x<VB.cx)||(p.side>0&&b.x>VB.cx);
+ let target=p.home;
+ if(onSide)target=vbPredictX(p);
+ if(VB.mode==="2v2"){
+  const mate=VB.players.find(q=>q!==p&&q.side===p.side);
+  if(mate&&onSide&&Math.abs(p.x-b.x)>Math.abs(mate.x-b.x))target=p.home;
  }
- equip();bloxSaveMeta();renderBloxShop();
+ const dx=target-p.x;
+ p.vx=Math.abs(dx)<6?0:Math.sign(dx)*VB.MOVE*p.skill;
+ const near=Math.abs(b.x-p.x)<VB.rp+VB.rb+22&&onSide;
+ const hitZone=b.y>p.y-VB.rp*2.4&&b.y<p.y+VB.rp*0.3&&b.vy>-60;
+ if(near&&hitZone&&p.onGround&&Math.random()<0.16+p.skill*0.12){p.vy=VB.JUMP;p.onGround=false;}
 }
-document.getElementById("bloxHats").addEventListener("click",e=>{
- const b=e.target.closest("[data-hat]");if(!b)return;
- const it=BLOX_HATS.find(h=>h[0]===b.dataset.hat);
- bloxBuyEquip(it[0],it[2],it[1],()=>{bloxHat=it[0]});
-});
-document.getElementById("bloxColors").addEventListener("click",e=>{
- const b=e.target.closest("[data-color]");if(!b)return;
- const it=BLOX_COLORS.find(c=>c[0]===b.dataset.color);
- bloxBuyEquip(it[0],it[2],it[0]+" outfit",()=>{bloxColor=it[0]});
-});
-/* --- the game --- */
-const blox=document.getElementById("blox"),bloxCv=document.getElementById("bloxCanvas"),bxc=bloxCv.getContext("2d");
-const BLOX_X=110,BLOX_W=34,BLOX_H=48,BLOX_G=1500;
-let bloxOpenFlag=false,bloxRAF=null,bloxLastTs=0,BR=null;
-function bloxSize(){const st=document.getElementById("bloxStage");bloxCv.width=st.clientWidth||360;bloxCv.height=st.clientHeight||520}
-function bloxNewRun(){
- BR={state:"ready",worldX:0,speed:230,dist:0,coins:0,py:0,vy:0,jumps:0,phase:0,plats:[],genX:0,dead:false};
- BR.plats.push({x:-80,w:460,y:Math.round(bloxCv.height*.62),lava:false,coins:[]});
- BR.genX=380;bloxGen();
- BR.py=BR.plats[0].y-BLOX_H;
+function vbSpawn(x,y,n,col,sp){for(let i=0;i<n;i++)VB.parts.push({x,y,vx:(Math.random()-.5)*sp,vy:-Math.random()*sp*0.8,life:1,col})}
+function vbPoint(team){
+ VB.score[team]++;
+ vbSpawn(VB.ball.x,VB.groundY,14,"#f4e2b0",VB.h*0.9);
+ VB.flash=1;VB.shake=Math.min(VB.w,VB.h)*0.02;
+ document.getElementById("vbScore").textContent=VB.score[0]+" – "+VB.score[1];
+ if(VB.score[team]>=WIN_SCORE){vbFinish(team);return}
+ VB.state="point";VB.timer=1.2;
+ VB.pointServer=team===0?1:-1; /* team that lost serves next; team0=left */
 }
-function bloxGen(){
- while(BR.genX<BR.worldX+bloxCv.width+300){
-  const gap=60+Math.random()*90+Math.min(70,BR.dist*.15);
-  const w=110+Math.random()*150;
-  const prev=BR.plats[BR.plats.length-1];
-  let y=prev.y+(Math.random()*160-80);
-  y=Math.max(bloxCv.height*.30,Math.min(bloxCv.height*.80,y));
-  const lava=!prev.lava&&Math.random()<Math.min(.28,.10+BR.dist*.0006);
-  const x=BR.genX+gap,p={x,w,y:Math.round(y),lava,coins:[]};
-  if(!lava&&Math.random()<.55){const n=1+Math.floor(Math.random()*3);for(let i=0;i<n;i++)p.coins.push({x:x+w*(i+1)/(n+1),y:p.y-52,got:false})}
-  BR.plats.push(p);BR.genX=x+w;
+function vbFinish(team){
+ VB.state="over";
+ const youWon=team===0;
+ if(youWon){vbWins++;vbStreak++;}else{vbStreak=0;}
+ store.set("vb-wins",vbWins);store.set("vb-streak",vbStreak);vbUpdateStats();
+ document.getElementById("vbWinTxt").textContent=youWon?"You win! 🏆🎉":"AI wins 😤 Rematch?";
+ document.getElementById("vbOver").style.display="flex";
+ document.getElementById("vbCtrl").style.display="none";
+ if(youWon)vbSpawn(VB.w/2,VB.h*0.3,40,"#ffd23f",VB.h*1.1);
+}
+function vbStep(dt){
+ if(!VB)return;VB.t+=dt;
+ if(VB.flash>0)VB.flash=Math.max(0,VB.flash-dt*2);
+ if(VB.shake>0)VB.shake=Math.max(0,VB.shake-dt*VB.shake*8-0.5);
+ VB.parts.forEach(p=>{p.vy+=VB.G*0.6*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.life-=dt*1.1});
+ VB.parts=VB.parts.filter(p=>p.life>0);
+ if(VB.state==="point"){VB.timer-=dt;if(VB.timer<=0)vbServe(VB.pointServer);return}
+ if(VB.state!=="play")return;
+ const w=VB.w,h=VB.h,cx=VB.cx,rp=VB.rp,rb=VB.rb,netHalf=VB.netW/2,netTopY=VB.groundY-VB.netH;
+ /* players */
+ for(const p of VB.players){
+  if(p.isHuman){
+   p.vx=((vbInput.right?1:0)-(vbInput.left?1:0))*VB.MOVE;
+   if(vbInput.jump&&p.onGround){p.vy=VB.JUMP;p.onGround=false;}
+  }else vbAI(p,dt);
+  p.x+=p.vx*dt;p.vy+=VB.G*dt;p.y+=p.vy*dt;
+  if(p.y>=p.y0){p.y=p.y0;p.vy=0;p.onGround=true;}
+  if(p.side<0)p.x=Math.max(rp,Math.min(cx-netHalf-rp,p.x));
+  else p.x=Math.max(cx+netHalf+rp,Math.min(w-rp,p.x));
  }
- while(BR.plats.length&&BR.plats[0].x+BR.plats[0].w<BR.worldX-120)BR.plats.shift();
-}
-function bloxJump(){
- if(!BR)return;
- if(BR.state==="ready"){BR.state="playing";return}
- if(BR.state==="dead"){bloxNewRun();return}
- if(BR.jumps<2){BR.vy=BR.jumps===0?-640:-560;BR.jumps++}
-}
-function bloxDie(){
- if(BR.dead)return;BR.dead=true;BR.state="dead";
- bloxCoins+=BR.coins;
- if(Math.floor(BR.dist)>bloxBest)bloxBest=Math.floor(BR.dist);
- bloxSaveMeta();
-}
-function bloxStep(dt){
- if(!BR||BR.state!=="playing")return;
- BR.speed=Math.min(430,230+BR.dist*.35);
- BR.worldX+=BR.speed*dt;
- BR.dist=BR.worldX/50;
- BR.phase+=dt*11;
- const prevBottom=BR.py+BLOX_H;
- BR.vy+=BLOX_G*dt;BR.py+=BR.vy*dt;
- const newBottom=BR.py+BLOX_H,px=BR.worldX+BLOX_X;
- for(const p of BR.plats){
-  if(px+BLOX_W*.7<p.x||px-BLOX_W*.7>p.x+p.w)continue;
-  if(BR.vy>=0&&prevBottom<=p.y+2&&newBottom>=p.y){
-   if(p.lava){bloxDie();return}
-   BR.py=p.y-BLOX_H;BR.vy=0;BR.jumps=0;
+ /* ball */
+ const b=VB.ball,prevX=b.x;
+ b.vy+=VB.Gb*dt;b.x+=b.vx*dt;b.y+=b.vy*dt;b.spin+=b.vx*dt*0.02;
+ VB.trail.push({x:b.x,y:b.y});if(VB.trail.length>9)VB.trail.shift();
+ /* walls + ceiling */
+ if(b.x<rb){b.x=rb;b.vx=Math.abs(b.vx)*0.92;}
+ if(b.x>w-rb){b.x=w-rb;b.vx=-Math.abs(b.vx)*0.92;}
+ if(b.y<rb){b.y=rb;b.vy=Math.abs(b.vy)*0.85;}
+ /* net — swept test so a fast ball can't tunnel through the thin post */
+ if(b.y>netTopY-rb){
+  const band=netHalf+rb;
+  if(prevX<=cx&&b.x>cx-band){b.x=cx-band;b.vx=-Math.abs(b.vx)*0.55;}
+  else if(prevX>=cx&&b.x<cx+band){b.x=cx+band;b.vx=Math.abs(b.vx)*0.55;}
+  else if(Math.abs(b.x-cx)<band){if(b.x<cx){b.x=cx-band;b.vx=-Math.abs(b.vx)*0.55;}else{b.x=cx+band;b.vx=Math.abs(b.vx)*0.55;}}
+ }
+ /* players hit ball */
+ for(const p of VB.players){
+  const dx=b.x-p.x,dy=b.y-p.y,d=Math.hypot(dx,dy),rr=rb+rp;
+  if(d<rr&&d>0.01){
+   const nx=dx/d,ny=dy/d;
+   b.x=p.x+nx*rr;b.y=p.y+ny*rr;
+   const sp=VB.HIT;
+   b.vx=nx*sp*0.92+p.vx*0.55;
+   b.vy=Math.min(ny*sp,-sp*0.48)+p.vy*0.45;
+   const s=Math.hypot(b.vx,b.vy);if(s>VB.MAXB){b.vx*=VB.MAXB/s;b.vy*=VB.MAXB/s;}
+   vbSpawn(b.x,b.y,6,"#ffffff",VB.h*0.5);
+   break;
   }
-  for(const c of p.coins)if(!c.got&&Math.abs(c.x-px)<32&&Math.abs(c.y-(BR.py+BLOX_H/2))<46){c.got=true;BR.coins++}
  }
- if(BR.py>bloxCv.height+80)bloxDie();
- bloxGen();
+ /* ground -> point */
+ if(b.y>=VB.groundY-rb){
+  b.y=VB.groundY-rb;
+  vbPoint(b.x<cx?1:0); /* landed left(side<0) => team1(right) scores */
+ }
 }
-function bloxText(x,txt,font,cx,cy){x.font=font;x.strokeText(txt,cx,cy);x.fillText(txt,cx,cy)}
-function bloxDraw(){
- if(!BR)return;
- const w=bloxCv.width,h=bloxCv.height,x=bxc;
- const g=x.createLinearGradient(0,0,0,h);
- g.addColorStop(0,"#8fd8f7");g.addColorStop(.7,"#cdeefb");g.addColorStop(.701,"#2e9ec9");g.addColorStop(1,"#1a6f96");
- x.fillStyle=g;x.fillRect(0,0,w,h);
- x.font="34px serif";x.fillText("☀️",w-66,52);
- x.font="22px serif";x.fillText("⛵",(w-((BR.worldX*.25)%(w+80)))|0,h*.66);
- for(const p of BR.plats){
-  const sx=p.x-BR.worldX;
-  if(sx>w||sx+p.w<0)continue;
-  x.fillStyle=p.lava?"#ff5230":"#e8c37a";x.fillRect(sx,p.y,p.w,16);
-  x.fillStyle=p.lava?"#b52a0c":"#c9a25a";x.fillRect(sx,p.y+16,p.w,9);
-  if(p.lava){x.font="15px serif";x.fillText("🔥",sx+p.w/2-8,p.y-5)}
-  x.font="20px serif";
-  for(const c of p.coins)if(!c.got)x.fillText("🪙",c.x-BR.worldX-10,c.y+8);
- }
- /* blocky avatar */
- x.save();x.translate(BLOX_X,BR.py);
- const lp=BR.state==="playing"?Math.sin(BR.phase)*5:0;
- x.fillStyle="#565b78";
- x.fillRect(4,BLOX_H-13,10,13+lp);x.fillRect(BLOX_W-14,BLOX_H-13,10,13-lp);
- x.fillStyle=bloxColorHex();
- x.fillRect(0,14,BLOX_W,24);x.fillRect(-7,16,7,15);x.fillRect(BLOX_W,16,7,15);
- x.fillStyle="#ffd23f";x.fillRect(3,-8,BLOX_W-6,22);
- x.fillStyle="#333";x.fillRect(9,-2,4,6);x.fillRect(BLOX_W-13,-2,4,6);x.fillRect(11,8,BLOX_W-22,3);
- const hat=BLOX_HAT_E[bloxHat];
- if(hat){x.font="24px serif";x.textAlign="center";x.fillText(hat,BLOX_W/2,-12);x.textAlign="left"}
+function vbDrawPlayer(p){
+ const x=vx,rp=VB.rp;
+ x.save();
+ /* shadow */
+ x.fillStyle="rgba(0,0,0,.16)";x.beginPath();const sh=1-(p.y0-p.y)/(VB.h*0.3);x.ellipse(p.x,VB.groundY+2,rp*0.9*Math.max(.4,sh),rp*0.28*Math.max(.4,sh),0,0,7);x.fill();
+ /* body: dome */
+ const grd=x.createLinearGradient(p.x,p.y-rp,p.x,p.y+rp);
+ grd.addColorStop(0,"#ffffff55");grd.addColorStop(0.25,p.color);grd.addColorStop(1,"#00000033");
+ x.fillStyle=p.color;x.beginPath();x.arc(p.x,p.y,rp,Math.PI,2*Math.PI);x.closePath();x.fill();
+ x.fillStyle=grd;x.beginPath();x.arc(p.x,p.y,rp,Math.PI,2*Math.PI);x.closePath();x.fill();
+ x.fillStyle="rgba(0,0,0,.12)";x.fillRect(p.x-rp,p.y,rp*2,2);
+ /* eyes */
+ const look=p.side<0?1:-1,blink=(VB.t+p.blink)%3.4<0.12;
+ x.fillStyle="#fff";x.beginPath();x.arc(p.x+look*rp*0.32-rp*0.12,p.y-rp*0.42,rp*0.20,0,7);x.arc(p.x+look*rp*0.32+rp*0.22,p.y-rp*0.42,rp*0.20,0,7);x.fill();
+ if(!blink){x.fillStyle="#1a1a2a";x.beginPath();x.arc(p.x+look*rp*0.36-rp*0.12,p.y-rp*0.40,rp*0.10,0,7);x.arc(p.x+look*rp*0.36+rp*0.22,p.y-rp*0.40,rp*0.10,0,7);x.fill();}
+ /* headband */
+ x.strokeStyle="#ffffffcc";x.lineWidth=rp*0.13;x.beginPath();x.arc(p.x,p.y,rp*0.86,Math.PI*1.15,Math.PI*1.85);x.stroke();
+ if(p.isHuman){x.font=rp*0.6+"px serif";x.textAlign="center";x.fillText("⭐",p.x,p.y-rp*1.05);}
  x.restore();
- document.getElementById("bloxDist").textContent=Math.floor(BR.dist)+"m";
- document.getElementById("bloxRunCoins").textContent="🪙 "+BR.coins;
- x.textAlign="center";x.fillStyle="#fff";x.strokeStyle="rgba(0,0,0,.4)";x.lineWidth=4;x.lineJoin="round";
- if(BR.state==="ready"){
-  bloxText(x,"CABO BLOX 🧱","800 28px Inter,sans-serif",w/2,h*.30);
-  bloxText(x,"Tap to start!","700 17px Inter,sans-serif",w/2,h*.30+34);
-  bloxText(x,"Tap = jump · tap again in the air = double jump","600 13px Inter,sans-serif",w/2,h*.30+58);
-  bloxText(x,"Grab 🪙 for the shop · don't touch the 🔥!","600 13px Inter,sans-serif",w/2,h*.30+78);
- }else if(BR.state==="dead"){
-  bloxText(x,"WIPEOUT! 🌊","800 28px Inter,sans-serif",w/2,h*.32);
-  bloxText(x,Math.floor(BR.dist)+"m · +"+BR.coins+" 🪙 banked","700 16px Inter,sans-serif",w/2,h*.32+32);
-  bloxText(x,(Math.floor(BR.dist)>=bloxBest&&bloxBest>0?"🏆 NEW BEST! ":"Best: "+bloxBest+"m — ")+"tap to go again","600 14px Inter,sans-serif",w/2,h*.32+56);
- }
+}
+function vbDrawBall(){
+ const x=vx,b=VB.ball,r=VB.rb;
+ x.save();
+ x.fillStyle="rgba(0,0,0,.14)";x.beginPath();const sh=1-(VB.groundY-b.y)/(VB.h*0.6);x.ellipse(b.x,VB.groundY+2,r*1.5*Math.max(.35,sh),r*0.4*Math.max(.35,sh),0,0,7);x.fill();
+ /* trail */
+ for(let i=0;i<VB.trail.length;i++){const tp=VB.trail[i];x.globalAlpha=(i/VB.trail.length)*0.28;x.fillStyle="#fff";x.beginPath();x.arc(tp.x,tp.y,r*(i/VB.trail.length),0,7);x.fill();}
+ x.globalAlpha=1;
+ x.translate(b.x,b.y);x.rotate(b.spin);
+ const cols=["#ff5c6b","#ffd23f","#4ad6c8","#6aa5ff","#ff9e5e","#ffffff"];
+ for(let i=0;i<6;i++){x.fillStyle=cols[i];x.beginPath();x.moveTo(0,0);x.arc(0,0,r,i*Math.PI/3,(i+1)*Math.PI/3);x.closePath();x.fill();}
+ x.strokeStyle="rgba(0,0,0,.18)";x.lineWidth=1;x.beginPath();x.arc(0,0,r,0,7);x.stroke();
+ x.fillStyle="rgba(255,255,255,.55)";x.beginPath();x.arc(-r*0.35,-r*0.35,r*0.3,0,7);x.fill();
+ x.restore();
+}
+function vbDraw(){
+ const w=VB.w,h=VB.h,x=vx;
+ x.setTransform(1,0,0,1,0,0);
+ x.save();
+ if(VB.shake>0)x.translate((Math.random()-.5)*VB.shake,(Math.random()-.5)*VB.shake);
+ /* sky */
+ const sky=x.createLinearGradient(0,0,0,h);
+ sky.addColorStop(0,"#fdb56b");sky.addColorStop(.4,"#ff8f7a");sky.addColorStop(.7,"#7ec8e3");sky.addColorStop(1,"#bfe6f0");
+ x.fillStyle=sky;x.fillRect(0,0,w,h);
+ /* sun */
+ const sunY=h*0.30;x.fillStyle="rgba(255,240,190,.5)";x.beginPath();x.arc(w*0.5,sunY,h*0.16,0,7);x.fill();
+ x.fillStyle="#fff3c4";x.beginPath();x.arc(w*0.5,sunY,h*0.08,0,7);x.fill();
+ /* sea */
+ const seaY=VB.groundY-h*0.14;x.fillStyle="#2e9ec9";x.fillRect(0,seaY,w,VB.groundY-seaY);
+ x.font=h*0.05+"px serif";x.fillText("⛵",(w*0.2+((VB.t*8)%(w*0.7))),seaY-2);
+ /* clouds */
+ x.font=h*0.06+"px serif";vbClouds.forEach(c=>{const cxp=((c.x*w)+VB.t*10*c.s)%(w+80)-40;x.globalAlpha=.85;x.fillText("☁️",cxp,h*c.y);});x.globalAlpha=1;
+ /* palms */
+ x.font=h*0.14+"px serif";x.fillText("🌴",-h*0.01,VB.groundY-h*0.02);x.save();x.scale(-1,1);x.fillText("🌴",-w-h*0.01,VB.groundY-h*0.02);x.restore();
+ /* sand */
+ const sand=x.createLinearGradient(0,VB.groundY,0,h);sand.addColorStop(0,"#f4dca0");sand.addColorStop(1,"#e6c179");
+ x.fillStyle=sand;x.fillRect(0,VB.groundY,w,h-VB.groundY);
+ x.fillStyle="rgba(255,255,255,.25)";x.fillRect(0,VB.groundY,w,3);
+ /* net */
+ const cxn=VB.cx,netTopY=VB.groundY-VB.netH;
+ x.fillStyle="#6b4a2a";x.fillRect(cxn-VB.netW/2,netTopY,VB.netW,VB.netH);
+ x.strokeStyle="rgba(255,255,255,.75)";x.lineWidth=2;
+ for(let i=0;i<=6;i++){x.beginPath();x.moveTo(cxn-VB.netW/2-6,netTopY+i*VB.netH/6);x.lineTo(cxn+VB.netW/2+6,netTopY+i*VB.netH/6);x.stroke();}
+ x.fillStyle="#fff";x.fillRect(cxn-VB.netW/2-6,netTopY-4,VB.netW+12,6);
+ /* entities */
+ VB.players.filter(p=>p.side<0).forEach(vbDrawPlayer);
+ VB.players.filter(p=>p.side>0).forEach(vbDrawPlayer);
+ vbDrawBall();
+ /* particles */
+ VB.parts.forEach(p=>{x.globalAlpha=Math.max(0,p.life);x.fillStyle=p.col;x.beginPath();x.arc(p.x,p.y,VB.rb*0.5*p.life+1,0,7);x.fill();});x.globalAlpha=1;
+ /* score pills */
+ x.textAlign="center";x.font="800 "+Math.round(h*0.05)+"px Inter,sans-serif";
+ x.fillStyle="#ff6b5c";x.fillText(VB.score[0],w*0.32,h*0.10);
+ x.fillStyle="#8a63d2";x.fillText(VB.score[1],w*0.68,h*0.10);
+ x.fillStyle="rgba(255,255,255,.9)";x.font="700 "+Math.round(h*0.028)+"px Inter,sans-serif";x.fillText("YOU",w*0.32,h*0.13);x.fillText(VB.mode==="2v2"?"RIVALS":"AI",w*0.68,h*0.13);
+ if(Math.max(VB.score[0],VB.score[1])===WIN_SCORE-1&&VB.state==="play"){x.fillStyle="#fff";x.font="800 "+Math.round(h*0.03)+"px Inter,sans-serif";x.fillText("MATCH POINT!",w*0.5,h*0.09);}
  x.textAlign="left";
+ if(VB.flash>0){x.fillStyle="rgba(255,255,255,"+VB.flash*0.35+")";x.fillRect(0,0,w,h);}
+ x.restore();
 }
-function bloxLoop(ts){
- if(!bloxOpenFlag)return;
- const dt=Math.min(.035,bloxLastTs?(ts-bloxLastTs)/1000:.016);
- bloxLastTs=ts;
- bloxStep(dt);bloxDraw();
- bloxRAF=requestAnimationFrame(bloxLoop);
+function vbLoop(ts){
+ if(!vbOpen)return;
+ const dt=Math.min(.033,vbLast?(ts-vbLast)/1000:.016);vbLast=ts;
+ if(VB&&VB.state!=="over")vbStep(dt);
+ if(VB)vbDraw();
+ vbRAF=requestAnimationFrame(vbLoop);
 }
-document.getElementById("bloxOpen").addEventListener("click",()=>{
- blox.classList.add("open");document.body.style.overflow="hidden";
- bloxOpenFlag=true;bloxLastTs=0;
- bloxSize();bloxNewRun();bloxDraw();
- cancelAnimationFrame(bloxRAF);bloxRAF=requestAnimationFrame(bloxLoop);
+function vbStart(mode){
+ document.getElementById("vbMenu").style.display="none";
+ document.getElementById("vbOver").style.display="none";
+ document.getElementById("vbCtrl").style.display="flex";
+ vbInput.left=vbInput.right=vbInput.jump=false;
+ vbNew(mode);
+ document.getElementById("vbScore").textContent="0 – 0";
+}
+/* controls: hold-to-move buttons + jump */
+function vbBindHold(id,key){
+ const el=document.getElementById(id);
+ const on=e=>{e.preventDefault();vbInput[key]=true;};
+ const off=e=>{e.preventDefault();vbInput[key]=false;};
+ el.addEventListener("pointerdown",on);el.addEventListener("pointerup",off);
+ el.addEventListener("pointerleave",off);el.addEventListener("pointercancel",off);
+}
+vbBindHold("vbLeft","left");vbBindHold("vbRight","right");
+(()=>{const j=document.getElementById("vbJump");const on=e=>{e.preventDefault();vbInput.jump=true;};const off=e=>{e.preventDefault();vbInput.jump=false;};
+ j.addEventListener("pointerdown",on);j.addEventListener("pointerup",off);j.addEventListener("pointerleave",off);j.addEventListener("pointercancel",off);})();
+document.querySelectorAll("#vbMenu [data-mode]").forEach(b=>b.addEventListener("click",()=>vbStart(b.dataset.mode)));
+document.getElementById("vbAgain").addEventListener("click",()=>vbStart(VB?VB.mode:"1v1"));
+document.getElementById("vbMenuBtn").addEventListener("click",()=>{document.getElementById("vbOver").style.display="none";document.getElementById("vbMenu").style.display="flex";document.getElementById("vbCtrl").style.display="none";});
+document.getElementById("vbOpen").addEventListener("click",()=>{
+ vbEl.classList.add("open");document.body.style.overflow="hidden";vbOpen=true;vbLast=0;
+ vbSize();
+ document.getElementById("vbMenu").style.display="flex";document.getElementById("vbOver").style.display="none";document.getElementById("vbCtrl").style.display="none";
+ cancelAnimationFrame(vbRAF);vbRAF=requestAnimationFrame(vbLoop);
 });
-document.getElementById("bloxClose").addEventListener("click",()=>{
- if(BR&&BR.state==="playing")bloxDie(); /* bank coins even on quit */
- bloxOpenFlag=false;cancelAnimationFrame(bloxRAF);
- blox.classList.remove("open");document.body.style.overflow="";
- renderBloxShop();
-});
-bloxCv.addEventListener("pointerdown",e=>{e.preventDefault();bloxJump()});
+document.getElementById("vbClose").addEventListener("click",()=>{vbOpen=false;cancelAnimationFrame(vbRAF);vbEl.classList.remove("open");document.body.style.overflow="";});
 document.addEventListener("keydown",e=>{
- if(!bloxOpenFlag)return;
- if(e.code==="Space"||e.key==="ArrowUp"){e.preventDefault();bloxJump()}
+ if(!vbOpen)return;
+ if(e.key==="ArrowLeft"||e.key==="a"){vbInput.left=true;e.preventDefault();}
+ else if(e.key==="ArrowRight"||e.key==="d"){vbInput.right=true;e.preventDefault();}
+ else if(e.code==="Space"||e.key==="ArrowUp"||e.key==="w"){vbInput.jump=true;e.preventDefault();}
 });
-addEventListener("resize",()=>{if(bloxOpenFlag)bloxSize()});
-renderBloxShop();
-
+document.addEventListener("keyup",e=>{
+ if(!vbOpen)return;
+ if(e.key==="ArrowLeft"||e.key==="a")vbInput.left=false;
+ else if(e.key==="ArrowRight"||e.key==="d")vbInput.right=false;
+ else if(e.code==="Space"||e.key==="ArrowUp"||e.key==="w")vbInput.jump=false;
+});
+addEventListener("resize",()=>{if(vbOpen)vbSize()});
+vbUpdateStats();
 /* ============ EMILY'S CORNER (age 8) ============ */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 /* open activity modals from Emily's tiles/links */
