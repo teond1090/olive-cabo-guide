@@ -159,28 +159,19 @@
   .caption-out{background:rgba(255,255,255,.18);border-radius:14px;padding:16px 14px;font-weight:800;font-size:1.05rem;text-align:center;min-height:3.2em;display:flex;align-items:center;justify-content:center}
   .gh-time{font-family:var(--font-display);font-size:2.3rem;font-weight:700;color:var(--coral);line-height:1.1;margin-bottom:6px}
 
-  /* ---------- Cabo Word (Jade's game) ---------- */
-  .wd-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-  .wd-mode{font-size:.76rem;font-weight:700;color:#7b3f8f;background:#f6e4f2;border-radius:99px;padding:5px 13px;cursor:pointer}
-  .wd-streak{font-size:.9rem;font-weight:800;color:#e8703a}
-  .wd-board{display:flex;flex-direction:column;gap:6px;align-items:center;margin:0 auto 12px;max-width:288px}
-  .wd-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
-  .wd-tile{aspect-ratio:1;border:2px solid var(--sand-dark);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:1.5rem;text-transform:uppercase;color:var(--ink);background:#fff}
-  .wd-tile.filled{border-color:#b98ca8}
-  .wd-tile.correct{background:#4caf7d;border-color:#4caf7d;color:#fff}
-  .wd-tile.present{background:#e6b93f;border-color:#e6b93f;color:#fff}
-  .wd-tile.absent{background:#9a9a9a;border-color:#9a9a9a;color:#fff}
-  .wd-msg{text-align:center;font-weight:700;min-height:1.4em;color:#7b3f8f;margin-bottom:8px}
-  .wd-keys{display:flex;flex-direction:column;gap:6px;align-items:stretch;max-width:460px;margin:0 auto}
-  .wd-krow{display:flex;gap:5px;justify-content:center}
-  .wd-key{border:none;border-radius:7px;background:#e7dde3;color:var(--ink);font-family:var(--font-body);font-weight:700;font-size:.82rem;padding:13px 2px;cursor:pointer;text-transform:uppercase;transition:.12s;flex:1;min-width:0}
-  .wd-key.wide{flex:1.5;font-size:.66rem}
-  .wd-key.correct{background:#4caf7d;color:#fff}
-  .wd-key.present{background:#e6b93f;color:#fff}
-  .wd-key.absent{background:#a3a3a3;color:#fff}
-  .wd-actions{display:flex;gap:8px;justify-content:center;margin-top:14px}
-  .wd-btn{border:none;border-radius:99px;background:#c45ba2;color:#fff;font-family:var(--font-body);font-weight:700;font-size:.82rem;padding:9px 16px;cursor:pointer}
-  .wd-btn.on{background:#7b3f8f}
+  /* ---------- Cabo Blox (Jade's obby) ---------- */
+  .widget.blox-card{background:linear-gradient(160deg,#33364a,#1e2030);color:#fff;border:none;box-shadow:var(--shadow-lg)}
+  .blox-meta{display:flex;gap:18px;font-size:.95rem;margin-bottom:8px}
+  .blox-lab{font-size:.68rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;opacity:.75;margin:14px 0 6px}
+  .blox-shop{display:flex;gap:6px;flex-wrap:wrap}
+  .blox-shop button{border:1.5px solid #4a4e66;background:#2a2d40;color:#eee;border-radius:99px;padding:8px 12px;font-family:var(--font-body);font-weight:700;font-size:.78rem;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.12s}
+  .blox-shop button:hover{background:#3a3e58}
+  .blox-shop button.eq{background:#e2231a;border-color:#e2231a;color:#fff}
+  .blox-shop .sw{width:15px;height:15px;border-radius:4px;display:inline-block}
+  .blox{position:fixed;inset:0;z-index:98;background:#0d2a3d;display:none;flex-direction:column}
+  .blox.open{display:flex}
+  .blox-stage{flex:1;position:relative;overflow:hidden}
+  .blox-stage canvas{position:absolute;inset:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 
   /* ---------- Emily's Corner (age 8) ---------- */
   .ct-emily{background:linear-gradient(140deg,#ff8fce,#8a63d2)}
@@ -875,21 +866,19 @@
       </div>
     </div>
 
-    <!-- CABO WORD GAME -->
-    <div class="sec-head reveal" style="margin-top:22px"><h2 style="font-size:1.4rem">Cabo Word 🌴</h2><span class="tag" style="background:#c45ba2">Daily game</span></div>
-    <div class="widget reveal wordle" id="wordle">
-      <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:6px">Guess the 5-letter Cabo word in 6 tries. Green = right spot, yellow = wrong spot. A fresh word every day — or hit ♾️ for endless. 🌴</p>
-      <div class="wd-topbar">
-        <span class="wd-mode" id="wdModeLabel">Today's word</span>
-        <span class="wd-streak" id="wdStreak">🔥 0</span>
+    <!-- CABO BLOX OBBY -->
+    <div class="sec-head reveal" style="margin-top:22px"><h2 style="font-size:1.4rem">Cabo Blox 🧱</h2><span class="tag" style="background:#e2231a">Obby!</span></div>
+    <div class="widget reveal blox-card">
+      <div class="blox-meta">
+        <span>🪙 <b id="bloxBank">0</b> coins</span>
+        <span>🏆 Best run: <b id="bloxBestLbl">0m</b></span>
       </div>
-      <div class="wd-board" id="wdBoard"></div>
-      <div class="wd-msg" id="wdMsg"></div>
-      <div class="wd-keys" id="wdKeys"></div>
-      <div class="wd-actions">
-        <button class="wd-btn" id="wdEndless">♾️ Endless</button>
-        <button class="wd-btn" id="wdShare">📋 Share result</button>
-      </div>
+      <p style="font-size:.85rem;opacity:.92">Run the beach obby! Jump the gaps, dodge the 🔥 lava blocks, and grab every coin — then spend them on hats and outfit colors for your avatar. Tap to jump, tap again mid-air for a double jump. How far can you get?</p>
+      <button class="c-btn" id="bloxOpen" style="background:#e2231a;color:#fff;font-weight:800;margin-top:8px">▶ Play Cabo Blox</button>
+      <div class="blox-lab">🎩 Hats</div>
+      <div class="blox-shop" id="bloxHats"></div>
+      <div class="blox-lab">👕 Outfit color</div>
+      <div class="blox-shop" id="bloxColors"></div>
     </div>
 
     <!-- CAMERA STUDIOS -->
@@ -1338,6 +1327,16 @@
   <input type="file" id="magicFile" accept="image/*" style="display:none">
 </div>
 
+<!-- CABO BLOX OBBY -->
+<div class="blox" id="blox">
+  <div class="booth-head">
+    <button class="f-back" id="bloxClose">‹ Exit</button>
+    <div class="f-title">🧱 Cabo Blox</div>
+    <div class="f-back" style="pointer-events:none"><span id="bloxDist">0m</span> · <span id="bloxRunCoins">🪙 0</span></div>
+  </div>
+  <div class="blox-stage" id="bloxStage"><canvas id="bloxCanvas"></canvas></div>
+</div>
+
 <!-- IN-OLIVE BOOKING FRAME -->
 <div class="frame-overlay" id="frameOverlay">
   <div class="frame-head">
@@ -1514,7 +1513,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v24-2026-07-13";
+const OLIVE_BUILD="v25-2026-07-13";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -2095,105 +2094,172 @@ document.getElementById("jadeChallengeRoll").addEventListener("click",()=>{
 });
 document.getElementById("jadeChallengeShoot").addEventListener("click",()=>document.getElementById("boothOpen").click());
 
-/* ============ CABO WORD (Jade's Wordle-style game) ============ */
-const WD_WORDS=["BEACH","OCEAN","WAVES","CORAL","SHELL","WHALE","TACOS","SALSA","MANGO","SANDY","PALMS","SUNNY","RELAX","BOATS","PEARL","TIDES","LIMES","PARTY","MUSIC","DANCE","SMILE","HAPPY","FLOAT","JUICE","FRUIT","HONEY","LEMON","CANDY","DREAM","MAGIC","SHINE","STARS","NIGHT","LIGHT","HEART","VIBES","QUEEN","BRAVE","PEACH","BERRY"];
-const WD_WIN=["Splash! 🌊","Nailed it! 🌴","You're a natural 😎","Iconic. 💅","Too easy? 🔥","Genius. 🧠✨"];
-let wdAnswer="",wdGuesses=[],wdCurrent="",wdOver=false,wdMode="daily";
-function wdToday(){const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
-function wdYesterday(){const d=new Date(Date.now()-864e5);return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
-function wdDailyAnswer(){const d=new Date(),n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5);return WD_WORDS[n%WD_WORDS.length]}
-function wdScore(guess,answer){
- const res=Array(5).fill("absent"),a=answer.split("");
- for(let i=0;i<5;i++)if(guess[i]===a[i]){res[i]="correct";a[i]=null}
- for(let i=0;i<5;i++){if(res[i]==="correct")continue;const j=a.indexOf(guess[i]);if(j>-1){res[i]="present";a[j]=null}}
- return res;
+/* ============ CABO BLOX — Jade's obby (Roblox-style runner + avatar shop) ============ */
+const BLOX_HATS=[["none","🚫 No hat",0],["cap","🧢 Cap",25],["flower","🌺 Flower",40],["shades","🕶️ Shades",60],["flamingo","🦩 Flamingo",90],["crown","👑 Crown",150]];
+const BLOX_HAT_E={none:"",cap:"🧢",flower:"🌺",shades:"🕶️",flamingo:"🦩",crown:"👑"};
+const BLOX_COLORS=[["coral","#ff7e6b",0],["teal","#39c5bb",0],["purple","#9b6bff",30],["pink","#ff6bb3",30],["gold","#ffb14e",60],["midnight","#565b78",60]];
+let bloxCoins=store.get("blox-coins",0),bloxBest=store.get("blox-best",0);
+let bloxOwned=store.get("blox-owned",["none","coral","teal"]);
+let bloxHat=store.get("blox-hat","none"),bloxColor=store.get("blox-color","coral");
+function bloxColorHex(){const c=BLOX_COLORS.find(c=>c[0]===bloxColor);return c?c[1]:"#ff7e6b"}
+function bloxSaveMeta(){store.set("blox-coins",bloxCoins);store.set("blox-best",bloxBest);store.set("blox-owned",bloxOwned);store.set("blox-hat",bloxHat);store.set("blox-color",bloxColor)}
+function renderBloxShop(){
+ document.getElementById("bloxBank").textContent=bloxCoins;
+ document.getElementById("bloxBestLbl").textContent=bloxBest+"m";
+ document.getElementById("bloxHats").innerHTML=BLOX_HATS.map(([id,label,cost])=>{
+  const owned=bloxOwned.includes(id);
+  return `<button data-hat="${id}" class="${bloxHat===id?"eq":""}">${label}${owned?"":" · 🪙"+cost}</button>`;
+ }).join("");
+ document.getElementById("bloxColors").innerHTML=BLOX_COLORS.map(([id,hex,cost])=>{
+  const owned=bloxOwned.includes(id);
+  return `<button data-color="${id}" class="${bloxColor===id?"eq":""}"><span class="sw" style="background:${hex}"></span>${owned?id:"🪙"+cost}</button>`;
+ }).join("");
 }
-function wdMsg(t){document.getElementById("wdMsg").textContent=t}
-function wdUpdateStreak(){document.getElementById("wdStreak").textContent="🔥 "+store.get("wd-streak-n",0)}
-function wdKeyStatus(){
- const st={},rank={absent:0,present:1,correct:2};
- wdGuesses.forEach(g=>{const res=wdScore(g,wdAnswer);for(let i=0;i<5;i++){const k=g[i];if(!(k in st)||rank[res[i]]>rank[st[k]])st[k]=res[i]}});
- return st;
-}
-function wdRender(){
- let html="";
- for(let r=0;r<6;r++){
-  html+='<div class="wd-row">';
-  const g=wdGuesses[r];
-  for(let c=0;c<5;c++){
-   if(g){const res=wdScore(g,wdAnswer);html+=`<div class="wd-tile ${res[c]}">${g[c]}</div>`}
-   else if(r===wdGuesses.length){const ch=wdCurrent[c]||"";html+=`<div class="wd-tile ${ch?"filled":""}">${ch}</div>`}
-   else html+='<div class="wd-tile"></div>';
-  }
-  html+='</div>';
+function bloxBuyEquip(id,cost,label,equip){
+ if(!bloxOwned.includes(id)){
+  if(bloxCoins<cost){toast("Need 🪙"+cost+" — run the obby to earn more!");return}
+  bloxCoins-=cost;bloxOwned.push(id);toast("Unlocked "+label+"! 🎉");
  }
- document.getElementById("wdBoard").innerHTML=html;
- const st=wdKeyStatus();
- const rows=[["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["ENTER","Z","X","C","V","B","N","M","BACK"]];
- document.getElementById("wdKeys").innerHTML=rows.map(row=>'<div class="wd-krow">'+row.map(k=>{
-  const wide=k==="ENTER"||k==="BACK",label=k==="ENTER"?"Enter":k==="BACK"?"⌫":k;
-  return `<button class="wd-key ${wide?"wide":""} ${st[k]||""}" data-k="${k}">${label}</button>`;
- }).join("")+'</div>').join("");
+ equip();bloxSaveMeta();renderBloxShop();
 }
-function wdSaveDaily(){if(wdMode==="daily")store.set("wd-daily",{date:wdToday(),answer:wdAnswer,guesses:wdGuesses,over:wdOver})}
-function wdFinish(win){
- if(wdMode!=="daily")return;
- const today=wdToday();
- if(store.get("wd-last","")===today)return; /* already counted today */
- let streak=store.get("wd-streak-n",0);
- streak=win?(store.get("wd-last","")===wdYesterday()?streak+1:1):0;
- store.set("wd-streak-n",streak);store.set("wd-last",today);
- wdUpdateStreak();
-}
-function wdSubmit(){
- if(wdCurrent.length<5){wdMsg("Need 5 letters!");return}
- wdGuesses.push(wdCurrent);
- const win=wdCurrent===wdAnswer,lose=!win&&wdGuesses.length>=6;
- wdCurrent="";wdRender();
- if(win){wdOver=true;wdMsg(WD_WIN[Math.floor(Math.random()*WD_WIN.length)]);wdFinish(true)}
- else if(lose){wdOver=true;wdMsg("The word was "+wdAnswer+" 🌴");wdFinish(false)}
- else wdMsg("");
- wdSaveDaily();
-}
-function wdType(k){
- if(wdOver)return;
- if(k==="ENTER")return wdSubmit();
- if(k==="BACK"){wdCurrent=wdCurrent.slice(0,-1);return wdRender()}
- if(/^[A-Z]$/.test(k)&&wdCurrent.length<5){wdCurrent+=k;wdRender()}
-}
-function wdStartDaily(){
- wdMode="daily";document.getElementById("wdModeLabel").textContent="Today's word";document.getElementById("wdEndless").classList.remove("on");
- const s=store.get("wd-daily",null);
- if(s&&s.date===wdToday()){wdAnswer=s.answer;wdGuesses=s.guesses||[];wdOver=!!s.over}
- else{wdAnswer=wdDailyAnswer();wdGuesses=[];wdOver=false}
- wdCurrent="";wdRender();wdUpdateStreak();
- wdMsg(wdOver?(wdGuesses[wdGuesses.length-1]===wdAnswer?"Solved! Come back tomorrow 🌴":"The word was "+wdAnswer):"");
-}
-function wdStartEndless(){
- wdMode="endless";document.getElementById("wdModeLabel").textContent="Endless — tap for new";document.getElementById("wdEndless").classList.add("on");
- wdAnswer=WD_WORDS[Math.floor(Math.random()*WD_WORDS.length)];wdGuesses=[];wdCurrent="";wdOver=false;wdRender();wdMsg("");
-}
-document.getElementById("wdKeys").addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(b)wdType(b.dataset.k)});
-document.getElementById("wdModeLabel").addEventListener("click",()=>{if(wdMode!=="daily")wdStartDaily()});
-document.getElementById("wdEndless").addEventListener("click",wdStartEndless);
-document.getElementById("wdShare").addEventListener("click",()=>{
- if(!wdGuesses.length){toast("Play a round first! 🌴");return}
- const grid=wdGuesses.map(g=>wdScore(g,wdAnswer).map(s=>s==="correct"?"🟩":s==="present"?"🟨":"⬛").join("")).join("\n");
- const won=wdGuesses[wdGuesses.length-1]===wdAnswer;
- const text=`Cabo Word 🌴 ${won?wdGuesses.length:"X"}/6${wdMode==="daily"?" · 🔥"+store.get("wd-streak-n",0):""}\n`+grid;
- const done=()=>toast("📋 Copied — paste it to flex!");
- if(navigator.share){navigator.share({text}).catch(()=>{})}
- else if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text,done));
- else fallbackCopy(text,done);
+document.getElementById("bloxHats").addEventListener("click",e=>{
+ const b=e.target.closest("[data-hat]");if(!b)return;
+ const it=BLOX_HATS.find(h=>h[0]===b.dataset.hat);
+ bloxBuyEquip(it[0],it[2],it[1],()=>{bloxHat=it[0]});
 });
+document.getElementById("bloxColors").addEventListener("click",e=>{
+ const b=e.target.closest("[data-color]");if(!b)return;
+ const it=BLOX_COLORS.find(c=>c[0]===b.dataset.color);
+ bloxBuyEquip(it[0],it[2],it[0]+" outfit",()=>{bloxColor=it[0]});
+});
+/* --- the game --- */
+const blox=document.getElementById("blox"),bloxCv=document.getElementById("bloxCanvas"),bxc=bloxCv.getContext("2d");
+const BLOX_X=110,BLOX_W=34,BLOX_H=48,BLOX_G=1500;
+let bloxOpenFlag=false,bloxRAF=null,bloxLastTs=0,BR=null;
+function bloxSize(){const st=document.getElementById("bloxStage");bloxCv.width=st.clientWidth||360;bloxCv.height=st.clientHeight||520}
+function bloxNewRun(){
+ BR={state:"ready",worldX:0,speed:230,dist:0,coins:0,py:0,vy:0,jumps:0,phase:0,plats:[],genX:0,dead:false};
+ BR.plats.push({x:-80,w:460,y:Math.round(bloxCv.height*.62),lava:false,coins:[]});
+ BR.genX=380;bloxGen();
+ BR.py=BR.plats[0].y-BLOX_H;
+}
+function bloxGen(){
+ while(BR.genX<BR.worldX+bloxCv.width+300){
+  const gap=60+Math.random()*90+Math.min(70,BR.dist*.15);
+  const w=110+Math.random()*150;
+  const prev=BR.plats[BR.plats.length-1];
+  let y=prev.y+(Math.random()*160-80);
+  y=Math.max(bloxCv.height*.30,Math.min(bloxCv.height*.80,y));
+  const lava=!prev.lava&&Math.random()<Math.min(.28,.10+BR.dist*.0006);
+  const x=BR.genX+gap,p={x,w,y:Math.round(y),lava,coins:[]};
+  if(!lava&&Math.random()<.55){const n=1+Math.floor(Math.random()*3);for(let i=0;i<n;i++)p.coins.push({x:x+w*(i+1)/(n+1),y:p.y-52,got:false})}
+  BR.plats.push(p);BR.genX=x+w;
+ }
+ while(BR.plats.length&&BR.plats[0].x+BR.plats[0].w<BR.worldX-120)BR.plats.shift();
+}
+function bloxJump(){
+ if(!BR)return;
+ if(BR.state==="ready"){BR.state="playing";return}
+ if(BR.state==="dead"){bloxNewRun();return}
+ if(BR.jumps<2){BR.vy=BR.jumps===0?-640:-560;BR.jumps++}
+}
+function bloxDie(){
+ if(BR.dead)return;BR.dead=true;BR.state="dead";
+ bloxCoins+=BR.coins;
+ if(Math.floor(BR.dist)>bloxBest)bloxBest=Math.floor(BR.dist);
+ bloxSaveMeta();
+}
+function bloxStep(dt){
+ if(!BR||BR.state!=="playing")return;
+ BR.speed=Math.min(430,230+BR.dist*.35);
+ BR.worldX+=BR.speed*dt;
+ BR.dist=BR.worldX/50;
+ BR.phase+=dt*11;
+ const prevBottom=BR.py+BLOX_H;
+ BR.vy+=BLOX_G*dt;BR.py+=BR.vy*dt;
+ const newBottom=BR.py+BLOX_H,px=BR.worldX+BLOX_X;
+ for(const p of BR.plats){
+  if(px+BLOX_W*.7<p.x||px-BLOX_W*.7>p.x+p.w)continue;
+  if(BR.vy>=0&&prevBottom<=p.y+2&&newBottom>=p.y){
+   if(p.lava){bloxDie();return}
+   BR.py=p.y-BLOX_H;BR.vy=0;BR.jumps=0;
+  }
+  for(const c of p.coins)if(!c.got&&Math.abs(c.x-px)<32&&Math.abs(c.y-(BR.py+BLOX_H/2))<46){c.got=true;BR.coins++}
+ }
+ if(BR.py>bloxCv.height+80)bloxDie();
+ bloxGen();
+}
+function bloxText(x,txt,font,cx,cy){x.font=font;x.strokeText(txt,cx,cy);x.fillText(txt,cx,cy)}
+function bloxDraw(){
+ if(!BR)return;
+ const w=bloxCv.width,h=bloxCv.height,x=bxc;
+ const g=x.createLinearGradient(0,0,0,h);
+ g.addColorStop(0,"#8fd8f7");g.addColorStop(.7,"#cdeefb");g.addColorStop(.701,"#2e9ec9");g.addColorStop(1,"#1a6f96");
+ x.fillStyle=g;x.fillRect(0,0,w,h);
+ x.font="34px serif";x.fillText("☀️",w-66,52);
+ x.font="22px serif";x.fillText("⛵",(w-((BR.worldX*.25)%(w+80)))|0,h*.66);
+ for(const p of BR.plats){
+  const sx=p.x-BR.worldX;
+  if(sx>w||sx+p.w<0)continue;
+  x.fillStyle=p.lava?"#ff5230":"#e8c37a";x.fillRect(sx,p.y,p.w,16);
+  x.fillStyle=p.lava?"#b52a0c":"#c9a25a";x.fillRect(sx,p.y+16,p.w,9);
+  if(p.lava){x.font="15px serif";x.fillText("🔥",sx+p.w/2-8,p.y-5)}
+  x.font="20px serif";
+  for(const c of p.coins)if(!c.got)x.fillText("🪙",c.x-BR.worldX-10,c.y+8);
+ }
+ /* blocky avatar */
+ x.save();x.translate(BLOX_X,BR.py);
+ const lp=BR.state==="playing"?Math.sin(BR.phase)*5:0;
+ x.fillStyle="#565b78";
+ x.fillRect(4,BLOX_H-13,10,13+lp);x.fillRect(BLOX_W-14,BLOX_H-13,10,13-lp);
+ x.fillStyle=bloxColorHex();
+ x.fillRect(0,14,BLOX_W,24);x.fillRect(-7,16,7,15);x.fillRect(BLOX_W,16,7,15);
+ x.fillStyle="#ffd23f";x.fillRect(3,-8,BLOX_W-6,22);
+ x.fillStyle="#333";x.fillRect(9,-2,4,6);x.fillRect(BLOX_W-13,-2,4,6);x.fillRect(11,8,BLOX_W-22,3);
+ const hat=BLOX_HAT_E[bloxHat];
+ if(hat){x.font="24px serif";x.textAlign="center";x.fillText(hat,BLOX_W/2,-12);x.textAlign="left"}
+ x.restore();
+ document.getElementById("bloxDist").textContent=Math.floor(BR.dist)+"m";
+ document.getElementById("bloxRunCoins").textContent="🪙 "+BR.coins;
+ x.textAlign="center";x.fillStyle="#fff";x.strokeStyle="rgba(0,0,0,.4)";x.lineWidth=4;x.lineJoin="round";
+ if(BR.state==="ready"){
+  bloxText(x,"CABO BLOX 🧱","800 28px Inter,sans-serif",w/2,h*.30);
+  bloxText(x,"Tap to start!","700 17px Inter,sans-serif",w/2,h*.30+34);
+  bloxText(x,"Tap = jump · tap again in the air = double jump","600 13px Inter,sans-serif",w/2,h*.30+58);
+  bloxText(x,"Grab 🪙 for the shop · don't touch the 🔥!","600 13px Inter,sans-serif",w/2,h*.30+78);
+ }else if(BR.state==="dead"){
+  bloxText(x,"WIPEOUT! 🌊","800 28px Inter,sans-serif",w/2,h*.32);
+  bloxText(x,Math.floor(BR.dist)+"m · +"+BR.coins+" 🪙 banked","700 16px Inter,sans-serif",w/2,h*.32+32);
+  bloxText(x,(Math.floor(BR.dist)>=bloxBest&&bloxBest>0?"🏆 NEW BEST! ":"Best: "+bloxBest+"m — ")+"tap to go again","600 14px Inter,sans-serif",w/2,h*.32+56);
+ }
+ x.textAlign="left";
+}
+function bloxLoop(ts){
+ if(!bloxOpenFlag)return;
+ const dt=Math.min(.035,bloxLastTs?(ts-bloxLastTs)/1000:.016);
+ bloxLastTs=ts;
+ bloxStep(dt);bloxDraw();
+ bloxRAF=requestAnimationFrame(bloxLoop);
+}
+document.getElementById("bloxOpen").addEventListener("click",()=>{
+ blox.classList.add("open");document.body.style.overflow="hidden";
+ bloxOpenFlag=true;bloxLastTs=0;
+ bloxSize();bloxNewRun();bloxDraw();
+ cancelAnimationFrame(bloxRAF);bloxRAF=requestAnimationFrame(bloxLoop);
+});
+document.getElementById("bloxClose").addEventListener("click",()=>{
+ if(BR&&BR.state==="playing")bloxDie(); /* bank coins even on quit */
+ bloxOpenFlag=false;cancelAnimationFrame(bloxRAF);
+ blox.classList.remove("open");document.body.style.overflow="";
+ renderBloxShop();
+});
+bloxCv.addEventListener("pointerdown",e=>{e.preventDefault();bloxJump()});
 document.addEventListener("keydown",e=>{
- if(!document.getElementById("view-jade").classList.contains("active"))return;
- const ae=document.activeElement;if(ae&&/input|textarea/i.test(ae.tagName))return;
- if(e.key==="Enter"){e.preventDefault();wdType("ENTER")}
- else if(e.key==="Backspace"){e.preventDefault();wdType("BACK")}
- else if(/^[a-zA-Z]$/.test(e.key)){e.preventDefault();wdType(e.key.toUpperCase())}
+ if(!bloxOpenFlag)return;
+ if(e.code==="Space"||e.key==="ArrowUp"){e.preventDefault();bloxJump()}
 });
-wdStartDaily();
+addEventListener("resize",()=>{if(bloxOpenFlag)bloxSize()});
+renderBloxShop();
 
 /* ============ EMILY'S CORNER (age 8) ============ */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
