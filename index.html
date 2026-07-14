@@ -159,6 +159,29 @@
   .caption-out{background:rgba(255,255,255,.18);border-radius:14px;padding:16px 14px;font-weight:800;font-size:1.05rem;text-align:center;min-height:3.2em;display:flex;align-items:center;justify-content:center}
   .gh-time{font-family:var(--font-display);font-size:2.3rem;font-weight:700;color:var(--coral);line-height:1.1;margin-bottom:6px}
 
+  /* ---------- Cabo Word (Jade's game) ---------- */
+  .wd-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .wd-mode{font-size:.76rem;font-weight:700;color:#7b3f8f;background:#f6e4f2;border-radius:99px;padding:5px 13px;cursor:pointer}
+  .wd-streak{font-size:.9rem;font-weight:800;color:#e8703a}
+  .wd-board{display:flex;flex-direction:column;gap:6px;align-items:center;margin:0 auto 12px;max-width:288px}
+  .wd-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%}
+  .wd-tile{aspect-ratio:1;border:2px solid var(--sand-dark);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:1.5rem;text-transform:uppercase;color:var(--ink);background:#fff}
+  .wd-tile.filled{border-color:#b98ca8}
+  .wd-tile.correct{background:#4caf7d;border-color:#4caf7d;color:#fff}
+  .wd-tile.present{background:#e6b93f;border-color:#e6b93f;color:#fff}
+  .wd-tile.absent{background:#9a9a9a;border-color:#9a9a9a;color:#fff}
+  .wd-msg{text-align:center;font-weight:700;min-height:1.4em;color:#7b3f8f;margin-bottom:8px}
+  .wd-keys{display:flex;flex-direction:column;gap:6px;align-items:stretch;max-width:460px;margin:0 auto}
+  .wd-krow{display:flex;gap:5px;justify-content:center}
+  .wd-key{border:none;border-radius:7px;background:#e7dde3;color:var(--ink);font-family:var(--font-body);font-weight:700;font-size:.82rem;padding:13px 2px;cursor:pointer;text-transform:uppercase;transition:.12s;flex:1;min-width:0}
+  .wd-key.wide{flex:1.5;font-size:.66rem}
+  .wd-key.correct{background:#4caf7d;color:#fff}
+  .wd-key.present{background:#e6b93f;color:#fff}
+  .wd-key.absent{background:#a3a3a3;color:#fff}
+  .wd-actions{display:flex;gap:8px;justify-content:center;margin-top:14px}
+  .wd-btn{border:none;border-radius:99px;background:#c45ba2;color:#fff;font-family:var(--font-body);font-weight:700;font-size:.82rem;padding:9px 16px;cursor:pointer}
+  .wd-btn.on{background:#7b3f8f}
+
   /* ---------- Emily's Corner (age 8) ---------- */
   .ct-emily{background:linear-gradient(140deg,#ff8fce,#8a63d2)}
   .emi-stickers{font-size:1.8rem;letter-spacing:.28em;text-align:center;margin:14px 0 0;filter:drop-shadow(0 2px 3px rgba(138,99,210,.28))}
@@ -244,8 +267,24 @@
   .pet-stat .lab{width:92px;flex-shrink:0}
   .pet-bar{flex:1;height:13px;background:rgba(255,255,255,.28);border-radius:99px;overflow:hidden}
   .pet-bar i{display:block;height:100%;border-radius:99px;transition:width .4s,background .4s}
-  .pet-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .pet-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   .pet-actions button{background:#fff;color:#0a6ba0;border:none;border-radius:14px;padding:13px 4px;font-weight:800;font-family:var(--font-body);font-size:.82rem;cursor:pointer;transition:.15s}
+  .pet-stage-lbl{background:rgba(255,255,255,.25);border-radius:99px;padding:2px 10px;font-size:.68rem;font-weight:700}
+  .pet-avatar.st-baby{font-size:3.3rem}
+  .pet-avatar.st-teen{font-size:4.3rem}
+  .pet-avatar.st-adult{font-size:5rem}
+  .pet-avatar.egg{font-size:3.6rem;animation:eggWob 1.2s ease-in-out infinite}
+  @keyframes eggWob{0%,100%{transform:translateX(-50%) rotate(-7deg)}50%{transform:translateX(-50%) rotate(7deg)}}
+  .pet-poops{position:absolute;left:10px;bottom:8px;display:flex;gap:1px;font-size:1.1rem;line-height:1}
+  .pet-sick-badge{position:absolute;right:12px;top:12px;font-size:1.5rem;display:none}
+  .pet-sick-badge.on{display:block;animation:petBob 1.2s ease-in-out infinite}
+  .pet-agebar{text-align:center;font-size:.74rem;opacity:.9;margin:10px 0 2px}
+  .pet-mini{position:absolute;inset:0;display:none;padding:8px 10px}
+  .pet-mini.on{display:block;background:rgba(8,40,60,.32)}
+  .pet-mini .hud{position:absolute;top:8px;color:#fff;font-weight:800;font-size:.82rem;text-shadow:0 1px 2px rgba(0,0,0,.45)}
+  #petMiniScore{left:12px}
+  #petMiniTime{right:12px}
+  .pet-target{position:absolute;left:50%;top:50%;font-size:2.5rem;cursor:pointer;user-select:none;transition:left .09s,top .09s;transform:translate(-50%,-50%);filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
   .pet-actions button:hover{transform:translateY(-2px)}
   .pet-actions button:active{transform:translateY(0)}
   .pet-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
@@ -605,6 +644,7 @@
     <a href="#/chat" data-view="chat">💬 Chat</a>
     <a href="#/jade" data-view="jade">🏐 Jade's Corner</a>
     <a href="#/emily" data-view="emily">🦄 Emily's Corner</a>
+    <a href="#/studio" data-view="studio">🎨 Photo Magic</a>
     <a href="#/resort" data-view="resort">🏨 Home Base</a>
     <a href="#/tools" data-view="tools">🧳 Tools & Tips</a>
   </div>
@@ -642,6 +682,7 @@
       <button class="tile ct-free" data-goto="schedule"><span class="t-emoji">📅</span><b>Family Schedule</b><span>What's on today — shared live</span></button>
       <button class="tile ct-land" data-goto="chat"><span class="t-emoji">💬</span><b>Chat Room</b><span>The Cabo Crew — live</span></button>
       <button class="tile ct-resort" data-goto="resort"><span class="t-emoji">🏨</span><b>Home Base</b><span>Our Hyatt Ziva cheat sheet</span></button>
+      <button class="tile ct-jade" data-goto="studio"><span class="t-emoji">🎨</span><b>Photo Magic</b><span>Turn photos into art & animations</span></button>
       <button class="tile ct-food" data-goto="tools"><span class="t-emoji">🧳</span><b>Tools & Tips</b><span>Money · packing · Spanish</span></button>
     </div>
 
@@ -834,17 +875,34 @@
       </div>
     </div>
 
-    <div class="sec-head reveal" style="margin-top:22px"><h2 style="font-size:1.4rem">Photo Magic</h2><span class="tag" style="background:#6a5cff">New ✨</span></div>
-    <div class="two-col reveal">
-      <div class="widget" style="background:linear-gradient(150deg,#6a5cff,#c45ba2);color:#fff;display:flex;flex-direction:column;justify-content:center">
-        <h3 style="color:#fff">✨ Photo Magic Studio</h3>
-        <p style="font-size:.84rem;opacity:.94;margin-bottom:14px">Turn any photo into ART 🎨 — oil painting, watercolor, pencil sketch, pop-art, comic, neon or pixel — or bring it to LIFE 🎬 with sparkles, floating hearts, bubbles, rainbow shimmer, dreamy zoom & glitch. Take a pic or pick one, tap a style, then save & share.</p>
-        <button class="c-btn" style="background:#fff;color:#5b3fd0" id="magicOpen">✨ Open Photo Magic</button>
+    <!-- CABO WORD GAME -->
+    <div class="sec-head reveal" style="margin-top:22px"><h2 style="font-size:1.4rem">Cabo Word 🌴</h2><span class="tag" style="background:#c45ba2">Daily game</span></div>
+    <div class="widget reveal wordle" id="wordle">
+      <p style="font-size:.82rem;color:var(--ink-soft);margin-bottom:6px">Guess the 5-letter Cabo word in 6 tries. Green = right spot, yellow = wrong spot. A fresh word every day — or hit ♾️ for endless. 🌴</p>
+      <div class="wd-topbar">
+        <span class="wd-mode" id="wdModeLabel">Today's word</span>
+        <span class="wd-streak" id="wdStreak">🔥 0</span>
       </div>
+      <div class="wd-board" id="wdBoard"></div>
+      <div class="wd-msg" id="wdMsg"></div>
+      <div class="wd-keys" id="wdKeys"></div>
+      <div class="wd-actions">
+        <button class="wd-btn" id="wdEndless">♾️ Endless</button>
+        <button class="wd-btn" id="wdShare">📋 Share result</button>
+      </div>
+    </div>
+
+    <!-- CAMERA STUDIOS -->
+    <div class="two-col reveal" style="margin-top:14px">
       <div class="widget" style="background:linear-gradient(150deg,#c45ba2,#7b3f8f);color:#fff;display:flex;flex-direction:column;justify-content:center">
         <h3 style="color:#fff">🤳 Pro Photo Studio</h3>
-        <p style="font-size:.84rem;opacity:.92;margin-bottom:14px">11 live filters, 30+ Cabo stickers, captions, polaroid & film frames, a rule-of-thirds grid, self-timer, a 3-shot photo strip, and your own in-app camera roll. Snap, save, share. 📸✨</p>
+        <p style="font-size:.84rem;opacity:.92;margin-bottom:14px">Live camera with 11 filters, 30+ Cabo stickers, captions, frames, a grid, self-timer, a 3-shot photo strip, and your own in-app camera roll. 📸✨</p>
         <button class="c-btn" style="background:#fff;color:#7b3f8f" id="boothOpen">📸 Open the Photo Studio</button>
+      </div>
+      <div class="widget" style="background:linear-gradient(150deg,#6a5cff,#c45ba2);color:#fff;display:flex;flex-direction:column;justify-content:center">
+        <h3 style="color:#fff">✨ Photo Magic</h3>
+        <p style="font-size:.84rem;opacity:.94;margin-bottom:14px">Turn any photo into a painting or a living animation — now its own tab so everyone can use it! 🎨🎬</p>
+        <button class="c-btn" style="background:#fff;color:#5b3fd0" data-goto="studio">✨ Open Photo Magic</button>
       </div>
     </div>
 
@@ -890,22 +948,33 @@
       <div id="petPlay" style="display:none">
         <div class="pet-name-row">
           <b id="petNameLbl">Buddy</b>
+          <span class="pet-stage-lbl" id="petStageLbl">Baby</span>
           <span class="pet-level" id="petLevel">Lv 1</span>
           <button class="mini" id="petRename" title="Rename">✏️</button>
         </div>
-        <div class="pet-stage">
+        <div class="pet-stage" id="petStage">
           <div class="pet-sun">☀️</div>
           <div class="pet-avatar" id="petAvatar">🐢</div>
           <div class="pet-fx" id="petFx"></div>
+          <div class="pet-poops" id="petPoops"></div>
+          <div class="pet-sick-badge" id="petSickBadge">🤒</div>
+          <div class="pet-mini" id="petMini">
+            <div class="hud" id="petMiniScore">Score: 0</div>
+            <div class="hud" id="petMiniTime">8s</div>
+            <div class="pet-target" id="petTarget">🎾</div>
+          </div>
         </div>
         <div class="pet-say" id="petSay">Hi! 💛</div>
         <div class="pet-stats" id="petStats"></div>
         <div class="pet-actions">
           <button data-care="feed">🍤 Feed</button>
           <button data-care="play">🎾 Play</button>
-          <button data-care="wash">🫧 Wash</button>
+          <button data-care="wash">🫧 Bath</button>
+          <button data-care="clean">🧹 Clean</button>
           <button data-care="sleep">😴 Sleep</button>
+          <button data-care="med">💊 Medicine</button>
         </div>
+        <div class="pet-agebar"><span id="petAge">Age: 0 days</span> · <span id="petMoodLbl">😊 Happy</span></div>
         <button class="pet-reset" id="petReset">🔄 Adopt a different buddy</button>
       </div>
     </div>
@@ -982,6 +1051,32 @@
       <div class="pack-pct" id="emiPct">0% super-explorer</div>
       <div class="pack-cols" id="emiList"></div>
     </div>
+  </section>
+
+  </div>
+  <!-- ============ VIEW: PHOTO MAGIC ============ -->
+  <div class="view" id="view-studio">
+
+  <section id="studio">
+    <div class="sec-head reveal"><h2>Photo Magic</h2><span class="tag" style="background:#6a5cff">Everyone ✨</span></div>
+    <p class="sec-blurb reveal">Turn any photo into art — or bring it to life. For the whole family: take or pick a picture, tap a style, then save & share. Works even with no internet.</p>
+    <div class="widget reveal" style="background:linear-gradient(150deg,#6a5cff,#c45ba2);color:#fff;text-align:center;padding:34px 24px">
+      <div style="font-size:3rem">✨🎨🎬</div>
+      <h3 style="color:#fff;font-size:1.35rem;margin:10px 0 4px">Make something magic</h3>
+      <p style="opacity:.94;max-width:520px;margin:0 auto 20px">7 painting styles and 6 live animations, right from your photos.</p>
+      <button class="c-btn" style="background:#fff;color:#5b3fd0;font-size:1rem;padding:14px 28px" id="magicOpen">✨ Open Photo Magic</button>
+    </div>
+    <div class="two-col reveal" style="margin-top:14px">
+      <div class="widget">
+        <h3>🎨 Turn it into a painting</h3>
+        <p style="font-size:.86rem;color:var(--ink-soft)">Oil · Watercolor · Pencil Sketch · Pop Art · Comic · Neon · Pixel. Saves as an image straight to your camera roll & share sheet.</p>
+      </div>
+      <div class="widget">
+        <h3>🎬 Bring it to life</h3>
+        <p style="font-size:.86rem;color:var(--ink-soft)">Sparkle · Hearts · Bubbles · Rainbow · Dreamy Zoom · Glitch. Tap “🎬 Record 3s” to save a short video clip to share.</p>
+      </div>
+    </div>
+    <p class="sec-blurb reveal" style="margin-top:12px;font-size:.82rem">💡 Your saved shots from the 📸 Photo Studio appear as a one-tap pick — or choose any photo from your phone.</p>
   </section>
 
   </div>
@@ -1419,7 +1514,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v23-2026-07-13";
+const OLIVE_BUILD="v24-2026-07-13";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -2000,6 +2095,106 @@ document.getElementById("jadeChallengeRoll").addEventListener("click",()=>{
 });
 document.getElementById("jadeChallengeShoot").addEventListener("click",()=>document.getElementById("boothOpen").click());
 
+/* ============ CABO WORD (Jade's Wordle-style game) ============ */
+const WD_WORDS=["BEACH","OCEAN","WAVES","CORAL","SHELL","WHALE","TACOS","SALSA","MANGO","SANDY","PALMS","SUNNY","RELAX","BOATS","PEARL","TIDES","LIMES","PARTY","MUSIC","DANCE","SMILE","HAPPY","FLOAT","JUICE","FRUIT","HONEY","LEMON","CANDY","DREAM","MAGIC","SHINE","STARS","NIGHT","LIGHT","HEART","VIBES","QUEEN","BRAVE","PEACH","BERRY"];
+const WD_WIN=["Splash! 🌊","Nailed it! 🌴","You're a natural 😎","Iconic. 💅","Too easy? 🔥","Genius. 🧠✨"];
+let wdAnswer="",wdGuesses=[],wdCurrent="",wdOver=false,wdMode="daily";
+function wdToday(){const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+function wdYesterday(){const d=new Date(Date.now()-864e5);return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+function wdDailyAnswer(){const d=new Date(),n=Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5);return WD_WORDS[n%WD_WORDS.length]}
+function wdScore(guess,answer){
+ const res=Array(5).fill("absent"),a=answer.split("");
+ for(let i=0;i<5;i++)if(guess[i]===a[i]){res[i]="correct";a[i]=null}
+ for(let i=0;i<5;i++){if(res[i]==="correct")continue;const j=a.indexOf(guess[i]);if(j>-1){res[i]="present";a[j]=null}}
+ return res;
+}
+function wdMsg(t){document.getElementById("wdMsg").textContent=t}
+function wdUpdateStreak(){document.getElementById("wdStreak").textContent="🔥 "+store.get("wd-streak-n",0)}
+function wdKeyStatus(){
+ const st={},rank={absent:0,present:1,correct:2};
+ wdGuesses.forEach(g=>{const res=wdScore(g,wdAnswer);for(let i=0;i<5;i++){const k=g[i];if(!(k in st)||rank[res[i]]>rank[st[k]])st[k]=res[i]}});
+ return st;
+}
+function wdRender(){
+ let html="";
+ for(let r=0;r<6;r++){
+  html+='<div class="wd-row">';
+  const g=wdGuesses[r];
+  for(let c=0;c<5;c++){
+   if(g){const res=wdScore(g,wdAnswer);html+=`<div class="wd-tile ${res[c]}">${g[c]}</div>`}
+   else if(r===wdGuesses.length){const ch=wdCurrent[c]||"";html+=`<div class="wd-tile ${ch?"filled":""}">${ch}</div>`}
+   else html+='<div class="wd-tile"></div>';
+  }
+  html+='</div>';
+ }
+ document.getElementById("wdBoard").innerHTML=html;
+ const st=wdKeyStatus();
+ const rows=[["Q","W","E","R","T","Y","U","I","O","P"],["A","S","D","F","G","H","J","K","L"],["ENTER","Z","X","C","V","B","N","M","BACK"]];
+ document.getElementById("wdKeys").innerHTML=rows.map(row=>'<div class="wd-krow">'+row.map(k=>{
+  const wide=k==="ENTER"||k==="BACK",label=k==="ENTER"?"Enter":k==="BACK"?"⌫":k;
+  return `<button class="wd-key ${wide?"wide":""} ${st[k]||""}" data-k="${k}">${label}</button>`;
+ }).join("")+'</div>').join("");
+}
+function wdSaveDaily(){if(wdMode==="daily")store.set("wd-daily",{date:wdToday(),answer:wdAnswer,guesses:wdGuesses,over:wdOver})}
+function wdFinish(win){
+ if(wdMode!=="daily")return;
+ const today=wdToday();
+ if(store.get("wd-last","")===today)return; /* already counted today */
+ let streak=store.get("wd-streak-n",0);
+ streak=win?(store.get("wd-last","")===wdYesterday()?streak+1:1):0;
+ store.set("wd-streak-n",streak);store.set("wd-last",today);
+ wdUpdateStreak();
+}
+function wdSubmit(){
+ if(wdCurrent.length<5){wdMsg("Need 5 letters!");return}
+ wdGuesses.push(wdCurrent);
+ const win=wdCurrent===wdAnswer,lose=!win&&wdGuesses.length>=6;
+ wdCurrent="";wdRender();
+ if(win){wdOver=true;wdMsg(WD_WIN[Math.floor(Math.random()*WD_WIN.length)]);wdFinish(true)}
+ else if(lose){wdOver=true;wdMsg("The word was "+wdAnswer+" 🌴");wdFinish(false)}
+ else wdMsg("");
+ wdSaveDaily();
+}
+function wdType(k){
+ if(wdOver)return;
+ if(k==="ENTER")return wdSubmit();
+ if(k==="BACK"){wdCurrent=wdCurrent.slice(0,-1);return wdRender()}
+ if(/^[A-Z]$/.test(k)&&wdCurrent.length<5){wdCurrent+=k;wdRender()}
+}
+function wdStartDaily(){
+ wdMode="daily";document.getElementById("wdModeLabel").textContent="Today's word";document.getElementById("wdEndless").classList.remove("on");
+ const s=store.get("wd-daily",null);
+ if(s&&s.date===wdToday()){wdAnswer=s.answer;wdGuesses=s.guesses||[];wdOver=!!s.over}
+ else{wdAnswer=wdDailyAnswer();wdGuesses=[];wdOver=false}
+ wdCurrent="";wdRender();wdUpdateStreak();
+ wdMsg(wdOver?(wdGuesses[wdGuesses.length-1]===wdAnswer?"Solved! Come back tomorrow 🌴":"The word was "+wdAnswer):"");
+}
+function wdStartEndless(){
+ wdMode="endless";document.getElementById("wdModeLabel").textContent="Endless — tap for new";document.getElementById("wdEndless").classList.add("on");
+ wdAnswer=WD_WORDS[Math.floor(Math.random()*WD_WORDS.length)];wdGuesses=[];wdCurrent="";wdOver=false;wdRender();wdMsg("");
+}
+document.getElementById("wdKeys").addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(b)wdType(b.dataset.k)});
+document.getElementById("wdModeLabel").addEventListener("click",()=>{if(wdMode!=="daily")wdStartDaily()});
+document.getElementById("wdEndless").addEventListener("click",wdStartEndless);
+document.getElementById("wdShare").addEventListener("click",()=>{
+ if(!wdGuesses.length){toast("Play a round first! 🌴");return}
+ const grid=wdGuesses.map(g=>wdScore(g,wdAnswer).map(s=>s==="correct"?"🟩":s==="present"?"🟨":"⬛").join("")).join("\n");
+ const won=wdGuesses[wdGuesses.length-1]===wdAnswer;
+ const text=`Cabo Word 🌴 ${won?wdGuesses.length:"X"}/6${wdMode==="daily"?" · 🔥"+store.get("wd-streak-n",0):""}\n`+grid;
+ const done=()=>toast("📋 Copied — paste it to flex!");
+ if(navigator.share){navigator.share({text}).catch(()=>{})}
+ else if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text,done));
+ else fallbackCopy(text,done);
+});
+document.addEventListener("keydown",e=>{
+ if(!document.getElementById("view-jade").classList.contains("active"))return;
+ const ae=document.activeElement;if(ae&&/input|textarea/i.test(ae.tagName))return;
+ if(e.key==="Enter"){e.preventDefault();wdType("ENTER")}
+ else if(e.key==="Backspace"){e.preventDefault();wdType("BACK")}
+ else if(/^[a-zA-Z]$/.test(e.key)){e.preventDefault();wdType(e.key.toUpperCase())}
+});
+wdStartDaily();
+
 /* ============ EMILY'S CORNER (age 8) ============ */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 /* open activity modals from Emily's tiles/links */
@@ -2119,27 +2314,44 @@ emiEl.addEventListener("change",e=>{
 });
 emiBar();
 
-/* -- Emily's Cabo Pet (a little life-sim: needs decay over real time, actions restore them, care earns levels) -- */
+/* -- Emily's Cabo Pet: a real Tamagotchi — eggs hatch & evolve, needs decay in real time,
+   it poops, can get sick, and "Play" is an interactive tap mini-game. -- */
 const PET_NAMES={"🐢":"Shelly","🐬":"Splash","🦀":"Pinchy","🐠":"Bubbles"};
-const PET_DECAY={hunger:.6,fun:.5,energy:.35,clean:.3}; /* points lost per real minute */
+const PET_DECAY={hunger:.6,fun:.5,energy:.35,clean:.3}; /* per real minute */
+const PET_POOP_MIN=7; /* a poop every ~7 min */
 const PET_STATS=[["hunger","🍤","Tummy"],["fun","🎾","Fun"],["energy","⚡","Energy"],["clean","🫧","Clean"]];
-let pet=store.get("pet",null);
+let pet=store.get("pet",null),petMiniTimer=null;
 function petClamp(n){return Math.max(0,Math.min(100,Math.round(n)))}
+function petStage(){if(!pet.hatched)return "egg";if(pet.level<=2)return "baby";if(pet.level<=5)return "teen";return "adult"}
+function petStageName(){return {egg:"Egg 🥚",baby:"Baby",teen:"Teen",adult:"Grown-up ✨"}[petStage()]}
+function petAgeDays(){return Math.max(0,Math.floor((Date.now()-(pet.born||Date.now()))/864e5))}
 function petDecay(){
  if(!pet)return;
- const mins=Math.max(0,(Date.now()-(pet.ts||Date.now()))/60000);
- if(mins<0.05)return;
- pet.hunger=petClamp(pet.hunger-PET_DECAY.hunger*mins);
- pet.fun=petClamp(pet.fun-PET_DECAY.fun*mins);
- pet.energy=petClamp(pet.energy-PET_DECAY.energy*mins);
- pet.clean=petClamp(pet.clean-PET_DECAY.clean*mins);
- pet.ts=Date.now();
+ const now=Date.now(),mins=Math.max(0,(now-(pet.ts||now))/60000);
+ if(mins>=0.05){
+  pet.hunger=petClamp(pet.hunger-PET_DECAY.hunger*mins);
+  pet.fun=petClamp(pet.fun-PET_DECAY.fun*mins);
+  pet.energy=petClamp(pet.energy-PET_DECAY.energy*mins);
+  pet.clean=petClamp(pet.clean-PET_DECAY.clean*mins);
+  pet.ts=now;
+ }
+ /* poop accumulates over time once hatched */
+ if(pet.hatched){
+  if(!pet.pTs)pet.pTs=now;
+  while(now-pet.pTs>PET_POOP_MIN*60000&&(pet.poops||0)<4){pet.poops=(pet.poops||0)+1;pet.pTs+=PET_POOP_MIN*60000}
+  /* neglect makes it sick */
+  if(!pet.sick&&(pet.hunger<=0||pet.clean<=0||(pet.poops||0)>=4))pet.sick=true;
+ }
 }
-function petMood(){const a=(pet.hunger+pet.fun+pet.energy+pet.clean)/4;return a>=75?"happy":a>=50?"ok":a>=28?"meh":"sad"}
+function petMood(){if(pet.sick)return "sad";const a=(pet.hunger+pet.fun+pet.energy+pet.clean)/4-(pet.poops||0)*6;return a>=72?"happy":a>=48?"ok":a>=26?"meh":"sad"}
+function petMoodLabel(){return {happy:"😄 Happy",ok:"🙂 Good",meh:"😕 Meh",sad:pet.sick?"🤒 Sick":"😢 Sad"}[petMood()]}
 function petRand(arr){return arr[Math.floor(Math.random()*arr.length)]}
 function petSayText(){
- const low=[["hunger",pet.hunger,"I'm getting hungry… can I have a snack? 🍤"],
-  ["clean",pet.clean,"I feel all sandy… a wash would be nice! 🫧"],
+ if(!pet.hatched)return "Feed me to help me hatch! 🥚✨";
+ if(pet.sick)return "I don't feel good… can I have medicine? 🤒💊";
+ if((pet.poops||0)>=2)return "Eww, it's messy in here… clean up? 🧹💩";
+ const low=[["hunger",pet.hunger,"I'm getting hungry… snack please? 🍤"],
+  ["clean",pet.clean,"I feel all sandy… bath time? 🫧"],
   ["energy",pet.energy,"*yawn* I'm so sleepy… 😴"],
   ["fun",pet.fun,"I'm booored! Let's play! 🎾"]].filter(n=>n[1]<35).sort((a,b)=>a[1]-b[1])[0];
  if(low)return low[2];
@@ -2153,49 +2365,75 @@ function renderPet(){
  const choose=document.getElementById("petChoose"),play=document.getElementById("petPlay");
  if(!pet){choose.style.display="block";play.style.display="none";return}
  choose.style.display="none";play.style.display="block";
- const av=document.getElementById("petAvatar");
- av.textContent=pet.emoji;av.className="pet-avatar "+petMood();
+ const stage=petStage(),av=document.getElementById("petAvatar");
+ av.textContent=stage==="egg"?"🥚":pet.emoji;
+ av.className="pet-avatar "+(stage==="egg"?"egg":"st-"+stage+" "+petMood());
  document.getElementById("petNameLbl").textContent=pet.name;
+ document.getElementById("petStageLbl").textContent=petStageName();
  document.getElementById("petLevel").textContent="Lv "+pet.level;
  document.getElementById("petSay").textContent=petSayText();
+ document.getElementById("petPoops").textContent="💩".repeat(pet.poops||0);
+ document.getElementById("petSickBadge").classList.toggle("on",!!pet.sick);
+ document.getElementById("petAge").textContent="Age: "+petAgeDays()+" day"+(petAgeDays()===1?"":"s");
+ document.getElementById("petMoodLbl").textContent=petMoodLabel();
  document.getElementById("petStats").innerHTML=PET_STATS.map(([k,e,lab])=>
   `<div class="pet-stat"><span class="lab">${e} ${lab}</span><span class="pet-bar"><i style="width:${pet[k]}%;background:${petBarColor(pet[k])}"></i></span></div>`).join("");
 }
-function petFx(sym){
- const fx=document.getElementById("petFx");
- fx.textContent=sym;fx.classList.remove("go");void fx.offsetWidth;fx.classList.add("go");
-}
+function petFx(sym){const fx=document.getElementById("petFx");fx.textContent=sym;fx.classList.remove("go");void fx.offsetWidth;fx.classList.add("go")}
+function petXP(n){pet.xp=(pet.xp||0)+n;let up=false;while(pet.xp>=pet.level*50){pet.xp-=pet.level*50;pet.level++;up=true}if(up)toast("🎉 "+pet.name+" grew up to Level "+pet.level+"!")}
 function petAct(kind){
- if(!pet)return;petDecay();
- if(kind==="feed"){pet.hunger=petClamp(pet.hunger+28);petFx("🍤")}
- else if(kind==="play"){pet.fun=petClamp(pet.fun+30);pet.energy=petClamp(pet.energy-10);petFx("🎾")}
+ if(!pet||petMiniTimer)return;petDecay();
+ if(kind==="feed"){
+  if(!pet.hatched){pet.hatched=true;pet.born=Date.now();pet.pTs=Date.now();petFx("🐣");toast(pet.name+" hatched! 🐣💛")}
+  else{pet.hunger=petClamp(pet.hunger+28);petFx("🍤")}
+ }else if(kind==="play"){petPlayGame();return}
  else if(kind==="wash"){pet.clean=petClamp(pet.clean+34);petFx("✨")}
+ else if(kind==="clean"){pet.poops=0;pet.clean=petClamp(pet.clean+10);petFx("🧹")}
  else if(kind==="sleep"){pet.energy=petClamp(pet.energy+40);petFx("💤")}
- pet.xp=(pet.xp||0)+6;
- let leveled=false;
- while(pet.xp>=pet.level*50){pet.xp-=pet.level*50;pet.level++;leveled=true}
- pet.ts=Date.now();store.set("pet",pet);renderPet();
- if(leveled)toast("🎉 "+pet.name+" grew to Level "+pet.level+"!");
+ else if(kind==="med"){
+  if(pet.sick){pet.sick=false;pet.hunger=petClamp(pet.hunger+12);pet.clean=petClamp(pet.clean+12);pet.energy=petClamp(pet.energy+12);petFx("💊");toast("All better! 💊💛")}
+  else{toast(pet.name+" feels fine — no medicine needed 😊");return}
+ }
+ petXP(6);pet.ts=Date.now();store.set("pet",pet);renderPet();
+}
+/* interactive Play mini-game: tap the toy as many times as you can in 8s */
+function petPlayGame(){
+ if(!pet.hatched){toast("Feed the egg to hatch it first! 🥚");return}
+ if(pet.sick){toast("Too sick to play — give medicine first! 💊");return}
+ if(pet.energy<15){toast(pet.name+" is too sleepy to play — let it sleep 😴");return}
+ let score=0,time=8;
+ const mini=document.getElementById("petMini"),target=document.getElementById("petTarget");
+ const sc=document.getElementById("petMiniScore"),tm=document.getElementById("petMiniTime");
+ mini.classList.add("on");sc.textContent="Score: 0";tm.textContent="8s";
+ const move=()=>{target.style.left=(14+Math.random()*72)+"%";target.style.top=(26+Math.random()*54)+"%"};
+ move();
+ const onHit=()=>{score++;sc.textContent="Score: "+score;petFx(petRand(["⭐","💛","🎾"]));move()};
+ target.onclick=onHit;
+ petMiniTimer=setInterval(()=>{
+  time--;tm.textContent=time+"s";
+  if(time<=0){
+   clearInterval(petMiniTimer);petMiniTimer=null;target.onclick=null;mini.classList.remove("on");
+   pet.fun=petClamp(pet.fun+Math.min(45,score*6));pet.energy=petClamp(pet.energy-8);
+   petXP(Math.min(12,score));pet.ts=Date.now();store.set("pet",pet);renderPet();
+   toast("🎾 You scored "+score+"! "+pet.name+" had a blast!");
+  }
+ },1000);
 }
 document.getElementById("petPick").addEventListener("click",e=>{
  const b=e.target.closest("[data-pet]");if(!b)return;
  const emoji=b.dataset.pet;
- pet={emoji,name:PET_NAMES[emoji]||"Buddy",hunger:85,fun:85,energy:85,clean:85,xp:0,level:1,ts:Date.now()};
+ pet={emoji,name:PET_NAMES[emoji]||"Buddy",hunger:85,fun:85,energy:85,clean:85,xp:0,level:1,ts:Date.now(),born:Date.now(),hatched:false,poops:0,sick:false,pTs:Date.now()};
  store.set("pet",pet);renderPet();
  setTimeout(()=>{const n=prompt("Yay! What do you want to name your "+emoji+"?",pet.name);if(n&&n.trim()){pet.name=n.trim().slice(0,18);store.set("pet",pet);renderPet()}},150);
 });
-document.getElementById("petPlay").addEventListener("click",e=>{
- const c=e.target.closest("[data-care]");if(c)petAct(c.dataset.care);
-});
-document.getElementById("petRename").addEventListener("click",()=>{
- if(!pet)return;const n=prompt("Rename your buddy:",pet.name);if(n&&n.trim()){pet.name=n.trim().slice(0,18);store.set("pet",pet);renderPet()}
-});
-document.getElementById("petAvatar").addEventListener("click",()=>{if(pet){petFx(petRand(["💛","⭐","🫧","🎉"]));document.getElementById("petSay").textContent=petRand(["Hehe, that tickles! 😄","Boop! 👉","I love you! 💛"])}});
+document.getElementById("petPlay").addEventListener("click",e=>{const c=e.target.closest("[data-care]");if(c)petAct(c.dataset.care)});
+document.getElementById("petRename").addEventListener("click",()=>{if(!pet)return;const n=prompt("Rename your buddy:",pet.name);if(n&&n.trim()){pet.name=n.trim().slice(0,18);store.set("pet",pet);renderPet()}});
+document.getElementById("petAvatar").addEventListener("click",()=>{if(!pet||petMiniTimer)return;if(!pet.hatched){petFx("✨");document.getElementById("petSay").textContent="Feed me to hatch! 🥚";return}petFx(petRand(["💛","⭐","🫧","🎉"]));document.getElementById("petSay").textContent=petRand(["Hehe, that tickles! 😄","Boop! 👉","I love you! 💛"])});
 document.getElementById("petReset").addEventListener("click",()=>{
- if(confirm("Say bye to "+(pet?pet.name:"your buddy")+" and adopt a new one?")){pet=null;localStorage.removeItem("olive-pet");renderPet()}
+ if(confirm("Say bye to "+(pet?pet.name:"your buddy")+" and adopt a new one?")){if(petMiniTimer){clearInterval(petMiniTimer);petMiniTimer=null;document.getElementById("petMini").classList.remove("on")}pet=null;localStorage.removeItem("olive-pet");renderPet()}
 });
 petDecay();renderPet();
-setInterval(()=>{petDecay();if(pet&&document.getElementById("view-emily").classList.contains("active"))renderPet()},60000);
+setInterval(()=>{if(petMiniTimer)return;petDecay();if(pet&&document.getElementById("view-emily").classList.contains("active"))renderPet();if(pet)store.set("pet",pet)},60000);
 
 /* ============ AR PHOTO BOOTH ============ */
 const BOOTH_STICKERS=["🤠","🕶️","🌮","🏐","🫒","🐬","🦜","🍹","⭐","😎","👑","🔥","🌅","🦞","💖","✌️","🤙","🌺","🦩","🍍","😜","🫶","🌴","🐢","🐳","🦭","🪅","🌊","🩴","🏖️","🍉","🦀","🦄","🌈","🐠","🥭"];
@@ -3277,7 +3515,7 @@ document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
 
 /* ============ VIEW ROUTER (tabs) ============ */
 const navLinks=[...document.querySelectorAll("nav a[data-view]")];
-const VIEWS=["home","activities","schedule","chat","jade","emily","resort","tools"];
+const VIEWS=["home","activities","schedule","chat","jade","emily","studio","resort","tools"];
 function showView(v){
  if(!VIEWS.includes(v))v="home";
  document.querySelectorAll(".view").forEach(el=>el.classList.toggle("active",el.id==="view-"+v));
