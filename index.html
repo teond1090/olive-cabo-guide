@@ -1057,12 +1057,12 @@
     </div>
     <div class="two-col reveal" style="margin-top:14px">
       <div class="widget">
-        <h3>🎨 Turn it into a painting</h3>
-        <p style="font-size:.86rem;color:var(--ink-soft)">Oil · Watercolor · Pencil Sketch · Pop Art · Comic · Neon · Pixel. Saves as an image straight to your camera roll & share sheet.</p>
+        <h3>📷 Make photos look pro</h3>
+        <p style="font-size:.86rem;color:var(--ink-soft)">Real photo enhancing — Auto Enhance, Golden Hour, Vivid HDR, Portrait, Film, Cinematic, B&W and more. Then an Oil-Paint brush look if you want art. Saves to your camera roll.</p>
       </div>
       <div class="widget">
         <h3>🎬 Bring it to life</h3>
-        <p style="font-size:.86rem;color:var(--ink-soft)">Sparkle · Hearts · Bubbles · Rainbow · Dreamy Zoom · Glitch. Tap “🎬 Record 3s” to save a short video clip to share.</p>
+        <p style="font-size:.86rem;color:var(--ink-soft)">Real motion: Cinematic pan-zoom, 3D Wiggle, Float, Light Sweep — plus Sparkle, Hearts, Rainbow. Tap “🎬 Record 3s” to save a video clip.</p>
       </div>
     </div>
     <p class="sec-blurb reveal" style="margin-top:12px;font-size:.82rem">💡 Your saved shots from the 📸 Photo Studio appear as a one-tap pick — or choose any photo from your phone.</p>
@@ -1316,8 +1316,9 @@
     </div>
   </div>
   <div class="magic-styles">
-    <div class="magic-group"><span class="magic-lab">🎨 Turn into a painting</span><div class="magic-chips" id="magicPaint"></div></div>
-    <div class="magic-group"><span class="magic-lab">🎬 Bring it to life</span><div class="magic-chips" id="magicAnim"></div></div>
+    <div class="magic-group"><span class="magic-lab">📷 Enhance — realistic photo looks</span><div class="magic-chips" id="magicEnh"></div></div>
+    <div class="magic-group"><span class="magic-lab">🎨 Artistic styles</span><div class="magic-chips" id="magicPaint"></div></div>
+    <div class="magic-group"><span class="magic-lab">🎬 Animate the photo</span><div class="magic-chips" id="magicAnim"></div></div>
   </div>
   <div class="magic-actions">
     <button class="bx" id="magicOriginal">↩︎ Original</button>
@@ -1513,7 +1514,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v25-2026-07-13";
+const OLIVE_BUILD="v26-2026-07-13";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -2744,11 +2745,90 @@ renderRoll();
    No AI/backend — all on-device. Source photo via file picker or the camera roll. */
 const magic=document.getElementById("magic"),magicCanvas=document.getElementById("magicCanvas"),magicCtx=magicCanvas.getContext("2d");
 const magicFile=document.getElementById("magicFile");
-let magicImg=null,magicRAF=null,magicAnimFn=null,magicStart=0,magicParticles=[];
-const MAGIC_PAINT=[["oil","🖼️ Oil"],["water","💧 Watercolor"],["sketch","✏️ Sketch"],["pop","🎨 Pop Art"],["comic","💥 Comic"],["neon","🌌 Neon"],["pixel","🟦 Pixel"]];
-const MAGIC_ANIM=[["sparkle","✨ Sparkle"],["hearts","💖 Hearts"],["bubbles","🫧 Bubbles"],["rainbow","🌈 Rainbow"],["zoom","🔍 Dreamy Zoom"],["glitch","📼 Glitch"]];
+let magicImg=null,magicRAF=null,magicAnimFn=null,magicStart=0,magicParticles=[],magicBaseW=0,magicBaseH=0;
+const MAGIC_ENH=[["auto","✨ Auto Enhance"],["golden","🌅 Golden Hour"],["vivid","🌈 Vivid HDR"],["portrait","👤 Portrait"],["film","🎞️ Film"],["cine","🎬 Cinematic"],["airy","🤍 Bright & Airy"],["mono","⚫ B&W"],["warm","🔥 Warm"],["cool","❄️ Cool"]];
+const MAGIC_PAINT=[["oil","🖼️ Oil Paint"],["water","💧 Watercolor"],["sketch","✏️ Sketch"],["pop","🎨 Pop Art"],["comic","💥 Comic"],["neon","🌌 Neon"],["pixel","🟦 Pixel"]];
+const MAGIC_ANIM=[["cine","🎬 Cinematic"],["parallax","🪄 3D Wiggle"],["float","🎈 Float"],["sweep","✨ Light Sweep"],["sparkle","🌟 Sparkle"],["hearts","💖 Hearts"],["rainbow","🌈 Rainbow"],["glitch","📼 Glitch"]];
+document.getElementById("magicEnh").innerHTML=MAGIC_ENH.map(([k,l])=>`<button data-enh="${k}">${l}</button>`).join("");
 document.getElementById("magicPaint").innerHTML=MAGIC_PAINT.map(([k,l])=>`<button data-paint="${k}">${l}</button>`).join("");
 document.getElementById("magicAnim").innerHTML=MAGIC_ANIM.map(([k,l])=>`<button data-anim="${k}">${l}</button>`).join("");
+function magicFitCanvas(){if(magicBaseW&&(magicCanvas.width!==magicBaseW||magicCanvas.height!==magicBaseH)){magicCanvas.width=magicBaseW;magicCanvas.height=magicBaseH}}
+/* ---- realistic photo grading engine (proper tone/colour, not posterize) ---- */
+const PHOTO_PRESETS={
+ auto:{auto:true,con:1.06,vib:.18,sat:1.03,clarity:.35},
+ golden:{temp:16,con:1.08,sat:1.12,vib:.12,hiTone:[255,180,90],hiAmt:.14,exp:1.03,clarity:.2},
+ vivid:{con:1.13,sat:1.26,vib:.22,exp:1.02,clarity:.5},
+ portrait:{blur:.8,exp:1.05,con:.97,sat:1.06,temp:8,hiTone:[255,220,200],hiAmt:.08,lift:.04},
+ film:{con:1.05,sat:.9,lift:.11,grain:15,shTone:[40,70,90],shAmt:.16,hiTone:[255,225,180],hiAmt:.12,temp:4},
+ cine:{con:1.16,sat:1.05,shTone:[20,90,120],shAmt:.24,hiTone:[255,160,70],hiAmt:.18,lift:.05,clarity:.3},
+ airy:{exp:1.12,con:.9,sat:1.02,lift:.13,temp:5},
+ mono:{gray:true,con:1.15,grain:9,clarity:.4},
+ warm:{temp:20,sat:1.08,con:1.04},
+ cool:{temp:-18,tint:-4,sat:1.05,con:1.05}
+};
+function magicSharpen(d,w,h,amt){
+ const cp=new Uint8ClampedArray(d);
+ for(let y=1;y<h-1;y++)for(let xx=1;xx<w-1;xx++){const i=(y*w+xx)*4;
+  for(let c=0;c<3;c++){const sh=5*cp[i+c]-cp[i-4+c]-cp[i+4+c]-cp[i-w*4+c]-cp[i+w*4+c];d[i+c]=cp[i+c]*(1-amt)+sh*amt}}
+}
+function applyPhoto(name){
+ if(!magicImg)return;
+ const p=PHOTO_PRESETS[name];if(!p)return;
+ magicStopAnim();magicFitCanvas();magicResetT();
+ const x=magicCtx,w=magicCanvas.width,h=magicCanvas.height,hasFilter=typeof x.filter==="string";
+ x.filter=(hasFilter&&p.blur)?`blur(${p.blur}px)`:"none";
+ x.clearRect(0,0,w,h);x.drawImage(magicImg,0,0,w,h);x.filter="none";
+ const im=x.getImageData(0,0,w,h),d=im.data,N=d.length;
+ let wbR=1,wbG=1,wbB=1,loR=0,loG=0,loB=0,scR=1,scG=1,scB=1;
+ if(p.auto){
+  const hr=new Uint32Array(256),hg=new Uint32Array(256),hb=new Uint32Array(256);let sr=0,sg=0,sb=0,cnt=0;
+  for(let i=0;i<N;i+=16){hr[d[i]]++;hg[d[i+1]]++;hb[d[i+2]]++;sr+=d[i];sg+=d[i+1];sb+=d[i+2];cnt++}
+  const ar=sr/cnt,ag=sg/cnt,ab=sb/cnt,grayA=(ar+ag+ab)/3;
+  wbR=1+(grayA/ar-1)*.5;wbG=1+(grayA/ag-1)*.5;wbB=1+(grayA/ab-1)*.5;
+  const pct=(hh,f)=>{let t=cnt*f,s=0;for(let v=0;v<256;v++){s+=hh[v];if(s>=t)return v}return 255};
+  loR=pct(hr,.008);loG=pct(hg,.008);loB=pct(hb,.008);
+  scR=255/Math.max(1,pct(hr,.992)-loR);scG=255/Math.max(1,pct(hg,.992)-loG);scB=255/Math.max(1,pct(hb,.992)-loB);
+ }
+ const exp=p.exp||1,con=p.con||1,sat=p.sat==null?1:p.sat,vib=p.vib||0,temp=p.temp||0,tint=p.tint||0,lift=p.lift||0,grain=p.grain||0;
+ const shT=p.shTone||[0,0,0],hiT=p.hiTone||[0,0,0],shA=p.shAmt||0,hiA=p.hiAmt||0;
+ for(let i=0;i<N;i+=4){
+  let r=d[i],g=d[i+1],b=d[i+2];
+  if(p.auto){r=(r-loR)*scR*wbR;g=(g-loG)*scG*wbG;b=(b-loB)*scB*wbB}
+  if(exp!==1){r*=exp;g*=exp;b*=exp}
+  if(temp){r+=temp;b-=temp}if(tint)g+=tint;
+  if(lift){const L=lift*46;r=r*(1-lift)+L;g=g*(1-lift)+L;b=b*(1-lift)+L}
+  if(con!==1){r=(r-128)*con+128;g=(g-128)*con+128;b=(b-128)*con+128}
+  let l=.299*r+.587*g+.114*b;
+  if(p.gray){r=g=b=l}
+  else{const mx=Math.max(r,g,b),mn=Math.min(r,g,b),cur=(mx-mn)/(mx+1e-3),sf=sat+vib*(1-Math.min(1,cur));
+   if(sf!==1){r=l+(r-l)*sf;g=l+(g-l)*sf;b=l+(b-l)*sf}}
+  if(shA||hiA){const lum=l/255,sw=(1-lum)*(1-lum),hw=lum*lum;
+   r+=shT[0]*shA*sw+hiT[0]*hiA*hw;g+=shT[1]*shA*sw+hiT[1]*hiA*hw;b+=shT[2]*shA*sw+hiT[2]*hiA*hw;}
+  if(grain){const n=(Math.random()-.5)*grain;r+=n;g+=n;b+=n}
+  d[i]=r<0?0:r>255?255:r;d[i+1]=g<0?0:g>255?255:g;d[i+2]=b<0?0:b>255?255:b;
+ }
+ if(p.clarity)magicSharpen(d,w,h,Math.min(.8,p.clarity));
+ x.putImageData(im,0,0);
+}
+/* ---- proper oil painting via Kuwahara filter (real brush-stroke look) ---- */
+function magicKuwahara(radius){
+ const cv=magicCanvas,x=magicCtx;let w=cv.width,h=cv.height;const MAXK=720;
+ if(Math.max(w,h)>MAXK){const sc=MAXK/Math.max(w,h),nw=Math.round(w*sc),nh=Math.round(h*sc);cv.width=nw;cv.height=nh;w=nw;h=nh}
+ x.setTransform(1,0,0,1,0,0);x.filter="none";x.clearRect(0,0,w,h);x.drawImage(magicImg,0,0,w,h);
+ const src=x.getImageData(0,0,w,h),s=src.data,out=x.createImageData(w,h),o=out.data,lum=new Float32Array(w*h);
+ for(let i=0,p=0;i<s.length;i+=4,p++)lum[p]=.299*s[i]+.587*s[i+1]+.114*s[i+2];
+ const R=radius,quads=[[-R,0,-R,0],[0,R,-R,0],[-R,0,0,R],[0,R,0,R]];
+ for(let y=0;y<h;y++)for(let xx=0;xx<w;xx++){
+  let best=1e12,br=0,bg=0,bb=0;
+  for(let q=0;q<4;q++){const Q=quads[q];let sum=0,sq=0,rr=0,gg=0,bbb=0,cnt=0;
+   for(let dy=Q[2];dy<=Q[3];dy++){const yy=y+dy;if(yy<0||yy>=h)continue;const row=yy*w;
+    for(let dx=Q[0];dx<=Q[1];dx++){const xa=xx+dx;if(xa<0||xa>=w)continue;const pp=row+xa,i=pp*4,L=lum[pp];sum+=L;sq+=L*L;rr+=s[i];gg+=s[i+1];bbb+=s[i+2];cnt++}}
+   if(!cnt)continue;const mean=sum/cnt,v=sq/cnt-mean*mean;
+   if(v<best){best=v;br=rr/cnt;bg=gg/cnt;bb=bbb/cnt}}
+  const i=(y*w+xx)*4;o[i]=br;o[i+1]=bg;o[i+2]=bb;o[i+3]=255;
+ }
+ x.putImageData(out,0,0);
+}
 function magicPost(v,n){v=v<0?0:v>255?255:v;return Math.round(v/255*(n-1))/(n-1)*255}
 function magicHsl(h,s,l){h/=360;const a=s*Math.min(l,1-l);const f=n=>{const k=(n+h*12)%12;return Math.round(255*(l-a*Math.max(-1,Math.min(k-3,9-k,1))))};return[f(0),f(8),f(4)]}
 function magicStopAnim(){if(magicRAF){cancelAnimationFrame(magicRAF);magicRAF=null}magicAnimFn=null}
@@ -2762,6 +2842,7 @@ function magicLoadSrc(src){
   const MAXD=1000,sc=Math.min(1,MAXD/Math.max(img.width,img.height));
   magicCanvas.width=Math.round(img.width*sc)||img.width;
   magicCanvas.height=Math.round(img.height*sc)||img.height;
+  magicBaseW=magicCanvas.width;magicBaseH=magicCanvas.height;
   magicStopAnim();magicDrawBase();
   document.getElementById("magicMsg").style.display="none";
   magicClearChips();document.getElementById("magicRecord").style.display="none";
@@ -2773,7 +2854,8 @@ magicFile.addEventListener("change",e=>{const f=e.target.files&&e.target.files[0
 /* --- paintings (static pixel art) --- */
 function magicPaint(style){
  if(!magicImg)return;
- magicStopAnim();magicResetT();
+ magicStopAnim();magicFitCanvas();magicResetT();
+ if(style==="oil"){toast("Painting… 🎨");setTimeout(()=>magicKuwahara(4),20);return}
  const c=magicCanvas,x=magicCtx,w=c.width,h=c.height;
  if(style==="pixel"){
   const sw=Math.max(18,Math.round(w/14)),sh=Math.max(18,Math.round(h/14));
@@ -2816,17 +2898,24 @@ function animParticles(t,emoji){magicDrawBase();const x=magicCtx,w=magicCanvas.w
 function animRainbow(t){magicDrawBase();const x=magicCtx,w=magicCanvas.width,h=magicCanvas.height;x.save();x.globalCompositeOperation="overlay";x.globalAlpha=.45;const hue=(t*70)%360,g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,`hsl(${hue},100%,55%)`);g.addColorStop(.5,`hsl(${(hue+120)%360},100%,55%)`);g.addColorStop(1,`hsl(${(hue+240)%360},100%,55%)`);x.fillStyle=g;x.fillRect(0,0,w,h);x.restore();}
 function animZoom(t){const x=magicCtx,w=magicCanvas.width,h=magicCanvas.height,s=1.12+.08*Math.sin(t*.6);magicResetT();x.clearRect(0,0,w,h);const dw=w*s,dh=h*s,dx=(w-dw)/2+Math.sin(t*.4)*w*.03,dy=(h-dh)/2+Math.cos(t*.3)*h*.03;x.drawImage(magicImg,dx,dy,dw,dh);}
 function animGlitch(t){magicDrawBase();const x=magicCtx,w=magicCanvas.width,h=magicCanvas.height;for(let i=0;i<6;i++){const sy=Math.floor(Math.random()*h),sh=4+Math.floor(Math.random()*16),off=(Math.random()-.5)*w*.06;x.drawImage(magicCanvas,0,sy,w,sh,off,sy,w,sh);}x.save();x.globalCompositeOperation="screen";x.globalAlpha=.22;x.fillStyle="#ff004c";x.fillRect((Math.random()-.5)*12,0,w,h);x.restore();}
+/* motion effects that animate the actual photo */
+function animCine(t){const x=magicCtx,w=magicCanvas.width,h=magicCanvas.height;magicResetT();x.clearRect(0,0,w,h);const s=1.06+.10*(.5+.5*Math.sin(t*.5)),dw=w*s,dh=h*s,dx=(w-dw)/2+Math.sin(t*.25)*w*.045,dy=(h-dh)/2;x.drawImage(magicImg,dx,dy,dw,dh);}
+function animParallax(t){const x=magicCtx,w=magicCanvas.width,h=magicCanvas.height;magicResetT();x.clearRect(0,0,w,h);const s=1.09,dw=w*s,dh=h*s,dx=(w-dw)/2+Math.sin(t*1.5)*w*.032,dy=(h-dh)/2+Math.cos(t*1.15)*h*.022;x.drawImage(magicImg,dx,dy,dw,dh);}
+function animFloat(t){const x=magicCtx,w=magicCanvas.width,h=magicCanvas.height;magicResetT();x.clearRect(0,0,w,h);const s=1.02+.03*Math.sin(t*1.25),dw=w*s,dh=h*s;x.drawImage(magicImg,(w-dw)/2,(h-dh)/2,dw,dh);}
+function animSweep(t){magicDrawBase();const x=magicCtx,w=magicCanvas.width,h=magicCanvas.height;const cx=(((t*.35)%1.4)-.2)*w;x.save();x.globalCompositeOperation="overlay";const g=x.createLinearGradient(cx-w*.25,0,cx+w*.25,h);g.addColorStop(0,"rgba(255,255,255,0)");g.addColorStop(.5,"rgba(255,255,255,.55)");g.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=g;x.fillRect(0,0,w,h);x.restore();}
 function magicLoop(ts){if(!magicAnimFn)return;magicAnimFn((ts-magicStart)/1000);magicRAF=requestAnimationFrame(magicLoop);}
 function magicStartAnim(style){
- if(!magicImg)return;magicStopAnim();
- if(style==="hearts"||style==="bubbles")magicMakeParticles();
- magicAnimFn={sparkle:animSparkle,hearts:t=>animParticles(t,"💖"),bubbles:t=>animParticles(t,"🫧"),rainbow:animRainbow,zoom:animZoom,glitch:animGlitch}[style];
+ if(!magicImg)return;magicStopAnim();magicFitCanvas();
+ if(style==="hearts")magicMakeParticles();
+ magicAnimFn={cine:animCine,parallax:animParallax,float:animFloat,sweep:animSweep,sparkle:animSparkle,hearts:t=>animParticles(t,"💖"),rainbow:animRainbow,glitch:animGlitch}[style];
+ if(!magicAnimFn)return;
  magicStart=performance.now();magicRAF=requestAnimationFrame(magicLoop);
  document.getElementById("magicRecord").style.display="";
 }
+document.getElementById("magicEnh").addEventListener("click",e=>{const b=e.target.closest("[data-enh]");if(!b)return;if(!magicImg){toast("Pick a photo first 📷");return}magicClearChips();b.classList.add("on");document.getElementById("magicRecord").style.display="none";applyPhoto(b.dataset.enh);});
 document.getElementById("magicPaint").addEventListener("click",e=>{const b=e.target.closest("[data-paint]");if(!b)return;if(!magicImg){toast("Pick a photo first 📷");return}magicClearChips();b.classList.add("on");document.getElementById("magicRecord").style.display="none";magicPaint(b.dataset.paint);});
 document.getElementById("magicAnim").addEventListener("click",e=>{const b=e.target.closest("[data-anim]");if(!b)return;if(!magicImg){toast("Pick a photo first 📷");return}magicClearChips();b.classList.add("on");magicStartAnim(b.dataset.anim);});
-document.getElementById("magicOriginal").addEventListener("click",()=>{if(!magicImg)return;magicStopAnim();magicClearChips();document.getElementById("magicRecord").style.display="none";magicDrawBase();});
+document.getElementById("magicOriginal").addEventListener("click",()=>{if(!magicImg)return;magicStopAnim();magicFitCanvas();magicClearChips();document.getElementById("magicRecord").style.display="none";magicDrawBase();});
 document.getElementById("magicChoose").addEventListener("click",()=>magicFile.click());
 document.getElementById("magicPhoto").addEventListener("click",()=>magicFile.click());
 document.getElementById("magicLast").addEventListener("click",()=>{const roll=store.get("cam-roll",[]);if(roll[0])magicLoadSrc(roll[0]);else toast("No saved shots yet — take one in the Photo Studio! 📸")});
