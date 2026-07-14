@@ -239,6 +239,11 @@
   .loc-empty{color:var(--ink-soft);font-size:.9rem;padding:8px 2px}
   .loc-map{width:100%;height:230px;border:none;border-radius:14px;margin-top:12px;background:var(--sand)}
   .loc-note{font-size:.76rem;color:var(--ink-soft);margin-top:10px;line-height:1.5}
+  .loc-help{display:none;background:#fff4e6;border:1px solid #f0c78a;border-radius:14px;padding:14px 15px;margin-top:12px;font-size:.82rem;line-height:1.55;color:#7a5a2a}
+  .loc-help.show{display:block}
+  .loc-help b{color:#8a5a10}
+  .loc-help ul{margin:8px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+  .loc-help .try{margin-top:12px;background:var(--olive);color:#fff;border:none;border-radius:99px;padding:9px 16px;font-family:var(--font-body);font-weight:700;font-size:.85rem;cursor:pointer}
   .card .cb{padding:9px 11px 11px;display:flex;flex-direction:column;gap:3px;flex:1}
   .card h3{font-size:.83rem;line-height:1.25;color:var(--olive-deep);font-family:var(--font-body);font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.1em}
   .card .c-price{font-size:.74rem;font-weight:700;color:var(--coral)}
@@ -607,6 +612,15 @@
       <div class="loc-list" id="locList"><div class="loc-empty">No one is sharing right now. Flip the switch above to put yourself on the map. 🗺️</div></div>
       <iframe class="loc-map" id="locMap" title="Family location map" loading="lazy" style="display:none"></iframe>
       <div class="loc-note">🔒 Your location is shared only with people who have Olive's private link, and only while your switch is ON. It's never posted publicly or saved to any account. Phones will ask permission before sharing — that's normal.</div>
+      <div class="loc-help" id="locHelp">
+        <b>Can't turn it on?</b> Your phone's main Location can be ON, but the <b>browser</b> also needs its own permission:
+        <ul>
+          <li><b>iPhone:</b> Settings → Safari → <b>Location</b> → set to “Ask” or “Allow” (if it's “Deny,” that's the blocker). Also check Settings → Privacy &amp; Security → Location Services is ON.</li>
+          <li>Then reopen Olive and flip the switch again — tap <b>“Allow”</b> when the popup appears.</li>
+          <li><b>Android/Chrome:</b> tap the 🔒 or ⓘ icon by the web address → Permissions → Location → Allow, then try again.</li>
+        </ul>
+        <button class="try" id="locRetry">🔄 Try again</button>
+      </div>
     </div>
   </section>
 
@@ -1290,7 +1304,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v20-2026-07-13";
+const OLIVE_BUILD="v21-2026-07-13";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -2739,14 +2753,24 @@ function publishLoc(lat,lng){
  locPeople.set(m.id,m);renderLocList();
  fetch(LOC_URL,{method:"POST",body:JSON.stringify(m)}).catch(()=>{});
 }
+function showLocHelp(show){const h=document.getElementById("locHelp");if(h)h.classList.toggle("show",show)}
 function startSharing(){
  if(!("geolocation" in navigator)){toast("This device can't share location");locShareEl.checked=false;store.set("loc-share",false);locLabel();return}
+ if(locWatchId!=null)navigator.geolocation.clearWatch(locWatchId); // never stack watches
+ showLocHelp(false);
+ document.getElementById("locSelf").textContent="Getting your location… (tap Allow if your phone asks) 📡";
  locWatchId=navigator.geolocation.watchPosition(pos=>{
-  locSelfPos=pos;locLabel();publishLoc(pos.coords.latitude,pos.coords.longitude);
+  locSelfPos=pos;showLocHelp(false);publishLoc(pos.coords.latitude,pos.coords.longitude);
+  document.getElementById("locSelf").textContent="You're on the map ✓";
  },err=>{
-  toast(err.code===1?"Location permission denied — allow it in your browser to share":"Couldn't get your location right now");
-  locShareEl.checked=false;store.set("loc-share",false);stopSharing();locLabel();
- },{enableHighAccuracy:true,maximumAge:30000,timeout:20000});
+  if(err.code===1){ /* PERMISSION_DENIED — genuinely blocked, so stop and explain how to fix it */
+   locShareEl.checked=false;store.set("loc-share",false);stopSharing();
+   document.getElementById("locSelf").textContent="";
+   showLocHelp(true);
+  }else{ /* TIMEOUT / POSITION_UNAVAILABLE — transient; keep the switch ON and keep watching */
+   document.getElementById("locSelf").textContent=locSelfPos?"You're on the map ✓ (updating…)":"Still finding your location — step near a window or outside 📡";
+  }
+ },{enableHighAccuracy:true,maximumAge:60000,timeout:45000});
  locBeat=setInterval(()=>{if(locSelfPos)publishLoc(locSelfPos.coords.latitude,locSelfPos.coords.longitude)},120000);
 }
 function stopSharing(){
@@ -2756,7 +2780,10 @@ function stopSharing(){
 }
 locShareEl.addEventListener("change",()=>{
  store.set("loc-share",locShareEl.checked);locLabel();
- if(locShareEl.checked)startSharing();else stopSharing();
+ if(locShareEl.checked)startSharing();else{showLocHelp(false);stopSharing()}
+});
+document.getElementById("locRetry").addEventListener("click",()=>{
+ locShareEl.checked=true;store.set("loc-share",true);locLabel();startSharing();
 });
 if(!LOCKED){locSub();if(locShareEl.checked)startSharing()}
 locLabel();
