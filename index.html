@@ -321,6 +321,9 @@
 
   /* ---------- Family Map (opt-in location sharing) ---------- */
   .loccard{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-top:16px}
+  .loc-name-row{display:flex;flex-direction:column;gap:5px;margin-top:12px}
+  .loc-name-input{border:1.5px solid var(--sand-dark);background:#fff;color:var(--ink);-webkit-text-fill-color:var(--ink);border-radius:12px;padding:11px 13px;font-family:var(--font-body);font-size:1rem;max-width:260px}
+  .loc-name-input:focus{outline:none;border-color:var(--olive)}
   .loc-toggle{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}
   .switch{position:relative;display:inline-block;width:52px;height:30px;flex-shrink:0}
   .switch input{opacity:0;width:0;height:0}
@@ -705,6 +708,10 @@
     <div class="loccard reveal" id="locCard">
       <div class="sec-head" style="margin-bottom:2px"><h2 style="font-size:1.3rem">📍 Family Map</h2><span class="tag">Opt-in</span></div>
       <p style="font-size:.86rem;color:var(--ink-soft)">Turn this on to share your live location with the family during the trip — so nobody gets lost between the pool, the beach and the marina. You choose when it's on, and you can turn it off any time.</p>
+      <div class="loc-name-row">
+        <label for="locName" style="font-size:.82rem;font-weight:700;color:var(--ink)">You appear on the map as</label>
+        <input id="locName" class="loc-name-input" maxlength="24" placeholder="type your name" autocomplete="name">
+      </div>
       <div class="loc-toggle">
         <label class="switch"><input type="checkbox" id="locShare"><span class="sl"></span></label>
         <div><b id="locShareLabel">Share my location: OFF</b><div class="lt" id="locSelf" style="font-size:.76rem;color:var(--ink-soft)"></div></div>
@@ -1537,7 +1544,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v27-2026-07-13";
+const OLIVE_BUILD="v28-2026-07-13";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -3606,13 +3613,18 @@ function locSub(){
   locES.onerror=()=>{locES.close();setTimeout(locSub,8000)};
  }catch(e){}
 }
+function locMyName(){return ((document.getElementById("locName")&&document.getElementById("locName").value)||store.get("chat-name","")||"").trim()}
 function publishLoc(lat,lng){
- const m={k:"loc",id:locDeviceId,by:evWho(),lat:+lat.toFixed(5),lng:+lng.toFixed(5),ts:Date.now()};
+ const nm=locMyName();
+ if(!nm)return; /* never broadcast an anonymous "Someone" — require a name first */
+ const m={k:"loc",id:locDeviceId,by:nm,lat:+lat.toFixed(5),lng:+lng.toFixed(5),ts:Date.now()};
  locPeople.set(m.id,m);renderLocList();
  fetch(LOC_URL,{method:"POST",body:JSON.stringify(m)}).catch(()=>{});
 }
 function showLocHelp(show){const h=document.getElementById("locHelp");if(h)h.classList.toggle("show",show)}
 function startSharing(){
+ if(!locMyName()){ /* no name set — don't resume/share anonymously */
+  locShareEl.checked=false;store.set("loc-share",false);locLabel();document.getElementById("locSelf").textContent="";return;}
  if(!("geolocation" in navigator)){toast("This device can't share location");locShareEl.checked=false;store.set("loc-share",false);locLabel();return}
  if(locWatchId!=null)navigator.geolocation.clearWatch(locWatchId); // never stack watches
  showLocHelp(false);
@@ -3636,11 +3648,27 @@ function stopSharing(){
  if(locBeat){clearInterval(locBeat);locBeat=null}
  locSelfPos=null;locPeople.delete(locDeviceId);renderLocList();
 }
+const locNameEl=document.getElementById("locName");
+locNameEl.value=(store.get("chat-name","")||"").trim();
+locNameEl.addEventListener("input",()=>{
+ const v=locNameEl.value.trim();
+ store.set("chat-name",v);
+ try{if(typeof chatName!=="undefined")chatName=v}catch(e){}
+ if(locShareEl.checked&&locSelfPos)publishLoc(locSelfPos.coords.latitude,locSelfPos.coords.longitude);
+});
+function locNeedName(){
+ if(locMyName())return false;
+ toast("First, type your name so the family knows it's you 🙂");
+ locNameEl.focus();
+ return true;
+}
 locShareEl.addEventListener("change",()=>{
+ if(locShareEl.checked&&locNeedName()){locShareEl.checked=false;return}
  store.set("loc-share",locShareEl.checked);locLabel();
  if(locShareEl.checked)startSharing();else{showLocHelp(false);stopSharing()}
 });
 document.getElementById("locRetry").addEventListener("click",()=>{
+ if(locNeedName())return;
  locShareEl.checked=true;store.set("loc-share",true);locLabel();startSharing();
 });
 if(!LOCKED){locSub();if(locShareEl.checked)startSharing()}
