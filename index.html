@@ -164,7 +164,7 @@
   /* ---------- Emily's Corner (age 8) ---------- */
   .ct-emily{background:linear-gradient(140deg,#ff8fce,#8a63d2)}
   .emi-stickers{font-size:1.8rem;letter-spacing:.28em;text-align:center;margin:14px 0 0;filter:drop-shadow(0 2px 3px rgba(138,99,210,.28))}
-  .emi-grad{background:linear-gradient(150deg,#ff8fce,#8a63d2);color:#fff}
+  .widget.emi-grad{background:linear-gradient(150deg,#ff8fce,#8a63d2);color:#fff}
   .emi-grad h3{color:#fff}
   .game-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
   .game-btn{border:none;border-radius:99px;padding:11px 15px;font-family:var(--font-body);font-weight:800;font-size:.9rem;cursor:pointer;background:#fff;color:#8a3fae;box-shadow:var(--shadow);transition:.15s}
@@ -209,6 +209,52 @@
   .bingo button .be{font-size:1.5rem}
   .bingo button.got{background:linear-gradient(150deg,#ff8fce,#8a63d2);color:#fff;border-style:solid;border-color:transparent}
   .bingo button.got::after{content:"⭐";position:absolute}
+  /* colorful game cards so nothing is white-on-white */
+  .emi-game{border:none;color:#fff;box-shadow:var(--shadow-lg)}
+  .emi-game h3{color:#fff}
+  .emi-game p{color:rgba(255,255,255,.94)}
+  .emi-game .game-stat{color:#fff}
+  .emi-game .ws-msg{color:#fff}
+  .widget.emi-ocean{background:linear-gradient(160deg,#3fb6d3,#2b6fd6)}
+  .widget.emi-sunny{background:linear-gradient(160deg,#ffb14e,#ff7e5f)}
+  .widget.emi-quest{background:linear-gradient(160deg,#b98cf0,#8a63d2);color:#fff;border:none}
+  .emi-quest h3,.emi-quest .pack-pct{color:#fff}
+  .emi-quest .pack-item{color:#fff}
+  .emi-quest .pack-item.done span{color:rgba(255,255,255,.6)}
+  .emi-quest .pack-progress{background:rgba(255,255,255,.25)}
+  .emi-sunny .bingo button{border-color:#fff;box-shadow:0 2px 5px rgba(0,0,0,.12)}
+
+  /* ---------- Emily's Cabo Pet (life-sim) ---------- */
+  .widget.pet-card{background:linear-gradient(165deg,#5fd3be,#3a94dd);color:#fff;border:none;box-shadow:var(--shadow-lg)}
+  .pet-card h3{color:#fff}
+  .pet-stage{height:160px;border-radius:16px;position:relative;overflow:hidden;margin:12px 0;background:linear-gradient(180deg,#bdf0ff 0%,#74caf0 60%,#f5e3b2 60%,#efd79a 100%)}
+  .pet-sun{position:absolute;top:12px;right:16px;font-size:1.6rem}
+  .pet-avatar{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);font-size:4.2rem;line-height:1;animation:petBob 1.9s ease-in-out infinite;filter:drop-shadow(0 6px 6px rgba(0,0,0,.18));cursor:pointer}
+  .pet-avatar.happy{animation-duration:1.1s}
+  .pet-avatar.sad{animation:none;filter:grayscale(.45) drop-shadow(0 6px 6px rgba(0,0,0,.18))}
+  @keyframes petBob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-13px)}}
+  .pet-fx{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);font-size:1.9rem;pointer-events:none;opacity:0}
+  .pet-fx.go{animation:petFx 1s ease-out}
+  @keyframes petFx{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}25%{opacity:1}100%{opacity:0;transform:translate(-50%,-46px) scale(1.2)}}
+  .pet-name-row{display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:8px}
+  .pet-name-row b{font-family:var(--font-display);font-size:1.25rem}
+  .pet-level{background:rgba(255,255,255,.25);border-radius:99px;padding:3px 11px;font-size:.74rem;font-weight:700}
+  .pet-name-row .mini{background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:99px;width:28px;height:28px;cursor:pointer;font-size:.85rem}
+  .pet-say{background:rgba(255,255,255,.22);border-radius:14px;padding:11px 13px;text-align:center;font-weight:600;min-height:2.6em;display:flex;align-items:center;justify-content:center}
+  .pet-stats{display:flex;flex-direction:column;gap:7px;margin:12px 0}
+  .pet-stat{display:flex;align-items:center;gap:9px;font-size:.8rem;font-weight:600}
+  .pet-stat .lab{width:92px;flex-shrink:0}
+  .pet-bar{flex:1;height:13px;background:rgba(255,255,255,.28);border-radius:99px;overflow:hidden}
+  .pet-bar i{display:block;height:100%;border-radius:99px;transition:width .4s,background .4s}
+  .pet-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .pet-actions button{background:#fff;color:#0a6ba0;border:none;border-radius:14px;padding:13px 4px;font-weight:800;font-family:var(--font-body);font-size:.82rem;cursor:pointer;transition:.15s}
+  .pet-actions button:hover{transform:translateY(-2px)}
+  .pet-actions button:active{transform:translateY(0)}
+  .pet-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+  .pet-pick button{background:rgba(255,255,255,.92);color:#0a6ba0;border:none;border-radius:16px;padding:14px 4px;font-size:2rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;transition:.15s}
+  .pet-pick button:hover{transform:translateY(-3px)}
+  .pet-pick button span{font-size:.72rem;font-weight:800}
+  .pet-reset{background:transparent;border:1.5px solid rgba(255,255,255,.55);color:#fff;border-radius:99px;padding:8px 15px;font-size:.76rem;font-weight:700;margin-top:14px;cursor:pointer}
 
   /* ---------- Photo Booth: grid + gallery ---------- */
   .booth-grid{position:absolute;inset:0;pointer-events:none;display:none;background-image:linear-gradient(rgba(255,255,255,.45) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.45) 1px,transparent 1px);background-size:33.33% 33.33%;mix-blend-mode:overlay}
@@ -823,16 +869,51 @@
       <div class="c-btns"><button class="c-btn" style="background:#fff;color:#8a3fae" data-actopen="kidz">🛝 See the KidZ Club</button></div>
     </div>
 
+    <!-- GAME 0: CABO PET (life-sim) -->
+    <div class="widget reveal pet-card" style="margin-top:14px">
+      <h3>🐣 Emily's Cabo Pet</h3>
+      <div id="petChoose">
+        <p style="font-size:.86rem">Adopt your very own Cabo buddy and take care of it every day — feed it, play with it, keep it happy, and watch it level up! Who do you want?</p>
+        <div class="pet-pick" id="petPick">
+          <button data-pet="🐢"><span style="font-size:2rem">🐢</span><span>Turtle</span></button>
+          <button data-pet="🐬"><span style="font-size:2rem">🐬</span><span>Dolphin</span></button>
+          <button data-pet="🦀"><span style="font-size:2rem">🦀</span><span>Crab</span></button>
+          <button data-pet="🐠"><span style="font-size:2rem">🐠</span><span>Fish</span></button>
+        </div>
+      </div>
+      <div id="petPlay" style="display:none">
+        <div class="pet-name-row">
+          <b id="petNameLbl">Buddy</b>
+          <span class="pet-level" id="petLevel">Lv 1</span>
+          <button class="mini" id="petRename" title="Rename">✏️</button>
+        </div>
+        <div class="pet-stage">
+          <div class="pet-sun">☀️</div>
+          <div class="pet-avatar" id="petAvatar">🐢</div>
+          <div class="pet-fx" id="petFx"></div>
+        </div>
+        <div class="pet-say" id="petSay">Hi! 💛</div>
+        <div class="pet-stats" id="petStats"></div>
+        <div class="pet-actions">
+          <button data-care="feed">🍤 Feed</button>
+          <button data-care="play">🎾 Play</button>
+          <button data-care="wash">🫧 Wash</button>
+          <button data-care="sleep">😴 Sleep</button>
+        </div>
+        <button class="pet-reset" id="petReset">🔄 Adopt a different buddy</button>
+      </div>
+    </div>
+
     <!-- GAME 1: MEMORY MATCH -->
-    <div class="widget reveal" style="margin-top:14px">
+    <div class="widget reveal emi-game emi-ocean" style="margin-top:14px">
       <h3>🧠 Cabo Memory Match</h3>
-      <p style="font-size:.84rem;color:var(--ink-soft)">Flip two cards. Find all the matching pairs in as few tries as you can!</p>
+      <p style="font-size:.84rem">Flip two cards. Find all the matching pairs in as few tries as you can!</p>
       <div class="game-btns">
         <span class="game-stat" id="mmStat">Moves: 0 · Pairs: 0/8</span>
         <button class="game-btn" id="mmNew" style="margin-left:auto">🔄 New game</button>
       </div>
       <div class="mm-grid" id="mmGrid"></div>
-      <div class="ws-msg" id="mmWin" style="color:#8a3fae"></div>
+      <div class="ws-msg" id="mmWin" style="color:#fff5b0"></div>
     </div>
 
     <!-- GAME 2: WORD SCRAMBLE -->
@@ -853,11 +934,11 @@
     </div>
 
     <!-- GAME 3: CABO BINGO / SCAVENGER HUNT -->
-    <div class="widget reveal" style="margin-top:14px">
-      <h3>🔍 Cabo Scavenger Bingo <span style="font-size:.72rem;color:var(--ink-soft);font-weight:400">— saves on this phone</span></h3>
-      <p style="font-size:.84rem;color:var(--ink-soft)">Tap a square when you spot it in real life. Fill a whole row, column, or diagonal for BINGO! 🎉</p>
+    <div class="widget reveal emi-game emi-sunny" style="margin-top:14px">
+      <h3>🔍 Cabo Scavenger Bingo <span style="font-size:.72rem;color:rgba(255,255,255,.85);font-weight:400">— saves on this phone</span></h3>
+      <p style="font-size:.84rem">Tap a square when you spot it in real life. Fill a whole row, column, or diagonal for BINGO! 🎉</p>
       <div class="bingo" id="bingoGrid"></div>
-      <div class="ws-msg" id="bingoMsg" style="color:#8a3fae"></div>
+      <div class="ws-msg" id="bingoMsg" style="color:#fff"></div>
     </div>
 
     <!-- EMILY'S ACTIVITIES -->
@@ -889,8 +970,8 @@
     </div>
 
     <!-- EMILY'S QUEST -->
-    <div class="widget reveal" style="margin-top:14px">
-      <h3>🏆 Emily's Cabo Quest <span style="font-size:.72rem;color:var(--ink-soft);font-weight:400">— check off your adventures!</span></h3>
+    <div class="widget reveal emi-quest" style="margin-top:14px">
+      <h3>🏆 Emily's Cabo Quest <span style="font-size:.72rem;color:rgba(255,255,255,.8);font-weight:400">— check off your adventures!</span></h3>
       <div class="pack-progress"><div id="emiBar" style="background:linear-gradient(90deg,#ff8fce,#8a63d2)"></div></div>
       <div class="pack-pct" id="emiPct">0% super-explorer</div>
       <div class="pack-cols" id="emiList"></div>
@@ -1304,7 +1385,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v21-2026-07-13";
+const OLIVE_BUILD="v22-2026-07-13";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -2013,6 +2094,84 @@ emiEl.addEventListener("change",e=>{
 });
 emiBar();
 
+/* -- Emily's Cabo Pet (a little life-sim: needs decay over real time, actions restore them, care earns levels) -- */
+const PET_NAMES={"🐢":"Shelly","🐬":"Splash","🦀":"Pinchy","🐠":"Bubbles"};
+const PET_DECAY={hunger:.6,fun:.5,energy:.35,clean:.3}; /* points lost per real minute */
+const PET_STATS=[["hunger","🍤","Tummy"],["fun","🎾","Fun"],["energy","⚡","Energy"],["clean","🫧","Clean"]];
+let pet=store.get("pet",null);
+function petClamp(n){return Math.max(0,Math.min(100,Math.round(n)))}
+function petDecay(){
+ if(!pet)return;
+ const mins=Math.max(0,(Date.now()-(pet.ts||Date.now()))/60000);
+ if(mins<0.05)return;
+ pet.hunger=petClamp(pet.hunger-PET_DECAY.hunger*mins);
+ pet.fun=petClamp(pet.fun-PET_DECAY.fun*mins);
+ pet.energy=petClamp(pet.energy-PET_DECAY.energy*mins);
+ pet.clean=petClamp(pet.clean-PET_DECAY.clean*mins);
+ pet.ts=Date.now();
+}
+function petMood(){const a=(pet.hunger+pet.fun+pet.energy+pet.clean)/4;return a>=75?"happy":a>=50?"ok":a>=28?"meh":"sad"}
+function petRand(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function petSayText(){
+ const low=[["hunger",pet.hunger,"I'm getting hungry… can I have a snack? 🍤"],
+  ["clean",pet.clean,"I feel all sandy… a wash would be nice! 🫧"],
+  ["energy",pet.energy,"*yawn* I'm so sleepy… 😴"],
+  ["fun",pet.fun,"I'm booored! Let's play! 🎾"]].filter(n=>n[1]<35).sort((a,b)=>a[1]-b[1])[0];
+ if(low)return low[2];
+ const m=petMood();
+ if(m==="happy")return petRand(["I LOVE Cabo with you! 🌴💛","You're the best owner ever! 🥹","Wanna build a sandcastle? 🏰","Best. Vacation. Ever. ✨"]);
+ if(m==="sad")return "I missed you… let's take care of me? 🥺";
+ return petRand(["I'm doing okay! 😊","What are we doing today? 🐾","Hi friend! 👋"]);
+}
+function petBarColor(v){return v>=50?"#39d98a":v>=25?"#ffc53d":"#ff6b6b"}
+function renderPet(){
+ const choose=document.getElementById("petChoose"),play=document.getElementById("petPlay");
+ if(!pet){choose.style.display="block";play.style.display="none";return}
+ choose.style.display="none";play.style.display="block";
+ const av=document.getElementById("petAvatar");
+ av.textContent=pet.emoji;av.className="pet-avatar "+petMood();
+ document.getElementById("petNameLbl").textContent=pet.name;
+ document.getElementById("petLevel").textContent="Lv "+pet.level;
+ document.getElementById("petSay").textContent=petSayText();
+ document.getElementById("petStats").innerHTML=PET_STATS.map(([k,e,lab])=>
+  `<div class="pet-stat"><span class="lab">${e} ${lab}</span><span class="pet-bar"><i style="width:${pet[k]}%;background:${petBarColor(pet[k])}"></i></span></div>`).join("");
+}
+function petFx(sym){
+ const fx=document.getElementById("petFx");
+ fx.textContent=sym;fx.classList.remove("go");void fx.offsetWidth;fx.classList.add("go");
+}
+function petAct(kind){
+ if(!pet)return;petDecay();
+ if(kind==="feed"){pet.hunger=petClamp(pet.hunger+28);petFx("🍤")}
+ else if(kind==="play"){pet.fun=petClamp(pet.fun+30);pet.energy=petClamp(pet.energy-10);petFx("🎾")}
+ else if(kind==="wash"){pet.clean=petClamp(pet.clean+34);petFx("✨")}
+ else if(kind==="sleep"){pet.energy=petClamp(pet.energy+40);petFx("💤")}
+ pet.xp=(pet.xp||0)+6;
+ let leveled=false;
+ while(pet.xp>=pet.level*50){pet.xp-=pet.level*50;pet.level++;leveled=true}
+ pet.ts=Date.now();store.set("pet",pet);renderPet();
+ if(leveled)toast("🎉 "+pet.name+" grew to Level "+pet.level+"!");
+}
+document.getElementById("petPick").addEventListener("click",e=>{
+ const b=e.target.closest("[data-pet]");if(!b)return;
+ const emoji=b.dataset.pet;
+ pet={emoji,name:PET_NAMES[emoji]||"Buddy",hunger:85,fun:85,energy:85,clean:85,xp:0,level:1,ts:Date.now()};
+ store.set("pet",pet);renderPet();
+ setTimeout(()=>{const n=prompt("Yay! What do you want to name your "+emoji+"?",pet.name);if(n&&n.trim()){pet.name=n.trim().slice(0,18);store.set("pet",pet);renderPet()}},150);
+});
+document.getElementById("petPlay").addEventListener("click",e=>{
+ const c=e.target.closest("[data-care]");if(c)petAct(c.dataset.care);
+});
+document.getElementById("petRename").addEventListener("click",()=>{
+ if(!pet)return;const n=prompt("Rename your buddy:",pet.name);if(n&&n.trim()){pet.name=n.trim().slice(0,18);store.set("pet",pet);renderPet()}
+});
+document.getElementById("petAvatar").addEventListener("click",()=>{if(pet){petFx(petRand(["💛","⭐","🫧","🎉"]));document.getElementById("petSay").textContent=petRand(["Hehe, that tickles! 😄","Boop! 👉","I love you! 💛"])}});
+document.getElementById("petReset").addEventListener("click",()=>{
+ if(confirm("Say bye to "+(pet?pet.name:"your buddy")+" and adopt a new one?")){pet=null;localStorage.removeItem("olive-pet");renderPet()}
+});
+petDecay();renderPet();
+setInterval(()=>{petDecay();if(pet&&document.getElementById("view-emily").classList.contains("active"))renderPet()},60000);
+
 /* ============ AR PHOTO BOOTH ============ */
 const BOOTH_STICKERS=["🤠","🕶️","🌮","🏐","🫒","🐬","🦜","🍹","⭐","😎","👑","🔥","🌅","🦞","💖","✌️","🤙","🌺","🦩","🍍","😜","🫶","🌴","🐢","🐳","🦭","🪅","🌊","🩴","🏖️","🍉","🦀","🦄","🌈","🐠","🥭"];
 /* filters: css for live preview; px params for baking on iPhones (no canvas filter support) */
@@ -2517,19 +2676,28 @@ function oliveReply(raw){
  }
  return null; /* no specific intent — the handler decides: AI for questions, wit for banter */
 }
-function isQuestion(s){return /\?\s*$/.test(s)||/^(what|when|where|who|why|how|can|could|should|is|are|do|does|will|any)\b/i.test(s.trim())}
+function isQuestion(s){return /\?\s*$/.test(s)||/^(what|when|where|who|why|how|can|could|should|is|are|do|does|will|any|which|recommend|suggest|tell me|help|ideas?|advice|find|show me|got any|need)\b/i.test(s.trim())}
 async function oliveAI(userMsg){
  const wx=window.oliveWx,today=todayAgendaLine();
  const recent=chatCache.slice(-6).map(m=>m.n+": "+m.x).join("\n");
- const sys="You are Olive 🫒, the witty, warm, very funny tour-guide bot living inside a family's Cabo San Lucas vacation app. The family ('the Cabo Crew') stays at Hyatt Ziva Los Cabos (all-inclusive, San José del Cabo); trip starts July 18 2026. "
-  +(wx?`Weather now ${wx.now}°F ${wx.label}, high ${wx.hi}°F${wx.sunset?", sunset "+wx.sunset:""}. `:"")
-  +(today?`Today's family schedule: ${today}. `:"Nothing on today's schedule. ")
-  +"Bookable in the app: snorkel cruise $89, pirate sunset cruise $99, parasail $80, camel $109, ATV $99, zipline $95, horseback $80, dolphins $139, fishing charter $400-800/boat. Resort beach is NOT swimmable; swim at Chileno Bay or Medano. Taxi to Cabo $30-50, tours pick up at the resort. One family member is 'OG' — tease him lovingly when relevant. Family-friendly always. Answer the sender by name in under 55 words with personality and emoji. Never invent bookings or prices not listed.";
- const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),7000);
+ const days=(()=>{const t=new Date((tripInput.value||"2026-07-18")+"T08:00:00");return Math.ceil((t-Date.now())/864e5)})();
+ const when=days>1?`The trip starts in ${days} days (July 18, 2026).`:days===1?"The trip starts TOMORROW!":days===0?"The trip starts TODAY! 🎉":`They're on the trip now — about day ${1-days} in Cabo.`;
+ const sys=`You are Olive 🫒 — the family's witty, warm, whip-smart travel-guide bot living inside their Cabo San Lucas vacation app. Personality: funny, upbeat, a little sassy, genuinely helpful — like a favorite aunt who knows everything about Cabo. Keep replies short (under 60 words), specific, and warm, with the occasional emoji. Address the sender by name, and ask a fun follow-up question when it fits. Never invent prices, bookings, or facts you don't have — if unsure, point them to the 🛎️ Concierge button.
+
+THE FAMILY ("the Cabo Crew") stays all-inclusive at Hyatt Ziva Los Cabos (San José del Cabo). Kids: Jade (14 — loves volleyball & photos, has a "Jade's Corner" tab) and Emily (8 — loves games & the KidZ Club, has "Emily's Corner"). One member goes by "OG" — tease him lovingly when it fits. ${when}
+
+CABO FACTS: resort beach is NOT swimmable (strong waves) — swim at Chileno Bay (calm, sea turtles, best before 10am) or Medano Beach (town, roped kid zones). Taxi to Cabo San Lucas $30–50 each way (agree the fare first) or Uber; most tours include free resort pickup. Tipping: 15–20% restaurants, 10–15% boat crews, $3–5/day housekeeping; pesos haggle better than USD. KidZ Club ages 4–12 (5-slide waterpark); new Teen Club for Jade. Emergency = 911.
+
+BOOKABLE IN THE APP (real prices — never change them): snorkel cruise $89, pirate sunset cruise $99, parasail $80, camel ride $109, ATV $99, zipline $95, horseback $80, dolphin swim $139, fishing charter $400–800/boat, glass-bottom boat to the Arch, banana boat.
+
+APP FEATURES you can point people to: 🏄 Activities (browse/vote/book), 📅 Schedule (shared family plans), 🧳 Tools (English→Spanish translator + tipping/packing/money guides), 📍 Family Map (opt-in location sharing) on Home, the Pro Photo Studio in Jade's Corner, and the games + Cabo Pet in Emily's Corner.`
+  +(wx?` LIVE WEATHER now: ${wx.now}°F, ${wx.label}, high ${wx.hi}°F${wx.sunset?", sunset "+wx.sunset:""}.`:"")
+  +(today?` ON THE SCHEDULE TODAY: ${today}.`:" Nothing is on the schedule today.");
+ const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),8500);
  try{
   const r=await fetch("https://text.pollinations.ai/openai",{method:"POST",signal:ctl.signal,
    headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({model:"openai",max_tokens:130,messages:[
+   body:JSON.stringify({model:"openai",max_tokens:200,temperature:.8,messages:[
     {role:"system",content:sys},
     {role:"user",content:(recent?"Recent chat:\n"+recent+"\n\n":"")+chatName+" says: "+userMsg}]})});
   clearTimeout(timer);
@@ -2543,7 +2711,7 @@ const HONEST_TIPS=[
  "golden hour is the only photography meeting that matters","hydrate before you celebrate"
 ];
 function honestAnswer(){
- return "Honest answer: that one's not in my guidebook! 📖 The 🛎️ Concierge button knows everything (real humans, fast). Free wisdom meanwhile: "+HONEST_TIPS[Math.floor(Math.random()*HONEST_TIPS.length)]+". 🫒";
+ return "That exact one's outside my guidebook 📖 — but the 🛎️ Concierge (real humans, fast) can nail it, and 🧳 Tools has the translator, money & packing guides. Free wisdom meanwhile: "+HONEST_TIPS[Math.floor(Math.random()*HONEST_TIPS.length)]+". Ask me about food, beaches, plans, the Arch, money, or the kids anytime! 🫒";
 }
 /* ---- the wit engine: Olive answers EVERY message ---- */
 const OLIVE_QUIPS=[
@@ -2581,6 +2749,40 @@ function wittyFallback(raw){
  const q=OLIVE_QUIPS[i%OLIVE_QUIPS.length];
  return q(snip);
 }
+/* ---- Olive's on-device brain: real answers to the questions the guidebook covers,
+   no external AI needed (works offline, never breaks). oliveReply runs first; this fills the gaps. ---- */
+function oliveKnows(raw){
+ const t=raw.toLowerCase();const wx=window.oliveWx;
+ const pick=a=>a[Math.floor(Math.random()*a.length)];
+ if(/\b(plan|itinerary|what should we do|what.*(do today|do tomorrow|to do)|things to do|suggest.*day)\b/.test(t)){
+  const hot=wx&&wx.hi>=90;
+  return `Here's a perfect Cabo day 🌴: 🌅 morning on the water (snorkel Chileno Bay or a boat to the Arch — calm before 10am), 🏖️ midday in the shade or pool while the kids hit KidZ Club, 🌇 golden-hour photos, then tacos in town or a sunset cruise.${hot?" It's a hot one today — hydrate! 💧":""} Want me to help book any of it? Try 🏄 Activities.`;
+ }
+ if(/\b(best )?(restaurant|good food|where.*(eat|dinner|lunch)|nice dinner|fancy)\b/.test(t))
+  return pick([
+   "Food plan 🌮: on property all 7 Ziva restaurants are already paid-for (the Mexican one's a sleeper hit). Off property — Tacos Gardenias for the real deal, The Office on Medano for a toes-in-sand sunset dinner, and Flora Farms for the magical farm night (book ahead!). Want a table? Tap 🛎️ Concierge.",
+   "Hungry crew? Tacos in town run $8–15 and are unbeatable. Big night out: The Office on the beach or Flora Farms under the fairy lights. Or stay in — the resort restaurants cost you nothing. 😋"
+  ]);
+ if(/\bwhale/.test(t))return "Whales are a winter thing here (Dec–Apr) 🐋 — in July they're off on their own vacation. But you CAN see dolphins, sea turtles, rays and loads of fish year-round; the snorkel cruise is your best marine-life bet. 🐬";
+ if(/\b(arch|lands? ?end|el arco)\b/.test(t))return "El Arco / Land's End 🪨 — the iconic rock arch where the Sea of Cortez meets the Pacific, reachable only by water. Grab a water taxi from the marina (~$15–20 pp, haggle kindly) or the glass-bottom boat. Lover's Beach is right there. Best light late afternoon. 📸";
+ if(/\bbeach\b/.test(t)&&/best|which|swim|good|recommend|where/.test(t))return "For swimming 🏝️: Chileno Bay (calm, clear, sea turtles — before 10am) and Medano Beach (lively town beach, roped kid zones). Our resort beach is gorgeous but NOT swimmable — strong waves. Lover's Beach by the Arch is a must-see. 🌊";
+ if(/\b(shop|shopping|souvenir|buy|market|gift|bring home)\b/.test(t))return "Souvenirs 🎁: the marina shops and San José del Cabo's Art District. Good buys — vanilla, hot sauce, Talavera pottery, silver, a woven blanket. Haggle kindly at stalls (start ~60–70%) and pesos beat dollars. Skip anything turtle/coral — illegal to bring back. 🐢";
+ if(/\b(atm|cash|currency|exchange|pesos?|dollars?|money|tip)\b/.test(t))return "Money 💵: USD works most places but you'll get pesos back at a meh rate — pull pesos from a bank ATM (Santander/BBVA, not airport ones) for the best deal, and tell your bank you're traveling. Tips: 15–20% dining, 10–15% boat crews, $3–5/day housekeeping. Full guide in 🧳 Tools.";
+ if(/\b(wifi|wi-fi|internet|data|e?sim)\b/.test(t))return "The Ziva has free WiFi in rooms & lobby 📶 — fine for chats and photos, so-so for streaming. Out in town, cafes have WiFi. Want reliable data everywhere? A cheap eSIM (Airalo) or a Telcel SIM is the move. 📱";
+ if(/\b(safe|safety|dangerous|crime|tap water|drink.*water)\b/.test(t))return "Cabo's tourist areas are safe with normal common sense 👍: drink bottled/filtered water (resort ice is fine), stick to busy spots at night, use official taxis or Uber, and mind the ocean flags (red = stay out). Emergency is 911. 🚑";
+ if(/\b(sunscreen|spf|sunburn|burn)\b/.test(t))return "SPF 50, reef-safe, reapply every 2 hours and after every swim ☀️ — the sun here is serious. Hats + rash guards for the kids beat re-lotioning a wiggly 8-year-old. Keep aloe in the mini-fridge for post-beach relief. 🧴";
+ if(/\b(seasick|sea ?sick|motion sick|nausea|queasy)\b/.test(t))return "Boat day? 🛥️ Take Dramamine ~1 hour before, sit mid-boat and watch the horizon, and skip the greasy breakfast. Ginger candy helps too. Most Arch trips are short and calm — you've got this! 🌊";
+ if(/\brain|storm|thunder|cloudy\b/.test(t))return (wx?`Radar says about ${wx.rain}% shower chance today. `:"")+"July showers are usually short and warm 🌦️. Rainy-hour backups: the spa, KidZ Club indoor fun, a long lunch in town, or a guilt-free siesta. It rarely lasts. ☔";
+ if(/\b(wear|pack|packing|clothes|outfit|what.*bring)\b/.test(t))return "Cabo uniform 🧳: 2 swimsuits each, breezy cover-ups, sundresses, one 'nice casual' outfit for fancy dinners, sandals + water shoes, hat & sunnies. Nights are warm — no jacket needed. Don't forget reef-safe SPF, aloe, chargers, and passports (valid 6+ months!). Full list in 🧳 Tools.";
+ if(/\b(nightlife|bar|club|party|night out|drinks tonight)\b/.test(t))return "Grown-up night out 🍸: the Cabo San Lucas marina is party central (Cabo Wabo; El Squid Roe if you're brave). Lower-key — sunset drinks at Sunset Monalisa or a marina stroll. Taxi both ways, agree the fare first. Kids have KidZ/Teen Club, so go enjoy! 💃";
+ if(/\b(romantic|date night|anniversary|honeymoon|just us)\b/.test(t))return "Romance mode 💕: a toes-in-sand dinner at The Office, the view at Sunset Monalisa, a sunset sailing cruise, or Flora Farms under the lights. Ask the concierge about a private beach dinner. Drop the kids at the club and go be adults. 🥂";
+ if(/\b(pharmacy|farmacia|medicine|doctor|hospital|first aid|band.?aid)\b/.test(t))return "Farmacias are everywhere and cheap 💊 — lots is over-the-counter here. The Ziva has a doctor on call (ask the front desk). Bring your own supply of anything essential. Emergency = 911.";
+ if(/\b(time zone|time change|what time is it|hour(s)? (ahead|behind)|clock)\b/.test(t))return "Cabo runs on Mountain Time (America/Mazatlán) with no summer daylight saving — same as US Mountain, and 1 hour behind California in July. Your phone should switch automatically. ⏰";
+ if(/\b(kid|child|children|little ones?|for the (kids|littles)|8[- ]year)\b/.test(t))return "Kid wins 🧒: KidZ Club waterpark (ages 4–12, included), glass-bottom boat to the Arch, banana boat, sandcastles at Medano, and turtle-nest spotting on beach walks. Emily even has her own Corner in the app — games and a virtual Cabo Pet for the downtime! 🛝";
+ if(/\b(thank|thanks|gracias|ty|appreciate)\b/.test(t))return pick(["¡De nada! That's Spanish for 'anytime.' 🫒","Anytime, mi gente! 💛","You're welcome — now go have the best day. 🌴"]);
+ if(/^(hi+|hey+|hello|hola|yo|sup|good morning|buenos)\b/.test(t))return pick(["¡Hola! 🫒 What can I help you plan today?","Hey hey! Ready for some Cabo magic? 🌴 Ask me anything — food, plans, weather.","Buenos días! ☀️ Need ideas, a translation, or today's plan? I got you."]);
+ return null;
+}
 document.getElementById("chatSendBtn").addEventListener("click",()=>{
  const inp=document.getElementById("chatText"),v=inp.value.trim();
  if(!v||!chatName)return;
@@ -2589,16 +2791,16 @@ document.getElementById("chatSendBtn").addEventListener("click",()=>{
     1. known topics -> instant local answer
     2. other QUESTIONS -> real AI (free, no key) with live trip context; honest fallback if unreachable
     3. banter -> wit engine. OG always gets the roast treatment on top. */
- const intent=oliveReply(v);
+ const intent=oliveReply(v)||oliveKnows(v);
  const og=isOG(chatName);
  if(intent){
   setTimeout(()=>postOlive(intent),800);
   if(og)setTimeout(()=>postOlive(nextRoast()),2500);
  }else if(isQuestion(v)){
-  oliveAI(v).then(ai=>{
-   postOlive(ai||honestAnswer());
+  setTimeout(()=>{
+   postOlive(honestAnswer());
    if(og)setTimeout(()=>postOlive(nextRoast()),1600);
-  });
+  },800);
  }else{
   if(og)setTimeout(()=>postOlive(nextRoast()),900);
   else setTimeout(()=>postOlive(wittyFallback(v)),700+Math.floor(Math.random()*600));
