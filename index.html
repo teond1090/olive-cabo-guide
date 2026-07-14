@@ -73,6 +73,19 @@
   .cd-meta h2{font-size:1.3rem;color:var(--olive-dark)}
   .cd-meta input[type=date]{margin-top:6px;border:1.5px solid var(--sand-dark);background:var(--sand);border-radius:10px;padding:8px 11px;font-family:var(--font-body);font-size:.9rem;color:var(--ink)}
 
+  /* ---------- Trip-day mode (Day X in Cabo) ---------- */
+  .tb-card{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:18px 20px;margin-bottom:8px}
+  .tb-date{font-size:.85rem;color:var(--ink-soft);margin-bottom:6px}
+  .tb-row{display:flex;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px dashed var(--sand-dark)}
+  .tb-row:last-of-type{border-bottom:none}
+  .tb-emoji{font-size:1.4rem}
+  .tb-time{font-weight:700;color:var(--olive-dark);min-width:78px;font-size:.88rem}
+  .tb-body{flex:1}
+  .tb-empty{padding:14px 4px;color:var(--ink-soft)}
+  .tb-empty a{color:var(--olive-dark);font-weight:700}
+  .tb-tip{background:var(--sand);border-radius:12px;padding:12px 14px;font-size:.9rem;margin-top:12px;line-height:1.5}
+  .tb-tomorrow{font-size:.85rem;color:var(--ink-soft);margin-top:10px}
+
   /* ---------- Nav ---------- */
   nav{position:sticky;top:0;background:rgba(247,241,227,.9);backdrop-filter:blur(10px);z-index:40;border-bottom:1px solid var(--sand-dark)}
   nav .wrap{display:flex;gap:4px;overflow-x:auto;padding:10px 18px;align-items:center;scrollbar-width:none}
@@ -147,6 +160,66 @@
   .jade-stickers{font-size:1.7rem;letter-spacing:.32em;text-align:center;margin:14px 0 0;filter:drop-shadow(0 2px 3px rgba(123,63,143,.25))}
   .caption-out{background:rgba(255,255,255,.18);border-radius:14px;padding:16px 14px;font-weight:800;font-size:1.05rem;text-align:center;min-height:3.2em;display:flex;align-items:center;justify-content:center}
   .gh-time{font-family:var(--font-display);font-size:2.3rem;font-weight:700;color:var(--coral);line-height:1.1;margin-bottom:6px}
+
+  /* ---------- Emily's Corner (age 8) ---------- */
+  .ct-emily{background:linear-gradient(140deg,#ff8fce,#8a63d2)}
+  .emi-stickers{font-size:1.8rem;letter-spacing:.28em;text-align:center;margin:14px 0 0;filter:drop-shadow(0 2px 3px rgba(138,99,210,.28))}
+  .emi-grad{background:linear-gradient(150deg,#ff8fce,#8a63d2);color:#fff}
+  .emi-grad h3{color:#fff}
+  .game-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .game-btn{border:none;border-radius:99px;padding:11px 15px;font-family:var(--font-body);font-weight:800;font-size:.9rem;cursor:pointer;background:#fff;color:#8a3fae;box-shadow:var(--shadow);transition:.15s}
+  .game-btn:hover{transform:translateY(-2px)}
+  .game-btn.alt{background:rgba(255,255,255,.24);color:#fff}
+  .game-stat{font-size:.9rem;font-weight:700;color:#8a3fae}
+  /* memory match */
+  .mm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+  .mm-card{aspect-ratio:1;border-radius:14px;border:none;background:linear-gradient(150deg,#ff8fce,#8a63d2);font-size:1.9rem;display:flex;align-items:center;justify-content:center;cursor:pointer;color:transparent;transition:transform .18s, background .18s;box-shadow:inset 0 2px 6px rgba(0,0,0,.12);-webkit-tap-highlight-color:transparent}
+  .mm-card.flip{background:#fff;color:initial;transform:rotateY(0)}
+  .mm-card.done{background:#e9ffe4;color:initial;cursor:default;box-shadow:none}
+  .mm-card::before{content:"❓";font-size:1.3rem;color:rgba(255,255,255,.8)}
+  .mm-card.flip::before,.mm-card.done::before{content:none}
+  /* word scramble */
+  .ws-word{font-family:var(--font-display);font-size:2.1rem;font-weight:700;letter-spacing:.24em;color:#8a3fae;text-align:center;margin:8px 0}
+  .ws-hint{font-size:.86rem;color:var(--ink-soft);text-align:center;margin-bottom:10px}
+  .ws-row{display:flex;gap:8px}
+  .ws-row input{flex:1;border:2px solid #e6b8de;border-radius:12px;padding:11px 13px;font-family:var(--font-body);font-size:1rem;text-transform:uppercase;letter-spacing:.1em}
+  .ws-msg{text-align:center;font-weight:700;margin-top:10px;min-height:1.3em}
+  /* bingo / scavenger */
+  .bingo{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+  .bingo button{aspect-ratio:1;border:2px dashed #d9a8e6;background:#fff;border-radius:14px;padding:6px;font-size:.72rem;font-weight:700;color:#7b3f8f;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;line-height:1.15;transition:.15s;-webkit-tap-highlight-color:transparent}
+  .bingo button .be{font-size:1.5rem}
+  .bingo button.got{background:linear-gradient(150deg,#ff8fce,#8a63d2);color:#fff;border-style:solid;border-color:transparent}
+  .bingo button.got::after{content:"⭐";position:absolute}
+
+  /* ---------- Photo Booth: grid + gallery ---------- */
+  .booth-grid{position:absolute;inset:0;pointer-events:none;display:none;background-image:linear-gradient(rgba(255,255,255,.45) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.45) 1px,transparent 1px);background-size:33.33% 33.33%;mix-blend-mode:overlay}
+  .booth-grid.on{display:block}
+  .booth-video-mirror{transform:scaleX(-1)}
+  .roll{display:flex;gap:8px;overflow-x:auto;padding:10px 14px;background:#101010}
+  .roll:empty{display:none}
+  .roll .shot{position:relative;flex-shrink:0}
+  .roll .shot img{height:64px;border-radius:10px;display:block;border:1.5px solid #333}
+  .roll .shot button{position:absolute;top:-6px;right:-6px;width:20px;height:20px;border-radius:99px;border:none;background:#e05a5a;color:#fff;font-size:.7rem;cursor:pointer;line-height:1}
+  .roll .shot .dl{top:auto;bottom:-6px;right:auto;left:-6px;background:var(--olive)}
+
+  /* ---------- Family Map (opt-in location sharing) ---------- */
+  .loccard{background:var(--cream);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;margin-top:16px}
+  .loc-toggle{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}
+  .switch{position:relative;display:inline-block;width:52px;height:30px;flex-shrink:0}
+  .switch input{opacity:0;width:0;height:0}
+  .switch .sl{position:absolute;inset:0;background:var(--sand-dark);border-radius:99px;transition:.2s;cursor:pointer}
+  .switch .sl::before{content:"";position:absolute;height:24px;width:24px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .switch input:checked+.sl{background:var(--olive)}
+  .switch input:checked+.sl::before{transform:translateX(22px)}
+  .loc-list{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+  .loc-row{display:flex;align-items:center;gap:12px;padding:11px 13px;background:var(--sand);border-radius:14px}
+  .loc-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+  .loc-row .ln{font-weight:700;color:var(--ink)}
+  .loc-row .lt{font-size:.76rem;color:var(--ink-soft)}
+  .loc-row .lmap{margin-left:auto;background:var(--olive);color:#fff;border-radius:99px;padding:8px 13px;font-size:.8rem;font-weight:700;text-decoration:none;white-space:nowrap}
+  .loc-empty{color:var(--ink-soft);font-size:.9rem;padding:8px 2px}
+  .loc-map{width:100%;height:230px;border:none;border-radius:14px;margin-top:12px;background:var(--sand)}
+  .loc-note{font-size:.76rem;color:var(--ink-soft);margin-top:10px;line-height:1.5}
   .card .cb{padding:9px 11px 11px;display:flex;flex-direction:column;gap:3px;flex:1}
   .card h3{font-size:.83rem;line-height:1.25;color:var(--olive-deep);font-family:var(--font-body);font-weight:700;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.1em}
   .card .c-price{font-size:.74rem;font-weight:700;color:var(--coral)}
@@ -445,6 +518,7 @@
     <a href="#/schedule" data-view="schedule">📅 Schedule</a>
     <a href="#/chat" data-view="chat">💬 Chat</a>
     <a href="#/jade" data-view="jade">🏐 Jade's Corner</a>
+    <a href="#/emily" data-view="emily">🦄 Emily's Corner</a>
     <a href="#/resort" data-view="resort">🏨 Home Base</a>
     <a href="#/tools" data-view="tools">🧳 Tools & Tips</a>
   </div>
@@ -454,6 +528,9 @@
 
   <!-- ============ VIEW: HOME ============ -->
   <div class="view active" id="view-home">
+
+  <!-- TODAY IN CABO (trip-day mode; hidden until the trip starts) -->
+  <section id="todayBrief" style="display:none"></section>
 
   <!-- WEATHER -->
   <section id="weather">
@@ -498,6 +575,19 @@
     <div class="dice-box reveal">
       <button class="dice-btn" id="diceBtn">🎲 Roll a Perfect Day</button>
       <div class="dice-out" id="diceOut">Can't decide? Let Olive build tomorrow for you — one tap.</div>
+    </div>
+
+    <!-- FAMILY MAP (opt-in location sharing) -->
+    <div class="loccard reveal" id="locCard">
+      <div class="sec-head" style="margin-bottom:2px"><h2 style="font-size:1.3rem">📍 Family Map</h2><span class="tag">Opt-in</span></div>
+      <p style="font-size:.86rem;color:var(--ink-soft)">Turn this on to share your live location with the family during the trip — so nobody gets lost between the pool, the beach and the marina. You choose when it's on, and you can turn it off any time.</p>
+      <div class="loc-toggle">
+        <label class="switch"><input type="checkbox" id="locShare"><span class="sl"></span></label>
+        <div><b id="locShareLabel">Share my location: OFF</b><div class="lt" id="locSelf" style="font-size:.76rem;color:var(--ink-soft)"></div></div>
+      </div>
+      <div class="loc-list" id="locList"><div class="loc-empty">No one is sharing right now. Flip the switch above to put yourself on the map. 🗺️</div></div>
+      <iframe class="loc-map" id="locMap" title="Family location map" loading="lazy" style="display:none"></iframe>
+      <div class="loc-note">🔒 Your location is shared only with people who have Olive's private link, and only while your switch is ON. It's never posted publicly or saved to any account. Phones will ask permission before sharing — that's normal.</div>
     </div>
   </section>
 
@@ -594,7 +684,7 @@
 
   <section id="jade">
     <div class="sec-head reveal"><h2>Jade's Corner</h2><span class="tag" style="background:#c45ba2">VIP · age 14</span></div>
-    <p class="sec-blurb reveal">Cabo, but make it iconic. 🏐 This page is all yours, Jade — and there's a little-sister section so the 8-year-old legend has the best week of her life too.</p>
+    <p class="sec-blurb reveal">Cabo, but make it iconic. 🏐 This page is all yours, Jade — volleyball, photo ops, AR, and a camera studio built for the feed. (Emily's got her own Corner now — 🦄 <a href="#/emily" style="color:#7b3f8f;font-weight:700">tap here</a> to send her there.)</p>
 
     <div class="conc-banner reveal" style="background:linear-gradient(140deg,#c45ba2,#7b3f8f)">
       <div class="cb-icon">🏐</div>
@@ -637,16 +727,15 @@
         <p style="font-size:.78rem;color:var(--ink-soft);margin-top:12px">🎉 <b>Teen Club at the Ziva</b> — brand new from the 2025 renovation, made exactly for your age group. Best place on property to find people who aren't your parents.</p>
         <p style="font-size:.78rem;color:var(--ink-soft);margin-top:8px">📸 <b>Photo-op circuit:</b> Arch selfie from the water taxi · Lover's Beach · the marina sign at golden hour · fairy lights at Flora Farms · sunset silhouettes on the beach walk.</p>
       </div>
-      <div class="widget">
-        <h3>🦄 Little Sis HQ (age 8)</h3>
-        <ul style="font-size:.86rem;padding-left:20px;display:flex;flex-direction:column;gap:8px">
-          <li><b>KidZ Club mini waterpark</b> — five slides, included, all day 🛝</li>
-          <li><b>Glass-bottom boat</b> — count the fish under your feet on the way to the Arch 🐟</li>
-          <li><b>Banana boat</b> with the whole family (she's over the age-5 minimum) 🍌</li>
-          <li><b>Turtle patrol</b> — July is nesting season; spot the marked nests on a beach walk (look, never touch) 🐢</li>
-          <li><b>Big-sister training:</b> Jade teaches her a volleyball serve at Medano = core memory 🏐</li>
-        </ul>
-        <div class="more-links" style="margin-top:10px"><a href="javascript:void(0)" data-actopen="kidz">🛝 KidZ Club</a><a href="javascript:void(0)" data-actopen="arch">⛵ Glass-bottom boat</a></div>
+      <div class="widget" style="display:flex;flex-direction:column">
+        <h3>🎯 Photo Challenge of the Day</h3>
+        <p style="font-size:.8rem;color:var(--ink-soft);margin-bottom:6px">A fresh shot to get today. Nail it, then post it.</p>
+        <div class="caption-out" id="jadeChallenge" style="background:linear-gradient(150deg,#ffe1f3,#efe3ff);color:#7b3f8f;min-height:3.4em">🌅 Golden-hour silhouette on the beach walk</div>
+        <div class="c-btns" style="margin-top:12px">
+          <button class="c-btn" style="background:#c45ba2;color:#fff" id="jadeChallengeRoll">🎲 New challenge</button>
+          <button class="c-btn" style="background:#7b3f8f;color:#fff" id="jadeChallengeShoot">📸 Open camera</button>
+        </div>
+        <p style="font-size:.74rem;color:var(--ink-soft);margin-top:auto;padding-top:12px">🏐 <b>Volleyball HQ:</b> Medano Beach pickup games most afternoons. 🎉 <b>Teen Club</b> at the Ziva is your headquarters for finding people who aren't your parents.</p>
       </div>
     </div>
 
@@ -668,9 +757,9 @@
         <p style="font-size:.74rem;color:var(--ink-soft);padding:8px 10px 0">Spin with your finger, then tap the AR button — it stands in the actual room (or on the actual beach) through your camera. Photo-op gold. 📸 <i>(On iPhone the astronaut is the best AR citizen.)</i></p>
       </div>
       <div class="widget" style="background:linear-gradient(150deg,#c45ba2,#7b3f8f);color:#fff;display:flex;flex-direction:column;justify-content:center">
-        <h3 style="color:#fff">🤳 AR Photo Booth</h3>
-        <p style="font-size:.84rem;opacity:.92;margin-bottom:14px">Live camera + Cabo stickers. Slap a sombrero, a volleyball or a dolphin on anyone, snap it, share it. Little sis approved.</p>
-        <button class="c-btn" style="background:#fff;color:#7b3f8f" id="boothOpen">📸 Open the Photo Booth</button>
+        <h3 style="color:#fff">🤳 Pro Photo Studio</h3>
+        <p style="font-size:.84rem;opacity:.92;margin-bottom:14px">11 live filters, 30+ Cabo stickers, captions, polaroid & film frames, a rule-of-thirds grid, self-timer, a 3-shot photo strip, and your own in-app camera roll. Snap, save, share. 📸✨</p>
+        <button class="c-btn" style="background:#fff;color:#7b3f8f" id="boothOpen">📸 Open the Photo Studio</button>
       </div>
     </div>
 
@@ -679,6 +768,99 @@
       <div class="pack-progress"><div id="jadeBar"></div></div>
       <div class="pack-pct" id="jadePct">0% legendary</div>
       <div class="pack-cols" id="jadeList"></div>
+    </div>
+  </section>
+
+  </div>
+  <!-- ============ VIEW: EMILY'S CORNER ============ -->
+  <div class="view" id="view-emily">
+
+  <section id="emily">
+    <div class="sec-head reveal"><h2>Emily's Corner</h2><span class="tag" style="background:#8a63d2">VIP · age 8</span></div>
+    <p class="sec-blurb reveal">This whole page is yours, Emily! 🦄 Games, puzzles, and the coolest things to do in Cabo for an 8-year-old adventurer. Beat the games, then go find real fish, real turtles, and the biggest waterslide.</p>
+
+    <div class="emi-stickers reveal">🦄 🐠 🐢 🏖️ 🍦 🐬 🌈 🪅 🩴 ⭐</div>
+
+    <div class="conc-banner reveal" style="background:linear-gradient(140deg,#ff8fce,#8a63d2)">
+      <div class="cb-icon">🛝</div>
+      <div class="cb-text">
+        <b>Your #1 spot: the KidZ Club waterpark</b>
+        <span>Five waterslides, splash zone, games and crafts — right at our resort, and it's already included. Open all day, with people whose whole job is fun. Ask a grown-up to walk you over!</span>
+      </div>
+      <div class="c-btns"><button class="c-btn" style="background:#fff;color:#8a3fae" data-actopen="kidz">🛝 See the KidZ Club</button></div>
+    </div>
+
+    <!-- GAME 1: MEMORY MATCH -->
+    <div class="widget reveal" style="margin-top:14px">
+      <h3>🧠 Cabo Memory Match</h3>
+      <p style="font-size:.84rem;color:var(--ink-soft)">Flip two cards. Find all the matching pairs in as few tries as you can!</p>
+      <div class="game-btns">
+        <span class="game-stat" id="mmStat">Moves: 0 · Pairs: 0/8</span>
+        <button class="game-btn" id="mmNew" style="margin-left:auto">🔄 New game</button>
+      </div>
+      <div class="mm-grid" id="mmGrid"></div>
+      <div class="ws-msg" id="mmWin" style="color:#8a3fae"></div>
+    </div>
+
+    <!-- GAME 2: WORD SCRAMBLE -->
+    <div class="widget reveal emi-grad" style="margin-top:14px">
+      <h3>🔤 Cabo Word Scramble</h3>
+      <p style="font-size:.84rem;opacity:.92">Unscramble the letters to spell a Cabo word. Stuck? Read the hint!</p>
+      <div class="ws-word" id="wsWord" style="color:#fff">— — —</div>
+      <div class="ws-hint" id="wsHint" style="color:rgba(255,255,255,.9)">Hint appears here</div>
+      <div class="ws-row">
+        <input id="wsInput" placeholder="Type your answer" autocomplete="off" autocapitalize="characters">
+        <button class="game-btn" id="wsCheck">Check ✓</button>
+      </div>
+      <div class="ws-msg" id="wsMsg" style="color:#fff"></div>
+      <div class="game-btns" style="justify-content:center">
+        <button class="game-btn alt" id="wsHintBtn">💡 Show a letter</button>
+        <button class="game-btn alt" id="wsSkip">⏭️ Skip</button>
+      </div>
+    </div>
+
+    <!-- GAME 3: CABO BINGO / SCAVENGER HUNT -->
+    <div class="widget reveal" style="margin-top:14px">
+      <h3>🔍 Cabo Scavenger Bingo <span style="font-size:.72rem;color:var(--ink-soft);font-weight:400">— saves on this phone</span></h3>
+      <p style="font-size:.84rem;color:var(--ink-soft)">Tap a square when you spot it in real life. Fill a whole row, column, or diagonal for BINGO! 🎉</p>
+      <div class="bingo" id="bingoGrid"></div>
+      <div class="ws-msg" id="bingoMsg" style="color:#8a3fae"></div>
+    </div>
+
+    <!-- EMILY'S ACTIVITIES -->
+    <div class="two-col reveal" style="margin-top:14px">
+      <div class="widget">
+        <h3>🌟 Emily's Cabo To-Do List</h3>
+        <ul style="font-size:.88rem;padding-left:20px;display:flex;flex-direction:column;gap:9px">
+          <li><b>Ride all 5 KidZ Club slides</b> — then do it again 🛝</li>
+          <li><b>Glass-bottom boat to the Arch</b> — count the fish under your feet 🐟</li>
+          <li><b>Banana boat bounce</b> with the family (you're big enough!) 🍌</li>
+          <li><b>Turtle patrol</b> — July is baby-turtle season; find a marked nest on a beach walk (look with your eyes, not your hands!) 🐢</li>
+          <li><b>Build the tallest sandcastle</b> and decorate it with shells 🏰</li>
+          <li><b>Try a new fruit</b> — mango on a stick, coconut, or a fresh agua fresca 🥭</li>
+          <li><b>Learn 3 Spanish words</b> — try "hola", "gracias", "delfín" 🗣️</li>
+        </ul>
+        <div class="more-links" style="margin-top:10px"><a href="javascript:void(0)" data-actopen="kidz">🛝 KidZ Club</a><a href="javascript:void(0)" data-actopen="arch">⛵ Glass-bottom boat</a><a href="javascript:void(0)" data-actopen="banana">🍌 Banana boat</a></div>
+      </div>
+      <div class="widget emi-grad">
+        <h3>🦄 Emily's Rules of Cabo</h3>
+        <ul style="font-size:.9rem;padding-left:20px;display:flex;flex-direction:column;gap:9px">
+          <li>☀️ <b>Sunscreen first</b>, every time — even when you don't want to</li>
+          <li>💧 Drink water like it's your job (it's hot!)</li>
+          <li>👀 Stay where a grown-up can see you at the pool and beach</li>
+          <li>🌊 Our resort beach is for playing in the sand — swimming is in the pools</li>
+          <li>🐢 Sea animals are for watching, not touching</li>
+          <li>🍦 There is always room for one more paleta 😋</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- EMILY'S QUEST -->
+    <div class="widget reveal" style="margin-top:14px">
+      <h3>🏆 Emily's Cabo Quest <span style="font-size:.72rem;color:var(--ink-soft);font-weight:400">— check off your adventures!</span></h3>
+      <div class="pack-progress"><div id="emiBar" style="background:linear-gradient(90deg,#ff8fce,#8a63d2)"></div></div>
+      <div class="pack-pct" id="emiPct">0% super-explorer</div>
+      <div class="pack-cols" id="emiList"></div>
     </div>
   </section>
 
@@ -871,6 +1053,7 @@
   </div>
   <div class="booth-stage" id="boothStage">
     <video id="boothVideo" autoplay playsinline muted></video>
+    <div class="booth-grid" id="boothGrid"></div>
     <div class="booth-msg" id="boothMsg">Allow camera access to start…</div>
     <div class="booth-count" id="boothCount"></div>
   </div>
@@ -879,11 +1062,15 @@
   <div class="booth-actions">
     <button class="bx" id="boothText">✍️ Caption</button>
     <button class="bx" id="boothFrame">🖼️ Frame: off</button>
+    <button class="bx" id="boothMirror">🪞 Mirror: on</button>
+    <button class="bx" id="boothGridBtn">▦ Grid</button>
     <button class="bx" id="boothTimer">⏱️ 3s</button>
+    <button class="bx" id="boothStrip">🎞️ Strip ×3</button>
     <button class="bx" id="boothClear">🧹 Clear</button>
     <button class="chat-send" id="boothSnap">📸 Snap</button>
   </div>
-  <div style="background:#181818;color:#888;font-size:.66rem;text-align:center;padding:0 14px 12px">tap a sticker to add · drag to move · double-tap to grow</div>
+  <div class="roll" id="boothRoll"></div>
+  <div style="background:#181818;color:#888;font-size:.66rem;text-align:center;padding:0 14px 12px">tap a sticker to add · drag to move · double-tap to grow · your last shots save below 📸</div>
 </div>
 
 <!-- IN-OLIVE BOOKING FRAME -->
@@ -1062,7 +1249,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v17-2026-06-11";
+const OLIVE_BUILD="v19-2026-07-13";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -1081,15 +1268,67 @@ function toggleVote(act){publishEv({k:"vote",id:"v-"+act+"-"+voterId,act,on:!myV
 const tripInput=document.getElementById("tripDate");
 tripInput.value=store.get("trip-date","2026-07-18");
 tripInput.addEventListener("change",()=>{store.set("trip-date",tripInput.value);tick()});
+function setUnit(id,val,label){const b=document.getElementById(id);b.textContent=val;b.nextElementSibling.textContent=label}
 function tick(){
+ const n=tripDayN();
+ if(n>=1&&n<=TRIP_MODE_DAYS){ /* we're there — countdown becomes the trip-day card */
+  setUnit("cdDays",n,"day");
+  setUnit("cdHours",eventsOn(localDateStr(0)).length,"plans today");
+  setUnit("cdMins",window.oliveWx?window.oliveWx.now+"°":"—","right now");
+  document.querySelector(".cd-meta h2").textContent="🌴 Day "+n+" in Cabo!";
+  renderTodayBrief();
+  return;
+ }
  const target=new Date(tripInput.value+"T08:00:00");
  let ms=target-new Date();
  const past=ms<0; ms=Math.abs(ms);
  const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);
- document.getElementById("cdDays").textContent=d;
- document.getElementById("cdHours").textContent=h;
- document.getElementById("cdMins").textContent=m;
+ setUnit("cdDays",d,"days");
+ setUnit("cdHours",h,"hours");
+ setUnit("cdMins",m,"mins");
  document.querySelector(".cd-meta h2").textContent=past?"🌴 We're in Cabo mode!":"✈️ Countdown to Cabo";
+ renderTodayBrief();
+}
+
+/* ============ TRIP-DAY MODE ============ */
+const TRIP_MODE_DAYS=14; /* show Day-X mode for up to 2 weeks after the start date */
+const TRIP_TIPS=[
+ "Arrival day: unpack, sunscreen, pool. Easy resort dinner tonight — save the town for when you're rested. Got tour confirmations? Forward them to the 📅 Schedule inbox so the whole crew sees the plan.",
+ "The ocean is calmest before 10 am — snorkeling, boat trips and paddleboards are all better in the morning. Book tomorrow's adventure today; morning slots go first.",
+ "Chileno Bay before 10 am = sea turtles and glass-clear water. Water shoes help on the rocks, and both the shade and the fish disappear by 11.",
+ "Midday sun here is serious — SPF 50, reapply after every swim. Noon-to-3 is KidZ Club / adults-only pool / siesta time. Tacos taste better after a nap. Proven science.",
+ "Heading to town tonight? Agree on the taxi fare BEFORE you get in (~$30–50 each way) — or Uber works in Cabo. Most tours pick up free at the Ziva, so always ask.",
+ "Souvenir day: at the marina stalls the first price is a suggestion — friendly haggling is expected, and pesos get better deals than dollars.",
+ "Last full day energy: do the thing everyone kept saying “we should do,” and get the big group photo. Tip the people who made the week — guides $5–10/person goes a long way."
+];
+function localDateStr(offsetDays){const d=new Date(Date.now()+offsetDays*864e5);return d.toLocaleDateString("en-CA")}
+function tripDayN(){
+ const s=tripInput.value; if(!s)return 0;
+ const start=new Date(s+"T00:00:00");
+ const now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+ return Math.round((today-start)/864e5)+1;
+}
+function eventsOn(dstr){
+ return [...evMap.values()].filter(e=>!e.del&&!e.inbox&&e.k!=="vote"&&e.d===dstr)
+  .sort((a,b)=>String(a.tm||"99:99").localeCompare(String(b.tm||"99:99")));
+}
+function renderTodayBrief(){
+ const el=document.getElementById("todayBrief");if(!el)return;
+ const n=tripDayN();
+ if(n<1||n>TRIP_MODE_DAYS){el.style.display="none";return}
+ el.style.display="block";
+ const evs=eventsOn(localDateStr(0)),tevs=eventsOn(localDateStr(1));
+ const wx=window.oliveWx;
+ const rows=evs.length?evs.map(e=>`<div class="tb-row"><span class="tb-emoji">${e.e||"📌"}</span><span class="tb-time">${e.tm?esc(to12h(e.tm)):"anytime"}</span><div class="tb-body"><b>${esc(e.t||"")}</b>${e.booked?' <span class="sd-booked">📌 booked</span>':""}</div></div>`).join("")
+  :'<div class="tb-empty">🌵 Nothing on the books — official pool day! Or be the hero: <a href="#/activities">browse activities</a> or ask Olive in the chat.</div>';
+ const tline=tevs.length?`<div class="tb-tomorrow">🌅 Tomorrow: ${tevs.map(e=>`${e.e||"📌"} ${esc(e.t||"")}${e.tm?" · "+esc(to12h(e.tm)):""}`).join(" &nbsp;·&nbsp; ")}</div>`:"";
+ el.innerHTML=`<div class="sec-head"><h2>🌞 Today in Cabo</h2><span class="tag">Day ${n}</span></div>
+  <div class="tb-card">
+   <div class="tb-date">${new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric"})}${wx?` · ${wx.now}°F ${wx.label.toLowerCase()}${wx.sunset?" · 🌇 sunset "+wx.sunset:""}`:""}</div>
+   ${rows}
+   <div class="tb-tip">💡 <b>Olive's tip of the day:</b> ${TRIP_TIPS[(n-1)%TRIP_TIPS.length]}</div>
+   ${tline}
+  </div>`;
 }
 tick();setInterval(tick,30000);
 
@@ -1112,6 +1351,7 @@ fetch("https://api.open-meteo.com/v1/forecast?latitude=22.89&longitude=-109.91&c
    }
    document.getElementById("wTemp").textContent=Math.round(j.current.temperature_2m)+"°F";
    document.getElementById("wCond").textContent=e+" "+label;
+   tick(); /* refresh trip-day card now that live temp is in */
    const days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
    document.getElementById("forecast").innerHTML=j.daily.time.map((t,i)=>{
      const dt=new Date(t+"T12:00:00");const[de]=wmo(j.daily.weather_code[i]);
@@ -1581,18 +1821,160 @@ document.getElementById("captionCopy").addEventListener("click",()=>{
  else fallbackCopy(c,done);
 });
 
+/* ============ JADE: PHOTO CHALLENGE OF THE DAY ============ */
+const JADE_CHALLENGES=[
+ "🌅 Golden-hour silhouette on the beach walk","🏐 Mid-air volleyball spike (get someone to toss)",
+ "🤳 The Arch framed behind you from the water taxi","🕶️ Coolest sunglasses reflection you can find",
+ "🐬 You + the ocean, jump shot at the peak","🌮 Flat-lay of the best taco plate of the day",
+ "👯 Matching poses with a family member","🌺 Something bright pink or coral in the frame",
+ "🏝️ 'Postcard' wide shot of Land's End","💦 Action splash at the pool",
+ "🫒 The Olive vibe: green + gold + sand in one shot","😎 A candid laugh — no posing allowed"
+];
+document.getElementById("jadeChallenge").textContent=JADE_CHALLENGES[store.get("jade-chal-i",0)%JADE_CHALLENGES.length];
+document.getElementById("jadeChallengeRoll").addEventListener("click",()=>{
+ let i=store.get("jade-chal-i",0);
+ i=(i+1+Math.floor(Math.random()*3))%JADE_CHALLENGES.length;
+ store.set("jade-chal-i",i);
+ document.getElementById("jadeChallenge").textContent=JADE_CHALLENGES[i];
+});
+document.getElementById("jadeChallengeShoot").addEventListener("click",()=>document.getElementById("boothOpen").click());
+
+/* ============ EMILY'S CORNER (age 8) ============ */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+/* open activity modals from Emily's tiles/links */
+document.getElementById("view-emily").addEventListener("click",e=>{
+ const b=e.target.closest("[data-actopen]");
+ if(b)openModal(b.dataset.actopen);
+});
+
+/* -- Memory Match -- */
+const MM_EMOJIS=["🐠","🐬","🐢","🌴","🍦","🏐","🐚","⭐"];
+let mmFlipped=[],mmMoves=0,mmMatched=0,mmLock=false;
+function mmStat(){document.getElementById("mmStat").textContent=`Moves: ${mmMoves} · Pairs: ${mmMatched}/8`}
+function mmNew(){
+ const deck=shuffle([...MM_EMOJIS,...MM_EMOJIS].map(e=>({e})));
+ mmFlipped=[];mmMoves=0;mmMatched=0;mmLock=false;
+ document.getElementById("mmWin").textContent="";
+ document.getElementById("mmGrid").innerHTML=deck.map((c,idx)=>`<button class="mm-card" data-mm="${idx}" data-e="${c.e}">${c.e}</button>`).join("");
+ mmStat();
+}
+document.getElementById("mmGrid").addEventListener("click",e=>{
+ const b=e.target.closest("[data-mm]");if(!b||mmLock)return;
+ if(b.classList.contains("flip")||b.classList.contains("done"))return;
+ b.classList.add("flip");mmFlipped.push(b);
+ if(mmFlipped.length===2){
+  mmMoves++;mmStat();mmLock=true;
+  const[a,c]=mmFlipped;
+  if(a.dataset.e===c.dataset.e){
+   setTimeout(()=>{[a,c].forEach(x=>{x.classList.add("done");x.classList.remove("flip")});mmFlipped=[];mmLock=false;mmMatched++;mmStat();
+    if(mmMatched===8)document.getElementById("mmWin").textContent=`🎉 You won in ${mmMoves} moves! Amazing!`;},500);
+  }else setTimeout(()=>{[a,c].forEach(x=>x.classList.remove("flip"));mmFlipped=[];mmLock=false},850);
+ }
+});
+document.getElementById("mmNew").addEventListener("click",mmNew);
+mmNew();
+
+/* -- Word Scramble -- */
+const WS_WORDS=[
+ ["BEACH","Sandy place where the waves meet the land 🏖️"],["OCEAN","The big blue water full of fish 🌊"],
+ ["TURTLE","A slow animal with a shell that lays eggs on the sand 🐢"],["DOLPHIN","A super-smart animal that jumps out of the sea 🐬"],
+ ["TACOS","Yummy food in a folded tortilla 🌮"],["SUNSET","When the sky turns orange and the sun goes down 🌅"],
+ ["CACTUS","A prickly desert plant 🌵"],["SEASHELL","You find these on the sand and hold them to your ear 🐚"],
+ ["FIESTA","A big, fun party! 🎉"],["MANGO","A sweet orange tropical fruit 🥭"],
+ ["WHALE","The biggest animal in the whole ocean 🐳"],["SANDCASTLE","You build this at the beach with a bucket 🏰"]
+];
+let wsIdx=0,wsReveal=0;
+function scramble(w){let a=w.split("");do{shuffle(a)}while(a.join("")===w&&w.length>1);return a.join("")}
+function wsLoad(){
+ wsReveal=0;const[word,hint]=WS_WORDS[wsIdx];
+ document.getElementById("wsWord").textContent=scramble(word).split("").join(" ");
+ document.getElementById("wsHint").textContent="💡 "+hint;
+ document.getElementById("wsInput").value="";
+ document.getElementById("wsMsg").textContent="";
+}
+function wsNext(){wsIdx=(wsIdx+1)%WS_WORDS.length;wsLoad()}
+document.getElementById("wsCheck").addEventListener("click",()=>{
+ const ans=document.getElementById("wsInput").value.trim().toUpperCase().replace(/\s+/g,"");
+ const m=document.getElementById("wsMsg");
+ if(ans===WS_WORDS[wsIdx][0]){m.textContent="🎉 YES! That's it!";setTimeout(wsNext,1200)}
+ else m.textContent="❌ Not yet — try again or tap a hint!";
+});
+document.getElementById("wsInput").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("wsCheck").click()});
+document.getElementById("wsHintBtn").addEventListener("click",()=>{
+ const word=WS_WORDS[wsIdx][0];wsReveal=Math.min(wsReveal+1,word.length);
+ document.getElementById("wsMsg").textContent="Starts with: "+word.slice(0,wsReveal)+"…";
+});
+document.getElementById("wsSkip").addEventListener("click",wsNext);
+wsIdx=Math.floor(Math.random()*WS_WORDS.length);wsLoad();
+
+/* -- Scavenger Bingo -- */
+const BINGO_ITEMS=[
+ ["🌵","A cactus"],["🐦","A pelican or seabird"],["⛵","A boat on the water"],
+ ["🌊","A really big wave"],["🐠","A fish (real or on a menu!)"],["🌮","Someone eating tacos"],
+ ["🐕","A dog on the beach"],["🌅","A sunset"],["🐚","A seashell"]
+];
+const BINGO_LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+let bingoGot=store.get("emily-bingo",[]);
+function bingoCheck(){
+ const win=BINGO_LINES.some(l=>l.every(i=>bingoGot.includes(i)));
+ document.getElementById("bingoMsg").textContent=bingoGot.length===9?"🌟 You found them ALL — superstar!":(win?"🎉 BINGO! You got a whole line! Show a grown-up!":"");
+}
+function bingoRender(){
+ document.getElementById("bingoGrid").innerHTML=BINGO_ITEMS.map((it,i)=>`<button data-b="${i}" class="${bingoGot.includes(i)?"got":""}"><span class="be">${it[0]}</span>${it[1]}</button>`).join("");
+ bingoCheck();
+}
+document.getElementById("bingoGrid").addEventListener("click",e=>{
+ const b=e.target.closest("[data-b]");if(!b)return;
+ const i=+b.dataset.b;
+ bingoGot=bingoGot.includes(i)?bingoGot.filter(x=>x!==i):[...bingoGot,i];
+ store.set("emily-bingo",bingoGot);
+ b.classList.toggle("got");bingoCheck();
+});
+bingoRender();
+
+/* -- Emily's Cabo Quest -- */
+const EMILY_QUESTS=[
+ "🛝 Go down a KidZ Club waterslide","🏰 Build a sandcastle with a moat",
+ "🐠 Spot a fish from the glass-bottom boat","🍦 Eat a paleta (fruit popsicle)",
+ "🐢 Find a marked turtle nest on a beach walk","🍌 Ride the banana boat",
+ "🗣️ Say “gracias” to someone who helps you","🐚 Collect 3 pretty seashells",
+ "🌈 Find something in every color of the rainbow","💦 Do a big splash in the pool",
+ "🥭 Try a fruit you've never had before","⭐ Get BINGO in the scavenger game"
+];
+let emiDone=store.get("emily-quests",[]);
+const emiEl=document.getElementById("emiList");
+emiEl.innerHTML=EMILY_QUESTS.map((q,i)=>`<label class="pack-item${emiDone.includes(i)?" done":""}"><input type="checkbox" data-i="${i}" ${emiDone.includes(i)?"checked":""}><span>${q}</span></label>`).join("");
+function emiBar(){
+ const pct=Math.round(emiDone.length/EMILY_QUESTS.length*100);
+ document.getElementById("emiBar").style.width=pct+"%";
+ document.getElementById("emiPct").textContent=pct===100?"💯 SUPER-EXPLORER — you did it all! 🏆":pct+"% super-explorer";
+}
+emiEl.addEventListener("change",e=>{
+ const i=+e.target.dataset.i;
+ emiDone=e.target.checked?[...emiDone,i]:emiDone.filter(x=>x!==i);
+ store.set("emily-quests",emiDone);
+ e.target.closest(".pack-item").classList.toggle("done",e.target.checked);
+ emiBar();
+});
+emiBar();
+
 /* ============ AR PHOTO BOOTH ============ */
-const BOOTH_STICKERS=["🤠","🕶️","🌮","🏐","🫒","🐬","🦜","🍹","⭐","😎","👑","🔥","🌅","🦞","💖","✌️","🤙","🌺","🦩","🍍","😜","🫶"];
+const BOOTH_STICKERS=["🤠","🕶️","🌮","🏐","🫒","🐬","🦜","🍹","⭐","😎","👑","🔥","🌅","🦞","💖","✌️","🤙","🌺","🦩","🍍","😜","🫶","🌴","🐢","🐳","🦭","🪅","🌊","🩴","🏖️","🍉","🦀","🦄","🌈","🐠","🥭"];
 /* filters: css for live preview; px params for baking on iPhones (no canvas filter support) */
 const BOOTH_FILTERS=[
  {n:"Normal",css:"none",px:null},
  {n:"Golden",css:"saturate(1.3) sepia(.2) brightness(1.06)",px:{sat:1.3,sep:.2,bri:1.06}},
+ {n:"Sunset",css:"saturate(1.35) sepia(.25) brightness(1.05) contrast(1.05)",px:{sat:1.35,warm:.22,bri:1.05,con:1.05}},
  {n:"Vivid",css:"saturate(1.65) contrast(1.12)",px:{sat:1.65,con:1.12}},
+ {n:"Pop",css:"saturate(1.85) contrast(1.2) brightness(1.02)",px:{sat:1.85,con:1.2,bri:1.02}},
+ {n:"Dreamy",css:"brightness(1.12) saturate(1.1) blur(.7px) contrast(.96)",px:{bri:1.12,sat:1.1}},
+ {n:"Blush",css:"saturate(1.2) hue-rotate(8deg) brightness(1.05)",px:{sat:1.2,pink:.14,bri:1.05}},
+ {n:"Aqua",css:"saturate(1.25) hue-rotate(-18deg) brightness(1.03)",px:{sat:1.25,aqua:.16,bri:1.03}},
  {n:"Vintage",css:"sepia(.45) saturate(.85) brightness(1.05)",px:{sep:.45,sat:.85,bri:1.05}},
- {n:"Noir",css:"grayscale(1) contrast(1.18)",px:{gray:1,con:1.18}},
  {n:"Cool",css:"saturate(1.12) hue-rotate(-12deg)",px:{sat:1.12,cool:.12}},
+ {n:"Noir",css:"grayscale(1) contrast(1.18)",px:{gray:1,con:1.18}},
 ];
-let boothFilter=0,boothFrameOn=false;
+let boothFilter=0,boothFrameOn=false,boothMirrorOn=true,boothGridOn=false;
 const booth=document.getElementById("booth"),boothVideo=document.getElementById("boothVideo"),boothStage=document.getElementById("boothStage");
 let boothStream=null,boothFacing="user";
 document.getElementById("boothStickers").innerHTML=BOOTH_STICKERS.map(s=>`<button data-stk="${s}">${s}</button>`).join("");
@@ -1607,6 +1989,22 @@ document.getElementById("boothFrame").addEventListener("click",e=>{
  boothFrameOn=!boothFrameOn;
  e.currentTarget.textContent="🖼️ Frame: "+(boothFrameOn?"ON":"off");
  e.currentTarget.classList.toggle("on",boothFrameOn);
+});
+function applyMirror(){
+ /* mirror only makes sense on the selfie camera */
+ const on=boothMirrorOn&&boothFacing==="user";
+ boothVideo.classList.toggle("booth-video-mirror",on);
+}
+document.getElementById("boothMirror").addEventListener("click",e=>{
+ boothMirrorOn=!boothMirrorOn;
+ e.currentTarget.textContent="🪞 Mirror: "+(boothMirrorOn?"on":"off");
+ e.currentTarget.classList.toggle("on",boothMirrorOn);
+ applyMirror();
+});
+document.getElementById("boothGridBtn").addEventListener("click",e=>{
+ boothGridOn=!boothGridOn;
+ document.getElementById("boothGrid").classList.toggle("on",boothGridOn);
+ e.currentTarget.classList.toggle("on",boothGridOn);
 });
 document.getElementById("boothText").addEventListener("click",()=>{
  const sug=CAPTIONS[Math.floor(Math.random()*CAPTIONS.length)];
@@ -1627,7 +2025,7 @@ document.getElementById("boothTimer").addEventListener("click",async()=>{
 function applyPixelFilter(ctx,w,h,p){
  if(!p)return;
  const img=ctx.getImageData(0,0,w,h),d=img.data;
- const sat=p.sat??1,bri=p.bri??1,con=p.con??1,sep=p.sep??0,gray=p.gray??0,cool=p.cool??0;
+ const sat=p.sat??1,bri=p.bri??1,con=p.con??1,sep=p.sep??0,gray=p.gray??0,cool=p.cool??0,warm=p.warm??0,pink=p.pink??0,aqua=p.aqua??0;
  for(let i=0;i<d.length;i+=4){
   let r=d[i],g=d[i+1],b=d[i+2];
   const l=.299*r+.587*g+.114*b;
@@ -1636,6 +2034,9 @@ function applyPixelFilter(ctx,w,h,p){
    r=r*(1-sep)+sr*sep;g=g*(1-sep)+sg*sep;b=b*(1-sep)+sb*sep}
   if(gray){r=g=b=l}
   if(cool){r*=(1-cool*.5);b*=(1+cool)}
+  if(warm){r*=(1+warm);b*=(1-warm*.6)}
+  if(pink){r*=(1+pink*.6);b*=(1+pink*.3);g*=(1-pink*.15)}
+  if(aqua){g*=(1+aqua*.4);b*=(1+aqua*.6);r*=(1-aqua*.3)}
   r=((r/255-.5)*con+.5)*255*bri;g=((g/255-.5)*con+.5)*255*bri;b=((b/255-.5)*con+.5)*255*bri;
   d[i]=r<0?0:r>255?255:r;d[i+1]=g<0?0:g>255?255:g;d[i+2]=b<0?0:b>255?255:b;
  }
@@ -1648,6 +2049,7 @@ async function boothStart(){
   if(boothStream)boothStream.getTracks().forEach(t=>t.stop());
   boothStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:boothFacing},audio:false});
   boothVideo.srcObject=boothStream;
+  applyMirror();
   document.getElementById("boothMsg").style.display="none";
  }catch(e){
   document.getElementById("boothMsg").textContent="📷 Camera not available — check permissions in your browser settings, or try the 🔄 Flip button.";
@@ -1684,17 +2086,19 @@ boothStage.addEventListener("dblclick",e=>{
  s.dataset.size=sz;s.style.fontSize=sz+"px";
 });
 document.getElementById("boothClear").addEventListener("click",()=>boothStage.querySelectorAll(".stk").forEach(s=>s.remove()));
-document.getElementById("boothSnap").addEventListener("click",async()=>{
- if(!boothStream){toast("Camera isn't running");return}
+/* capture the live stage (video + filter + stickers), honoring the mirror; no frame */
+function captureStage(){
  const r=boothStage.getBoundingClientRect();
  const c=document.createElement("canvas");
  c.width=boothVideo.videoWidth||1280;c.height=boothVideo.videoHeight||720;
  const ctx=c.getContext("2d");
- /* filter: native canvas filter where supported, pixel math elsewhere (iPhone) */
  const flt=BOOTH_FILTERS[boothFilter];
  const nativeFilter=typeof ctx.filter==="string"&&flt.css!=="none";
  if(nativeFilter)ctx.filter=flt.css;
+ const mirrored=boothVideo.classList.contains("booth-video-mirror");
+ if(mirrored){ctx.save();ctx.translate(c.width,0);ctx.scale(-1,1)}
  ctx.drawImage(boothVideo,0,0,c.width,c.height);
+ if(mirrored)ctx.restore();
  ctx.filter="none";
  if(!nativeFilter&&flt.px)applyPixelFilter(ctx,c.width,c.height,flt.px);
  /* map on-screen sticker positions (object-fit:cover) back onto the video frame */
@@ -1715,22 +2119,39 @@ document.getElementById("boothSnap").addEventListener("click",async()=>{
    ctx.fillText(s.textContent,cx,cy);
   }
  });
- /* polaroid frame */
- let out=c;
- if(boothFrameOn){
-  const m=Math.round(c.width*.05),bottom=Math.round(c.height*.2);
-  const f=document.createElement("canvas");
-  f.width=c.width+m*2;f.height=c.height+m+bottom;
-  const fx=f.getContext("2d");
-  fx.fillStyle="#fffdf7";fx.fillRect(0,0,f.width,f.height);
-  fx.drawImage(c,m,m);
-  fx.fillStyle="#4a5630";fx.textAlign="center";fx.textBaseline="middle";
-  fx.font="700 "+Math.round(bottom*.34)+"px Fraunces, Georgia, serif";
-  fx.fillText("CABO 2026 🫒",f.width/2,c.height+m+bottom*.42);
-  fx.fillStyle="#9a987f";fx.font=Math.round(bottom*.16)+"px Inter, sans-serif";
-  fx.fillText("shot on Olive · "+new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"}),f.width/2,c.height+m+bottom*.74);
-  out=f;
- }
+ return c;
+}
+function boothFooter(fx,w,y,foot,accent){
+ fx.fillStyle=accent;fx.textAlign="center";fx.textBaseline="middle";
+ fx.font="700 "+Math.round(foot*.34)+"px Fraunces, Georgia, serif";
+ fx.fillText("CABO 2026 🫒",w/2,y+foot*.40);
+ fx.fillStyle="#9a987f";fx.font=Math.round(foot*.16)+"px Inter, sans-serif";
+ fx.fillText("shot on Olive · "+new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"}),w/2,y+foot*.74);
+}
+function polaroid(c){
+ const m=Math.round(c.width*.05),bottom=Math.round(c.height*.2);
+ const f=document.createElement("canvas");
+ f.width=c.width+m*2;f.height=c.height+m+bottom;
+ const fx=f.getContext("2d");
+ fx.fillStyle="#fffdf7";fx.fillRect(0,0,f.width,f.height);
+ fx.drawImage(c,m,m);
+ boothFooter(fx,f.width,c.height+m,bottom,"#4a5630");
+ return f;
+}
+/* in-app "Cabo camera roll" — recent shots saved on this phone */
+function renderRoll(){
+ const el=document.getElementById("boothRoll");if(!el)return;
+ const roll=store.get("cam-roll",[]);
+ el.innerHTML=roll.map((d,i)=>`<div class="shot"><img src="${d}" alt="Cabo shot"><button class="dl" data-rolldl="${i}" title="Save to phone">⬇</button><button data-rolldel="${i}" title="Delete">✕</button></div>`).join("");
+}
+function saveToRoll(canvas){
+ let url;try{url=canvas.toDataURL("image/jpeg",.55)}catch(e){return}
+ let roll=store.get("cam-roll",[]);roll.unshift(url);roll=roll.slice(0,8);
+ while(roll.length){try{localStorage.setItem("olive-cam-roll",JSON.stringify(roll));break}catch(e){roll.pop()}}
+ renderRoll();
+}
+function exportCanvas(out){
+ saveToRoll(out);
  out.toBlob(async blob=>{
   const file=new File([blob],"olive-cabo-photo.png",{type:"image/png"});
   if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
@@ -1738,9 +2159,42 @@ document.getElementById("boothSnap").addEventListener("click",async()=>{
   }
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);a.download="olive-cabo-photo.png";a.click();
-  toast("📸 Saved! Check your downloads");
+  toast("📸 Saved to your camera roll & downloads");
  },"image/png");
+}
+document.getElementById("boothSnap").addEventListener("click",()=>{
+ if(!boothStream){toast("Camera isn't running");return}
+ let out=captureStage();
+ if(boothFrameOn)out=polaroid(out);
+ exportCanvas(out);
 });
+document.getElementById("boothStrip").addEventListener("click",async()=>{
+ if(!boothStream){toast("Camera isn't running");return}
+ const cd=document.getElementById("boothCount");cd.style.display="flex";
+ const shots=[];
+ for(let n=0;n<3;n++){
+  for(const t of ["3","2","1","📸"]){cd.textContent=t;await new Promise(r=>setTimeout(r,550))}
+  shots.push(captureStage());
+ }
+ cd.style.display="none";
+ const w=shots[0].width,pad=Math.round(w*.03),foot=Math.round(w*.15);
+ const sc=document.createElement("canvas");
+ sc.width=w+pad*2;
+ sc.height=shots.reduce((a,s)=>a+s.height,0)+pad*(shots.length+1)+foot;
+ const x=sc.getContext("2d");
+ x.fillStyle="#fffdf7";x.fillRect(0,0,sc.width,sc.height);
+ let y=pad;shots.forEach(s=>{x.drawImage(s,pad,y,w,s.height);y+=s.height+pad});
+ boothFooter(x,sc.width,y,foot,"#7b3f8f");
+ exportCanvas(sc);
+ toast("🎞️ Photo strip saved!");
+});
+document.getElementById("boothRoll").addEventListener("click",e=>{
+ const del=e.target.closest("[data-rolldel]"),dl=e.target.closest("[data-rolldl]");
+ let roll=store.get("cam-roll",[]);
+ if(del){roll.splice(+del.dataset.rolldel,1);store.set("cam-roll",roll);renderRoll();return}
+ if(dl){const a=document.createElement("a");a.href=roll[+dl.dataset.rolldl];a.download="olive-cabo-photo.jpg";a.click()}
+});
+renderRoll();
 
 /* ============ PHRASES ============ */
 let pIdx=0;
@@ -2109,13 +2563,13 @@ function handleEvMsg(raw){
   if(t&&applyEv({k:"ev",id:"in-"+j.id,inbox:true,t,d:null,sd:sug.d,st:sug.t,by:"forwarded email",ts:(j.time||0)*1000}))changed=true;
  }
  if(changed){
-  saveEvents();renderSchedule();renderCards();
+  saveEvents();renderSchedule();renderCards();renderTodayBrief();
   if(mAct&&overlay.classList.contains("open"))syncModalActions();
  }
 }
 function publishEv(ev){
  ev.ts=Date.now();
- applyEv(ev);saveEvents();renderSchedule();
+ applyEv(ev);saveEvents();renderSchedule();renderTodayBrief();
  fetch(EV_URL,{method:"POST",body:JSON.stringify(ev)}).catch(()=>{});
 }
 /* keep the topic warm: ntfy only retains ~12h, so any device holding the schedule
@@ -2144,6 +2598,79 @@ function evSub(){
  }catch(e){}
 }
 if(!LOCKED){evPollHistory();evSub();}
+
+/* ============ FAMILY MAP — opt-in location sharing ============
+   Consensual only: shares over a private link-secret ntfy topic, and ONLY while
+   the switch is on. The browser gates every read behind its own permission prompt. */
+const LOC_TOPIC="olive-loc-"+(ROOM_SUFFIX||"locked"),LOC_URL="https://ntfy.sh/"+LOC_TOPIC;
+const locDeviceId=(()=>{let v=store.get("loc-device","");if(!v){v="d"+Math.random().toString(36).slice(2,10);store.set("loc-device",v)}return v})();
+const locPeople=new Map();
+let locWatchId=null,locSelfPos=null,locBeat=null,locES=null;
+const locShareEl=document.getElementById("locShare");
+locShareEl.checked=store.get("loc-share",false);
+function locLabel(){
+ const on=locShareEl.checked;
+ document.getElementById("locShareLabel").textContent="Share my location: "+(on?"ON":"OFF");
+ document.getElementById("locSelf").textContent=on?(locSelfPos?"You're on the map ✓":"Waiting for your phone's location…"):"";
+}
+function locAgo(ts){
+ const s=Math.round((Date.now()-ts)/1000);
+ if(s<60)return "just now";
+ const m=Math.round(s/60);if(m<60)return m+" min ago";
+ return Math.round(m/60)+"h ago";
+}
+function renderLocList(){
+ const list=document.getElementById("locList"),map=document.getElementById("locMap"),now=Date.now();
+ const people=[...locPeople.values()].filter(p=>now-p.ts<30*60*1000).sort((a,b)=>b.ts-a.ts);
+ if(!people.length){list.innerHTML='<div class="loc-empty">No one is sharing right now. Flip the switch above to put yourself on the map. 🗺️</div>';map.style.display="none";return}
+ list.innerHTML=people.map(p=>`<div class="loc-row"><span class="loc-dot" style="background:hsl(${hue(p.by)},60%,45%)"></span><div><div class="ln">${esc(p.by)}${p.id===locDeviceId?" (you)":""}</div><div class="lt">updated ${locAgo(p.ts)}</div></div><a class="lmap" target="_blank" rel="noopener" href="https://www.google.com/maps?q=${p.lat},${p.lng}">📍 Map</a></div>`).join("");
+ const f=people[0];map.style.display="block";map.src=`https://maps.google.com/maps?q=${f.lat},${f.lng}&z=14&output=embed`;
+}
+function handleLocMsg(raw){
+ let j;try{j=JSON.parse(raw)}catch(e){return}
+ if(j.event&&j.event!=="message")return;
+ let m=null;try{m=JSON.parse(j.message)}catch(e){}
+ if(m&&m.k==="loc"&&m.id&&typeof m.lat==="number"){
+  const cur=locPeople.get(m.id);
+  if(!cur||cur.ts<m.ts){locPeople.set(m.id,m);renderLocList()}
+ }
+}
+function locPollHistory(){fetch(LOC_URL+"/json?poll=1&since=6h").then(r=>r.text()).then(t=>t.split("\n").filter(Boolean).forEach(handleLocMsg)).catch(()=>{})}
+function locSub(){
+ try{
+  locES=new EventSource(LOC_URL+"/sse");
+  locES.onopen=locPollHistory;
+  locES.onmessage=e=>handleLocMsg(e.data);
+  locES.onerror=()=>{locES.close();setTimeout(locSub,8000)};
+ }catch(e){}
+}
+function publishLoc(lat,lng){
+ const m={k:"loc",id:locDeviceId,by:evWho(),lat:+lat.toFixed(5),lng:+lng.toFixed(5),ts:Date.now()};
+ locPeople.set(m.id,m);renderLocList();
+ fetch(LOC_URL,{method:"POST",body:JSON.stringify(m)}).catch(()=>{});
+}
+function startSharing(){
+ if(!("geolocation" in navigator)){toast("This device can't share location");locShareEl.checked=false;store.set("loc-share",false);locLabel();return}
+ locWatchId=navigator.geolocation.watchPosition(pos=>{
+  locSelfPos=pos;locLabel();publishLoc(pos.coords.latitude,pos.coords.longitude);
+ },err=>{
+  toast(err.code===1?"Location permission denied — allow it in your browser to share":"Couldn't get your location right now");
+  locShareEl.checked=false;store.set("loc-share",false);stopSharing();locLabel();
+ },{enableHighAccuracy:true,maximumAge:30000,timeout:20000});
+ locBeat=setInterval(()=>{if(locSelfPos)publishLoc(locSelfPos.coords.latitude,locSelfPos.coords.longitude)},120000);
+}
+function stopSharing(){
+ if(locWatchId!=null){navigator.geolocation.clearWatch(locWatchId);locWatchId=null}
+ if(locBeat){clearInterval(locBeat);locBeat=null}
+ locSelfPos=null;locPeople.delete(locDeviceId);renderLocList();
+}
+locShareEl.addEventListener("change",()=>{
+ store.set("loc-share",locShareEl.checked);locLabel();
+ if(locShareEl.checked)startSharing();else stopSharing();
+});
+if(!LOCKED){locSub();if(locShareEl.checked)startSharing()}
+locLabel();
+setInterval(renderLocList,60000);
 
 function renderSchedule(){
  const el=document.getElementById("schedList");if(!el)return;
@@ -2295,7 +2822,7 @@ document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
 
 /* ============ VIEW ROUTER (tabs) ============ */
 const navLinks=[...document.querySelectorAll("nav a[data-view]")];
-const VIEWS=["home","activities","schedule","chat","jade","resort","tools"];
+const VIEWS=["home","activities","schedule","chat","jade","emily","resort","tools"];
 function showView(v){
  if(!VIEWS.includes(v))v="home";
  document.querySelectorAll(".view").forEach(el=>el.classList.toggle("active",el.id==="view-"+v));
