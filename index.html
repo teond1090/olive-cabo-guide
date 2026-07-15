@@ -173,6 +173,9 @@
   .vb-menu button:active,.vb-over button:active{transform:translateY(3px);box-shadow:0 1px 0 #d9a400}
   .vb-menu button[data-mode="2v2"]{background:#4ad6c8;color:#053b36;box-shadow:0 4px 0 #2ba99c}
   .vb-tip{font-size:.76rem;opacity:.8;margin-top:6px}
+  .vb-diff{display:flex;gap:8px;margin-bottom:4px}
+  .vb-diff button{border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;border-radius:99px;padding:8px 15px;font-family:var(--font-body);font-weight:700;font-size:.85rem;cursor:pointer;box-shadow:none}
+  .vb-diff button.on{background:#fff;color:#0d2a3d;border-color:#fff}
   .vb-ctrl{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:flex-end;padding:16px 18px;pointer-events:none}
   .vb-b{pointer-events:auto;width:72px;height:72px;border-radius:50%;border:none;background:rgba(255,255,255,.24);color:#fff;font-size:1.8rem;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent;backdrop-filter:blur(3px);user-select:none;touch-action:none}
   .vb-b:active{background:rgba(255,255,255,.45)}
@@ -1349,9 +1352,14 @@
     <div class="vb-menu" id="vbMenu">
       <h2>🏐 Cabo Volley</h2>
       <p>Beach volleyball on the sand. First to 7 points wins the match!</p>
+      <div class="vb-diff" id="vbDiff">
+        <button data-diff="easy" class="on">😎 Chill</button>
+        <button data-diff="normal">🏐 Normal</button>
+        <button data-diff="pro">🔥 Pro</button>
+      </div>
       <button data-mode="1v1">🙋 1v1 — you vs the AI</button>
       <button data-mode="2v2">👯 2v2 — you + a buddy</button>
-      <div class="vb-tip">◀ ▶ to move · ⤒ to jump &amp; spike · (or ← → keys + Space)</div>
+      <div class="vb-tip">◀ ▶ to move · jump when the ball is high to <b>spike it down</b> · (← → keys + Space work too)</div>
     </div>
     <div class="vb-over" id="vbOver" style="display:none">
       <h2 id="vbWinTxt">You win! 🏆</h2>
@@ -1544,7 +1552,7 @@ const store={
  set(k,v){try{localStorage.setItem("olive-"+k,JSON.stringify(v))}catch(e){}}
 };
 
-const OLIVE_BUILD="v28-2026-07-13";
+const OLIVE_BUILD="v29-2026-07-13";
 
 /* ============ ROOMS ============
    Access model: anyone with Olive's link is family. Only people who joined
@@ -2144,17 +2152,19 @@ function vbLayout(){
  VB.HIT=Math.min(w,h)*1.75;VB.MAXB=Math.min(w,h)*2.2;
  VB.players.forEach(p=>{p.y0=VB.groundY-VB.rp;if(p.onGround)p.y=p.y0});
 }
+const VB_DIFF={easy:{skill:0.5,jump:0.085,error:0.26,laziness:0.17},normal:{skill:0.7,jump:0.15,error:0.13,laziness:0.06},pro:{skill:0.9,jump:0.23,error:0.04,laziness:0}};
+let vbDiffChoice="easy";
 function vbMakePlayers(mode){
  const arr=[];
- const mk=(side,team,color,isHuman,homeFrac,skill)=>({side,team,color,isHuman,home:0,homeFrac,skill,x:0,y:0,vx:0,vy:0,onGround:true,y0:0,blink:Math.random()*4});
+ const mk=(side,team,color,isHuman,homeFrac,skill)=>({side,team,color,isHuman,home:0,homeFrac,skill,x:0,y:0,vx:0,vy:0,onGround:true,y0:0,blink:Math.random()*4,err:0,errT:0});
  arr.push(mk(-1,0,"#ff6b5c",true,0.25,1));        /* you (left) */
- if(mode==="2v2")arr.push(mk(-1,0,"#ffb14e",false,0.10,0.82)); /* your buddy */
- arr.push(mk(1,1,"#8a63d2",false,mode==="2v2"?0.90:0.75,0.88)); /* opponent */
- if(mode==="2v2")arr.push(mk(1,1,"#4ad6c8",false,0.68,0.82));
+ if(mode==="2v2")arr.push(mk(-1,0,"#ffb14e",false,0.10,0.9)); /* your buddy — steady helper */
+ arr.push(mk(1,1,"#8a63d2",false,mode==="2v2"?0.90:0.72,1.0)); /* opponent */
+ if(mode==="2v2")arr.push(mk(1,1,"#4ad6c8",false,0.68,0.95));
  return arr;
 }
 function vbNew(mode){
- VB={mode,state:"play",score:{0:0,1:0},server:-1,timer:0,ball:{x:0,y:0,vx:0,vy:0,spin:0},trail:[],parts:[],flash:0,players:vbMakePlayers(mode),t:0,shake:0};
+ VB={mode,state:"play",score:{0:0,1:0},server:-1,timer:0,ball:{x:0,y:0,vx:0,vy:0,spin:0},trail:[],parts:[],flash:0,players:vbMakePlayers(mode),t:0,shake:0,diff:VB_DIFF[vbDiffChoice]||VB_DIFF.easy};
  vbLayout();
  VB.players.forEach(p=>{p.home=(p.side<0?p.homeFrac:p.homeFrac)*VB.w;p.x=p.home;p.y=p.y0;});
  vbServe(-1);
@@ -2164,7 +2174,7 @@ function vbServe(side){
  VB.server=side;VB.state="play";
  const b=VB.ball;
  b.x=side<0?VB.w*0.25:VB.w*0.75;
- b.y=VB.groundY-VB.h*0.52;b.vx=0;b.vy=0;b.spin=0;
+ b.y=VB.groundY-VB.h*0.42;b.vx=0;b.vy=-VB.h*0.14;b.spin=0; /* gentle toss, then arcs into play */
  VB.trail=[];
 }
 function vbPredictX(p){
@@ -2179,18 +2189,27 @@ function vbPredictX(p){
  return Math.max(VB.rp,Math.min(VB.w-VB.rp,px));
 }
 function vbAI(p,dt){
- const b=VB.ball,onSide=(p.side<0&&b.x<VB.cx)||(p.side>0&&b.x>VB.cx);
+ const b=VB.ball,d=VB.diff,opp=p.team===1;
+ /* difficulty only scales the OPPONENTS; your 2v2 buddy always plays a steady game */
+ const eff=(opp?d.skill:0.72)*(p.skill||1),jumpP=opp?d.jump:0.16,errAmt=opp?d.error:0.10,lazy=opp?d.laziness:0.04;
+ const onSide=(p.side<0&&b.x<VB.cx)||(p.side>0&&b.x>VB.cx);
+ const approaching=(p.side<0&&b.vx<0)||(p.side>0&&b.vx>0);
  let target=p.home;
- if(onSide)target=vbPredictX(p);
+ if(onSide||approaching){
+  target=vbPredictX(p);
+  if(!p.errT||VB.t>p.errT){p.err=(Math.random()*2-1)*errAmt;p.errT=VB.t+0.5+Math.random()*0.6;} /* wobbly aim (bigger on easy) */
+  target+=p.err*VB.w;
+ }
  if(VB.mode==="2v2"){
   const mate=VB.players.find(q=>q!==p&&q.side===p.side);
-  if(mate&&onSide&&Math.abs(p.x-b.x)>Math.abs(mate.x-b.x))target=p.home;
+  if(mate&&(onSide||approaching)&&Math.abs(p.x-b.x)>Math.abs(mate.x-b.x))target=p.home;
  }
- const dx=target-p.x;
- p.vx=Math.abs(dx)<6?0:Math.sign(dx)*VB.MOVE*p.skill;
- const near=Math.abs(b.x-p.x)<VB.rp+VB.rb+22&&onSide;
- const hitZone=b.y>p.y-VB.rp*2.4&&b.y<p.y+VB.rp*0.3&&b.vy>-60;
- if(near&&hitZone&&p.onGround&&Math.random()<0.16+p.skill*0.12){p.vy=VB.JUMP;p.onGround=false;}
+ if(Math.random()<lazy)target=p.x; /* hesitation — lets you get one past it */
+ const tv=Math.abs(target-p.x)<10?0:Math.sign(target-p.x)*VB.MOVE*eff;
+ p.vx+=(tv-p.vx)*Math.min(1,dt*12); /* momentum, not teleporting */
+ const near=Math.abs(b.x-p.x)<VB.rp+VB.rb+16&&onSide;
+ const hitZone=b.y>p.y-VB.rp*2.2&&b.y<p.y+VB.rp*0.2&&b.vy>-40;
+ if(near&&hitZone&&p.onGround&&Math.random()<jumpP){p.vy=VB.JUMP;p.onGround=false;}
 }
 function vbSpawn(x,y,n,col,sp){for(let i=0;i<n;i++)VB.parts.push({x,y,vx:(Math.random()-.5)*sp,vy:-Math.random()*sp*0.8,life:1,col})}
 function vbPoint(team){
@@ -2224,7 +2243,8 @@ function vbStep(dt){
  /* players */
  for(const p of VB.players){
   if(p.isHuman){
-   p.vx=((vbInput.right?1:0)-(vbInput.left?1:0))*VB.MOVE;
+   const tv=((vbInput.right?1:0)-(vbInput.left?1:0))*VB.MOVE;
+   p.vx+=(tv-p.vx)*Math.min(1,dt*16); /* momentum for a natural feel */
    if(vbInput.jump&&p.onGround){p.vy=VB.JUMP;p.onGround=false;}
   }else vbAI(p,dt);
   p.x+=p.vx*dt;p.vy+=VB.G*dt;p.y+=p.vy*dt;
@@ -2251,11 +2271,13 @@ function vbStep(dt){
  for(const p of VB.players){
   const dx=b.x-p.x,dy=b.y-p.y,d=Math.hypot(dx,dy),rr=rb+rp;
   if(d<rr&&d>0.01){
-   const nx=dx/d,ny=dy/d;
+   const nx=dx/d,ny=dy/d,sp=VB.HIT;
    b.x=p.x+nx*rr;b.y=p.y+ny*rr;
-   const sp=VB.HIT;
-   b.vx=nx*sp*0.92+p.vx*0.55;
-   b.vy=Math.min(ny*sp,-sp*0.48)+p.vy*0.45;
+   /* directional bounce off the contact point: side hits pop UP (a bump),
+      jumping above the ball drives it DOWN (a spike) — realistic & lets you aim */
+   const lift=(1-Math.abs(ny))*sp*0.5;
+   b.vx=nx*sp*0.95+p.vx*0.6;
+   b.vy=ny*sp*0.9-lift+p.vy*0.45;
    const s=Math.hypot(b.vx,b.vy);if(s>VB.MAXB){b.vx*=VB.MAXB/s;b.vy*=VB.MAXB/s;}
    vbSpawn(b.x,b.y,6,"#ffffff",VB.h*0.5);
    break;
@@ -2372,6 +2394,7 @@ function vbBindHold(id,key){
 vbBindHold("vbLeft","left");vbBindHold("vbRight","right");
 (()=>{const j=document.getElementById("vbJump");const on=e=>{e.preventDefault();vbInput.jump=true;};const off=e=>{e.preventDefault();vbInput.jump=false;};
  j.addEventListener("pointerdown",on);j.addEventListener("pointerup",off);j.addEventListener("pointerleave",off);j.addEventListener("pointercancel",off);})();
+document.querySelectorAll("#vbDiff [data-diff]").forEach(b=>b.addEventListener("click",()=>{vbDiffChoice=b.dataset.diff;document.querySelectorAll("#vbDiff [data-diff]").forEach(x=>x.classList.toggle("on",x===b));}));
 document.querySelectorAll("#vbMenu [data-mode]").forEach(b=>b.addEventListener("click",()=>vbStart(b.dataset.mode)));
 document.getElementById("vbAgain").addEventListener("click",()=>vbStart(VB?VB.mode:"1v1"));
 document.getElementById("vbMenuBtn").addEventListener("click",()=>{document.getElementById("vbOver").style.display="none";document.getElementById("vbMenu").style.display="flex";document.getElementById("vbCtrl").style.display="none";});
@@ -3378,26 +3401,26 @@ function honestAnswer(){
 }
 /* ---- the wit engine: Olive answers EVERY message ---- */
 const OLIVE_QUIPS=[
- s=>`“${s}” — noted, logged, and filed in the official Family Lore Archive. 📜`,
- ()=>"Strong take. The pelicans at the marina agree. 🦤",
- ()=>"This chat has better plot than streaming. Continue. 🍿",
- ()=>"I'm just a travel app, but even I felt that. 💀",
- s=>`Adding “${s}” to the vacation highlight reel. 🎬`,
- ()=>"Counterpoint: tacos. That's it. That's the counterpoint. 🌮",
- ()=>"The committee will deliberate over guacamole and report back. 🥑",
- ()=>"Bold of you to say that with the whole group chat watching. 👀",
- ()=>"Olive has reviewed this message and stamps it APPROVED. ✅🫒",
- ()=>"Somewhere in the marina, a mariachi band just played a dramatic sting. 🎺",
- ()=>"Energy level: vacation. Carry on, Cabo Crew. 🏝️",
- s=>`“${s}” is exactly the kind of leadership this family needs. 🫡`,
- ()=>"New rule: whoever sent that buys the churros. 🍩",
- ()=>"I've seen sunsets less dramatic than this chat. And I track sunsets professionally. 🌇",
+ ()=>"Noted. I'll pretend I didn't read it — same as the rest of the group chat.",
+ ()=>"A bold position. The pelicans on the marina have already ruled against you.",
+ s=>`“${s}.” Added to the official record, which is a cocktail napkin, but still.`,
+ ()=>"Profound. Say it again slower, ideally with a margarita in hand.",
+ ()=>"I'm contractually a travel guide, but I'll allow this tangent.",
+ ()=>"Counterpoint: it's five o'clock somewhere, and that somewhere is right here.",
+ ()=>"The committee reviewed your statement over guacamole. No notes.",
+ ()=>"Confidence like that usually comes with a bar tab. Who's got the tab?",
+ ()=>"Filed under 'things that sounded better on vacation.'",
+ ()=>"I track sunsets for a living, and even I glanced up for that one.",
+ ()=>"Routing this to the Department of Not My Problem, poolside branch.",
+ s=>`“${s}.” Powerful. Possibly wrong, but powerful.`,
+ ()=>"That's the energy that ends with someone ordering the entire ceviche menu.",
+ ()=>"Approved — with the quiet concern of someone who's seen this crew after two rounds.",
 ];
 function wittyFallback(raw){
  const t=raw.toLowerCase();
  const wx=window.oliveWx;
  const snip=raw.length>48?raw.slice(0,45)+"…":raw;
- if(/😂|🤣|\blol\b|haha|lmao/.test(t))return "I just laughed in fourteen languages. Mostly Spanish. 😂";
+ if(/😂|🤣|\blol\b|haha|lmao/.test(t))return "That earned a genuine laugh out of a travel app. Rare. Well done.";
  if(/\b(hot|sweat|melting|burning up|heat)\b/.test(t))return "It's not 'hot', it's complimentary sauna mode. Hydrate, mi gente — agua is free and so is the shade. 🥵💧";
  if(/\b(tired|nap|exhausted|sleepy|worn out)\b/.test(t))return "Permission to nap: GRANTED. Vacation rule #2 — naps officially count as an activity. 😴";
  if(/\b(margarita|tequila|beer|cerveza|drinks?|cocktail)\b/.test(t))return "Reminder that the all-inclusive bracelet is basically a superpower. Use it responsibly…ish. 🍹";
@@ -3407,7 +3430,7 @@ function wittyFallback(raw){
  if(/\b(love|amazing|beautiful|incredible|best day)\b/.test(t))return "Agreed. Officially logging this as a Core Memory™. 🥹🫒";
  if(/\b(waiting|hurry|late|where are you|where is everyone)\b/.test(t))return "Family punctuality forecast: 0% chance. Order a snack and accept your fate. ⏳😏";
  if(/\b(sand|sunburn|jellyfish|wave)\b/.test(t))return "The ocean gives and the ocean takes. Mostly it gives. Reapply the SPF 50 and get back out there. 🌊";
- if(/\?\s*$/.test(raw))return "Excellent question. My professional tour-guide answer: probably tacos. For real specifics, say “Olive help”. 🌮";
+ if(/\?\s*$/.test(raw))return "Fair question. My honest guide's answer leans toward 'tacos,' but for the real one, ask me something specific — food, beaches, cocktails, a plan for the day.";
  let i=store.get("quip-i",0);store.set("quip-i",i+1);
  const q=OLIVE_QUIPS[i%OLIVE_QUIPS.length];
  return q(snip);
@@ -3439,6 +3462,10 @@ function oliveKnows(raw){
  if(/\b(wear|pack|packing|clothes|outfit|what.*bring)\b/.test(t))return "Cabo uniform 🧳: 2 swimsuits each, breezy cover-ups, sundresses, one 'nice casual' outfit for fancy dinners, sandals + water shoes, hat & sunnies. Nights are warm — no jacket needed. Don't forget reef-safe SPF, aloe, chargers, and passports (valid 6+ months!). Full list in 🧳 Tools.";
  if(/\b(nightlife|bar|club|party|night out|drinks tonight)\b/.test(t))return "Grown-up night out 🍸: the Cabo San Lucas marina is party central (Cabo Wabo; El Squid Roe if you're brave). Lower-key — sunset drinks at Sunset Monalisa or a marina stroll. Taxi both ways, agree the fare first. Kids have KidZ/Teen Club, so go enjoy! 💃";
  if(/\b(romantic|date night|anniversary|honeymoon|just us)\b/.test(t))return "Romance mode 💕: a toes-in-sand dinner at The Office, the view at Sunset Monalisa, a sunset sailing cruise, or Flora Farms under the lights. Ask the concierge about a private beach dinner. Drop the kids at the club and go be adults. 🥂";
+ if(/\b(mezcal|tequila|margarita|cocktail|agave|what.*(to )?(drink|sip)|bartender)\b/.test(t))return "Drink like a local 🥃: reach for 100% agave — a reposado tequila neat, or a smoky mezcal with orange and a little sal de gusano. The real margarita here is Tommy's-style (agave, lime, no sour mix), and the underrated MVP is a Paloma — tequila and grapefruit soda. Micheladas fix the beach heat. The swim-up bar pours honest measures, so pace yourself.";
+ if(/\b(happy hour|sunset drink|sundowner|rooftop|where.*(drink|cocktail))\b/.test(t))return (wx&&wx.sunset?`Sunset's about ${wx.sunset} tonight — `:"")+"be somewhere with a view an hour before 🌇. Sunset Monalisa (cliffside, worth booking), The Office with your feet in the sand, or a marina rooftop. On property, the adults-only pool bar is the best golden-hour seat in the house. Salud.";
+ if(/\b(spa|massage|relax|adults.?only|me time|unwind|hot tub|quiet)\b/.test(t))return "Grown-up recharge 💆: the Ziva spa does a serious beachfront massage — book a morning slot before they go. The adults-only pool and hot tubs are your quiet zone while the kids are at the club. A shaded cabana, a good book and a cold Paloma is a completely valid day plan.";
+ if(/\bgolf\b/.test(t))return "Cabo's a proper golf town ⛳: Cabo del Sol, Quivira and Diamante are world-class (and priced accordingly). Book tee times early and play at sunrise to beat the heat and the wind. The ocean holes alone are worth the round.";
  if(/\b(pharmacy|farmacia|medicine|doctor|hospital|first aid|band.?aid)\b/.test(t))return "Farmacias are everywhere and cheap 💊 — lots is over-the-counter here. The Ziva has a doctor on call (ask the front desk). Bring your own supply of anything essential. Emergency = 911.";
  if(/\b(time zone|time change|what time is it|hour(s)? (ahead|behind)|clock)\b/.test(t))return "Cabo runs on Mountain Time (America/Mazatlán) with no summer daylight saving — same as US Mountain, and 1 hour behind California in July. Your phone should switch automatically. ⏰";
  if(/\b(kid|child|children|little ones?|for the (kids|littles)|8[- ]year)\b/.test(t))return "Kid wins 🧒: KidZ Club waterpark (ages 4–12, included), glass-bottom boat to the Arch, banana boat, sandcastles at Medano, and turtle-nest spotting on beach walks. Emily even has her own Corner in the app — games and a virtual Cabo Pet for the downtime! 🛝";
