@@ -1,0 +1,19 @@
+{
+  "name": "Olive - Great American West RV Companion",
+  "short_name": "Olive",
+  "description": "Your RV travel companion for the American West. Landmarks, hidden gems, wildlife, RV services and memories, mile by mile.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F6EFE3",
+  "theme_color": "#A9472F",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23A9472F'/%3E%3Cpath d='M64 352 L176 192 L248 288 L320 160 L448 352 Z' fill='%23F6EFE3'/%3E%3Ccircle cx='360' cy='128' r='48' fill='%23DE7B39'/%3E%3Cpath d='M32 352 h448 v40 a224 224 0 0 1 -448 0 z' fill='%236E8367'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
