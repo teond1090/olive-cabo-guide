@@ -3,38 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#A9472F">
+<meta name="theme-color" content="#5A3018">
 <title>Olive &middot; Great American West RV Companion</title>
-<meta name="description" content="Olive - your RV travel companion for the Great American West. Landmarks, hidden gems, wildlife, RV services and memories, mile by mile.">
+<meta name="description" content="Olive - your RV trail boss for the Great American West. Landmarks, hidden gems, wildlife, eats, fuel, radio and memories, mile by mile.">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Olive">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23A9472F'/%3E%3Cpath d='M8 44 L22 24 L31 36 L40 20 L56 44 Z' fill='%23F6EFE3'/%3E%3Ccircle cx='45' cy='16' r='6' fill='%23DE7B39'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%235A3018'/%3E%3Cpath d='M32 6 l6.2 12.6 13.9 2-10 9.8 2.4 13.8L32 37.7 19.5 44.2l2.4-13.8-10-9.8 13.9-2z' fill='%23D9A32E'/%3E%3Cpath d='M8 50 h48 v6 H8z' fill='%23A63A24'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rye&family=Bitter:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   OLIVE - GREAT AMERICAN WEST RV COMPANION
-   Designed for comfortable reading on the road.
-   Base type is large by default; the A/A+/A++ control scales
-   every measurement because all sizing is in rem.
+   OLIVE - GREAT AMERICAN WEST
+   Theme: Americana / cowboy. Saddle leather, barn red, brass,
+   big sky denim, aged parchment.
+   Legibility rules for older eyes still win every time:
+   18px base, everything in rem, nothing under 44px to tap,
+   body copy stays in Inter no matter how western the headings get.
    ============================================================ */
 :root{
-  --sand:#F6EFE3; --card:#FFFDF8; --card-2:#FBF4E7;
-  --ink:#2B2724; --ink-soft:#5C544C; --ink-faint:#8A8076;
-  --canyon:#A9472F; --canyon-dk:#8A3823; --sunset:#DE7B39;
-  --sage:#6E8367; --pine:#35473C; --sky:#3E7091; --gold:#C99A2E;
-  --danger:#B23A2E; --ok:#4B7A4E;
-  --line:#E6D9C4; --line-2:#D6C4A8;
-  --shadow:0 2px 6px rgba(43,39,36,.07), 0 10px 26px rgba(43,39,36,.06);
-  --shadow-lg:0 6px 18px rgba(43,39,36,.12), 0 20px 50px rgba(43,39,36,.10);
-  --r:18px; --r-sm:12px; --r-lg:26px;
-  --tap:52px;                 /* minimum touch target */
-  --wrap:1080px;
+  /* paper + leather */
+  --parch:#F3E6CE; --parch-2:#EBDBBE; --cream:#FFFBF991;
+  --card:#FFF9ED; --card-2:#F7ECD6;
+  --leather:#5A3018; --leather-2:#7A4526; --leather-dk:#3A1D0D;
+  /* accents */
+  --rust:#A63A24; --rust-dk:#842916; --brass:#C8912C; --brass-lt:#E5BB63;
+  --denim:#2E5A78; --denim-dk:#1F4159; --sage:#6E8058; --pine:#3B4B33;
+  --ink:#2A1F16; --ink-soft:#5E4B3A; --ink-faint:#8B7660;
+  --danger:#A32E1E; --ok:#4E7440;
+  --line:#D8C4A0; --line-2:#C3A87C;
+  --shadow:0 2px 5px rgba(58,29,13,.10), 0 10px 24px rgba(58,29,13,.09);
+  --shadow-lg:0 6px 16px rgba(58,29,13,.18), 0 24px 56px rgba(58,29,13,.14);
+  --r:16px; --r-sm:11px; --r-lg:24px;
+  --tap:52px; --wrap:1080px;
+  /* grain overlay reused all over */
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
 }
-/* ---- Text-size control: seniors can bump everything up ---- */
 html[data-fs="m"]{font-size:18px}
 html[data-fs="l"]{font-size:21px}
 html[data-fs="xl"]{font-size:24px}
@@ -42,351 +48,431 @@ html[data-fs="xl"]{font-size:24px}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0}
 body{
-  background:var(--sand); color:var(--ink);
+  color:var(--ink);
   font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  font-size:1rem; line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  padding-bottom:calc(4.6rem + env(safe-area-inset-bottom));
+  font-size:1rem;line-height:1.6;-webkit-font-smoothing:antialiased;
+  padding-bottom:calc(4.8rem + env(safe-area-inset-bottom));
   overflow-x:hidden;
+  background-color:var(--parch);
+  background-image:
+    /* faint aged blotching */
+    radial-gradient(ellipse 60% 40% at 12% 8%, rgba(168,132,80,.13), transparent 60%),
+    radial-gradient(ellipse 50% 35% at 88% 22%, rgba(168,132,80,.11), transparent 60%),
+    radial-gradient(ellipse 70% 45% at 30% 90%, rgba(140,102,58,.10), transparent 62%),
+    var(--grain);
+  background-attachment:fixed,fixed,fixed,fixed;
+  background-size:auto,auto,auto,140px 140px;
 }
-h1,h2,h3,h4{font-family:Fraunces,Georgia,serif;margin:0 0 .4em;line-height:1.15;letter-spacing:-.01em}
-h1{font-size:2.1rem;font-weight:900}
-h2{font-size:1.55rem;font-weight:700}
-h3{font-size:1.2rem;font-weight:700}
+/* headings: slab serif. Display face reserved for the brand + big moments. */
+h1,h2,h3,h4{font-family:Bitter,Georgia,serif;margin:0 0 .4em;line-height:1.18;letter-spacing:-.005em}
+h1{font-size:2rem;font-weight:800}
+h2{font-size:1.5rem;font-weight:800}
+h3{font-size:1.18rem;font-weight:700}
 h4{font-size:1.02rem;font-weight:700}
+.western{font-family:Rye,Bitter,Georgia,serif;font-weight:400;letter-spacing:.01em}
 p{margin:0 0 .9em}
-a{color:var(--canyon);text-underline-offset:3px}
+a{color:var(--rust);text-underline-offset:3px}
 img{max-width:100%;display:block}
-:focus-visible{outline:3px solid var(--sky);outline-offset:2px;border-radius:6px}
+:focus-visible{outline:3px solid var(--denim);outline-offset:2px;border-radius:6px}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+hr.rope{
+  height:10px;border:0;margin:1.2rem 0;
+  background:repeating-linear-gradient(115deg,var(--line-2) 0 7px,var(--parch-2) 7px 13px);
+  border-top:1.5px solid var(--line-2);border-bottom:1.5px solid var(--line-2);border-radius:5px;opacity:.85;
+}
 
 /* ============ LAYOUT ============ */
 .wrap{max-width:var(--wrap);margin:0 auto;padding:0 1rem}
-.view{display:none;animation:fade .28s ease}
+.view{display:none;animation:fade .3s ease}
 .view.active{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
 .stack>*+*{margin-top:1rem}
 .grid{display:grid;gap:1rem}
-@media(min-width:700px){
-  .g2{grid-template-columns:1fr 1fr}
-  .g3{grid-template-columns:repeat(3,1fr)}
-}
+@media(min-width:700px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
 
-/* ============ HEADER ============ */
+/* ============ HEADER - tooled leather ============ */
 header.top{
-  background:linear-gradient(160deg,var(--canyon) 0%,var(--canyon-dk) 55%,#6E2C1B 100%);
-  color:#fff; position:relative; overflow:hidden;
-  padding:calc(1rem + env(safe-area-inset-top)) 0 1.15rem;
+  position:relative;overflow:hidden;color:#F7E9CF;
+  padding:calc(.9rem + env(safe-area-inset-top)) 0 3.4rem;
+  background-color:var(--leather);
+  background-image:
+    repeating-linear-gradient(92deg, rgba(0,0,0,.10) 0 2px, transparent 2px 7px),
+    radial-gradient(ellipse at 50% -20%, rgba(217,163,46,.30), transparent 62%),
+    linear-gradient(168deg,#6B3A1D 0%,#4A2513 60%,#35190B 100%),
+    var(--grain);
+  background-size:auto,auto,auto,120px 120px;
+  box-shadow:inset 0 -3px 0 var(--brass), 0 4px 14px rgba(58,29,13,.35);
 }
-header.top::after{ /* layered ridgeline */
-  content:"";position:absolute;left:0;right:0;bottom:-1px;height:4.2rem;
-  background:
-    linear-gradient(transparent,transparent) ,
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,120 L0,74 L110,36 L190,72 L300,20 L410,78 L520,44 L640,86 L760,40 L880,74 L1000,32 L1110,70 L1200,46 L1200,120 Z' fill='%23F6EFE3'/%3E%3C/svg%3E") bottom/100% 100% no-repeat;
-  pointer-events:none;
+/* stitched inner border */
+header.top::before{
+  content:"";position:absolute;inset:.55rem .55rem 2.9rem;
+  border:2px dashed rgba(232,197,133,.42);border-radius:12px;pointer-events:none;
 }
-.brandbar{display:flex;align-items:center;gap:.7rem;position:relative;z-index:2}
-.logo{width:2.9rem;height:2.9rem;flex:0 0 auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
-.brandtxt h1{font-size:1.7rem;margin:0;color:#fff;letter-spacing:-.02em}
-.brandtxt .tag{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#F3CDB6;font-weight:600}
+/* mountain ridgeline into the page */
+header.top::after{
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:3.1rem;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,120 L0,78 L95,40 L165,74 L275,22 L390,80 L500,46 L625,88 L745,42 L865,76 L985,34 L1105,72 L1200,48 L1200,120 Z' fill='%23F3E6CE'/%3E%3C/svg%3E") bottom/100% 100% no-repeat;
+}
+.brandbar{display:flex;align-items:center;gap:.8rem;position:relative;z-index:2}
+.logo{width:3.2rem;height:3.2rem;flex:0 0 auto;filter:drop-shadow(0 3px 5px rgba(0,0,0,.45))}
+.brandtxt .tag{
+  font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--brass-lt);
+  font-weight:700;display:flex;align-items:center;gap:.4rem;
+}
+.brandtxt .tag::before,.brandtxt .tag::after{content:"";height:1px;width:1.1rem;background:var(--brass);opacity:.7}
+.brandtxt h1{
+  font-family:Rye,Bitter,serif;font-size:2.05rem;font-weight:400;margin:.1rem 0 0;color:#FBEFD8;
+  text-shadow:0 2px 0 #3A1D0D, 0 4px 10px rgba(0,0,0,.4);letter-spacing:.02em;
+}
 .hdr-actions{margin-left:auto;display:flex;gap:.45rem;position:relative;z-index:2}
 .icon-btn{
-  min-width:var(--tap);min-height:var(--tap);border-radius:14px;border:1.5px solid rgba(255,255,255,.34);
-  background:rgba(255,255,255,.14);color:#fff;font-size:1.15rem;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;transition:.15s;
+  min-width:var(--tap);min-height:var(--tap);border-radius:13px;
+  border:2px solid rgba(232,197,133,.5);background:rgba(0,0,0,.22);color:#F7E9CF;
+  font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;
 }
-.icon-btn:hover{background:rgba(255,255,255,.26)}
-.icon-btn[aria-pressed="true"]{background:#fff;color:var(--canyon);border-color:#fff}
+.icon-btn:hover{background:var(--brass);color:var(--leather-dk);border-color:var(--brass)}
+.icon-btn[aria-pressed="true"]{background:var(--brass);color:var(--leather-dk);border-color:var(--brass-lt)}
 
 /* ============ NAV ============ */
 nav.tabs{
-  position:sticky;top:0;z-index:60;background:rgba(246,239,227,.97);
-  backdrop-filter:blur(10px);border-bottom:2px solid var(--line);
+  position:sticky;top:0;z-index:60;
+  background:linear-gradient(180deg,rgba(243,230,206,.98),rgba(235,219,190,.98));
+  backdrop-filter:blur(10px);border-bottom:3px solid var(--leather);
+  box-shadow:0 2px 8px rgba(58,29,13,.10);
 }
-.tabscroll{display:flex;gap:.3rem;overflow-x:auto;scrollbar-width:none;padding:.5rem 1rem;max-width:var(--wrap);margin:0 auto}
+.tabscroll{display:flex;gap:.32rem;overflow-x:auto;scrollbar-width:none;padding:.5rem 1rem;max-width:var(--wrap);margin:0 auto}
 .tabscroll::-webkit-scrollbar{display:none}
 nav.tabs a{
   flex:0 0 auto;display:flex;align-items:center;gap:.4rem;
-  padding:.6rem .9rem;min-height:var(--tap);border-radius:13px;
-  text-decoration:none;color:var(--ink-soft);font-weight:600;font-size:.94rem;
+  padding:.55rem .9rem;min-height:var(--tap);border-radius:11px;
+  text-decoration:none;color:var(--ink-soft);font-weight:700;font-size:.92rem;
   border:2px solid transparent;white-space:nowrap;transition:.15s;
 }
-nav.tabs a:hover{background:var(--card-2);color:var(--ink)}
-nav.tabs a.on{background:var(--canyon);color:#fff;border-color:var(--canyon);box-shadow:var(--shadow)}
-nav.tabs a .ic{font-size:1.12rem}
+nav.tabs a:hover{background:var(--card-2);color:var(--leather);border-color:var(--line-2)}
+nav.tabs a.on{
+  background:linear-gradient(170deg,var(--rust),var(--rust-dk));color:#FFF3E2;
+  border-color:var(--leather-dk);box-shadow:0 3px 0 var(--leather-dk),0 6px 12px rgba(58,29,13,.2);
+}
+nav.tabs a .ic{font-size:1.1rem}
 
 /* ============ CARDS ============ */
 .card{
-  background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);
-  padding:1.15rem;box-shadow:var(--shadow);
+  background:var(--card);border:2px solid var(--line-2);border-radius:var(--r);
+  padding:1.15rem;box-shadow:var(--shadow);position:relative;
+  background-image:var(--grain);background-size:130px 130px;background-blend-mode:multiply;
 }
-.card.tint{background:var(--card-2)}
-.card-h{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem}
-.card-h h2,.card-h h3{margin:0}
+.card.tint{background-color:var(--card-2)}
+.card-h{display:flex;align-items:center;gap:.65rem;margin-bottom:.75rem;padding-bottom:.55rem;border-bottom:2px solid var(--line)}
+.card-h h2,.card-h h3{margin:0;flex:1}
 .card-h .ic{font-size:1.5rem;line-height:1}
-.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--canyon)}
+.eyebrow{
+  font-size:.68rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--rust);
+  display:flex;align-items:center;gap:.45rem;
+}
+.eyebrow::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,var(--line-2),transparent)}
 .muted{color:var(--ink-soft)}
 .small{font-size:.86rem}
-.hr{height:1.5px;background:var(--line);border:0;margin:1rem 0}
-
-/* accent cards */
-.card.a-sage{border-left:6px solid var(--sage)}
-.card.a-sky{border-left:6px solid var(--sky)}
-.card.a-sun{border-left:6px solid var(--sunset)}
-.card.a-gold{border-left:6px solid var(--gold)}
-.card.a-canyon{border-left:6px solid var(--canyon)}
+.hr{height:2px;background:var(--line);border:0;margin:1rem 0}
+/* left accent straps */
+.card.a-sage{border-left:7px solid var(--sage)}
+.card.a-sky{border-left:7px solid var(--denim)}
+.card.a-sun{border-left:7px solid var(--brass)}
+.card.a-gold{border-left:7px solid var(--brass)}
+.card.a-canyon{border-left:7px solid var(--rust)}
+/* wanted-poster treatment */
+.poster{
+  background:var(--card-2);border:3px double var(--leather);border-radius:6px;padding:1.2rem;
+  text-align:center;box-shadow:var(--shadow);
+  background-image:var(--grain);background-size:120px 120px;background-blend-mode:multiply;
+}
+.poster .western{font-size:1.5rem;color:var(--leather);display:block;margin-bottom:.2rem}
 
 /* ============ BUTTONS ============ */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
-  min-height:var(--tap);padding:.7rem 1.25rem;border-radius:14px;
-  border:2px solid var(--canyon);background:var(--canyon);color:#fff;
-  font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;
-  text-decoration:none;transition:.15s;line-height:1.2;
+  min-height:var(--tap);padding:.65rem 1.2rem;border-radius:12px;
+  border:2px solid var(--leather-dk);background:linear-gradient(170deg,var(--rust),var(--rust-dk));color:#FFF3E2;
+  font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;
+  transition:.14s;line-height:1.2;box-shadow:0 3px 0 var(--leather-dk);
 }
-.btn:hover{background:var(--canyon-dk);border-color:var(--canyon-dk);transform:translateY(-1px)}
-.btn:active{transform:none}
-.btn.ghost{background:transparent;color:var(--canyon)}
-.btn.ghost:hover{background:rgba(169,71,47,.09)}
-.btn.sage{background:var(--sage);border-color:var(--sage)}
-.btn.sage:hover{background:var(--pine);border-color:var(--pine)}
-.btn.sky{background:var(--sky);border-color:var(--sky)}
-.btn.dark{background:var(--pine);border-color:var(--pine)}
+.btn:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--leather-dk),0 8px 16px rgba(58,29,13,.2)}
+.btn:active{transform:translateY(1px);box-shadow:0 1px 0 var(--leather-dk)}
+.btn.ghost{background:var(--card);color:var(--leather);border-color:var(--line-2);box-shadow:0 3px 0 var(--line-2)}
+.btn.ghost:hover{background:var(--card-2);border-color:var(--leather);box-shadow:0 5px 0 var(--line-2)}
+.btn.sage{background:linear-gradient(170deg,var(--sage),var(--pine))}
+.btn.sky{background:linear-gradient(170deg,var(--denim),var(--denim-dk))}
+.btn.dark{background:linear-gradient(170deg,var(--leather-2),var(--leather-dk))}
+.btn.brass{background:linear-gradient(170deg,var(--brass-lt),var(--brass));color:var(--leather-dk)}
 .btn.wide{width:100%}
-.btn.sm{min-height:2.6rem;padding:.4rem .8rem;font-size:.9rem;border-radius:11px}
+.btn.sm{min-height:2.7rem;padding:.35rem .8rem;font-size:.88rem;border-radius:9px;box-shadow:0 2px 0 var(--leather-dk)}
+.btn.ghost.sm{box-shadow:0 2px 0 var(--line-2)}
 .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
-.btnrow{display:flex;flex-wrap:wrap;gap:.6rem}
+.btnrow{display:flex;flex-wrap:wrap;gap:.55rem}
 
 /* ============ FORM ============ */
-input[type=text],input[type=date],input[type=time],input[type=number],input[type=search],select,textarea{
-  width:100%;min-height:var(--tap);padding:.65rem .85rem;border-radius:12px;
-  border:2px solid var(--line-2);background:#fff;
+input[type=text],input[type=date],input[type=time],input[type=number],input[type=search],input[type=tel],select,textarea{
+  width:100%;min-height:var(--tap);padding:.6rem .85rem;border-radius:10px;
+  border:2px solid var(--line-2);background:#FFFDF6;
   font-family:inherit;font-size:1rem;
-  color:var(--ink);-webkit-text-fill-color:var(--ink); /* iOS inheritance guard */
+  color:var(--ink);-webkit-text-fill-color:var(--ink);
 }
 textarea{min-height:6rem;resize:vertical;line-height:1.5}
-input:focus,select:focus,textarea:focus{border-color:var(--sky);outline:none}
-label.fld{display:block;font-weight:600;font-size:.9rem;margin-bottom:.3rem;color:var(--ink-soft)}
+input:focus,select:focus,textarea:focus{border-color:var(--denim);outline:none;background:#fff}
+label.fld{display:block;font-weight:700;font-size:.88rem;margin-bottom:.3rem;color:var(--ink-soft)}
 .field+.field{margin-top:.8rem}
-
-/* toggle switch - large for older hands */
 .switch{display:flex;align-items:center;gap:.8rem;cursor:pointer;min-height:var(--tap)}
 .switch input{position:absolute;opacity:0;pointer-events:none}
-.track{width:4rem;height:2.2rem;border-radius:2rem;background:var(--line-2);position:relative;transition:.2s;flex:0 0 auto}
-.track::after{content:"";position:absolute;top:.22rem;left:.22rem;width:1.76rem;height:1.76rem;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 2px 5px rgba(0,0,0,.25)}
-.switch input:checked+.track{background:var(--ok)}
+.track{width:4rem;height:2.2rem;border-radius:2rem;background:var(--line-2);position:relative;transition:.2s;flex:0 0 auto;border:2px solid var(--line-2)}
+.track::after{content:"";position:absolute;top:.13rem;left:.13rem;width:1.68rem;height:1.68rem;border-radius:50%;background:#FFF9ED;transition:.2s;box-shadow:0 2px 5px rgba(0,0,0,.3)}
+.switch input:checked+.track{background:var(--ok);border-color:var(--pine)}
 .switch input:checked+.track::after{transform:translateX(1.8rem)}
-.switch input:focus-visible+.track{outline:3px solid var(--sky);outline-offset:2px}
+.switch input:focus-visible+.track{outline:3px solid var(--denim);outline-offset:2px}
 
-/* ============ PILLS / CHIPS ============ */
-.pills{display:flex;flex-wrap:wrap;gap:.45rem}
+/* ============ PILLS ============ */
+.pills{display:flex;flex-wrap:wrap;gap:.42rem}
 .pill{
-  display:inline-flex;align-items:center;gap:.35rem;
-  padding:.4rem .8rem;border-radius:2rem;background:var(--card-2);
-  border:1.5px solid var(--line-2);font-size:.86rem;font-weight:600;color:var(--ink-soft);
+  display:inline-flex;align-items:center;gap:.32rem;
+  padding:.35rem .75rem;border-radius:2rem;background:var(--card-2);
+  border:2px solid var(--line-2);font-size:.84rem;font-weight:700;color:var(--ink-soft);
 }
-.pill.on{background:var(--canyon);color:#fff;border-color:var(--canyon)}
-.pill.sage{background:rgba(110,131,103,.16);border-color:var(--sage);color:var(--pine)}
-.pill.sky{background:rgba(62,112,145,.14);border-color:var(--sky);color:var(--sky)}
-.pill.gold{background:rgba(201,154,46,.16);border-color:var(--gold);color:#8A6A15}
-.pill.danger{background:rgba(178,58,46,.12);border-color:var(--danger);color:var(--danger)}
-button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
+.pill.on{background:linear-gradient(170deg,var(--rust),var(--rust-dk));color:#FFF3E2;border-color:var(--leather-dk)}
+.pill.sage{background:rgba(110,128,88,.18);border-color:var(--sage);color:var(--pine)}
+.pill.sky{background:rgba(46,90,120,.15);border-color:var(--denim);color:var(--denim-dk)}
+.pill.gold{background:rgba(200,145,44,.2);border-color:var(--brass);color:#7A5710}
+.pill.danger{background:rgba(163,46,30,.13);border-color:var(--danger);color:var(--danger)}
+button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
-/* ============ STAT TILES ============ */
+/* ============ STAT TILES - brass badges ============ */
 .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem}
 @media(min-width:640px){.stats{grid-template-columns:repeat(4,1fr)}}
-.stat{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:.85rem;text-align:center}
-.stat .n{font-family:Fraunces,serif;font-size:1.85rem;font-weight:900;color:var(--canyon);line-height:1}
-.stat .l{font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:.3rem}
+.stat{
+  background:linear-gradient(168deg,var(--card),var(--card-2));
+  border:2px solid var(--line-2);border-radius:var(--r-sm);padding:.85rem .5rem;text-align:center;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.6),0 2px 4px rgba(58,29,13,.08);
+}
+.stat .n{font-family:Bitter,serif;font-size:1.8rem;font-weight:800;color:var(--rust);line-height:1}
+.stat .l{font-size:.68rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint);margin-top:.32rem}
 
-/* ============ LIST ROWS ============ */
+/* ============ ROWS ============ */
 .row{
-  display:flex;gap:.85rem;align-items:flex-start;
+  display:flex;gap:.8rem;align-items:flex-start;
   padding:.85rem;border-radius:var(--r-sm);background:var(--card);
-  border:1.5px solid var(--line);
+  border:2px solid var(--line);
 }
-.row+.row{margin-top:.6rem}
-.row .ic{font-size:1.6rem;line-height:1;flex:0 0 auto;width:2.2rem;text-align:center}
+.row+.row{margin-top:.55rem}
+.row .ic{font-size:1.55rem;line-height:1;flex:0 0 auto;width:2.2rem;text-align:center}
 .row .bd{flex:1;min-width:0}
-.row .bd .t{font-weight:700;font-size:1.02rem}
-.row .bd .s{font-size:.88rem;color:var(--ink-soft)}
-.row .rt{flex:0 0 auto;text-align:right;font-size:.82rem;font-weight:700;color:var(--canyon)}
-.row.clickable{cursor:pointer;transition:.15s}
-.row.clickable:hover{border-color:var(--canyon);transform:translateX(2px)}
-.dist{font-family:Fraunces,serif;font-size:1.05rem;font-weight:700;color:var(--canyon);white-space:nowrap}
+.row .bd .t{font-weight:700;font-size:1.01rem}
+.row .bd .s{font-size:.87rem;color:var(--ink-soft)}
+.row .rt{flex:0 0 auto;text-align:right}
+.row.clickable{cursor:pointer;transition:.14s}
+.row.clickable:hover{border-color:var(--rust);transform:translateX(3px);box-shadow:-3px 0 0 var(--rust)}
+.dist{font-family:Bitter,serif;font-size:1.05rem;font-weight:800;color:var(--rust);white-space:nowrap}
+.eta{font-size:.72rem;color:var(--ink-faint);font-weight:700}
 
-/* ============ HERO / TODAY ============ */
+/* ============ HERO - big sky ============ */
 .hero{
-  background:linear-gradient(150deg,#3E7091 0%,#2F5871 100%);
-  color:#fff;border-radius:var(--r-lg);padding:1.4rem;position:relative;overflow:hidden;
-  box-shadow:var(--shadow-lg);
+  border-radius:var(--r-lg);padding:1.5rem 1.3rem;position:relative;overflow:hidden;color:#FFF3E2;
+  box-shadow:var(--shadow-lg);border:3px solid var(--leather-dk);
+  background-color:var(--denim);
+  background-image:
+    radial-gradient(circle at 78% 22%, rgba(229,187,99,.55), transparent 34%),
+    linear-gradient(178deg,#3E7196 0%,#2E5A78 45%,#1F4159 100%),
+    var(--grain);
+  background-size:auto,auto,120px 120px;
 }
-.hero .lbl{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#BBD9EC;font-weight:700}
-.hero h2{color:#fff;margin:.25rem 0 .5rem;font-size:1.85rem}
-.hero p{color:#DCEAF3;margin:0}
-.countdown{display:flex;gap:.6rem;margin-top:1rem}
-.cd{background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.28);border-radius:13px;padding:.55rem .3rem;text-align:center;flex:1}
-.cd b{display:block;font-family:Fraunces,serif;font-size:1.6rem;font-weight:900;line-height:1}
-.cd span{font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:#BBD9EC;font-weight:700}
+.hero::after{ /* silhouette ridge + a lone rider */
+  content:"";position:absolute;left:0;right:0;bottom:0;height:3.6rem;pointer-events:none;opacity:.92;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 140' preserveAspectRatio='none'%3E%3Cpath d='M0,140 L0,96 L120,58 L220,92 L340,44 L470,96 L600,62 L740,100 L880,56 L1010,94 L1130,64 L1200,86 L1200,140 Z' fill='%231F4159' opacity='.85'/%3E%3Cpath d='M0,140 L0,118 L150,100 L300,120 L460,104 L640,124 L820,106 L1000,122 L1200,108 L1200,140 Z' fill='%233A1D0D'/%3E%3C/svg%3E") bottom/100% 100% no-repeat;
+}
+.hero>*{position:relative;z-index:2}
+.hero .lbl{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brass-lt);font-weight:800}
+.hero h2{color:#FFF6E6;margin:.28rem 0 .45rem;font-size:1.75rem;text-shadow:0 2px 8px rgba(0,0,0,.35)}
+.hero p{color:#DCE9F2;margin:0;font-size:.95rem}
+.countdown{display:flex;gap:.55rem;margin-top:1.1rem}
+.cd{
+  background:rgba(0,0,0,.28);border:2px solid rgba(229,187,99,.45);border-radius:11px;
+  padding:.5rem .25rem;text-align:center;flex:1;
+}
+.cd b{display:block;font-family:Bitter,serif;font-size:1.5rem;font-weight:800;line-height:1;color:var(--brass-lt)}
+.cd span{font-size:.6rem;letter-spacing:.11em;text-transform:uppercase;color:#CFE0EC;font-weight:800}
 
-/* ============ ALERT BANNERS ============ */
+/* ============ ALERTS - the interactive heart ============ */
 .alert{
-  display:flex;gap:.8rem;align-items:flex-start;padding:1rem;border-radius:var(--r);
-  border:2px solid var(--gold);background:#FDF6E3;box-shadow:var(--shadow);
+  display:flex;gap:.75rem;align-items:flex-start;padding:.95rem;border-radius:var(--r);
+  border:2px solid var(--brass);background:#FCF3DE;box-shadow:var(--shadow);position:relative;
+  animation:slideIn .35s cubic-bezier(.2,.9,.3,1);
 }
+@keyframes slideIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
 .alert .ic{font-size:1.7rem;line-height:1;flex:0 0 auto}
 .alert .bd{flex:1;min-width:0}
-.alert .bd b{display:block;font-size:1.05rem;margin-bottom:.15rem}
-.alert.wild{border-color:var(--sage);background:#EFF3ED}
-.alert.gem{border-color:var(--sunset);background:#FDF0E5}
-.alert.health{border-color:var(--sky);background:#EAF2F7}
-.alert.danger{border-color:var(--danger);background:#FAEDEB}
+.alert .bd b{display:block;font-size:1.04rem;margin-bottom:.12rem;font-family:Bitter,serif}
+.alert.wild{border-color:var(--sage);background:#EEF2E8}
+.alert.gem{border-color:var(--rust);background:#FBEEE7}
+.alert.health{border-color:var(--denim);background:#E9F1F6}
+.alert.danger{border-color:var(--danger);background:#F9EBE8}
+.alert.fuel{border-color:var(--leather-2);background:#F5EDE2}
+.alert .x{position:absolute;top:.45rem;right:.45rem}
+/* countdown ring on approach alerts */
+.approach{display:flex;align-items:center;gap:.5rem;margin-top:.5rem}
+.approach .bar{flex:1;height:.55rem;background:var(--line);border-radius:1rem;overflow:hidden}
+.approach .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brass),var(--rust));border-radius:1rem;transition:width .6s}
+.approach .n{font-size:.76rem;font-weight:800;color:var(--rust);white-space:nowrap}
 
 /* ============ TIMELINE ============ */
 .tl{position:relative;padding-left:2.1rem}
-.tl::before{content:"";position:absolute;left:.72rem;top:.4rem;bottom:.4rem;width:3px;background:var(--line-2);border-radius:2px}
-.tl-item{position:relative;padding-bottom:1.15rem}
-.tl-item::before{
-  content:"";position:absolute;left:-1.62rem;top:.42rem;width:.92rem;height:.92rem;
-  border-radius:50%;background:var(--card);border:3px solid var(--canyon);
-}
-.tl-item.done::before{background:var(--canyon)}
-.tl-item.now::before{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 5px rgba(201,154,46,.25)}
-.tl-item .when{font-size:.76rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint)}
+.tl::before{content:"";position:absolute;left:.72rem;top:.4rem;bottom:.4rem;width:3px;background:repeating-linear-gradient(180deg,var(--line-2) 0 8px,transparent 8px 14px)}
+.tl-item{position:relative;padding-bottom:1.1rem}
+.tl-item::before{content:"";position:absolute;left:-1.64rem;top:.42rem;width:.95rem;height:.95rem;border-radius:50%;background:var(--card);border:3px solid var(--rust)}
+.tl-item.done::before{background:var(--rust)}
+.tl-item.now::before{background:var(--brass);border-color:var(--brass);box-shadow:0 0 0 5px rgba(200,145,44,.28)}
+.tl-item .when{font-size:.74rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint)}
 
-/* ============ DAY CARD ============ */
-.day{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
-.day+.day{margin-top:.9rem}
-.day-h{display:flex;gap:.85rem;align-items:center;padding:1rem;cursor:pointer;background:var(--card-2);border:0;width:100%;text-align:left;font-family:inherit}
+/* ============ DAY CARDS ============ */
+.day{background:var(--card);border:2px solid var(--line-2);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
+.day+.day{margin-top:.85rem}
+.day-h{display:flex;gap:.85rem;align-items:center;padding:.95rem;cursor:pointer;background:linear-gradient(170deg,var(--card-2),#F2E5CB);border:0;width:100%;text-align:left;font-family:inherit}
 .day-h .num{
-  width:3.1rem;height:3.1rem;flex:0 0 auto;border-radius:13px;background:var(--canyon);color:#fff;
+  width:3.15rem;height:3.15rem;flex:0 0 auto;border-radius:11px;
+  background:linear-gradient(168deg,var(--rust),var(--rust-dk));color:#FFF3E2;
   display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;
+  border:2px solid var(--leather-dk);box-shadow:0 2px 0 var(--leather-dk);
 }
-.day-h .num b{font-family:Fraunces,serif;font-size:1.3rem;font-weight:900}
-.day-h .num span{font-size:.58rem;letter-spacing:.08em;text-transform:uppercase}
+.day-h .num b{font-family:Bitter,serif;font-size:1.28rem;font-weight:800}
+.day-h .num span{font-size:.55rem;letter-spacing:.07em;text-transform:uppercase}
 .day-h .ti{flex:1;min-width:0}
-.day-h .ti b{display:block;font-size:1.06rem}
-.day-h .ti span{font-size:.86rem;color:var(--ink-soft)}
-.day-h .chev{font-size:1.2rem;color:var(--ink-faint);transition:.2s}
+.day-h .ti b{display:block;font-size:1.04rem;font-family:Bitter,serif}
+.day-h .ti span{font-size:.85rem;color:var(--ink-soft)}
+.day-h .chev{font-size:1.15rem;color:var(--ink-faint);transition:.2s}
 .day.open .day-h .chev{transform:rotate(180deg)}
 .day-b{display:none;padding:0 1rem 1.1rem}
 .day.open .day-b{display:block}
-.day.today .day-h{background:#FDF6E3}
-.day.today .day-h .num{background:var(--gold)}
-.seg{margin-top:.9rem}
-.seg b.sg{display:block;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:var(--canyon);margin-bottom:.35rem}
+.day.today .day-h{background:linear-gradient(170deg,#FBEED2,#F5E2B8)}
+.day.today .day-h .num{background:linear-gradient(168deg,var(--brass-lt),var(--brass));color:var(--leather-dk)}
+.seg{margin-top:.85rem}
+.seg b.sg{display:block;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-bottom:.32rem;font-weight:800}
 .seg ul{margin:0;padding-left:1.15rem}
 .seg li{margin-bottom:.3rem}
-.note{background:#FDF6E3;border-left:5px solid var(--gold);border-radius:9px;padding:.7rem .85rem;font-size:.92rem;margin-top:.85rem}
-.note.senior{background:#EFF3ED;border-left-color:var(--sage)}
-.note.warn{background:#FAEDEB;border-left-color:var(--danger)}
+.note{background:#FCF3DE;border-left:5px solid var(--brass);border-radius:8px;padding:.7rem .85rem;font-size:.91rem;margin-top:.8rem}
+.note.senior{background:#EEF2E8;border-left-color:var(--sage)}
+.note.warn{background:#F9EBE8;border-left-color:var(--danger)}
+.note.rv{background:#F5EDE2;border-left-color:var(--leather-2)}
 
-/* ============ BOTTOM BAR (senior quick access) ============ */
+/* ============ BOTTOM BAR ============ */
 .bottombar{
-  position:fixed;left:0;right:0;bottom:0;z-index:70;
-  background:rgba(255,253,248,.98);backdrop-filter:blur(10px);
-  border-top:2px solid var(--line);
-  padding:.35rem .4rem calc(.35rem + env(safe-area-inset-bottom));
-  display:flex;justify-content:space-around;
+  position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;justify-content:space-around;
+  background:linear-gradient(180deg,#4A2513,#35190B);
+  border-top:3px solid var(--brass);
+  padding:.3rem .35rem calc(.3rem + env(safe-area-inset-bottom));
+  box-shadow:0 -4px 14px rgba(58,29,13,.3);
 }
 .bottombar a{
-  flex:1;display:flex;flex-direction:column;align-items:center;gap:.1rem;
-  padding:.35rem .2rem;min-height:3.5rem;justify-content:center;
-  text-decoration:none;color:var(--ink-faint);font-size:.66rem;font-weight:700;
-  border-radius:11px;transition:.15s;letter-spacing:.02em;
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:.08rem;
+  padding:.35rem .15rem;min-height:3.5rem;justify-content:center;
+  text-decoration:none;color:#C8AC85;font-size:.63rem;font-weight:800;
+  border-radius:10px;transition:.15s;letter-spacing:.03em;text-transform:uppercase;
 }
-.bottombar a .ic{font-size:1.42rem;line-height:1}
-.bottombar a.on{color:var(--canyon);background:rgba(169,71,47,.1)}
+.bottombar a .ic{font-size:1.35rem;line-height:1}
+.bottombar a.on{color:var(--leather-dk);background:linear-gradient(170deg,var(--brass-lt),var(--brass))}
 
-/* ============ MODAL / SHEET ============ */
-.overlay{
-  position:fixed;inset:0;z-index:200;background:rgba(43,39,36,.55);
-  backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center;
-}
+/* ============ SHEET ============ */
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(42,31,22,.6);backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center}
 .overlay.on{display:flex}
 @media(min-width:700px){.overlay.on{align-items:center}}
 .sheet{
-  background:var(--sand);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;
-  border-radius:var(--r-lg) var(--r-lg) 0 0;padding:1.2rem;
-  padding-bottom:calc(1.2rem + env(safe-area-inset-bottom));
-  animation:up .28s cubic-bezier(.2,.8,.3,1);
+  background:var(--parch);width:100%;max-width:660px;max-height:92vh;overflow-y:auto;
+  border-radius:var(--r-lg) var(--r-lg) 0 0;padding:1.2rem;border:3px solid var(--leather);
+  padding-bottom:calc(1.2rem + env(safe-area-inset-bottom));animation:up .3s cubic-bezier(.2,.85,.3,1);
+  background-image:var(--grain);background-size:130px 130px;background-blend-mode:multiply;
 }
 @media(min-width:700px){.sheet{border-radius:var(--r-lg)}}
-@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-.sheet-h{display:flex;align-items:flex-start;gap:.8rem;margin-bottom:1rem}
-.sheet-h h3{flex:1;margin:0}
+@keyframes up{from{transform:translateY(42px);opacity:0}to{transform:none;opacity:1}}
+.sheet-h{display:flex;align-items:flex-start;gap:.8rem;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:3px double var(--line-2)}
+.sheet-h h3{flex:1;margin:0;font-family:Bitter,serif}
 .x{
   min-width:2.7rem;min-height:2.7rem;border-radius:50%;border:2px solid var(--line-2);
-  background:var(--card);font-size:1.15rem;cursor:pointer;color:var(--ink-soft);flex:0 0 auto;
+  background:var(--card);font-size:1.05rem;cursor:pointer;color:var(--ink-soft);flex:0 0 auto;
 }
-.x:hover{background:var(--canyon);color:#fff;border-color:var(--canyon)}
+.x:hover{background:var(--rust);color:#FFF3E2;border-color:var(--rust-dk)}
 
 /* ============ TOAST ============ */
 #toast{
-  position:fixed;left:50%;bottom:calc(5.2rem + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
-  background:var(--pine);color:#fff;padding:.8rem 1.2rem;border-radius:14px;
-  font-weight:600;font-size:.95rem;z-index:300;opacity:0;pointer-events:none;transition:.28s;
+  position:fixed;left:50%;bottom:calc(5.4rem + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);
+  background:linear-gradient(170deg,var(--leather-2),var(--leather-dk));color:#FFF3E2;
+  padding:.75rem 1.15rem;border-radius:12px;border:2px solid var(--brass);
+  font-weight:700;font-size:.93rem;z-index:300;opacity:0;pointer-events:none;transition:.28s;
   max-width:90vw;text-align:center;box-shadow:var(--shadow-lg);
 }
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ============ CHAT ============ */
-.msgs{display:flex;flex-direction:column;gap:.6rem;max-height:56vh;overflow-y:auto;padding:.4rem}
-.bubble{max-width:82%;padding:.7rem .9rem;border-radius:16px;font-size:.98rem;line-height:1.45;word-wrap:break-word}
-.bubble.theirs{background:var(--card);border:1.5px solid var(--line);align-self:flex-start;border-bottom-left-radius:5px}
-.bubble.mine{background:var(--canyon);color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
-.bubble.olive{background:#EFF3ED;border:1.5px solid var(--sage);align-self:flex-start;border-bottom-left-radius:5px}
-.b-name{font-size:.76rem;font-weight:700;margin-bottom:.15rem}
-.bubble.mine .b-name{color:#F3CDB6}
-.b-time{font-size:.68rem;opacity:.6;margin-top:.25rem}
+.msgs{display:flex;flex-direction:column;gap:.55rem;max-height:56vh;overflow-y:auto;padding:.4rem}
+.bubble{max-width:82%;padding:.65rem .9rem;border-radius:14px;font-size:.97rem;line-height:1.45;word-wrap:break-word;border:2px solid transparent}
+.bubble.theirs{background:var(--card);border-color:var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.bubble.mine{background:linear-gradient(170deg,var(--rust),var(--rust-dk));color:#FFF3E2;align-self:flex-end;border-color:var(--leather-dk);border-bottom-right-radius:4px}
+.bubble.olive{background:#EEF2E8;border-color:var(--sage);align-self:flex-start;border-bottom-left-radius:4px}
+.b-name{font-size:.74rem;font-weight:800;margin-bottom:.13rem}
+.bubble.mine .b-name{color:var(--brass-lt)}
+.b-time{font-size:.66rem;opacity:.62;margin-top:.22rem}
 .chatrow{display:flex;gap:.5rem;margin-top:.7rem}
 .chatrow input{flex:1}
 
-/* ============ MEDIA / GALLERY ============ */
-.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:.55rem}
-.gal figure{margin:0;position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;border:1.5px solid var(--line);background:var(--card-2)}
+/* ============ MEDIA ============ */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(102px,1fr));gap:.5rem}
+.gal figure{margin:0;position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;border:2px solid var(--line-2);background:var(--card-2)}
 .gal img,.gal video{width:100%;height:100%;object-fit:cover}
-.gal .del{position:absolute;top:.25rem;right:.25rem;width:1.7rem;height:1.7rem;border-radius:50%;border:0;background:rgba(43,39,36,.7);color:#fff;font-size:.8rem;cursor:pointer;line-height:1}
-.dropzone{
-  border:3px dashed var(--line-2);border-radius:var(--r);padding:1.8rem 1rem;text-align:center;
-  background:var(--card-2);cursor:pointer;transition:.15s;
-}
-.dropzone:hover,.dropzone.over{border-color:var(--canyon);background:#FBEDE7}
-#vidCanvas{width:100%;border-radius:var(--r-sm);background:#111;display:block;border:1.5px solid var(--line)}
+.gal .del{position:absolute;top:.22rem;right:.22rem;width:1.7rem;height:1.7rem;border-radius:50%;border:0;background:rgba(42,31,22,.75);color:#fff;font-size:.78rem;cursor:pointer;line-height:1}
+.dropzone{border:3px dashed var(--line-2);border-radius:var(--r);padding:1.7rem 1rem;text-align:center;background:var(--card-2);cursor:pointer;transition:.15s}
+.dropzone:hover,.dropzone.over{border-color:var(--rust);background:#FBEEE7}
+#vidCanvas,#trailCanvas{width:100%;border-radius:var(--r-sm);display:block;border:2px solid var(--line-2)}
+#vidCanvas{background:#161009}
+#trailCanvas{background:var(--card-2);touch-action:none}
 
 /* ============ PROGRESS ============ */
-.bar{height:.85rem;background:var(--line);border-radius:1rem;overflow:hidden}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--sunset),var(--canyon));border-radius:1rem;transition:width .5s}
+.bar{height:.85rem;background:var(--line);border-radius:1rem;overflow:hidden;border:1.5px solid var(--line-2)}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brass),var(--rust));border-radius:1rem;transition:width .5s}
 
 /* ============ CHECKLIST ============ */
-.chk{display:flex;align-items:flex-start;gap:.75rem;padding:.7rem;border-radius:11px;cursor:pointer;min-height:var(--tap)}
+.chk{display:flex;align-items:flex-start;gap:.7rem;padding:.65rem;border-radius:9px;cursor:pointer;min-height:var(--tap)}
 .chk:hover{background:var(--card-2)}
-.chk input{width:1.6rem;height:1.6rem;flex:0 0 auto;margin:.1rem 0 0;accent-color:var(--canyon);cursor:pointer}
+.chk input{width:1.6rem;height:1.6rem;flex:0 0 auto;margin:.1rem 0 0;accent-color:var(--rust);cursor:pointer}
 .chk span{flex:1;line-height:1.45}
 .chk input:checked+span{text-decoration:line-through;color:var(--ink-faint)}
 
-/* ============ UPDATE BAR ============ */
-#updateBar{
-  display:none;position:fixed;top:0;left:0;right:0;z-index:400;
-  background:var(--gold);color:#3A2C08;text-align:center;padding:.7rem 1rem;
-  font-weight:700;cursor:pointer;font-size:.95rem;
+/* ============ RADIO ============ */
+.dial{
+  background:linear-gradient(168deg,#3A1D0D,#241007);border:3px solid var(--brass);border-radius:var(--r);
+  padding:1rem;color:var(--brass-lt);box-shadow:inset 0 2px 12px rgba(0,0,0,.5);
 }
-/* ============ OFFLINE PILL ============ */
-#netPill{
-  position:fixed;right:.7rem;bottom:calc(5rem + env(safe-area-inset-bottom));z-index:150;
-  background:var(--pine);color:#fff;border-radius:2rem;padding:.4rem .8rem;font-size:.76rem;font-weight:700;
-  display:none;box-shadow:var(--shadow);
+.dial .freq{font-family:Bitter,serif;font-size:2.5rem;font-weight:800;line-height:1;color:var(--brass-lt);text-shadow:0 0 14px rgba(229,187,99,.5)}
+.dial .call{font-size:1rem;font-weight:800;letter-spacing:.1em;color:#FFF3E2}
+.dial .fmt{font-size:.82rem;color:#C8AC85}
+.dial .scale{
+  height:1.6rem;margin-top:.7rem;border-radius:5px;position:relative;
+  background:repeating-linear-gradient(90deg,rgba(229,187,99,.5) 0 1px,transparent 1px 11px);
+  border:1px solid rgba(229,187,99,.35);
 }
+.dial .scale .needle{position:absolute;top:-.25rem;bottom:-.25rem;width:3px;background:var(--rust);box-shadow:0 0 8px var(--rust);border-radius:2px;transition:left .4s}
+.station{display:flex;gap:.7rem;align-items:center;padding:.7rem;border-radius:10px;border:2px solid var(--line);background:var(--card);cursor:pointer}
+.station+.station{margin-top:.5rem}
+.station .f{font-family:Bitter,serif;font-weight:800;font-size:1.12rem;color:var(--rust);min-width:4.6rem;text-align:center}
+.station.on{border-color:var(--rust);background:#FBEEE7;box-shadow:-3px 0 0 var(--rust)}
+
+/* ============ BOOKING ============ */
+.gapcard{border:3px dashed var(--danger);background:#F9EBE8;border-radius:var(--r);padding:1rem}
+.gapcard.booked{border-style:solid;border-color:var(--ok);background:#EDF3EA}
+
+/* ============ UPDATE / NET ============ */
+#updateBar{display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:linear-gradient(170deg,var(--brass-lt),var(--brass));color:var(--leather-dk);text-align:center;padding:.7rem 1rem;font-weight:800;cursor:pointer;font-size:.93rem;border-bottom:3px solid var(--leather-dk)}
+#netPill{position:fixed;right:.7rem;bottom:calc(5.2rem + env(safe-area-inset-bottom));z-index:150;background:var(--leather-dk);color:var(--brass-lt);border:2px solid var(--brass);border-radius:2rem;padding:.35rem .8rem;font-size:.74rem;font-weight:800;display:none;box-shadow:var(--shadow)}
 #netPill.on{display:block}
 
-/* print */
 @media print{
   nav.tabs,.bottombar,.icon-btn,#toast,#netPill,.btn{display:none!important}
   .view{display:block!important}
   body{background:#fff;padding:0}
   .card,.day{break-inside:avoid;box-shadow:none}
 }
-/* reduced motion */
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 </head>
@@ -399,31 +485,31 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
 <header class="top">
   <div class="wrap brandbar">
     <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
-      <circle cx="32" cy="32" r="30" fill="#F6EFE3"/>
-      <path d="M6 46 L20 24 L29 37 L39 19 L58 46 Z" fill="#A9472F"/>
-      <circle cx="45" cy="17" r="7" fill="#DE7B39"/>
-      <path d="M2 46 h60 v8 a30 30 0 0 1 -60 0 z" fill="#6E8367"/>
+      <circle cx="32" cy="32" r="30" fill="#F3E6CE" stroke="#3A1D0D" stroke-width="2.5"/>
+      <path d="M32 7 l6.4 13 14.3 2.1-10.3 10.1 2.4 14.2L32 39.7 19.2 46.4l2.4-14.2L11.3 22.1 25.6 20z" fill="#C8912C" stroke="#3A1D0D" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="32" cy="30" r="4.6" fill="#A63A24"/>
     </svg>
     <div class="brandtxt">
-      <div class="tag">The Great American West</div>
+      <div class="tag">Great American West</div>
       <h1>Olive</h1>
     </div>
     <div class="hdr-actions">
       <button class="icon-btn" id="btnVoice" aria-pressed="false" title="Voice companion on/off" aria-label="Voice companion on or off">&#128264;</button>
-      <button class="icon-btn" id="btnText" title="Text size" aria-label="Change text size"><b style="font-size:.95rem">A</b><b style="font-size:1.25rem">A</b></button>
+      <button class="icon-btn" id="btnText" title="Text size" aria-label="Change text size"><b style="font-size:.9rem">A</b><b style="font-size:1.2rem">A</b></button>
     </div>
   </div>
 </header>
 
 <nav class="tabs" aria-label="Main">
   <div class="tabscroll">
-    <a href="#/today"   data-view="today"><span class="ic">&#127968;</span> Today</a>
-    <a href="#/journey" data-view="journey"><span class="ic">&#128506;&#65039;</span> Journey</a>
-    <a href="#/nearby"  data-view="nearby"><span class="ic">&#128205;</span> Nearby</a>
-    <a href="#/bucket"  data-view="bucket"><span class="ic">&#127919;</span> Bucket List</a>
+    <a href="#/today"    data-view="today"><span class="ic">&#127968;</span> Today</a>
+    <a href="#/journey"  data-view="journey"><span class="ic">&#128506;&#65039;</span> Journey</a>
+    <a href="#/nearby"   data-view="nearby"><span class="ic">&#128205;</span> Nearby</a>
+    <a href="#/radio"    data-view="radio"><span class="ic">&#128251;</span> Radio</a>
+    <a href="#/bucket"   data-view="bucket"><span class="ic">&#127919;</span> Bucket List</a>
     <a href="#/memories" data-view="memories"><span class="ic">&#128248;</span> Memories</a>
-    <a href="#/crew"    data-view="crew"><span class="ic">&#128172;</span> Crew</a>
-    <a href="#/toolkit" data-view="toolkit"><span class="ic">&#129520;</span> Toolkit</a>
+    <a href="#/crew"     data-view="crew"><span class="ic">&#128172;</span> Crew</a>
+    <a href="#/toolkit"  data-view="toolkit"><span class="ic">&#129520;</span> Toolkit</a>
   </div>
 </nav>
 
@@ -443,22 +529,26 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
     <div id="liveAlerts" class="stack"></div>
 
     <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#9749;</span><h3>Your Morning Briefing</h3></div>
-      <div id="briefing" class="muted">Preparing your briefing&hellip;</div>
+      <div class="card-h"><span class="ic">&#9749;</span><h3>Trail Boss Briefing</h3></div>
+      <div id="briefing" class="muted">Saddling up&hellip;</div>
       <div class="btnrow" style="margin-top:.9rem">
         <button class="btn sm" id="brRead">&#128266; Read it to me</button>
         <button class="btn sm ghost" id="brRefresh">&#8635; Refresh</button>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-h"><span class="ic">&#127760;</span><h3>Where You Are</h3></div>
+    <div class="card a-canyon">
+      <div class="card-h"><span class="ic">&#127760;</span><h3>Ride Along</h3></div>
       <label class="switch">
         <input type="checkbox" id="gpsToggle"><span class="track"></span>
         <span><b>Follow my journey</b><br><span class="small muted">Olive watches the road and speaks up when something good is coming.</span></span>
       </label>
-      <div id="gpsStatus" class="small muted" style="margin-top:.6rem">Location is off. Turn it on to unlock landmark alerts, hidden gems and RV services near you.</div>
+      <div id="gpsStatus" class="small muted" style="margin-top:.6rem">Location is off. Turn it on for landmark alerts, diners, fuel and RV services as you drive.</div>
       <div id="gpsHelp" style="display:none;margin-top:.8rem" class="note warn"></div>
+      <div class="btnrow" style="margin-top:.8rem">
+        <button class="btn sm brass" id="pinHere">&#128204; Save this spot</button>
+        <button class="btn sm ghost" id="whatsAhead">&#128071; What's ahead?</button>
+      </div>
     </div>
 
     <div class="card a-sky">
@@ -497,21 +587,47 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
 <!-- ============================ JOURNEY ============================ -->
 <div class="view" id="view-journey">
   <div class="stack">
-    <div class="card a-canyon">
-      <div class="eyebrow">August 17 &ndash; 31, 2026</div>
-      <h2 style="margin-top:.2rem">Fifteen Days Through the West</h2>
-      <p class="muted" style="margin:0">Three travelers, six states, five national parks. Built for scenic driving, history and wildlife &mdash; with an easy pace and an optional item every day you can drop without spoiling anything.</p>
-      <div class="pills" style="margin-top:.9rem">
+
+    <div class="poster">
+      <span class="western">The Great American West</span>
+      <div class="small muted" style="letter-spacing:.16em;text-transform:uppercase;font-weight:800">August 17 &ndash; 31, 2026</div>
+      <hr class="rope">
+      <p class="small" style="margin:0">Three travelers, six states, five national parks. Scenic driving, history and wildlife at an easy pace &mdash; with one optional item every day you can drop without spoiling a thing.</p>
+      <div class="pills" style="margin-top:.9rem;justify-content:center">
         <span class="pill sage">&#128663; ~3,400 miles</span>
-        <span class="pill sky">&#127957;&#65039; 5 national parks</span>
+        <span class="pill sky">&#127957;&#65039; 5 parks</span>
         <span class="pill gold">&#127963;&#65039; 6 states</span>
         <span class="pill">&#128719;&#65039; 15 days</span>
       </div>
     </div>
 
-    <div class="card tint">
-      <div class="card-h"><span class="ic">&#9888;&#65039;</span><h3>Route change we spotted</h3></div>
-      <p class="small" style="margin:0">Your booked hotels put you in <b>Dickinson, ND</b> on Aug 20 and <b>Havre, MT</b> on Aug 21 &mdash; not Medora and Billings as the original planner assumed. Havre puts you on US&#8209;2, the Hi&#8209;Line, which is the faster, prettier run to Glacier. The itinerary below follows <b>your bookings</b>.</p>
+    <!-- ---------- TRAIL TRACKING ---------- -->
+    <div class="card a-canyon">
+      <div class="card-h"><span class="ic">&#129517;</span><h3>Your Trail</h3></div>
+      <p class="small muted">Every mile you drive gets recorded. Drop a pin anywhere worth remembering, then take the whole trail with you &mdash; Google Maps, Google Earth, anywhere.</p>
+      <canvas id="trailCanvas" width="900" height="620" aria-label="Map of your journey"></canvas>
+      <div class="pills" style="margin-top:.7rem" id="trailLegend"></div>
+      <div class="btnrow" style="margin-top:.8rem">
+        <button class="btn sm brass" id="pinHere2">&#128204; Save this spot</button>
+        <button class="btn sm ghost" id="trailGpx">&#128229; Export trail (GPX)</button>
+        <button class="btn sm ghost" id="trailKml">&#127758; Export for Google Earth</button>
+        <button class="btn sm ghost" id="trailClear">&#128465;&#65039; Clear trail</button>
+      </div>
+      <div id="trailStats" class="small muted" style="margin-top:.7rem"></div>
+    </div>
+
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#128204;</span><h3>Saved Places</h3></div>
+      <p class="small muted">Spots you pinned along the way &mdash; a pullout with a view, a diner worth a return trip, where you parked.</p>
+      <div id="pinList"></div>
+    </div>
+
+    <!-- ---------- STAYS / BOOKING ---------- -->
+    <div class="card a-sky">
+      <div class="card-h"><span class="ic">&#128716;&#65039;</span><h3>Stays &amp; Bookings</h3></div>
+      <p class="small muted">Every night of the trip. Booked ones show your confirmation; open ones search Airbnb, Booking.com, Vrbo and hotels with your dates and town already filled in.</p>
+      <div id="staysList" style="margin-top:.9rem"></div>
+      <div class="note rv small" style="margin-top:.9rem"><b>How booking works here:</b> Olive fills in the dates, place and party size, then hands you to the booking site to pay on their secure checkout. It never takes card details itself. Once you've booked, tap <b>Save confirmation</b> and it lives in Olive &mdash; offline, with the phone number.</div>
     </div>
 
     <div class="btnrow">
@@ -524,8 +640,20 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
 
     <div class="card a-sky">
       <div class="card-h"><span class="ic">&#128739;&#65039;</span><h3>Scenic Route Advisor</h3></div>
-      <p class="small muted">When the interstate is the boring choice, Olive offers the better one. These are the alternates worth the extra time on your route.</p>
+      <p class="small muted">When the interstate is the boring choice, here's the better one.</p>
       <div id="scenicList"></div>
+    </div>
+
+    <div class="card a-canyon">
+      <div class="card-h"><span class="ic">&#9968;&#65039;</span><h3>Mountain Passes &amp; Grades</h3></div>
+      <p class="small muted">Every serious climb on your route, with what it asks of a heavy vehicle.</p>
+      <div id="passList"></div>
+    </div>
+
+    <div class="card tint">
+      <div class="card-h"><span class="ic">&#128507;</span><h3>Clearance &amp; Size Limits</h3></div>
+      <p class="small muted">Places on this route that will physically stop an RV. Worth knowing before you're committed.</p>
+      <div id="clearList"></div>
     </div>
   </div>
 </div>
@@ -535,39 +663,111 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
   <div class="stack">
     <div class="card a-canyon">
       <div class="card-h"><span class="ic">&#128205;</span><h3>What's Around You</h3></div>
-      <div id="nearbyStatus" class="muted small">Turn on <b>Follow my journey</b> on the Today tab and Olive will keep this list live as you drive.</div>
+      <div id="nearbyStatus" class="muted small">Turn on <b>Follow my journey</b> on the Today tab and this list goes live as you drive.</div>
       <div class="pills" id="nearFilters" style="margin-top:.9rem">
         <button class="pill on" data-cat="all">&#127758; Everything</button>
+        <button class="pill" data-cat="food">&#127869;&#65039; Eat</button>
+        <button class="pill" data-cat="fuel">&#9981; Fuel</button>
         <button class="pill" data-cat="landmark">&#127963;&#65039; Landmarks</button>
         <button class="pill" data-cat="gem">&#128142; Hidden gems</button>
-        <button class="pill" data-cat="food">&#127869;&#65039; Local eats</button>
         <button class="pill" data-cat="wildlife">&#129454; Wildlife</button>
         <button class="pill" data-cat="rv">&#128650; RV services</button>
         <button class="pill" data-cat="scenic">&#128247; Viewpoints</button>
+        <button class="pill" data-cat="park">&#127957;&#65039; Parks</button>
       </div>
-      <div class="field" style="margin-top:.9rem">
-        <label class="fld" for="radiusSel">Search distance</label>
-        <select id="radiusSel">
-          <option value="25">Within 25 miles</option>
-          <option value="50" selected>Within 50 miles</option>
-          <option value="100">Within 100 miles</option>
-          <option value="99999">Anywhere on the route</option>
-        </select>
+      <div class="grid g2" style="margin-top:.9rem">
+        <div class="field" style="margin:0">
+          <label class="fld" for="radiusSel">Search distance</label>
+          <select id="radiusSel">
+            <option value="25">Within 25 miles</option>
+            <option value="50" selected>Within 50 miles</option>
+            <option value="100">Within 100 miles</option>
+            <option value="99999">Anywhere on the route</option>
+          </select>
+        </div>
+        <div class="field" style="margin:0">
+          <label class="fld" for="dirSel">Direction</label>
+          <select id="dirSel">
+            <option value="all" selected>All around me</option>
+            <option value="ahead">Ahead on my route only</option>
+          </select>
+        </div>
       </div>
+    </div>
+
+    <div class="card a-sun" id="fuelPlanner">
+      <div class="card-h"><span class="ic">&#9981;</span><h3>Fuel Watch</h3></div>
+      <div id="fuelInfo" class="small muted">Turn on location and Olive warns you before the long empty stretches &mdash; the Hi&#8209;Line and central Montana have real gaps.</div>
     </div>
 
     <div id="nearbyList" class="stack"></div>
 
     <div class="card a-sage">
-      <div class="card-h"><span class="ic">&#128650;</span><h3>Find It Right Now</h3></div>
-      <p class="small muted">These open live maps for whatever is actually open around you &mdash; the things that change too fast to keep in a guide.</p>
+      <div class="card-h"><span class="ic">&#128269;</span><h3>Find It Right Now</h3></div>
+      <p class="small muted">Live maps for the things that change too fast for any guide.</p>
       <div class="grid g2" id="findNow"></div>
     </div>
 
     <div class="card a-gold">
       <div class="card-h"><span class="ic">&#127914;</span><h3>Events &amp; Festivals</h3></div>
-      <p class="small muted">Western heritage runs all summer. These fall inside your travel window.</p>
       <div id="eventsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ RADIO ============================ -->
+<div class="view" id="view-radio">
+  <div class="stack">
+    <div class="dial">
+      <div style="display:flex;align-items:flex-end;gap:.8rem">
+        <div>
+          <div class="freq" id="dialFreq">&mdash;&mdash;</div>
+          <div class="call" id="dialCall">TUNE IN</div>
+          <div class="fmt" id="dialFmt">Pick a station below</div>
+        </div>
+        <div style="margin-left:auto;text-align:right">
+          <div class="pills" style="justify-content:flex-end">
+            <button class="pill on" data-band="FM">FM</button>
+            <button class="pill" data-band="AM">AM</button>
+          </div>
+        </div>
+      </div>
+      <div class="scale"><div class="needle" id="dialNeedle" style="left:0"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="ic">&#128251;</span><h3>Stations Near You</h3></div>
+      <div id="radioStatus" class="small muted">Turn on location and Olive shows the stations that actually reach you. Until then, here's everything along the route by region.</div>
+      <div class="field" style="margin-top:.8rem">
+        <label class="fld" for="regionSel">Region</label>
+        <select id="regionSel"></select>
+      </div>
+      <div class="pills" style="margin-top:.8rem" id="fmtFilters">
+        <button class="pill on" data-fmt="all">All</button>
+        <button class="pill" data-fmt="Country">&#129352; Country</button>
+        <button class="pill" data-fmt="News/Talk">&#128483;&#65039; News/Talk</button>
+        <button class="pill" data-fmt="Public">&#127752; Public</button>
+        <button class="pill" data-fmt="Classic Rock">&#127928; Classic Rock</button>
+        <button class="pill" data-fmt="Native">&#129525; Native</button>
+      </div>
+      <div id="stationList" style="margin-top:.9rem"></div>
+    </div>
+
+    <div class="card a-canyon">
+      <div class="card-h"><span class="ic">&#9888;&#65039;</span><h3>NOAA Weather Radio</h3></div>
+      <p class="small muted">Seven frequencies, nationwide, 24 hours a day. When a storm is coming and your phone has no bars, this still works. Most RV and marine radios receive these.</p>
+      <div id="noaaList"></div>
+    </div>
+
+    <div class="card a-sky">
+      <div class="card-h"><span class="ic">&#128226;</span><h3>Travel &amp; Park Information Radio</h3></div>
+      <p class="small muted">Low-power stations at park gates and highway signs. Watch for "Tune to&hellip;" signs and these are what they mean.</p>
+      <div id="hiwayList"></div>
+    </div>
+
+    <div class="card tint">
+      <div class="card-h"><span class="ic">&#8505;&#65039;</span><h3>About this tab</h3></div>
+      <p class="small" style="margin:0">A phone browser can't tune a real radio &mdash; there's no hardware access for it. So this is a <b>station finder</b>: it tells your vehicle radio what to tune to, wherever you are, and it works with no signal at all. Where a station streams online, there's a listen link that needs data.</p>
     </div>
   </div>
 </div>
@@ -577,7 +777,7 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
   <div class="stack">
     <div class="card a-gold">
       <div class="card-h"><span class="ic">&#127919;</span><h3>Adventure Bucket List</h3></div>
-      <p class="small muted" style="margin:0">Built from your route. Check them off as you go &mdash; every one lands in your journal automatically.</p>
+      <p class="small muted" style="margin:0">Built from your route. Check them off as you go &mdash; each one lands in your journal automatically.</p>
       <div style="margin-top:.9rem">
         <div class="small muted" style="display:flex;justify-content:space-between"><span>Completed</span><span id="bkTxt">0 of 0</span></div>
         <div class="bar" style="margin-top:.35rem"><i id="bkBar" style="width:0"></i></div>
@@ -587,7 +787,7 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
 
     <div class="card a-canyon">
       <div class="card-h"><span class="ic">&#10084;&#65039;</span><h3>Favorite Places</h3></div>
-      <p class="small muted">Tap the heart on anything in Nearby or the Bucket List and it collects here.</p>
+      <p class="small muted">Tap the heart on anything and it collects here.</p>
       <div id="favList"></div>
     </div>
   </div>
@@ -641,7 +841,7 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
     <div class="card">
       <div class="card-h"><span class="ic">&#128221;</span><h3>Journal Entry</h3></div>
       <div class="field">
-        <textarea id="jrText" placeholder="What happened today? Olive already knows where you went &mdash; tell it the part it can't see."></textarea>
+        <textarea id="jrText" placeholder="What happened today? Olive already knows where you went - tell it the part it can't see."></textarea>
       </div>
       <div class="btnrow" style="margin-top:.7rem">
         <button class="btn" id="jrSave">&#128190; Save entry</button>
@@ -681,7 +881,8 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
         <button class="pill" data-ask="Olive, what's the plan today?">Today's plan</button>
         <button class="pill" data-ask="Olive, what's near us?">What's near us?</button>
         <button class="pill" data-ask="Olive, where should we eat?">Where to eat</button>
-        <button class="pill" data-ask="Olive, how far to the next stop?">Next stop</button>
+        <button class="pill" data-ask="Olive, where's the next fuel?">Next fuel</button>
+        <button class="pill" data-ask="Olive, what's on the radio?">Radio</button>
       </div>
       <div class="chatrow" id="chatInputRow" style="display:none">
         <input type="text" id="chatText" placeholder="Message the crew&hellip;" maxlength="500">
@@ -754,7 +955,7 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
 
     <div class="card tint">
       <div class="card-h"><span class="ic">&#128246;</span><h3>Works Without Signal</h3></div>
-      <p class="small" id="offlineTxt">Olive saves itself to your phone the first time you open it. Every day plan, landmark, story, checklist and phone number in this app works with no bars at all &mdash; only live weather and the crew chat need a signal.</p>
+      <p class="small" id="offlineTxt">Olive saves itself to your phone the first time you open it. Every day plan, landmark, story, checklist, radio frequency and phone number works with no bars at all &mdash; only live weather and the crew chat need a signal.</p>
       <div class="btnrow"><button class="btn sm sage" id="cacheNow">&#128190; Save for offline now</button></div>
     </div>
   </div>
@@ -764,9 +965,9 @@ button.pill{cursor:pointer;min-height:2.5rem;font-family:inherit}
 
 <div class="bottombar" role="navigation" aria-label="Quick">
   <a href="#/today" data-view="today"><span class="ic">&#127968;</span>Today</a>
-  <a href="#/journey" data-view="journey"><span class="ic">&#128506;&#65039;</span>Journey</a>
+  <a href="#/journey" data-view="journey"><span class="ic">&#128506;&#65039;</span>Trail</a>
   <a href="#/nearby" data-view="nearby"><span class="ic">&#128205;</span>Nearby</a>
-  <a href="#/memories" data-view="memories"><span class="ic">&#128248;</span>Memories</a>
+  <a href="#/radio" data-view="radio"><span class="ic">&#128251;</span>Radio</a>
   <a href="#/crew" data-view="crew"><span class="ic">&#128172;</span>Crew</a>
 </div>
 
@@ -1261,6 +1462,249 @@ const FINDNOW=[
 ];
 
 /* ============================================================
+   FUEL + MORE LOCAL EATS  (merged into the main POI list)
+   Fuel entries are the towns that actually have reliable pumps
+   on the sparse stretches - not every station, but the ones that
+   matter when the gauge is dropping.
+   ============================================================ */
+POI.push(
+/* ---- fuel: Colorado / Wyoming south ---- */
+{n:"Fuel - Cheyenne, WY",c:"fuel",lat:41.1400,lng:-104.8202,st:"WY",d:"Full services at the I-25/I-80 junction. Last easy stop before the run north on US-85.",tip:"Top off here. Between Cheyenne and Lusk it thins out fast."},
+{n:"Fuel - Lusk, WY",c:"fuel",lat:42.7625,lng:-104.4519,st:"WY",d:"Small-town pumps on US-85. The only dependable stop for a long way in either direction."},
+{n:"Fuel - Newcastle, WY",c:"fuel",lat:43.8544,lng:-104.2019,st:"WY",d:"Last fuel before climbing into the Black Hills."},
+{n:"Fuel - Douglas, WY",c:"fuel",lat:42.7597,lng:-105.3822,st:"WY",d:"I-25 exit with truck-stop services. Good midpoint on the Aug 29 run south."},
+{n:"Fuel - Buffalo, WY",c:"fuel",lat:44.3483,lng:-106.6989,st:"WY",d:"I-90/I-25 junction. Fuel here before the empty stretch toward Casper.",tip:"Buffalo to Casper is about 110 miles with very little between."},
+{n:"Fuel - Sheridan, WY",c:"fuel",lat:44.7972,lng:-106.9561,st:"WY",d:"Full truck-stop services right off I-90."},
+/* ---- fuel: South Dakota ---- */
+{n:"Fuel - Rapid City, SD",c:"fuel",lat:44.0805,lng:-103.2310,st:"SD",d:"Cheapest and most plentiful fuel in the Black Hills. Fill here rather than in the park towns."},
+{n:"Fuel - Custer, SD",c:"fuel",lat:43.7666,lng:-103.5991,st:"SD",d:"Small-town pumps, higher prices than Rapid City but convenient to the park."},
+{n:"Fuel - Wall, SD",c:"fuel",lat:43.9928,lng:-102.2410,st:"SD",d:"I-90 exit 110. Fuel, food and Wall Drug in one stop.",tip:"Fill here - eastbound on I-90 the next good options are thin."},
+{n:"Fuel - Kadoka, SD",c:"fuel",lat:43.8347,lng:-101.5099,st:"SD",d:"I-90 exit 150, the far end of the Badlands Loop."},
+{n:"Fuel - Spearfish, SD",c:"fuel",lat:44.4900,lng:-103.8594,st:"SD",d:"Full services at I-90 exit 14 before heading north."},
+/* ---- fuel: North Dakota ---- */
+{n:"Fuel - Belfield, ND",c:"fuel",lat:46.8908,lng:-103.1935,st:"ND",d:"I-94 exit 42, closest reliable fuel to Theodore Roosevelt's south unit."},
+{n:"Fuel - Dickinson, ND",c:"fuel",lat:46.8792,lng:-102.7896,st:"ND",d:"Full truck-stop services on I-94."},
+{n:"Fuel - Glendive, MT",c:"fuel",lat:47.1053,lng:-104.7125,st:"MT",d:"First Montana fuel westbound on I-94. Take it."},
+/* ---- fuel: Montana Hi-Line and beyond ---- */
+{n:"Fuel - Glasgow, MT",c:"fuel",lat:48.1969,lng:-106.6366,st:"MT",d:"Hi-Line services on US-2.",tip:"Glasgow to Malta is 70 miles, Malta to Havre another 90. Never pass a pump under half a tank out here."},
+{n:"Fuel - Malta, MT",c:"fuel",lat:48.3597,lng:-107.8736,st:"MT",d:"Midpoint fuel on the Hi-Line run to Havre."},
+{n:"Fuel - Havre, MT",c:"fuel",lat:48.5500,lng:-109.6841,st:"MT",d:"Full services. Fill before continuing west - Chester and Shelby are small."},
+{n:"Fuel - Shelby, MT",c:"fuel",lat:48.5053,lng:-111.8563,st:"MT",d:"US-2 / I-15 junction, the last big fuel before Glacier country."},
+{n:"Fuel - Cut Bank, MT",c:"fuel",lat:48.6333,lng:-112.3261,st:"MT",d:"Blackfeet Reservation edge, dependable pumps on US-2."},
+{n:"Fuel - Great Falls, MT",c:"fuel",lat:47.5053,lng:-111.3008,st:"MT",d:"Every service you could want. Cheapest fuel for a hundred miles in any direction."},
+{n:"Fuel - Columbia Falls / Kalispell",c:"fuel",lat:48.3722,lng:-114.1817,st:"MT",d:"Fill here before Glacier - there is no fuel on Going-to-the-Sun Road at all."},
+{n:"Fuel - Butte, MT",c:"fuel",lat:46.0038,lng:-112.5347,st:"MT",d:"I-15/I-90 junction truck stops."},
+{n:"Fuel - Ennis, MT",c:"fuel",lat:45.3494,lng:-111.7297,st:"MT",d:"Last good fuel on MT-287 before West Yellowstone."},
+{n:"Fuel - West Yellowstone, MT",c:"fuel",lat:44.6621,lng:-111.1041,st:"MT",d:"Fill up before entering the park. Prices inside are higher and stations are far apart."},
+{n:"Fuel - Gardiner, MT",c:"fuel",lat:45.0308,lng:-110.7050,st:"MT",d:"North entrance fuel."},
+{n:"Fuel - Old Faithful (in park)",c:"fuel",lat:44.4598,lng:-110.8267,st:"WY",d:"One of the few in-park stations. Also Canyon, Fishing Bridge, Grant, Mammoth and Tower.",tip:"In-park fuel is expensive and seasonal. Enter with three-quarters of a tank."},
+{n:"Fuel - Billings, MT",c:"fuel",lat:45.7833,lng:-108.5007,st:"MT",d:"Large truck stops on both I-90 exits."},
+{n:"Fuel - Hardin, MT",c:"fuel",lat:45.7333,lng:-107.6117,st:"MT",d:"Closest fuel to Little Bighorn Battlefield."},
+{n:"Fuel - Cody, WY",c:"fuel",lat:44.5263,lng:-109.0565,st:"WY",d:"Fill before the Wapiti Valley or Chief Joseph routes - nothing between here and the park gate."},
+
+/* ---- more local eats along the way ---- */
+{n:"Black Hills Burger & Bun, Custer",c:"food",lat:43.7666,lng:-103.5985,st:"SD",d:"A tiny place that people plan their day around. Get there before the line does."},
+{n:"Sage Creek Grille, Custer",c:"food",lat:43.7671,lng:-103.5973,st:"SD",d:"The nicer dinner in Custer, still relaxed. Bison meatloaf is the move."},
+{n:"Deadwood Social Club",c:"food",lat:44.3768,lng:-103.7290,st:"SD",d:"Upstairs over Saloon No. 10 where Wild Bill was shot. Italian, and genuinely good."},
+{n:"Wall Drug Cafe",c:"food",lat:43.9928,lng:-102.2410,st:"SD",d:"Hot beef sandwich, homemade donuts and the five-cent coffee. Cafeteria style, easy seating."},
+{n:"Boots Bar & Grill, Medora",c:"food",lat:46.9136,lng:-103.5258,st:"ND",d:"Burgers and a cold drink after the park loop. Unpretentious and quick."},
+{n:"Brickhouse Grille, Dickinson",c:"food",lat:46.8794,lng:-102.7889,st:"ND",d:"The good dinner in Dickinson, ten minutes from your Baymont."},
+{n:"Nalivka's Original Pizza, Havre",c:"food",lat:48.5497,lng:-109.6822,st:"MT",d:"A Havre fixture for decades. Nothing fancy, everything reliable."},
+{n:"Grand Union Hotel Dining, Fort Benton",c:"food",lat:47.8189,lng:-110.6672,st:"MT",d:"Dinner in Montana's oldest hotel, looking out at the Missouri."},
+{n:"Tupelo Grille, Whitefish",c:"food",lat:48.4108,lng:-114.3369,st:"MT",d:"Low-country cooking in a Montana ski town. Unexpected and very good."},
+{n:"Buffalo Cafe, Whitefish",c:"food",lat:48.4123,lng:-114.3381,st:"MT",d:"The local breakfast. Buffalo pie is hash browns, eggs and everything else in one skillet."},
+{n:"Backslope Brewing, Columbia Falls",c:"food",lat:48.3719,lng:-114.1822,st:"MT",d:"Good food, not just beer. Closest decent dinner to the west entrance."},
+{n:"Ptarmigan Dining Room, Many Glacier",c:"food",lat:48.7967,lng:-113.6569,st:"MT",d:"Dinner with Swiftcurrent Lake through the windows. Reserve ahead in August."},
+{n:"Wild West Pizzeria, West Yellowstone",c:"food",lat:44.6617,lng:-111.0997,st:"MT",d:"Reliable, quick and walkable from most West Yellowstone lodging."},
+{n:"Yellowstone Grill, Gardiner",c:"food",lat:45.0311,lng:-110.7058,st:"MT",d:"Small counter place doing breakfast burritos worth getting up for."},
+{n:"Old Faithful Inn Dining Room",c:"food",lat:44.4597,lng:-110.8306,st:"MT",d:"Eat inside the great log lobby building. Reserve, or do the lunch buffet."},
+{n:"Granny's Restaurant, Cody",c:"food",lat:44.5236,lng:-109.0489,st:"WY",d:"Exactly the small-town diner you hope to find. Homemade pie, big breakfasts, no pretense."},
+{n:"Irma Hotel Restaurant, Cody",c:"food",lat:44.5253,lng:-109.0583,st:"WY",d:"Prime rib buffet under Buffalo Bill's cherrywood bar. Touristy and completely worth it."},
+{n:"Montana's Rib & Chop House, Billings",c:"food",lat:45.7828,lng:-108.5053,st:"MT",d:"Steaks and ribs done properly. Easy parking, comfortable booths."},
+{n:"Stella's Kitchen & Bakery, Billings",c:"food",lat:45.7836,lng:-108.5044,st:"MT",d:"Cinnamon rolls the size of a dinner plate. Breakfast before the drive south."},
+{n:"Sanford's, Sheridan",c:"food",lat:44.7978,lng:-106.9553,st:"WY",d:"Enormous menu, cluttered walls, reliable food. Good stop on the Aug 29 haul."}
+);
+
+/* ============================================================
+   RADIO - stations by region along the route.
+   A browser cannot tune a radio; this tells the VEHICLE radio
+   what to reach for. Works entirely offline.
+   Frequencies were correct at build time - verify on the dial.
+   ============================================================ */
+const RADIO=[
+{r:"Denver & the Front Range, CO",lat:39.7392,lng:-104.9903,s:[
+  {f:"850",b:"AM",c:"KOA",fmt:"News/Talk",d:"50,000 watts - the big signal. Reaches deep into Wyoming at night."},
+  {f:"90.1",b:"FM",c:"KCFR",fmt:"Public",d:"Colorado Public Radio News."},
+  {f:"98.5",b:"FM",c:"KYGO",fmt:"Country",d:"Denver's country standard since forever."},
+  {f:"103.5",b:"FM",c:"KRFX",fmt:"Classic Rock",d:"The Fox."},
+  {f:"105.9",b:"FM",c:"KXKL",fmt:"Classic Hits",d:"Kool 105."},
+  {f:"93.3",b:"FM",c:"KTCL",fmt:"Alternative",d:"Channel 93.3."}]},
+
+{r:"Cheyenne & southeast Wyoming",lat:41.1400,lng:-104.8202,s:[
+  {f:"650",b:"AM",c:"KGAB",fmt:"News/Talk",d:"Cheyenne talk."},
+  {f:"1240",b:"AM",c:"KFBC",fmt:"News/Talk",d:"Local news and ag reports."},
+  {f:"91.9",b:"FM",c:"KUWR",fmt:"Public",d:"Wyoming Public Radio, the statewide flagship out of Laramie."},
+  {f:"93.3",b:"FM",c:"KIGN",fmt:"Rock",d:"The Gun."},
+  {f:"101.9",b:"FM",c:"KLEN",fmt:"Country",d:"Regional country."}]},
+
+{r:"Rapid City & the Black Hills, SD",lat:44.0805,lng:-103.2310,s:[
+  {f:"1380",b:"AM",c:"KOTA",fmt:"News/Talk",d:"Black Hills news, weather and ranch reports."},
+  {f:"89.3",b:"FM",c:"KBHE",fmt:"Public",d:"South Dakota Public Broadcasting."},
+  {f:"98.7",b:"FM",c:"KOUT",fmt:"Country",d:"Kat Country."},
+  {f:"97.9",b:"FM",c:"KFXS",fmt:"Classic Rock",d:"The Fox."},
+  {f:"95.1",b:"FM",c:"KSQY",fmt:"Classic Rock",d:"KSQY - the Deadwood and Spearfish signal."},
+  {f:"93.1",b:"FM",c:"KKMK",fmt:"Adult Contemporary",d:"Magic 93."}]},
+
+{r:"Badlands & western South Dakota",lat:43.8500,lng:-102.1000,s:[
+  {f:"1380",b:"AM",c:"KOTA",fmt:"News/Talk",d:"Still reaches most of the Badlands Loop."},
+  {f:"89.3",b:"FM",c:"KBHE",fmt:"Public",d:"SDPB - the most reliable FM out here."},
+  {f:"1610",b:"AM",c:"NPS",fmt:"Park Info",d:"Badlands park information near the entrances."}]},
+
+{r:"Dickinson, Medora & western North Dakota",lat:46.8792,lng:-102.7896,s:[
+  {f:"1460",b:"AM",c:"KLTC",fmt:"Country",d:"Dickinson country and farm reports."},
+  {f:"1230",b:"AM",c:"KDIX",fmt:"News/Talk",d:"Local Dickinson news."},
+  {f:"89.9",b:"FM",c:"KDPR",fmt:"Public",d:"Prairie Public Radio."},
+  {f:"96.1",b:"FM",c:"KCAD",fmt:"Country",d:"Cat Country."},
+  {f:"550",b:"AM",c:"KFYR",fmt:"News/Talk",d:"Bismarck's big signal - carries clear across the western half of the state."}]},
+
+{r:"Hi-Line: Glasgow, Malta & Havre, MT",lat:48.5500,lng:-109.6841,s:[
+  {f:"610",b:"AM",c:"KOJM",fmt:"News/Talk",d:"Havre news, weather and high school sports."},
+  {f:"92.5",b:"FM",c:"KPQX",fmt:"Country",d:"Havre country."},
+  {f:"88.1",b:"FM",c:"KGVA",fmt:"Native",d:"Fort Belknap Indian Community radio - Aaniiih and Nakoda programming."},
+  {f:"1450",b:"AM",c:"KLTZ",fmt:"News/Talk",d:"Glasgow, the eastern Hi-Line."},
+  {f:"89.9",b:"FM",c:"KGPR",fmt:"Public",d:"Great Falls public radio, reaches much of the Hi-Line."}]},
+
+{r:"Great Falls & central Montana",lat:47.5053,lng:-111.3008,s:[
+  {f:"1310",b:"AM",c:"KMON",fmt:"Country",d:"One of the longest-running country stations in Montana."},
+  {f:"94.5",b:"FM",c:"KMON-FM",fmt:"Country",d:"The FM side."},
+  {f:"89.9",b:"FM",c:"KGPR",fmt:"Public",d:"Great Falls public radio."},
+  {f:"98.9",b:"FM",c:"KAAK",fmt:"Adult Contemporary",d:"K99."}]},
+
+{r:"Glacier, Whitefish & the Flathead, MT",lat:48.4111,lng:-114.3376,s:[
+  {f:"880",b:"AM",c:"KJJR",fmt:"News/Talk",d:"Whitefish news and talk."},
+  {f:"89.9",b:"FM",c:"KUFM",fmt:"Public",d:"Montana Public Radio - the Flathead relay."},
+  {f:"103.9",b:"FM",c:"KDBR",fmt:"Classic Rock",d:"The Bear."},
+  {f:"107.5",b:"FM",c:"KBWG",fmt:"Native",d:"Blackfeet Nation radio out of Browning - well worth finding on the east side."},
+  {f:"1610",b:"AM",c:"NPS",fmt:"Park Info",d:"Glacier road status and closures near the entrances. Check it before Logan Pass."}]},
+
+{r:"Helena, Butte & southwest Montana",lat:46.0038,lng:-112.5347,s:[
+  {f:"1370",b:"AM",c:"KXTL",fmt:"News/Talk",d:"Butte talk."},
+  {f:"91.5",b:"FM",c:"KUKL",fmt:"Public",d:"Montana Public Radio, Helena area."},
+  {f:"94.1",b:"FM",c:"KMTX",fmt:"Adult Contemporary",d:"Helena."},
+  {f:"1240",b:"AM",c:"KBLL",fmt:"News/Talk",d:"Helena news."}]},
+
+{r:"Bozeman & West Yellowstone, MT",lat:44.6621,lng:-111.1041,s:[
+  {f:"1400",b:"AM",c:"KWYS",fmt:"News/Talk",d:"West Yellowstone's own small station."},
+  {f:"95.1",b:"FM",c:"KMMS-FM",fmt:"Rock",d:"The Moose, out of Bozeman."},
+  {f:"1450",b:"AM",c:"KMMS",fmt:"News/Talk",d:"Bozeman talk."},
+  {f:"89.1",b:"FM",c:"KBMC",fmt:"Public",d:"Montana Public Radio, Bozeman."},
+  {f:"1610",b:"AM",c:"NPS",fmt:"Park Info",d:"Yellowstone road and construction updates at the west gate. Genuinely useful in 2026."}]},
+
+{r:"Inside Yellowstone",lat:44.6000,lng:-110.5000,s:[
+  {f:"1610",b:"AM",c:"NPS",fmt:"Park Info",d:"Broadcast near entrances and major junctions - road work, closures, bear warnings."},
+  {f:"89.1",b:"FM",c:"KBMC",fmt:"Public",d:"Reaches parts of the north and west of the park."},
+  {f:"—",b:"FM",c:"",fmt:"Note",d:"Reception in the park is poor and patchy by design. Expect long silent stretches through the canyons."}]},
+
+{r:"Cody & the Bighorn Basin, WY",lat:44.5263,lng:-109.0565,s:[
+  {f:"1400",b:"AM",c:"KODI",fmt:"News/Talk",d:"Cody news, weather and the rodeo report."},
+  {f:"90.1",b:"FM",c:"KUWC",fmt:"Public",d:"Wyoming Public Radio, Cody relay."},
+  {f:"105.3",b:"FM",c:"KTAG",fmt:"Adult Contemporary",d:"Cody area."},
+  {f:"100.3",b:"FM",c:"KZMQ",fmt:"Country",d:"Big Horn Basin country."}]},
+
+{r:"Billings & Little Bighorn, MT",lat:45.7833,lng:-108.5007,s:[
+  {f:"970",b:"AM",c:"KBUL",fmt:"News/Talk",d:"Billings news and talk."},
+  {f:"91.7",b:"FM",c:"KEMC",fmt:"Public",d:"Yellowstone Public Radio - the best public signal in southern Montana."},
+  {f:"102.9",b:"FM",c:"KCTR",fmt:"Country",d:"Cat Country."},
+  {f:"103.7",b:"FM",c:"KRKX",fmt:"Classic Rock",d:"The Hawk."},
+  {f:"910",b:"AM",c:"KBLG",fmt:"News/Talk",d:"Billings."}]},
+
+{r:"Sheridan, Buffalo & the Bighorns, WY",lat:44.7972,lng:-106.9561,s:[
+  {f:"1410",b:"AM",c:"KWYO",fmt:"News/Talk",d:"Sheridan news and ranch reports."},
+  {f:"91.3",b:"FM",c:"KSUW",fmt:"Public",d:"Wyoming Public Radio, Sheridan."},
+  {f:"92.5",b:"FM",c:"KZWB",fmt:"Country",d:"Regional country."},
+  {f:"106.5",b:"FM",c:"KROE-FM",fmt:"Classic Hits",d:"Sheridan."}]}
+];
+
+const NOAA=[
+{f:"162.400",d:"Channel 1 - most common in rural areas"},
+{f:"162.425",d:"Channel 2"},
+{f:"162.450",d:"Channel 3"},
+{f:"162.475",d:"Channel 4 - widely used in Montana and Wyoming"},
+{f:"162.500",d:"Channel 5"},
+{f:"162.525",d:"Channel 6"},
+{f:"162.550",d:"Channel 7 - common near larger towns"}
+];
+
+const HIWAY=[
+{f:"1610 AM",n:"National Park information",d:"Glacier, Yellowstone, Badlands and Theodore Roosevelt all run low-power information stations near entrances. Road closures, construction and wildlife warnings."},
+{f:"530 AM",n:"Highway advisory radio",d:"Used by several state DOTs for construction and weather alerts. Watch for flashing 'Tune to' signs."},
+{f:"511",n:"Road conditions by phone",d:"Dial 511 in Montana, Wyoming, South Dakota, North Dakota and Colorado for live road conditions. Works anywhere with cell service.",tel:"511"}
+];
+
+/* ============================================================
+   MOUNTAIN PASSES - what each climb actually asks of you
+   ============================================================ */
+const PASSES=[
+{n:"Marias Pass",rt:"US-2",el:5213,st:"MT",day:6,grade:"Gentle, about 3%",
+ d:"The lowest crossing of the Continental Divide in Montana, and the reason US-2 is such a good road. Follows the southern edge of Glacier.",
+ rv:"The easiest major pass on your whole route. No concerns in any rig."},
+{n:"Logan Pass",rt:"Going-to-the-Sun Road",el:6646,st:"MT",day:7,grade:"Sustained 6%, narrow, no shoulder",
+ d:"The high point of Going-to-the-Sun Road, on the Continental Divide.",
+ rv:"HARD LIMIT: vehicles over 21 ft long, 8 ft wide (with mirrors) or 10 ft high are prohibited between Avalanche Creek and Rising Sun. An RV cannot make this drive - take the shuttle or a Red Bus tour.",warn:true},
+{n:"Homestake Pass",rt:"I-90",el:6329,st:"MT",day:9,grade:"6% both sides",
+ d:"Interstate crossing of the Divide east of Butte, through granite boulder country.",
+ rv:"Interstate grades and wide lanes. Use a low gear descending and watch your brakes."},
+{n:"MacDonald Pass",rt:"US-12",el:6320,st:"MT",day:9,grade:"6-7%, winding",
+ d:"West of Helena. Beautiful, and steeper than it looks on a map.",
+ rv:"Manageable but twisty. I-15 to I-90 is the calmer option in a big rig."},
+{n:"Craig Pass",rt:"Grand Loop Rd",el:8262,st:"WY",day:10,grade:"Moderate, winding",
+ d:"Between Old Faithful and West Thumb, crossing the Divide twice.",
+ rv:"Fine for most RVs but slow. Expect wildlife stops and construction delays in 2026."},
+{n:"Dunraven Pass",rt:"Grand Loop Rd",el:8878,st:"WY",day:11,grade:"8%, narrow, big drop-offs",
+ d:"Highest road in Yellowstone, between Canyon and Tower.",
+ rv:"Not recommended for large rigs - narrow with sharp switchbacks and limited pullouts. Check status; it closes for work regularly.",warn:true},
+{n:"Sylvan Pass",rt:"US-14/16/20",el:8530,st:"WY",day:11,grade:"8%, avalanche terrain",
+ d:"Yellowstone's east entrance road toward Cody.",
+ rv:"Doable but demanding. Descend in low gear. The Wapiti Valley below is the reward."},
+{n:"Dead Indian Pass",rt:"Chief Joseph Byway (WY-296)",el:8048,st:"WY",day:11,grade:"8%, long switchbacks",
+ d:"The Nez Perce escaped through here in 1877. The overlook at the top is extraordinary.",
+ rv:"Wide, well-engineered switchbacks - easier than the Beartooth by a wide margin. A good RV choice."},
+{n:"Beartooth Pass",rt:"US-212",el:10947,st:"MT",day:11,grade:"8-10%, no guardrails in places",
+ d:"One of the highest paved roads in the northern Rockies. Kuralt called it the most beautiful drive in America.",
+ rv:"STRONGLY DISCOURAGED in an RV. Extreme altitude, tight switchbacks, sheer drops, and it closes without warning even in August. Take Wapiti Valley instead.",warn:true},
+{n:"Powder River Pass",rt:"US-16, Bighorns",el:9666,st:"WY",day:13,grade:"7-8%",
+ d:"The Cloud Peak Skyway over the Bighorn Mountains.",
+ rv:"Only if you deliberately choose it. I-25 south from Buffalo is far easier and faster."},
+{n:"Granite Pass",rt:"US-14, Bighorns",el:8950,st:"WY",day:13,grade:"Up to 10% on the west side",
+ d:"Descends the Shell Canyon toward Greybull.",
+ rv:"The west descent is genuinely steep and long. Not the route to pick with a heavy vehicle."}
+];
+
+/* ============================================================
+   CLEARANCE & SIZE LIMITS - things that physically stop an RV
+   ============================================================ */
+const CLEARANCE=[
+{n:"Needles Eye Tunnel",rt:"Needles Highway, SD-87",dim:"8 ft 4 in wide × 9 ft 9 in high",st:"SD",day:2,
+ d:"The famous one. Genuinely too small for almost anything larger than a car or small van.",
+ alt:"Take Iron Mountain Road instead - same country, no squeeze.",warn:true},
+{n:"Iron Mountain Road tunnels",rt:"US-16A",dim:"Roughly 9-13 ft wide, 11-12 ft high",st:"SD",day:2,
+ d:"Three tunnels, each framing Mount Rushmore. Tighter than a normal highway tunnel but passable in most motorhomes.",
+ alt:"Measure your rig and check the posted signs at each tunnel mouth - they are marked."},
+{n:"Going-to-the-Sun Road",rt:"Glacier NP",dim:"21 ft long × 8 ft wide × 10 ft high maximum",st:"MT",day:7,
+ d:"Between Avalanche Creek and Rising Sun. Width includes mirrors; length includes bumpers and racks. Strictly enforced.",
+ alt:"Park at Apgar and take the free shuttle, or book a Red Bus tour. This is the right answer in an RV.",warn:true},
+{n:"Yellowstone campgrounds",rt:"Yellowstone NP",dim:"Varies - many sites cap at 30-40 ft",st:"WY",day:10,
+ d:"Park roads themselves take RVs fine, but campground sites vary enormously and the older loops are small.",
+ alt:"Fishing Bridge RV Park is the only full-hookup option in the park and books out months ahead."},
+{n:"Chief Joseph Scenic Byway",rt:"WY-296",dim:"No posted limit",st:"WY",day:11,
+ d:"Wide modern engineering with generous switchbacks.",
+ alt:"The comfortable RV route between Yellowstone's northeast side and Cody."},
+{n:"Wildlife Loop Road",rt:"Custer State Park",dim:"No limit",st:"SD",day:2,
+ d:"Paved, wide, gentle. Perfectly fine in any rig.",
+ alt:"The best wildlife viewing of the trip, and no size worries at all."}
+];
+
+/* ============================================================
    HELPERS
    ============================================================ */
 const $=id=>document.getElementById(id);
@@ -1282,11 +1726,31 @@ function dist(a,b,c,d){
   return 2*R*Math.asin(Math.sqrt(s));
 }
 /* compass bearing -> cardinal */
-function bearing(a,b,c,d){
+function bearingDeg(a,b,c,d){
   const p=Math.PI/180,y=Math.sin((d-b)*p)*Math.cos(c*p);
   const x=Math.cos(a*p)*Math.sin(c*p)-Math.sin(a*p)*Math.cos(c*p)*Math.cos((d-b)*p);
-  const deg=(Math.atan2(y,x)/p+360)%360;
-  return ["N","NE","E","SE","S","SW","W","NW"][Math.round(deg/45)%8];
+  return (Math.atan2(y,x)/p+360)%360;
+}
+function bearing(a,b,c,d){
+  return ["N","NE","E","SE","S","SW","W","NW"][Math.round(bearingDeg(a,b,c,d)/45)%8];
+}
+/* is a point roughly in front of us? +/- 75 degrees of travel.
+   Anything you are practically standing on counts as ahead - bearing to a
+   point 100 yards away is just noise, and "behind you" would be wrong. */
+function isAhead(p){
+  if(heading==null||!here)return true;
+  const d=p._d!=null?p._d:dist(here.lat,here.lng,p.lat,p.lng);
+  if(d<1.5)return true;
+  const diff=Math.abs(((bearingDeg(here.lat,here.lng,p.lat,p.lng)-heading+540)%360)-180);
+  return diff<75;
+}
+/* rough drive time at highway pace */
+function eta(mi){
+  const m=Math.round(mi/48*60);
+  if(m<1)return "arriving";
+  if(m<60)return "~"+m+" min";
+  const h=Math.floor(m/60);
+  return "~"+h+"h "+(m%60)+"m";
 }
 function mapUrl(p){return "https://www.google.com/maps/search/?api=1&query="+p.lat+","+p.lng}
 function mapSearch(q,lat,lng){
@@ -1329,7 +1793,7 @@ applyFS();
 /* ============================================================
    ROUTING
    ============================================================ */
-const VIEWS=["today","journey","nearby","bucket","memories","crew","toolkit"];
+const VIEWS=["today","journey","nearby","radio","bucket","memories","crew","toolkit"];
 function showView(v){
   if(!VIEWS.includes(v))v="today";
   VIEWS.forEach(x=>{const el=$("view-"+x);if(el)el.classList.toggle("active",x===v)});
@@ -1338,6 +1802,8 @@ function showView(v){
   if(v==="nearby")renderNearby();
   if(v==="memories")renderFeed();
   if(v==="bucket")renderBucket();
+  if(v==="radio")renderRadio();
+  if(v==="journey"){drawTrail();renderStays()}
   if(v==="crew"){unread=0;}
 }
 function route(){showView((location.hash||"#/today").replace("#/",""))}
@@ -1473,10 +1939,16 @@ function onFixErr(err){
     gpsStatus("Still finding your location… (this is normal indoors)");  /* transient - keep watching */
   }
 }
+let heading=null;                     /* degrees, direction of travel */
 function onFix(pos){
   const {latitude:lat,longitude:lng}=pos.coords;
   const prev=here;
   here={lat,lng,acc:pos.coords.accuracy,t:Date.now()};
+
+  /* direction of travel: use the device heading if it gives one,
+     otherwise infer it from the last leg */
+  if(pos.coords.heading!=null&&!isNaN(pos.coords.heading))heading=pos.coords.heading;
+  else if(prev&&dist(prev.lat,prev.lng,lat,lng)>0.05)heading=bearingDeg(prev.lat,prev.lng,lat,lng);
 
   /* --- accumulate miles ---
      Filter on implied SPEED, not raw distance: watchPosition gaps (tunnels,
@@ -1486,7 +1958,9 @@ function onFix(pos){
     const d=dist(prev.lat,prev.lng,lat,lng);
     const dt=(here.t-prev.t)/1000;                      /* seconds between fixes */
     const ok = d>0.03 && d<600 && (dt<5 ? d<25 : (d/(dt/3600))<95);
-    if(ok){const s=stats();s.mi+=d;saveStats(s)}
+    if(ok){const s=stats();s.mi+=d;saveStats(s);trailPush(lat,lng)}
+  }else if(!prev){
+    trailPush(lat,lng);            /* the trail has to start somewhere */
   }
   /* --- which state are we in? nearest known POI wins --- */
   const near=nearest(1)[0];
@@ -1521,7 +1995,8 @@ const ALERT_RULES=[
   {c:"scenic",  mi:8, ic:"&#128247;",cls:"",           lead:"Scenic stop %d ahead:"},
   {c:"gem",     mi:7, ic:"&#128142;",cls:"gem",        lead:"Hidden gem %d away:"},
   {c:"food",    mi:6, ic:"&#127869;&#65039;",cls:"gem",lead:"%d ahead:"},
-  {c:"rv",      mi:10,ic:"&#128650;",cls:"",           lead:"RV services %d ahead:"}
+  {c:"rv",      mi:10,ic:"&#128650;",cls:"",           lead:"RV services %d ahead:"},
+  {c:"fuel",    mi:12,ic:"&#9981;",cls:"fuel",         lead:"Fuel %d ahead:"}
 ];
 function checkAlerts(){
   if(!here)return;
@@ -1560,7 +2035,7 @@ function pushAlert(a){
   liveAlerts.unshift(a);
   /* drop anything you drove away from over an hour ago - stale alerts are noise */
   const cut=Date.now()-60*60*1000;
-  liveAlerts=liveAlerts.filter(x=>(x._t||0)>cut).slice(0,5);
+  liveAlerts=liveAlerts.filter(x=>(x._t||0)>cut).slice(0,6);
   renderAlerts();
   if(a.poi)addFeed("place","&#128205;","Passed near "+a.poi.n,a.poi.d);
 }
@@ -1653,6 +2128,7 @@ $("nearFilters").addEventListener("click",e=>{
   renderNearby();
 });
 $("radiusSel").addEventListener("change",renderNearby);
+$("dirSel").addEventListener("change",renderNearby);
 
 function renderNearby(){
   const el=$("nearbyList");
@@ -1664,31 +2140,66 @@ function renderNearby(){
     renderFindNow();renderEvents();
     return;
   }
-  $("nearbyStatus").innerHTML="&#128205; Live · sorted by how close you are right now.";
+  $("nearbyStatus").innerHTML="&#128205; Live · sorted by how close you are"+
+    (heading!=null?" · heading "+bearingFromDeg(heading):"")+".";
   const cats=nearCat==="all"?null:[nearCat];
-  const list=nearest(60,cats,radius);
-  el.innerHTML=list.length?cardList(list,true):
-    `<div class="card"><p class="muted" style="margin:0">Nothing in that category within ${radius===99999?"the route":radius+" miles"}. Try a wider distance.</p></div>`;
-  renderFindNow();renderEvents();
+  let list=nearest(80,cats,radius);
+  if($("dirSel").value==="ahead")list=list.filter(isAhead);
+  el.innerHTML=list.length?cardList(list.slice(0,50),true):
+    `<div class="card"><p class="muted" style="margin:0">Nothing in that category ${$("dirSel").value==="ahead"?"ahead of you ":""}within ${radius===99999?"the route":radius+" miles"}. Try a wider distance or switch back to "All around me".</p></div>`;
+  renderFindNow();renderEvents();renderFuelWatch();
 }
-const CAT_IC={landmark:"&#127963;&#65039;",gem:"&#128142;",food:"&#127869;&#65039;",wildlife:"&#129454;",rv:"&#128650;",scenic:"&#128247;",park:"&#127957;&#65039;"};
-const CAT_NM={landmark:"Landmark",gem:"Hidden gem",food:"Local eats",wildlife:"Wildlife",rv:"RV services",scenic:"Viewpoint",park:"National park"};
+const bearingFromDeg=d=>["north","northeast","east","southeast","south","southwest","west","northwest"][Math.round(d/45)%8];
+
+/* ---------- Fuel Watch: warn before the empty stretches ---------- */
+function renderFuelWatch(){
+  const el=$("fuelInfo");
+  if(!here){el.innerHTML="Turn on location and Olive warns you before the long empty stretches &mdash; the Hi&#8209;Line and central Montana have real gaps.";return}
+  const f=nearest(null,["fuel"],400);
+  if(!f.length){el.innerHTML="No mapped fuel nearby. Use the Find It Right Now buttons below for live stations.";return}
+  const ahead=f.filter(isAhead), next=ahead[0]||f[0];
+  const after=(ahead[1]||f[1]);
+  const gap=after?dist(next.lat,next.lng,after.lat,after.lng):null;
+  let warn="";
+  if(gap&&gap>70)warn=`<div class="note warn small" style="margin-top:.6rem"><b>Long gap ahead.</b> After ${esc(next.n.replace("Fuel - ",""))} it is about ${Math.round(gap)} miles to ${esc(after.n.replace("Fuel - ",""))}. Fill up even if you do not think you need to.</div>`;
+  el.innerHTML=`
+    <div class="row" style="border:0;background:transparent;padding:0">
+      <div class="ic">&#9981;</div><div class="bd">
+        <div class="t">Next fuel: ${esc(next.n.replace("Fuel - ",""))}</div>
+        <div class="s">${esc(next.d)}</div>
+      </div>
+      <div class="rt"><div class="dist">${fmtMi(next._d)}</div><div class="eta">${eta(next._d)}</div></div>
+    </div>${warn}
+    <div class="btnrow" style="margin-top:.7rem">
+      <a class="btn sm ghost" href="${mapUrl(next)}" target="_blank" rel="noopener">&#128506;&#65039; Navigate</a>
+      <a class="btn sm ghost" href="${mapSearch("gas station diesel",here.lat,here.lng)}" target="_blank" rel="noopener">&#9981; Live stations near me</a>
+    </div>`;
+}
+const CAT_IC={landmark:"&#127963;&#65039;",gem:"&#128142;",food:"&#127869;&#65039;",wildlife:"&#129454;",rv:"&#128650;",scenic:"&#128247;",park:"&#127957;&#65039;",fuel:"&#9981;"};
+const CAT_NM={landmark:"Landmark",gem:"Hidden gem",food:"Local eats",wildlife:"Wildlife",rv:"RV services",scenic:"Viewpoint",park:"National park",fuel:"Fuel"};
 function cardList(list,withDist){
   const favs=store.get("favs",[]);
   return list.map(p=>`
-    <div class="row clickable" data-poi="${esc(p.n)}">
+    <div class="row" data-card="${esc(p.n)}">
       <div class="ic">${CAT_IC[p.c]||"&#128205;"}</div>
       <div class="bd">
-        <div class="t">${esc(p.n)}</div>
+        <div class="t" data-poi="${esc(p.n)}" style="cursor:pointer">${esc(p.n)}</div>
         <div class="s">${esc((p.d||"").slice(0,110))}${(p.d||"").length>110?"…":""}</div>
         <div class="pills" style="margin-top:.4rem">
           <span class="pill">${CAT_NM[p.c]||p.c}</span>
           <span class="pill">${p.st}</span>
+          ${withDist&&isAhead(p)?'<span class="pill gold">&#11014;&#65039; Ahead of you</span>':""}
           ${p.senior?'<span class="pill sage">&#9855; Easy access</span>':""}
-          ${favs.includes(p.n)?'<span class="pill gold">&#10084;&#65039; Favorite</span>':""}
+          ${favs.includes(p.n)?'<span class="pill gold">&#10084;&#65039; Saved</span>':""}
+        </div>
+        <div class="btnrow" style="margin-top:.55rem">
+          <a class="btn sm ghost" href="${mapUrl(p)}" target="_blank" rel="noopener">&#128506;&#65039; Go</a>
+          <button class="btn sm ghost" data-fav="${esc(p.n)}">${favs.includes(p.n)?"&#10084;&#65039;":"&#9825;"}</button>
+          <button class="btn sm ghost" data-detour="${esc(p.n)}">&#129300; Detour?</button>
+          <button class="btn sm ghost" data-speak="${esc(p.n)}">&#128266;</button>
         </div>
       </div>
-      ${withDist?`<div class="rt"><div class="dist">${fmtMi(p._d)}</div><div class="small muted">${p._b}</div></div>`:""}
+      ${withDist?`<div class="rt"><div class="dist">${fmtMi(p._d)}</div><div class="eta">${eta(p._d)}</div><div class="small muted">${p._b}</div></div>`:""}
     </div>`).join("");
 }
 function emptyMsg(){return `<div class="card"><p class="muted" style="margin:0">Nothing in that category yet.</p></div>`}
@@ -2112,8 +2623,24 @@ $("packList").addEventListener("change",e=>{
   const s=store.get("pack",{});if(c.checked)s[c.dataset.pk]=1;else delete s[c.dataset.pk];store.set("pack",s);
 });
 function renderResv(){
-  const gapHtml=GAPS.length?`<div class="note warn" style="margin-top:1rem"><b>Nights not yet in Olive:</b> ${
-    GAPS.map(g=>fmtDate(g.d)+" &mdash; "+esc(g.p)).join(" · ")}<br><span class="small">Add them as you book, or bring the confirmations with you.</span></div>`:"";
+  const mine=myBookings();
+  const mineKeys=Object.keys(mine).sort();
+  const still=GAPS.filter(g=>!mine[g.d]);
+  const gapHtml=still.length?`<div class="note warn" style="margin-top:1rem"><b>Nights not yet booked:</b> ${
+    still.map(g=>fmtDate(g.d)+" &mdash; "+esc(g.p)).join(" · ")}<br><span class="small">Book them from <a href="#/journey">Journey &rarr; Stays</a>, then save the confirmation here.</span></div>`
+    :`<div class="note senior" style="margin-top:1rem"><b>Every night is accounted for.</b></div>`;
+  const mineHtml=mineKeys.length?mineKeys.map(d=>{
+    const b=mine[d];
+    return `<div class="row" style="border-color:var(--ok)">
+      <div class="ic">&#9989;</div><div class="bd">
+        <div class="t">${esc(b.t)}</div>
+        <div class="small muted">${fmtDate(d)} &mdash; you booked this</div>
+        ${b.a?`<div class="small muted">${esc(b.a)}</div>`:""}
+        ${b.conf?`<div class="pills" style="margin-top:.4rem"><span class="pill">Conf ${esc(b.conf)}</span></div>`:""}
+        ${b.note?`<div class="note small" style="margin-top:.5rem">${esc(b.note)}</div>`:""}
+        ${b.p?`<div class="btnrow" style="margin-top:.5rem"><a class="btn sm ghost" href="tel:${String(b.p).replace(/[^+\d]/g,"")}">&#128222; Call</a></div>`:""}
+      </div></div>`;
+  }).join(""):"";
   $("resList").innerHTML=RESV.map(r=>`
     <div class="row" style="${r.warn?"border-color:var(--danger)":""}">
       <div class="ic">&#127976;</div><div class="bd">
@@ -2128,7 +2655,7 @@ function renderResv(){
           ${r.lat?`<a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lng}" target="_blank" rel="noopener">&#128506;&#65039; Map</a>`:""}
           ${r.url?`<a class="btn sm ghost" href="${r.url}" target="_blank" rel="noopener">&#128279; Listing</a>`:""}
         </div>
-      </div></div>`).join("")+gapHtml;
+      </div></div>`).join("")+mineHtml+gapHtml;
 }
 function renderMed(){
   let list=MEDICAL.slice();
@@ -2488,6 +3015,434 @@ $("vidMake").addEventListener("click",async()=>{
 });
 
 /* ============================================================
+   TRAIL TRACKING - breadcrumbs, a drawn map, and exports
+   ============================================================ */
+function trail(){return store.get("trail",[])}
+function trailPush(lat,lng){
+  const t=trail(),last=t[t.length-1];
+  /* one point per ~0.5 mi keeps the file small but the shape honest */
+  if(last&&dist(last[0],last[1],lat,lng)<0.5)return;
+  t.push([+lat.toFixed(5),+lng.toFixed(5),Date.now()]);
+  store.set("trail",t.slice(-4000));
+  if($("view-journey").classList.contains("active"))drawTrail();
+}
+function pins(){return store.get("pins",[])}
+
+function savePin(){
+  if(!here)return toast("Turn on location first");
+  openSheet("Save this spot",`
+    <div class="field"><label class="fld" for="pnName">Name it</label>
+      <input type="text" id="pnName" placeholder="e.g. Pullout with the elk" maxlength="60"></div>
+    <div class="field"><label class="fld" for="pnNote">Note (optional)</label>
+      <textarea id="pnNote" placeholder="Why is this worth remembering?"></textarea></div>
+    <div class="field"><label class="fld" for="pnKind">Type</label>
+      <select id="pnKind">
+        <option value="&#128204;">Just a spot</option>
+        <option value="&#128247;">Great view / photo</option>
+        <option value="&#127869;&#65039;">Food</option>
+        <option value="&#9981;">Fuel</option>
+        <option value="&#128650;">Camp / overnight</option>
+        <option value="&#129454;">Wildlife</option>
+        <option value="&#128663;">Where we parked</option>
+      </select></div>
+    <p class="small muted">Saving: ${here.lat.toFixed(5)}, ${here.lng.toFixed(5)}</p>
+    <button class="btn wide" id="pnSave">&#128204; Save this spot</button>`);
+  $("pnSave").addEventListener("click",()=>{
+    const p=pins();
+    p.unshift({n:$("pnName").value.trim()||"Saved spot",note:$("pnNote").value.trim(),
+      k:$("pnKind").value,lat:here.lat,lng:here.lng,t:Date.now()});
+    store.set("pins",p);
+    addFeed("place","&#128204;","Saved a spot: "+(p[0].n),p[0].note);
+    closeSheet();toast("&#128204; Spot saved");renderPins();drawTrail();
+  });
+}
+$("pinHere").addEventListener("click",savePin);
+$("pinHere2").addEventListener("click",savePin);
+
+function renderPins(){
+  const p=pins();
+  $("pinList").innerHTML=p.length?p.map((x,i)=>`
+    <div class="row"><div class="ic">${x.k}</div><div class="bd">
+      <div class="t">${esc(x.n)}</div>
+      ${x.note?`<div class="s">${esc(x.note)}</div>`:""}
+      <div class="small muted">${new Date(x.t).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})} · ${x.lat.toFixed(4)}, ${x.lng.toFixed(4)}</div>
+      <div class="btnrow" style="margin-top:.5rem">
+        <a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=${x.lat},${x.lng}" target="_blank" rel="noopener">&#128506;&#65039; Open</a>
+        <button class="btn sm ghost" data-pinshare="${i}">&#128228; Share</button>
+        <button class="btn sm ghost" data-pindel="${i}">&#128465;&#65039;</button>
+      </div>
+    </div></div>`).join(""):'<p class="small muted" style="margin:0">No saved spots yet. Tap <b>Save this spot</b> whenever you find something worth coming back to.</p>';
+}
+$("pinList").addEventListener("click",async e=>{
+  const d=e.target.closest("[data-pindel]");
+  if(d){const p=pins();p.splice(+d.dataset.pindel,1);store.set("pins",p);renderPins();drawTrail();toast("Removed");return}
+  const s=e.target.closest("[data-pinshare]");
+  if(s){
+    const x=pins()[+s.dataset.pinshare];
+    const txt=x.n+(x.note?" — "+x.note:"")+"\nhttps://www.google.com/maps/search/?api=1&query="+x.lat+","+x.lng;
+    if(navigator.share){try{await navigator.share({title:x.n,text:txt});return}catch(e2){}}
+    try{await navigator.clipboard.writeText(txt);toast("&#128203; Copied")}catch(e2){}
+  }
+});
+
+/* ---------- the drawn map ---------- */
+const tc=$("trailCanvas"),tx=tc.getContext("2d");
+function drawTrail(){
+  const t=trail(),p=pins();
+  const W=tc.width,H=tc.height,PAD=44;
+  tx.clearRect(0,0,W,H);
+  /* parchment */
+  tx.fillStyle="#F7ECD6";tx.fillRect(0,0,W,H);
+
+  /* bounds: the whole route by default, tightened to your trail once you have one */
+  const route=POI.filter(x=>!x.r66);
+  let pts=t.map(x=>[x[0],x[1]]).concat(p.map(x=>[x.lat,x.lng]));
+  if(here)pts.push([here.lat,here.lng]);
+  const basis=pts.length>3?pts:route.map(x=>[x.lat,x.lng]);
+  let minLa=Math.min(...basis.map(x=>x[0])),maxLa=Math.max(...basis.map(x=>x[0]));
+  let minLo=Math.min(...basis.map(x=>x[1])),maxLo=Math.max(...basis.map(x=>x[1]));
+  const padLa=(maxLa-minLa)*.12+.15,padLo=(maxLo-minLo)*.12+.15;
+  minLa-=padLa;maxLa+=padLa;minLo-=padLo;maxLo+=padLo;
+  /* keep the aspect roughly true for the latitude we are at */
+  const midLa=(minLa+maxLa)/2, kx=Math.cos(midLa*Math.PI/180);
+  const spanLo=(maxLo-minLo)*kx, spanLa=(maxLa-minLa);
+  const sc=Math.min((W-PAD*2)/spanLo,(H-PAD*2)/spanLa);
+  const ox=(W-spanLo*sc)/2, oy=(H-spanLa*sc)/2;
+  const X=lo=>ox+(lo-minLo)*kx*sc;
+  const Y=la=>oy+(maxLa-la)*sc;
+
+  /* graticule */
+  tx.strokeStyle="rgba(168,132,80,.22)";tx.lineWidth=1;
+  for(let la=Math.ceil(minLa);la<maxLa;la++){tx.beginPath();tx.moveTo(0,Y(la));tx.lineTo(W,Y(la));tx.stroke()}
+  for(let lo=Math.ceil(minLo);lo<maxLo;lo++){tx.beginPath();tx.moveTo(X(lo),0);tx.lineTo(X(lo),H);tx.stroke()}
+
+  /* state labels from the POI set */
+  const byState={};
+  route.forEach(r=>{(byState[r.st]=byState[r.st]||[]).push(r)});
+  tx.font="700 15px Inter, sans-serif";tx.fillStyle="rgba(122,69,38,.35)";tx.textAlign="center";
+  Object.keys(byState).forEach(st=>{
+    const g=byState[st];
+    const la=g.reduce((a,b)=>a+b.lat,0)/g.length, lo=g.reduce((a,b)=>a+b.lng,0)/g.length;
+    if(la>minLa&&la<maxLa&&lo>minLo&&lo<maxLo)tx.fillText(ST_NAMES[st]||st,X(lo),Y(la));
+  });
+
+  /* route landmarks as faint dots */
+  route.forEach(r=>{
+    if(r.lat<minLa||r.lat>maxLa||r.lng<minLo||r.lng>maxLo)return;
+    tx.beginPath();tx.arc(X(r.lng),Y(r.lat),r.c==="park"?4:2.4,0,7);
+    tx.fillStyle=r.c==="park"?"rgba(110,128,88,.75)":"rgba(168,132,80,.5)";tx.fill();
+  });
+
+  /* the trail itself */
+  if(t.length>1){
+    tx.strokeStyle="#A63A24";tx.lineWidth=4;tx.lineJoin="round";tx.lineCap="round";
+    tx.shadowColor="rgba(58,29,13,.3)";tx.shadowBlur=5;
+    tx.beginPath();
+    t.forEach((pt,i)=>{const x=X(pt[1]),y=Y(pt[0]);i?tx.lineTo(x,y):tx.moveTo(x,y)});
+    tx.stroke();tx.shadowBlur=0;
+  }
+  /* pins */
+  p.forEach(x=>{
+    if(x.lat<minLa||x.lat>maxLa||x.lng<minLo||x.lng>maxLo)return;
+    const px=X(x.lng),py=Y(x.lat);
+    tx.beginPath();tx.moveTo(px,py);tx.lineTo(px-6,py-15);tx.lineTo(px+6,py-15);tx.closePath();
+    tx.fillStyle="#C8912C";tx.fill();tx.strokeStyle="#3A1D0D";tx.lineWidth=1.5;tx.stroke();
+    tx.beginPath();tx.arc(px,py-18,6,0,7);tx.fillStyle="#C8912C";tx.fill();tx.stroke();
+  });
+  /* you */
+  if(here){
+    const px=X(here.lng),py=Y(here.lat);
+    tx.beginPath();tx.arc(px,py,11,0,7);tx.fillStyle="rgba(46,90,120,.28)";tx.fill();
+    tx.beginPath();tx.arc(px,py,6,0,7);tx.fillStyle="#2E5A78";tx.fill();
+    tx.strokeStyle="#FFF9ED";tx.lineWidth=2.5;tx.stroke();
+  }
+  /* compass rose */
+  tx.save();tx.translate(W-46,46);
+  tx.strokeStyle="#7A4526";tx.lineWidth=2;tx.beginPath();tx.arc(0,0,17,0,7);tx.stroke();
+  tx.beginPath();tx.moveTo(0,-15);tx.lineTo(4,3);tx.lineTo(0,0);tx.lineTo(-4,3);tx.closePath();
+  tx.fillStyle="#A63A24";tx.fill();
+  tx.fillStyle="#5A3018";tx.font="800 11px Inter, sans-serif";tx.textAlign="center";tx.fillText("N",0,-20);
+  tx.restore();
+
+  /* scale bar */
+  const milesAcross=dist(midLa,minLo,midLa,maxLo);
+  const nice=[10,25,50,100,250,500].find(v=>v>milesAcross/5)||500;
+  const barPx=(nice/milesAcross)*(W-0);
+  tx.fillStyle="#5A3018";tx.fillRect(PAD,H-26,barPx,4);
+  tx.font="700 12px Inter, sans-serif";tx.textAlign="left";
+  tx.fillText(nice+" mi",PAD,H-32);
+
+  const miles=t.length>1?t.reduce((a,pt,i)=>i?a+dist(t[i-1][0],t[i-1][1],pt[0],pt[1]):0,0):0;
+  $("trailStats").innerHTML=t.length?
+    `<b>${t.length}</b> trail points · <b>${Math.round(miles).toLocaleString()}</b> miles of recorded trail · <b>${p.length}</b> saved spots`+
+    (t.length?` · started ${new Date(t[0][2]).toLocaleDateString()}`:""):
+    "No trail yet. Turn on <b>Follow my journey</b> and Olive draws your route as you drive.";
+  $("trailLegend").innerHTML=`<span class="pill danger">&#9473; Your trail</span>
+    <span class="pill gold">&#128204; Saved spots</span>
+    <span class="pill sage">&#9679; National parks</span>
+    <span class="pill sky">&#9679; You</span>`;
+}
+
+/* ---------- exports ---------- */
+function download(name,text,mime){
+  const b=new Blob([text],{type:mime});
+  const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;a.click();
+}
+$("trailGpx").addEventListener("click",()=>{
+  const t=trail(),p=pins();
+  if(!t.length&&!p.length)return toast("No trail to export yet");
+  let g='<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Olive" xmlns="http://www.topografix.com/GPX/1/1">\n';
+  g+='<metadata><name>The Great American West</name><desc>August 17-31, 2026</desc></metadata>\n';
+  p.forEach(x=>{g+=`<wpt lat="${x.lat}" lon="${x.lng}"><name>${escXml(x.n)}</name><desc>${escXml(x.note||"")}</desc><time>${new Date(x.t).toISOString()}</time></wpt>\n`});
+  if(t.length){
+    g+='<trk><name>Great American West trail</name><trkseg>\n';
+    t.forEach(pt=>{g+=`<trkpt lat="${pt[0]}" lon="${pt[1]}"><time>${new Date(pt[2]).toISOString()}</time></trkpt>\n`});
+    g+='</trkseg></trk>\n';
+  }
+  g+='</gpx>';
+  download("great-american-west.gpx",g,"application/gpx+xml");
+  toast("&#128229; GPX downloaded &mdash; opens in most map apps");
+});
+$("trailKml").addEventListener("click",()=>{
+  const t=trail(),p=pins();
+  if(!t.length&&!p.length)return toast("No trail to export yet");
+  let k='<?xml version="1.0" encoding="UTF-8"?>\n<kml xmlns="http://www.opengis.net/kml/2.2"><Document>\n';
+  k+='<name>The Great American West</name>\n<Style id="tr"><LineStyle><color>ff243aa6</color><width>4</width></LineStyle></Style>\n';
+  p.forEach(x=>{k+=`<Placemark><name>${escXml(x.n)}</name><description>${escXml(x.note||"")}</description><Point><coordinates>${x.lng},${x.lat},0</coordinates></Point></Placemark>\n`});
+  if(t.length>1){
+    k+='<Placemark><name>Our trail</name><styleUrl>#tr</styleUrl><LineString><tessellate>1</tessellate><coordinates>\n';
+    t.forEach(pt=>{k+=pt[1]+","+pt[0]+",0 "});
+    k+='\n</coordinates></LineString></Placemark>\n';
+  }
+  k+='</Document></kml>';
+  download("great-american-west.kml",k,"application/vnd.google-earth.kml+xml");
+  toast("&#127758; KML downloaded &mdash; open it in Google Earth or import to My Maps");
+});
+function escXml(s){return String(s||"").replace(/[<>&'"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","'":"&apos;",'"':"&quot;"}[c]))}
+$("trailClear").addEventListener("click",()=>{
+  if(!confirm("Clear the recorded trail? Your saved spots and journal are kept."))return;
+  store.set("trail",[]);drawTrail();toast("Trail cleared");
+});
+
+/* ============================================================
+   STAYS & BOOKING
+   ============================================================ */
+function myBookings(){return store.get("bookings",{})}
+function nightsList(){
+  /* every night of the trip, matched against confirmations */
+  const out=[];
+  DAYS.slice(0,14).forEach(d=>{
+    const mine=myBookings()[d.d];
+    const res=RESV.find(r=>d.d>=r.d&&d.d<r.out);
+    out.push({date:d.d,place:d.stay,day:d.n,res,mine});
+  });
+  return out;
+}
+function bookUrls(place,inD,outD){
+  const q=encodeURIComponent(place.replace(/\(.*?\)/g,"").split("/")[0].trim());
+  return {
+    airbnb:`https://www.airbnb.com/s/${q}/homes?checkin=${inD}&checkout=${outD}&adults=3`,
+    booking:`https://www.booking.com/searchresults.html?ss=${q}&checkin=${inD}&checkout=${outD}&group_adults=3&no_rooms=1`,
+    vrbo:`https://www.vrbo.com/search?q=${q}&d1=${inD}&d2=${outD}&adults=3`,
+    hotels:`https://www.google.com/travel/search?q=${q}%20hotels&ts=CAESABoECgIaAA`,
+    camp:`https://www.recreation.gov/search?q=${q}`,
+    rvparks:`https://www.google.com/maps/search/${q}%20RV%20park%20campground`
+  };
+}
+function nextDay(iso){const[y,m,d]=iso.split("-").map(Number);const dt=new Date(Date.UTC(y,m-1,d+1));return dt.toISOString().slice(0,10)}
+
+function renderStays(){
+  const list=nightsList();
+  $("staysList").innerHTML=list.map(n=>{
+    const booked=n.res||n.mine;
+    const u=bookUrls(n.place,n.date,nextDay(n.date));
+    if(booked){
+      const b=n.mine||{t:n.res.t,conf:n.res.conf,p:n.res.p,a:n.res.a,note:n.res.note};
+      return `<div class="gapcard booked" style="margin-bottom:.7rem">
+        <div style="display:flex;gap:.6rem;align-items:flex-start">
+          <div style="font-size:1.4rem">&#9989;</div>
+          <div style="flex:1;min-width:0">
+            <div class="small muted">${fmtDate(n.date)} · Day ${n.day} · ${esc(n.place)}</div>
+            <div style="font-weight:800;font-size:1.03rem">${esc(b.t)}</div>
+            ${b.a?`<div class="small muted">${esc(b.a)}</div>`:""}
+            ${b.conf?`<div class="pills" style="margin-top:.4rem"><span class="pill">Conf ${esc(b.conf)}</span></div>`:""}
+            <div class="btnrow" style="margin-top:.5rem">
+              ${b.p?`<a class="btn sm ghost" href="tel:${String(b.p).replace(/[^+\d]/g,"")}">&#128222; Call</a>`:""}
+              ${n.mine?`<button class="btn sm ghost" data-unbook="${n.date}">&#9998;&#65039; Edit</button>`:""}
+            </div>
+          </div></div></div>`;
+    }
+    return `<div class="gapcard" style="margin-bottom:.7rem">
+      <div style="display:flex;gap:.6rem;align-items:flex-start">
+        <div style="font-size:1.4rem">&#10071;</div>
+        <div style="flex:1;min-width:0">
+          <div class="small muted">${fmtDate(n.date)} · Day ${n.day}</div>
+          <div style="font-weight:800;font-size:1.03rem">${esc(n.place)} &mdash; not booked</div>
+          <div class="small muted" style="margin-top:.2rem">1 night, 3 adults</div>
+          <div class="btnrow" style="margin-top:.6rem">
+            <a class="btn sm" href="${u.airbnb}" target="_blank" rel="noopener">Airbnb</a>
+            <a class="btn sm ghost" href="${u.booking}" target="_blank" rel="noopener">Booking.com</a>
+            <a class="btn sm ghost" href="${u.vrbo}" target="_blank" rel="noopener">Vrbo</a>
+            <a class="btn sm ghost" href="${u.hotels}" target="_blank" rel="noopener">Hotels</a>
+            <a class="btn sm ghost" href="${u.rvparks}" target="_blank" rel="noopener">&#128650; RV parks</a>
+          </div>
+          <button class="btn sm brass" data-book="${n.date}" style="margin-top:.5rem">&#128190; Save confirmation</button>
+        </div></div></div>`;
+  }).join("");
+  const open=list.filter(n=>!(n.res||n.mine)).length;
+  $("staysList").insertAdjacentHTML("afterbegin",
+    open?`<div class="note warn" style="margin-top:0"><b>${open} night${open===1?"":"s"} still open.</b> With Glacier and Yellowstone in peak season, these are worth doing now rather than on the road.</div>`
+        :`<div class="note senior" style="margin-top:0"><b>Every night is booked.</b> Nicely done.</div>`);
+}
+$("staysList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-book]")||e.target.closest("[data-unbook]");
+  if(!b)return;
+  const date=b.dataset.book||b.dataset.unbook;
+  const cur=myBookings()[date]||{};
+  openSheet("Save your booking &mdash; "+fmtDate(date),`
+    <p class="small muted">Once you've booked on Airbnb, Booking.com or anywhere else, put the details here. Olive keeps them offline so you have them with no signal.</p>
+    <div class="field"><label class="fld" for="bkT">Place name</label><input type="text" id="bkT" value="${esc(cur.t||"")}" placeholder="e.g. Grizzly RV Park"></div>
+    <div class="field"><label class="fld" for="bkA">Address</label><input type="text" id="bkA" value="${esc(cur.a||"")}" placeholder="Street, town"></div>
+    <div class="field"><label class="fld" for="bkP">Phone</label><input type="tel" id="bkP" value="${esc(cur.p||"")}" placeholder="+1 406 555 0123"></div>
+    <div class="field"><label class="fld" for="bkC">Confirmation number</label><input type="text" id="bkC" value="${esc(cur.conf||"")}"></div>
+    <div class="field"><label class="fld" for="bkN">Notes</label><textarea id="bkN" placeholder="Check-in time, door code, cancellation policy…">${esc(cur.note||"")}</textarea></div>
+    <div class="btnrow" style="margin-top:.9rem">
+      <button class="btn" id="bkSave">&#128190; Save</button>
+      ${cur.t?`<button class="btn ghost" id="bkDel">&#128465;&#65039; Remove</button>`:""}
+    </div>`);
+  $("bkSave").addEventListener("click",()=>{
+    const m=myBookings();
+    const t=$("bkT").value.trim();
+    if(!t)return toast("Give it a name");
+    m[date]={t,a:$("bkA").value.trim(),p:$("bkP").value.trim(),conf:$("bkC").value.trim(),note:$("bkN").value.trim()};
+    store.set("bookings",m);closeSheet();renderStays();renderResv();
+    addFeed("milestone","&#127976;","Booked "+t,fmtDate(date));
+    toast("&#9989; Saved");
+  });
+  if($("bkDel"))$("bkDel").addEventListener("click",()=>{
+    const m=myBookings();delete m[date];store.set("bookings",m);
+    closeSheet();renderStays();renderResv();toast("Removed");
+  });
+});
+
+/* ============================================================
+   PASSES & CLEARANCE
+   ============================================================ */
+function renderPasses(){
+  $("passList").innerHTML=PASSES.map(p=>`
+    <div class="row" style="${p.warn?"border-color:var(--danger)":""}">
+      <div class="ic">${p.warn?"&#9888;&#65039;":"&#9968;&#65039;"}</div><div class="bd">
+        <div class="t">${esc(p.n)} <span class="small muted">· ${esc(p.rt)}</span></div>
+        <div class="pills" style="margin:.3rem 0"><span class="pill gold">${p.el.toLocaleString()} ft</span>
+          <span class="pill">${esc(p.grade)}</span><span class="pill">Day ${p.day}</span></div>
+        <div class="s">${esc(p.d)}</div>
+        <div class="note ${p.warn?"warn":"rv"} small" style="margin-top:.5rem"><b>In an RV:</b> ${esc(p.rv)}</div>
+      </div></div>`).join("");
+}
+function renderClearance(){
+  $("clearList").innerHTML=CLEARANCE.map(c=>`
+    <div class="row" style="${c.warn?"border-color:var(--danger)":""}">
+      <div class="ic">${c.warn?"&#9940;":"&#128207;"}</div><div class="bd">
+        <div class="t">${esc(c.n)}</div>
+        <div class="pills" style="margin:.3rem 0"><span class="pill ${c.warn?"danger":""}">${esc(c.dim)}</span><span class="pill">${esc(c.rt)}</span></div>
+        <div class="s">${esc(c.d)}</div>
+        <div class="note ${c.warn?"warn":"senior"} small" style="margin-top:.5rem"><b>What to do:</b> ${esc(c.alt)}</div>
+      </div></div>`).join("")+
+    `<p class="small muted" style="margin-top:.8rem">Dimensions are as posted at build time. Always trust the sign at the tunnel mouth over any app.</p>`;
+}
+
+/* ============================================================
+   RADIO
+   ============================================================ */
+let radioBand="FM", radioFmt="all", radioRegion=0;
+function nearestRegion(){
+  if(!here)return 0;
+  let best=0,bd=1e9;
+  RADIO.forEach((r,i)=>{const d=dist(here.lat,here.lng,r.lat,r.lng);if(d<bd){bd=d;best=i}});
+  return best;
+}
+function renderRadio(){
+  const sel=$("regionSel");
+  if(sel.options.length!==RADIO.length){
+    sel.innerHTML=RADIO.map((r,i)=>`<option value="${i}">${esc(r.r)}</option>`).join("");
+  }
+  if(here){
+    const auto=nearestRegion();
+    if(!store.get("radioManual",false)){radioRegion=auto;sel.value=auto}
+    const d=dist(here.lat,here.lng,RADIO[radioRegion].lat,RADIO[radioRegion].lng);
+    $("radioStatus").innerHTML="&#128205; Showing <b>"+esc(RADIO[radioRegion].r)+"</b>, about "+fmtMi(d)+" from you. Change the region if you want to look ahead.";
+  }else{
+    sel.value=radioRegion;
+    $("radioStatus").innerHTML="Turn on location and Olive picks your region automatically. Until then, browse by region.";
+  }
+  const reg=RADIO[radioRegion];
+  let list=reg.s.filter(s=>s.b===radioBand||s.b==="");
+  if(radioFmt!=="all")list=list.filter(s=>s.fmt===radioFmt);
+  $("stationList").innerHTML=list.length?list.map((s,i)=>`
+    <div class="station" data-st="${i}" data-f="${esc(s.f)}" data-c="${esc(s.c)}" data-fmt="${esc(s.fmt)}">
+      <div class="f">${esc(s.f)}<div style="font-size:.6rem;letter-spacing:.1em">${esc(s.b)}</div></div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800">${esc(s.c||s.fmt)}</div>
+        <div class="small muted">${esc(s.fmt)} &mdash; ${esc(s.d)}</div>
+      </div>
+    </div>`).join(""):'<p class="small muted">No stations match that filter in this region. Try All, or switch band.</p>';
+  $("noaaList").innerHTML=NOAA.map(n=>`
+    <div class="row"><div class="ic">&#128225;</div><div class="bd">
+      <div class="t">${n.f} MHz</div><div class="s">${esc(n.d)}</div></div></div>`).join("");
+  $("hiwayList").innerHTML=HIWAY.map(h=>`
+    <div class="row"><div class="ic">&#128226;</div><div class="bd">
+      <div class="t">${esc(h.f)} &mdash; ${esc(h.n)}</div><div class="s">${esc(h.d)}</div>
+      ${h.tel?`<div class="btnrow" style="margin-top:.5rem"><a class="btn sm ghost" href="tel:${h.tel}">&#128222; Dial ${h.tel}</a></div>`:""}
+    </div></div>`).join("");
+}
+$("regionSel").addEventListener("change",e=>{radioRegion=+e.target.value;store.set("radioManual",true);renderRadio()});
+$("fmtFilters").addEventListener("click",e=>{
+  const b=e.target.closest("[data-fmt]");if(!b)return;
+  radioFmt=b.dataset.fmt;$$("#fmtFilters .pill").forEach(p=>p.classList.toggle("on",p===b));renderRadio();
+});
+document.querySelector(".dial .pills").addEventListener("click",e=>{
+  const b=e.target.closest("[data-band]");if(!b)return;
+  radioBand=b.dataset.band;
+  $$(".dial [data-band]").forEach(p=>p.classList.toggle("on",p===b));renderRadio();
+});
+$("stationList").addEventListener("click",e=>{
+  const s=e.target.closest("[data-st]");if(!s)return;
+  $$("#stationList .station").forEach(x=>x.classList.toggle("on",x===s));
+  const f=s.dataset.f,c=s.dataset.c,fmt=s.dataset.fmt;
+  $("dialFreq").textContent=f;
+  $("dialCall").textContent=c||fmt;
+  $("dialFmt").textContent=fmt+" · "+radioBand;
+  /* needle position across the band */
+  const n=parseFloat(f);
+  let pct=50;
+  if(!isNaN(n)){
+    pct=radioBand==="FM"?((n-88)/(108-88))*100:((n-530)/(1700-530))*100;
+    pct=Math.max(1,Math.min(99,pct));
+  }
+  $("dialNeedle").style.left=pct+"%";
+  store.set("lastStation",{f,c,fmt,b:radioBand});
+  speak("Tune to "+f+" "+radioBand+", "+(c||fmt));
+});
+
+/* ============================================================
+   WHAT'S AHEAD
+   ============================================================ */
+$("whatsAhead").addEventListener("click",()=>{
+  if(!here)return toast("Turn on location first");
+  const all=nearest(null,null,120).filter(isAhead).slice(0,10);
+  const fuel=nearest(null,["fuel"],200).filter(isAhead)[0];
+  const food=nearest(null,["food","gem"],120).filter(isAhead)[0];
+  openSheet("What's ahead",
+    (heading!=null?`<p class="small muted">Heading ${bearingFromDeg(heading)}.</p>`:"")+
+    (fuel?`<div class="note rv"><b>&#9981; Next fuel:</b> ${esc(fuel.n.replace("Fuel - ",""))} &mdash; ${fmtMi(fuel._d)} (${eta(fuel._d)})</div>`:"")+
+    (food?`<div class="note"><b>&#127869;&#65039; Next good meal:</b> ${esc(food.n)} &mdash; ${fmtMi(food._d)}</div>`:"")+
+    (all.length?all.map(p=>`<div class="row"><div class="ic">${CAT_IC[p.c]}</div>
+      <div class="bd"><div class="t">${esc(p.n)}</div><div class="s">${esc((p.d||"").slice(0,90))}…</div></div>
+      <div class="rt"><div class="dist">${fmtMi(p._d)}</div><div class="eta">${eta(p._d)}</div></div></div>`).join("")
+      :"<p class='muted'>Nothing mapped ahead within 120 miles. Open country.</p>"));
+});
+
+/* ============================================================
    CREW CHAT  (ntfy.sh pub/sub - free, no accounts)
    ============================================================ */
 const CHAT_TOPIC="olive-crew-"+ROOM_SUFFIX, CHAT_URL="https://ntfy.sh/"+CHAT_TOPIC;
@@ -2612,6 +3567,26 @@ function oliveKnows(raw){
     const r=here?nearest(2,["rv"],80):null;
     return (r&&r.length?"Closest RV services: "+r.map(p=>p.n+" ("+fmtMi(p._d)+")").join(", ")+". ":"")+
       "For anything live — dump stations, propane, repairs — use the 'Find It Right Now' buttons on the Nearby tab.";
+  }
+  if(/\b(fuel|gas|diesel|fill up|petrol|tank)\b/.test(q)){
+    if(!here)return "Turn on 'Follow my journey' and I'll tell you the next fuel and how far the gap after it runs.";
+    const f=nearest(null,["fuel"],250).filter(isAhead);
+    if(!f.length)return "No mapped fuel ahead within 250 miles. Use the Find It Right Now buttons on the Nearby tab for live stations.";
+    const gap=f[1]?dist(f[0].lat,f[0].lng,f[1].lat,f[1].lng):null;
+    return "Next fuel: "+f[0].n.replace("Fuel - ","")+", "+fmtMi(f[0]._d)+" ("+eta(f[0]._d)+")."+
+      (gap&&gap>70?" After that it is about "+Math.round(gap)+" miles to the next one — fill up even if you think you don't need to.":"");
+  }
+  if(/\b(radio|station|music|listen|am|fm)\b/.test(q)){
+    const r=RADIO[nearestRegion()];
+    const picks=r.s.slice(0,3).map(s=>s.f+" "+s.b+" "+(s.c||s.fmt)).join(", ");
+    return "Around "+r.r+": "+picks+". Full list on the Radio tab. NOAA weather radio is 162.400 to 162.550 anywhere in the country.";
+  }
+  if(/\b(pass|grade|steep|climb|mountain road|clearance|tunnel|height|too big)\b/.test(q))
+    return "The one that matters most: Going-to-the-Sun Road bans vehicles over 21 feet long, 8 wide or 10 high — an RV cannot drive it, take the shuttle. The Beartooth tops 10,947 feet and is strongly discouraged in a big rig; use Wapiti Valley to Cody instead. Marias Pass on US-2 is the easiest crossing of the Divide on your whole route. Full list on the Journey tab.";
+  if(/\b(book|reserve|reservation|airbnb|vrbo|hotel room|where are we staying)\b/.test(q)){
+    const open=nightsList().filter(n=>!(n.res||n.mine));
+    return open.length?open.length+" nights are still unbooked: "+open.map(n=>fmtDate(n.date)+" in "+n.place.split("/")[0]).join(", ")+". Journey tab, Stays section — the search links have your dates already filled in."
+      :"Every night is booked. Confirmations are on the Toolkit tab.";
   }
   if(/\b(weather|hot|cold|rain|storm|temperature)\b/.test(q))
     return "Check the Today tab for live conditions. August out here: hot afternoons on the plains, genuinely cold mornings at Logan Pass and in Yellowstone. Layers, always.";
@@ -2773,6 +3748,7 @@ function boot(){
   renderHealth();renderCheck();renderPack();renderResv();renderMed();
   renderStories();renderSettings();renderNotif();renderFeed();renderGal();
   renderBriefing();renderNearby();netCheck();
+  renderStays();renderPins();renderPasses();renderClearance();renderRadio();drawTrail();
   cycleTimers();
   loadWeather();
   chatSubscribe();locSubscribe();
