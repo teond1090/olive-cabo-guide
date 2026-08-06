@@ -2,10 +2,10 @@ name: Olive daily briefing
 
 on:
   schedule:
-    # 14:00 UTC = 7:00 AM in Cabo (Mazatlan, UTC-7): morning briefing
-    - cron: '0 14 * 6-8 *'
-    # 23:00 UTC = 4:00 PM in Cabo: tomorrow-preview (posts only if tomorrow has plans)
-    - cron: '0 23 * 6-8 *'
+    # 13:00 UTC = 7:00 AM Mountain Daylight Time.
+    # August only - the Great American West trip runs Aug 17-31, 2026,
+    # with a countdown nudge for the two weeks before it.
+    - cron: '0 13 * 8 *'
   workflow_dispatch:
 
 jobs:
@@ -14,8 +14,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - name: Post morning briefing + republish schedule snapshot
+      - name: Post the morning briefing to the crew chat
         env:
-          OLIVE_EV_TOPIC: ${{ secrets.OLIVE_EV_TOPIC }}
           OLIVE_CHAT_TOPIC: ${{ secrets.OLIVE_CHAT_TOPIC }}
         run: python3 scripts/daily_briefing.py
