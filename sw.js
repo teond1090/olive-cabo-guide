@@ -1,14 +1,55 @@
 /* Olive - Great American West. Offline service worker.
-   Cache-first for the app shell so the whole guide works with no signal;
-   network-first for live data (weather, chat) which is useless when stale. */
-const CACHE="olive-west-v1";
+   Cache-first for the app shell AND Olive's voice clips, so the whole guide
+   plus every spoken line works with no signal - which is most of this route.
+   Network-first for live data (weather, chat), which is useless when stale. */
+const CACHE="olive-west-v3";
 const SHELL=["./","./index.html","./manifest.json"];
+const VOICE=[
+  "./voice/air.mp3",
+  "./voice/altitude.mp3",
+  "./voice/arrive.mp3",
+  "./voice/bear.mp3",
+  "./voice/bison.mp3",
+  "./voice/boardwalk.mp3",
+  "./voice/briefing.mp3",
+  "./voice/bucket.mp3",
+  "./voice/clearance.mp3",
+  "./voice/food.mp3",
+  "./voice/fuel.mp3",
+  "./voice/fuel-gap.mp3",
+  "./voice/gem.mp3",
+  "./voice/goat.mp3",
+  "./voice/heat.mp3",
+  "./voice/landmark.mp3",
+  "./voice/meds.mp3",
+  "./voice/offline.mp3",
+  "./voice/pass.mp3",
+  "./voice/stars.mp3",
+  "./voice/state.mp3",
+  "./voice/storm.mp3",
+  "./voice/stretch.mp3",
+  "./voice/sunset.mp3",
+  "./voice/video.mp3",
+  "./voice/voice-on.mp3",
+  "./voice/water.mp3",
+  "./voice/wildlife.mp3",
+  "./voice/wolf.mp3"
+];
 
 self.addEventListener("install",e=>{
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()));
+  e.waitUntil((async()=>{
+    const c=await caches.open(CACHE);
+    await c.addAll(SHELL);
+    /* voice clips are ~2.5MB - add them individually so one failure
+       cannot abort the whole install */
+    await Promise.all(VOICE.map(u=>c.add(u).catch(()=>{})));
+    self.skipWaiting();
+  })());
 });
 self.addEventListener("activate",e=>{
-  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+  e.waitUntil(caches.keys()
+    .then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k))))
+    .then(()=>self.clients.claim()));
 });
 self.addEventListener("fetch",e=>{
   const req=e.request;
@@ -28,7 +69,7 @@ self.addEventListener("fetch",e=>{
     );
     return;
   }
-  /* everything else: cache first, fill in behind */
+  /* everything else, voice clips included: cache first */
   e.respondWith(
     caches.match(req).then(hit=>hit||fetch(req).then(r=>{
       if(r.ok&&url.origin===location.origin){const cp=r.clone();caches.open(CACHE).then(c=>c.put(req,cp))}

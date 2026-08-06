@@ -977,7 +977,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w2-2026-08-06";
+const OLIVE_BUILD="w3-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -1642,6 +1642,46 @@ const HIWAY=[
 ];
 
 /* ============================================================
+   OLIVE'S SPOKEN LINES
+   Low, dry, unhurried. Blunt about the things that can hurt you,
+   never at the traveler's expense. Each key has a matching
+   pre-recorded clip in voice/<key>.mp3 when one has been made.
+   ============================================================ */
+const VOICE_LINES={
+"voice-on":"Alright. I'm listening. I'll speak up when something's worth stopping for.",
+"water":"Drink some water. You're higher and drier up here than you think, and it sneaks up on people.",
+"stretch":"Next wide spot, pull over and get all the way out. Ten minutes now beats a bad back at dinner.",
+"meds":"Medication. Now, not in a minute.",
+"sunset":"Sun's down in about half an hour. Find something facing west and quit talking for a minute.",
+"stars":"Sky's clear and the moon's barely there. Step away from the lights, give your eyes fifteen minutes, and look up. You don't get this at home.",
+"heat":"It's going to be a hot one, and there's no shade on those boardwalks. Water and a hat. I'm not asking.",
+"air":"Air quality's poor today. Probably smoke. Keep it short outside if anybody's got a bad chest.",
+"fuel":"Fuel's coming up. Take it. What's after this is a long stretch of nothing and no sympathy.",
+"fuel-gap":"Fill up here. The next pump is a long way off, and running dry out here is a very bad afternoon.",
+"bison":"Bison ahead. They've got the right of way and they know it. Stay in the vehicle and let them work.",
+"bear":"Bear country through here. A hundred yards, minimum. That's what the zoom is for.",
+"wolf":"Wolves through here, if you're patient and quiet. Look for the crowd with the spotting scopes. That's where they are.",
+"goat":"Mountain goats up here. They'll walk right past you like they own the place. They do. Twenty-five yards.",
+"wildlife":"Wildlife country. Eyes up, and nobody gets out to pose for a picture.",
+"boardwalk":"Stay on the boardwalk. The crust is thin and what's under it is boiling. People have made that mistake.",
+"altitude":"You're up high now. Move slow getting out, go easy on the drinks tonight, and drink water like it's your job.",
+"state":"New state line. Add it to the list.",
+"video":"Your video's finished. Go watch it.",
+"bucket":"That's one off the list.",
+"arrive":"You're here. Take your time.",
+"briefing":"Morning. Here's your day.",
+"landmark":"Something worth stopping for coming up.",
+"gem":"There's a good one just ahead. Most people drive right past it.",
+"food":"Decent food ahead. Better than whatever's in the cooler.",
+"storm":"Weather's turning. Look at the sky before you commit to anything.",
+"pass":"Long grade coming. Low gear, easy on the brakes, and take your time.",
+"clearance":"Don't take that road in this rig. It won't fit, and turning around won't be an option.",
+"offline":"No signal out here. Doesn't matter. Everything you need is already on the phone."
+};
+/* Filled in by the build once clips are generated. Empty = device voice only. */
+const VOICE_CLIPS=["air","altitude","arrive","bear","bison","boardwalk","briefing","bucket","clearance","food","fuel","fuel-gap","gem","goat","heat","landmark","meds","offline","pass","stars","state","storm","stretch","sunset","video","voice-on","water","wildlife","wolf"];
+
+/* ============================================================
    MOUNTAIN PASSES - what each climb actually asks of you
    ============================================================ */
 const PASSES=[
@@ -1757,17 +1797,73 @@ function mapSearch(q,lat,lng){
   return "https://www.google.com/maps/search/"+encodeURIComponent(q)+(lat?"/@"+lat+","+lng+",12z":"");
 }
 
-/* ---------- voice companion ---------- */
+/* ============================================================
+   VOICE COMPANION
+   Two engines:
+   - "olive"  : pre-recorded clips shipped with the app (voice/*.mp3).
+                Real recorded delivery, and it works with NO SIGNAL,
+                which matters because most of this route has none.
+   - "browser": the device's own speech engine, tuned as low and
+                unhurried as it will go. Handles anything dynamic
+                and anything a clip doesn't cover.
+   ============================================================ */
 let voiceOn=store.get("voice",false);
-function speak(text,force){
-  if(!voiceOn&&!force)return;
+let voiceMode=store.get("voiceMode","olive");     /* olive | browser */
+let curAudio=null;
+
+function stopSpeaking(){
+  try{speechSynthesis.cancel()}catch(e){}
+  if(curAudio){try{curAudio.pause();curAudio.currentTime=0}catch(e){}curAudio=null}
+}
+/* pick the lowest, least chirpy female voice the device offers */
+let _pickedVoice=null;
+function pickVoice(){
+  if(_pickedVoice)return _pickedVoice;
+  if(!("speechSynthesis" in window))return null;
+  const vs=speechSynthesis.getVoices()||[];
+  if(!vs.length)return null;
+  const en=vs.filter(v=>/^en(-|_)?/i.test(v.lang||""));
+  const pool=en.length?en:vs;
+  const prefer=[/zira/i,/aria/i,/jenny/i,/michelle/i,/samantha/i,/karen/i,/moira/i,/tessa/i,/female/i];
+  for(const re of prefer){const hit=pool.find(v=>re.test(v.name||""));if(hit){_pickedVoice=hit;return hit}}
+  _pickedVoice=pool[0];return _pickedVoice;
+}
+if("speechSynthesis" in window)speechSynthesis.onvoiceschanged=()=>{_pickedVoice=null;pickVoice()};
+
+function browserSpeak(text){
   if(!("speechSynthesis" in window))return;
   try{
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(String(text).replace(/[#*_>]/g,""));
-    u.rate=.94;u.pitch=1.0;u.lang="en-US";
+    u.rate=.86;      /* unhurried */
+    u.pitch=.72;     /* down into an alto */
+    u.volume=1;
+    u.lang="en-US";
+    const v=pickVoice();if(v)u.voice=v;
     speechSynthesis.speak(u);
   }catch(e){}
+}
+/* Play a shipped clip; fall back to the device voice if it is missing. */
+function playClip(key,fallbackText){
+  stopSpeaking();
+  try{
+    const a=new Audio("voice/"+key+".mp3");
+    a.preload="auto";
+    a.onerror=()=>{curAudio=null;if(fallbackText)browserSpeak(fallbackText)};
+    curAudio=a;
+    const p=a.play();
+    if(p&&p.catch)p.catch(()=>{curAudio=null;if(fallbackText)browserSpeak(fallbackText)});
+  }catch(e){if(fallbackText)browserSpeak(fallbackText)}
+}
+/* speak(text, force, key)
+   key names a pre-recorded line when one exists for this moment. */
+function speak(text,force,key){
+  if(!voiceOn&&!force)return;
+  if(key&&voiceMode==="olive"&&typeof VOICE_CLIPS!=="undefined"&&VOICE_CLIPS.indexOf(key)>=0){
+    playClip(key,VOICE_LINES[key]||text);
+    return;
+  }
+  browserSpeak(text);
 }
 function syncVoiceBtn(){
   const b=$("btnVoice");
@@ -1777,8 +1873,8 @@ function syncVoiceBtn(){
 }
 $("btnVoice").addEventListener("click",()=>{
   voiceOn=!voiceOn;store.set("voice",voiceOn);syncVoiceBtn();
-  if(voiceOn)speak("Voice companion on. I'll speak up when something worth seeing is coming.",true);
-  else{try{speechSynthesis.cancel()}catch(e){}toast("Voice off");}
+  if(voiceOn)speak(VOICE_LINES["voice-on"],true,"voice-on");
+  else{stopSpeaking();toast("Voice off");}
 });
 
 /* ---------- text size ---------- */
@@ -1862,7 +1958,7 @@ function noteState(st){
   if(!a.includes(st)){
     a.push(st);store.set("states",a);
     addFeed("milestone","&#128681;","Crossed into "+stName(st),"State number "+a.length+" of the trip.");
-    announce("Welcome to "+stName(st)+". That's state number "+a.length+".");
+    announce(stName(st)+". That's number "+a.length+". Add it to the list.","state");
   }
 }
 const ST_NAMES={CO:"Colorado",WY:"Wyoming",SD:"South Dakota",ND:"North Dakota",MT:"Montana",NE:"Nebraska",TX:"Texas",AZ:"Arizona",OK:"Oklahoma",CA:"California"};
@@ -2019,14 +2115,20 @@ function checkAlerts(){
     const key="w:"+z.n;
     if(d<=z.r&&!alerted.has(key)){
       alerted.add(key);saveAlerted();
-      out.push({ic:"&#129454;",cls:"wild",t:"Wildlife country: "+z.n,
+      const animals=z.a.join(" ").toLowerCase();
+      const vk=/wolf|wolves/.test(animals)?"wolf":/grizzly|bear/.test(animals)?"bear":
+               /bison/.test(animals)?"bison":/goat/.test(animals)?"goat":"wildlife";
+      out.push({ic:"&#129454;",cls:"wild",t:"Wildlife country: "+z.n,vk,
         s:"Watch for "+z.a.slice(0,3).join(", ").toLowerCase()+". "+z.when});
     }
   });
   out.slice(0,3).forEach(a=>pushAlert(a));
   if(out.length){
     const a=out[0];
-    announce(a.t.replace(/&#\d+;?/g,"")+". "+a.s);
+    /* a pre-recorded line when the moment has one, otherwise the details spoken */
+    const key=a.vk||({landmark:"landmark",park:"landmark",scenic:"landmark",
+                      gem:"gem",food:"food",fuel:"fuel",rv:null})[a.poi?a.poi.c:""]||null;
+    announce(a.t.replace(/&#\d+;?/g,"")+". "+a.s,key);
   }
 }
 let liveAlerts=[];
@@ -2060,8 +2162,8 @@ $("liveAlerts").addEventListener("click",e=>{
   const w=e.target.closest("[data-detour]");
   if(w)worthDetour(w.dataset.detour);
 });
-function announce(text){
-  if(voiceOn)speak(text);
+function announce(text,key){
+  if(voiceOn)speak(text,false,key);
   if(store.get("notif",false)&&document.hidden&&"Notification" in window&&Notification.permission==="granted"){
     try{new Notification("Olive",{body:text.slice(0,160),tag:"olive-alert"})}catch(e){}
   }
@@ -2286,7 +2388,7 @@ async function loadWeather(){
     /* heat warning matters for this group */
     if(j.daily.temperature_2m_max[0]>=93){
       pushOnce("heat"+todayISO(),{ic:"&#127777;&#65039;",cls:"health",t:"Hot day ahead — "+Math.round(j.daily.temperature_2m_max[0])+"°F",
-        s:"Thermal basins and overlooks have no shade. Carry water, wear hats, and plan the big walk before 11am."});
+        s:"Thermal basins and overlooks have no shade. Carry water, wear hats, and plan the big walk before 11am."},"heat");
     }
   }catch(e){$("wxNow").innerHTML='<p class="muted small">Weather needs a signal. Everything else in Olive works offline.</p>'}
   loadAir(c);
@@ -2301,12 +2403,13 @@ async function loadAir(c){
     else if(a>100){lbl="Unhealthy for sensitive groups";cls="gold";adv="If anyone has asthma, COPD or heart disease, keep outdoor time short today."}
     else if(a>50){lbl="Moderate";cls="gold";adv="Slight haze possible. Fine for most people."}
     $("airQ").innerHTML=`<span class="pill ${cls}">Air quality ${a} · ${lbl}</span> <span class="small muted">${adv}</span>`;
-    if(a>100)pushOnce("aqi"+todayISO(),{ic:"&#128168;",cls:"health",t:"Air quality is "+lbl.toLowerCase(),s:adv});
+    if(a>100)pushOnce("aqi"+todayISO(),{ic:"&#128168;",cls:"health",t:"Air quality is "+lbl.toLowerCase(),s:adv},"air");
   }catch(e){}
 }
-function pushOnce(key,alert){
+function pushOnce(key,alert,vk){
   if(alerted.has(key))return;
   alerted.add(key);saveAlerted();pushAlert(alert);
+  if(vk)announce(VOICE_LINES[vk]||(alert.t+". "+(alert.s||"")),vk);
 }
 /* moon phase 0=new .5=full */
 function moonPhase(d){
@@ -2334,8 +2437,8 @@ function renderSky(sunriseISO,sunsetISO,code){
            clear?"Clear, but the moon is bright enough to wash out fainter stars.":"Cloud cover will likely hide the stars tonight."}</div>
       </div></div>
     ${good?`<div class="note" style="margin-top:.8rem">Badlands, Theodore Roosevelt and Yellowstone all have genuinely dark skies. Step away from any lit building, give your eyes 15 minutes, and look up.</div>`:""}`;
-  if(mins>25&&mins<45)pushOnce("sunset"+todayISO(),{ic:"&#127749;",cls:"gem",t:"Sunset in about half an hour",s:"Good moment to find a west-facing overlook."});
-  if(good)pushOnce("stars"+todayISO(),{ic:"&#10024;",cls:"",t:"Great stargazing tonight",s:pname+", only "+illum+"% lit, and clear skies forecast."});
+  if(mins>25&&mins<45)pushOnce("sunset"+todayISO(),{ic:"&#127749;",cls:"gem",t:"Sunset in about half an hour",s:"Good moment to find a west-facing overlook."},"sunset");
+  if(good)pushOnce("stars"+todayISO(),{ic:"&#10024;",cls:"",t:"Great stargazing tonight",s:pname+", only "+illum+"% lit, and clear skies forecast."},"stars");
 }
 
 /* ============================================================
@@ -2457,7 +2560,7 @@ function renderBucket(){
 $("bucketList").addEventListener("change",e=>{
   const c=e.target.closest("[data-bk]");if(!c)return;
   const b=store.get("bucket",{}),i=c.dataset.bk;
-  if(c.checked){b[i]=Date.now();addFeed("milestone","&#9989;","Bucket list: "+BUCKET[i].n,"Checked off.");toast("&#9989; Nicely done")}
+  if(c.checked){b[i]=Date.now();addFeed("milestone","&#9989;","Bucket list: "+BUCKET[i].n,"Checked off.");toast("&#9989; Nicely done");announce(VOICE_LINES.bucket,"bucket")}
   else delete b[i];
   store.set("bucket",b);renderBucket();
 });
@@ -2575,17 +2678,17 @@ function cycleTimers(){
   const h=health();
   if(h.water.on)timers.push(setInterval(()=>{
     pushAlert({ic:"&#128167;",cls:"health",t:"Water break",s:"You are at altitude and in dry air. Drink even if you are not thirsty."});
-    announce("Time for water.");
+    announce(VOICE_LINES.water,"water");
   },h.water.every*60000));
   if(h.stretch.on)timers.push(setInterval(()=>{
     pushAlert({ic:"&#129336;",cls:"health",t:"Stretch break",s:"Next safe pullout: get fully out of the vehicle for a few minutes. It matters more than the miles you save."});
-    announce("Time to stop and stretch your legs.");
+    announce(VOICE_LINES.stretch,"stretch");
   },h.stretch.every*60000));
   if(h.med.on)timers.push(setInterval(()=>{
     const now=new Date().toTimeString().slice(0,5);
     if(health().med.times.includes(now)){
       pushAlert({ic:"&#128138;",cls:"health",t:"Medication reminder",s:"Scheduled dose at "+now+"."});
-      announce("Medication reminder.");
+      announce(VOICE_LINES.meds,"meds");
     }
   },30000));
 }
@@ -2686,6 +2789,14 @@ function renderSettings(){
       <select id="setFs"><option value="m">Normal</option><option value="l">Large</option><option value="xl">Extra large</option></select></div>
     <label class="switch" style="margin-top:.8rem"><input type="checkbox" id="setVoice" ${voiceOn?"checked":""}><span class="track"></span>
       <span><b>Voice companion</b><br><span class="small muted">Olive speaks alerts and can read anything aloud</span></span></label>
+    <div class="field"><label class="fld" for="setVoiceMode">Voice</label>
+      <select id="setVoiceMode">
+        <option value="olive">Olive &mdash; her recorded voice (works offline)</option>
+        <option value="browser">This phone's built-in voice</option>
+      </select>
+      <p class="small muted" style="margin-top:.35rem">Olive's own voice is used for the lines she says most. Anything she has to read out loud on the spot &mdash; your briefing, a landmark write-up &mdash; uses the phone's voice, pitched down to match.</p>
+      <button class="btn sm ghost" id="setVoiceTest" style="margin-top:.4rem">&#128266; Hear her</button>
+    </div>
     <label class="switch"><input type="checkbox" id="setMiles" ${store.get("autoTrack",true)?"checked":""}><span class="track"></span>
       <span><b>Track miles automatically</b><br><span class="small muted">Counts distance from your GPS while location is on</span></span></label>
     <hr class="hr">
@@ -2697,6 +2808,10 @@ function renderSettings(){
   $("setFs").value=store.get("fs","m");
   $("setFs").addEventListener("change",e=>{store.set("fs",e.target.value);applyFS()});
   $("setVoice").addEventListener("change",e=>{voiceOn=e.target.checked;store.set("voice",voiceOn);syncVoiceBtn()});
+  $("setVoiceMode").value=voiceMode;
+  $("setVoiceMode").addEventListener("change",e=>{voiceMode=e.target.value;store.set("voiceMode",voiceMode);
+    speak(VOICE_LINES["voice-on"],true,"voice-on")});
+  $("setVoiceTest").addEventListener("click",()=>speak(VOICE_LINES.fuel,true,"fuel"));
   $("setMiles").addEventListener("change",e=>store.set("autoTrack",e.target.checked));
   $("setExport").addEventListener("click",()=>{
     const dump={};["feed","stats","states","parks","bucket","favs","pack","health","media"].forEach(k=>dump[k]=store.get(k,null));
@@ -3007,7 +3122,7 @@ $("vidMake").addEventListener("click",async()=>{
       const a2=document.createElement("a");a2.href=url;a2.download="great-american-west."+ext;a2.click();
       toast("Downloaded — share it from your photos app");
     };
-    speak("Your Great American West video is ready.");
+    speak(VOICE_LINES.video,false,"video");
   };
   rec.start();
   runShow(()=>setTimeout(()=>{try{rec.stop()}catch(e){}},350),
@@ -3724,10 +3839,13 @@ if("serviceWorker" in navigator){
 $("cacheNow").addEventListener("click",async()=>{
   try{
     if("caches" in window){
-      const c=await caches.open("olive-west-v1");
+      const c=await caches.open("olive-west-v3");
       await c.addAll(["./","./index.html","./manifest.json"]);
-      toast("&#128190; Saved — Olive works with no signal now");
-      $("offlineTxt").innerHTML="<b>&#9989; Saved to this device.</b> Every day plan, landmark, story, checklist and phone number works with no bars at all. Only live weather and crew chat need a signal.";
+      /* her voice too - individually, so one miss can't abort the lot */
+      let got=0;
+      await Promise.all(VOICE_CLIPS.map(k=>c.add("./voice/"+k+".mp3").then(()=>got++).catch(()=>{})));
+      toast("&#128190; Saved — guide + "+got+" voice lines");
+      $("offlineTxt").innerHTML="<b>&#9989; Saved to this device.</b> Every day plan, landmark, story, checklist, radio frequency and phone number &mdash; plus all "+got+" of Olive's spoken lines &mdash; works with no bars at all. Only live weather and crew chat need a signal.";
     }else toast("This browser can't store offline");
   }catch(e){toast("Could not save offline")}
 });
@@ -3765,7 +3883,7 @@ function boot(){
       const i=tripDayIndex();
       if(i>=0){
         pushAlert({ic:"&#9749;",cls:"gem",t:"Day "+DAYS[i].n+" — "+DAYS[i].t,s:DAYS[i].r+". Tap Read it to me on the briefing card."});
-        announce("Good morning. Day "+DAYS[i].n+" of fifteen. "+DAYS[i].t+".");
+        announce(VOICE_LINES.briefing,"briefing");
       }
     },2500);
   }
