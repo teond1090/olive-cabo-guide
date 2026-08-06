@@ -540,10 +540,11 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <div class="card a-canyon">
       <div class="card-h"><span class="ic">&#127760;</span><h3>Ride Along</h3></div>
       <label class="switch">
-        <input type="checkbox" id="gpsToggle"><span class="track"></span>
-        <span><b>Follow my journey</b><br><span class="small muted">Olive watches the road and speaks up when something good is coming.</span></span>
+        <input type="checkbox" id="gpsToggle" checked><span class="track"></span>
+        <span><b>Follow my journey</b><br><span class="small muted">On by default. Olive watches the road and speaks up when something good is coming.</span></span>
       </label>
-      <div id="gpsStatus" class="small muted" style="margin-top:.6rem">Location is off. Turn it on for landmark alerts, diners, fuel and RV services as you drive.</div>
+      <div id="gpsStatus" class="small muted" style="margin-top:.6rem">Finding you&hellip;</div>
+      <p class="small muted" style="margin:.5rem 0 0">This is what makes landmarks, diners, fuel warnings, wildlife and the right radio stations appear for wherever you actually are. Your phone will ask permission the first time &mdash; say yes. Location stays on this device unless you switch on the Family Map.</p>
       <div id="gpsHelp" style="display:none;margin-top:.8rem" class="note warn"></div>
       <div class="btnrow" style="margin-top:.8rem">
         <button class="btn sm brass" id="pinHere">&#128204; Save this spot</button>
@@ -663,7 +664,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
   <div class="stack">
     <div class="card a-canyon">
       <div class="card-h"><span class="ic">&#128205;</span><h3>What's Around You</h3></div>
-      <div id="nearbyStatus" class="muted small">Turn on <b>Follow my journey</b> on the Today tab and this list goes live as you drive.</div>
+      <div id="nearbyStatus" class="muted small">Finding you&hellip; this list re-sorts itself as you drive.</div>
       <div class="pills" id="nearFilters" style="margin-top:.9rem">
         <button class="pill on" data-cat="all">&#127758; Everything</button>
         <button class="pill" data-cat="food">&#127869;&#65039; Eat</button>
@@ -737,7 +738,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
     <div class="card">
       <div class="card-h"><span class="ic">&#128251;</span><h3>Stations Near You</h3></div>
-      <div id="radioStatus" class="small muted">Turn on location and Olive shows the stations that actually reach you. Until then, here's everything along the route by region.</div>
+      <div id="radioStatus" class="small muted">Finding your region&hellip; Olive follows you from one broadcast area to the next automatically. Pick a region by hand to look ahead.</div>
       <div class="field" style="margin-top:.8rem">
         <label class="fld" for="regionSel">Region</label>
         <select id="regionSel"></select>
@@ -977,7 +978,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w3-2026-08-06";
+const OLIVE_BUILD="w4-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -1847,7 +1848,10 @@ function browserSpeak(text){
 function playClip(key,fallbackText){
   stopSpeaking();
   try{
-    const a=new Audio("voice/"+key+".mp3");
+    /* VOICE_DATA is only defined in the self-contained preview build,
+       where clips are embedded rather than fetched as files. */
+    const src=(typeof VOICE_DATA!=="undefined"&&VOICE_DATA[key])||("voice/"+key+".mp3");
+    const a=new Audio(src);
     a.preload="auto";
     a.onerror=()=>{curAudio=null;if(fallbackText)browserSpeak(fallbackText)};
     curAudio=a;
@@ -2012,8 +2016,42 @@ $("gpsToggle").addEventListener("change",e=>{
 function stopGPS(){
   if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null}
   store.set("gps",false);
-  gpsStatus("Location is off. Turn it on to unlock landmark alerts, hidden gems and RV services near you.");
+  gpsStatus("Location is off. Turn it on to unlock landmark alerts, hidden gems, fuel and the right radio stations for where you are.");
   $("gpsToggle").checked=false;
+}
+/* ---------------------------------------------------------------
+   Auto-start location whenever Olive is open.
+   A browser will not hand over location silently on the very first
+   visit - it has to ask. So: if permission is already granted we
+   start straight away and say nothing; if it has never been asked
+   we ask once on open; if it was refused we explain how to undo it
+   rather than nagging.
+   --------------------------------------------------------------- */
+async function autoStartGPS(){
+  if(!("geolocation" in navigator)){gpsStatus("This device has no location support.","danger");return}
+  if(store.get("gps",true)===false){stopGPS();return}      /* they deliberately turned it off */
+  let state="prompt";
+  try{
+    if(navigator.permissions&&navigator.permissions.query){
+      const p=await navigator.permissions.query({name:"geolocation"});
+      state=p.state;
+      /* if they grant it later in settings, pick that up without a reload */
+      p.onchange=()=>{if(p.state==="granted"&&watchId==null)startGPS()};
+    }
+  }catch(e){}
+  if(state==="denied"){
+    $("gpsToggle").checked=false;
+    onFixErr({code:1});
+    return;
+  }
+  startGPS();      /* granted -> silent; prompt -> the browser asks once */
+}
+/* watchPosition often dies while the phone is asleep or the tab is
+   backgrounded. Whenever Olive comes back to the front, revive it. */
+function reviveGPS(){
+  if(document.hidden)return;
+  if(store.get("gps",true)===false)return;
+  if(watchId==null)autoStartGPS();
 }
 function startGPS(){
   if(!("geolocation" in navigator)){gpsStatus("This device has no location support.","danger");return}
@@ -2067,8 +2105,23 @@ function onFix(pos){
   renderDash();renderHero();
   checkAlerts();
   renderNearby();
+  followRadio();                     /* stations follow you down the road */
   if(!lastFix||Date.now()-lastFix>15*60*1000){lastFix=Date.now();loadWeather();}
   if(locSharing)publishLoc();
+}
+
+/* As you drive out of one broadcast area and into the next, move the
+   radio list with you - unless the passenger has picked a region by hand. */
+function followRadio(){
+  if(store.get("radioManual",false))return;
+  const rg=nearestRegion();
+  if(rg===radioRegion){if($("view-radio").classList.contains("active"))renderRadio();return}
+  radioRegion=rg;
+  renderRadio();
+  const r=RADIO[rg];
+  const picks=r.s.slice(0,3).map(s=>s.f+" "+s.b).join(", ");
+  pushAlert({ic:"&#128251;",cls:"",t:"New radio country: "+r.r,
+             s:"Try "+picks+". Full list on the Radio tab."});
 }
 function fmtMi(m){return m<1?(Math.round(m*10)/10)+" mi":Math.round(m)+" mi"}
 
@@ -3872,7 +3925,8 @@ function boot(){
   chatSubscribe();locSubscribe();
   if(chatName)enterChat();
   if(store.get("loc-share",false)){locSharing=true;$("locToggle").checked=true}
-  if(store.get("gps",false))startGPS();
+  $("gpsToggle").checked=store.get("gps",true)!==false;
+  autoStartGPS();                       /* on by default, every time Olive opens */
   route();
 
   /* daily briefing announcement, once per morning */
@@ -3889,7 +3943,10 @@ function boot(){
   }
   setInterval(renderHero,60000);
   setInterval(checkUpdate,5*60*1000);
-  document.addEventListener("visibilitychange",()=>{if(!document.hidden){checkUpdate();netCheck()}});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden){checkUpdate();netCheck();reviveGPS()}});
+  window.addEventListener("focus",reviveGPS);
+  window.addEventListener("online",reviveGPS);
+  setInterval(reviveGPS,90000);          /* belt and braces: revive a watch the phone killed */
   checkUpdate();
 }
 boot();
