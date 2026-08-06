@@ -1,16 +1,16 @@
 {
   "name": "Olive - Great American West RV Companion",
   "short_name": "Olive",
-  "description": "Your RV travel companion for the American West. Landmarks, hidden gems, wildlife, RV services and memories, mile by mile.",
+  "description": "Your RV trail boss for the Great American West. Landmarks, hidden gems, wildlife, eats, fuel, radio and memories, mile by mile.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#F6EFE3",
-  "theme_color": "#A9472F",
+  "background_color": "#F3E6CE",
+  "theme_color": "#5A3018",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%23A9472F'/%3E%3Cpath d='M64 352 L176 192 L248 288 L320 160 L448 352 Z' fill='%23F6EFE3'/%3E%3Ccircle cx='360' cy='128' r='48' fill='%23DE7B39'/%3E%3Cpath d='M32 352 h448 v40 a224 224 0 0 1 -448 0 z' fill='%236E8367'/%3E%3C/svg%3E",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%235A3018'/%3E%3Cpath d='M256 56 l50 101 111 16-80 78 19 111-100-53-100 53 19-111-80-78 111-16z' fill='%23C8912C' stroke='%233A1D0D' stroke-width='12' stroke-linejoin='round'/%3E%3Ccircle cx='256' cy='240' r='37' fill='%23A63A24'/%3E%3C/svg%3E",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
