@@ -505,6 +505,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <a href="#/today"    data-view="today"><span class="ic">&#127968;</span> Today</a>
     <a href="#/journey"  data-view="journey"><span class="ic">&#128506;&#65039;</span> Journey</a>
     <a href="#/nearby"   data-view="nearby"><span class="ic">&#128205;</span> Nearby</a>
+    <a href="#/facts"    data-view="facts"><span class="ic">&#128161;</span> Did You Know</a>
     <a href="#/radio"    data-view="radio"><span class="ic">&#128251;</span> Radio</a>
     <a href="#/bucket"   data-view="bucket"><span class="ic">&#127919;</span> Bucket List</a>
     <a href="#/memories" data-view="memories"><span class="ic">&#128248;</span> Memories</a>
@@ -718,6 +719,29 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
   </div>
 </div>
 
+<!-- ============================ FACTS ============================ -->
+<div class="view" id="view-facts">
+  <div class="stack">
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#128161;</span><h3>Did You Know</h3></div>
+      <div id="factsWhere" class="small muted">Finding out where you are&hellip;</div>
+      <p class="small muted" style="margin:.6rem 0 0">Olive keeps an eye on the ground you're covering and digs up what happened here. This refreshes on its own every few miles &mdash; no need to touch anything.</p>
+      <div class="btnrow" style="margin-top:.8rem">
+        <button class="btn sm" id="factsRefresh">&#8635; Find facts here</button>
+        <button class="btn sm ghost" id="factsRead">&#128266; Read them to me</button>
+        <button class="btn sm ghost" id="factsSave">&#128221; Save to journal</button>
+      </div>
+    </div>
+
+    <div id="factsList" class="stack"></div>
+
+    <div class="card tint">
+      <div class="card-h"><span class="ic">&#128218;</span><h3>Where these come from</h3></div>
+      <p class="small" style="margin:0">Two places. Olive's own written history of the towns on your route &mdash; those work with no signal and are narrated in her voice. And, when you have bars, whatever else happened within a few miles of where you're sitting, drawn live from Wikipedia. Off the planned route, that live layer is doing all the work &mdash; which is how you get facts in Arizona as easily as in Montana.</p>
+    </div>
+  </div>
+</div>
+
 <!-- ============================ RADIO ============================ -->
 <div class="view" id="view-radio">
   <div class="stack">
@@ -740,20 +764,38 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
     <div class="card">
       <div class="card-h"><span class="ic">&#128251;</span><h3>Stations Near You</h3></div>
-      <div id="radioStatus" class="small muted">Finding your region&hellip; Olive follows you from one broadcast area to the next automatically. Pick a region by hand to look ahead.</div>
-      <div class="field" style="margin-top:.8rem">
-        <label class="fld" for="regionSel">Region</label>
-        <select id="regionSel"></select>
+      <div id="radioStatus" class="small muted">Finding your area&hellip;</div>
+      <div class="pills" style="margin-top:.8rem" id="radioSource">
+        <button class="pill on" data-rsrc="live">&#128225; Live &mdash; wherever I am</button>
+        <button class="pill" data-rsrc="route">&#128506;&#65039; The August route</button>
       </div>
-      <div class="pills" style="margin-top:.8rem" id="fmtFilters">
-        <button class="pill on" data-fmt="all">All</button>
-        <button class="pill" data-fmt="Country">&#129352; Country</button>
-        <button class="pill" data-fmt="News/Talk">&#128483;&#65039; News/Talk</button>
-        <button class="pill" data-fmt="Public">&#127752; Public</button>
-        <button class="pill" data-fmt="Classic Rock">&#127928; Classic Rock</button>
-        <button class="pill" data-fmt="Native">&#129525; Native</button>
+      <div id="liveRadioWrap">
+        <div class="pills" style="margin-top:.8rem" id="liveFilters">
+          <button class="pill on" data-lf="all">All</button>
+          <button class="pill" data-lf="fm">FM</button>
+          <button class="pill" data-lf="am">AM</button>
+          <button class="pill" data-lf="country">&#129352; Country</button>
+          <button class="pill" data-lf="news">&#128483;&#65039; News/Talk</button>
+          <button class="pill" data-lf="public">&#127752; Public</button>
+          <button class="pill" data-lf="rock">&#127928; Rock</button>
+        </div>
+      </div>
+      <div id="routeRadioWrap" style="display:none">
+        <div class="field" style="margin-top:.8rem">
+          <label class="fld" for="regionSel">Region on the route</label>
+          <select id="regionSel"></select>
+        </div>
+        <div class="pills" style="margin-top:.8rem" id="fmtFilters">
+          <button class="pill on" data-fmt="all">All</button>
+          <button class="pill" data-fmt="Country">&#129352; Country</button>
+          <button class="pill" data-fmt="News/Talk">&#128483;&#65039; News/Talk</button>
+          <button class="pill" data-fmt="Public">&#127752; Public</button>
+          <button class="pill" data-fmt="Classic Rock">&#127928; Classic Rock</button>
+          <button class="pill" data-fmt="Native">&#129525; Native</button>
+        </div>
       </div>
       <div id="stationList" style="margin-top:.9rem"></div>
+      <div id="nowPlaying" style="display:none;margin-top:.9rem"></div>
     </div>
 
     <div class="card a-canyon">
@@ -770,7 +812,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
     <div class="card tint">
       <div class="card-h"><span class="ic">&#8505;&#65039;</span><h3>About this tab</h3></div>
-      <p class="small" style="margin:0">A phone browser can't tune a real radio &mdash; there's no hardware access for it. So this is a <b>station finder</b>: it tells your vehicle radio what to tune to, wherever you are, and it works with no signal at all. Where a station streams online, there's a listen link that needs data.</p>
+      <p class="small" style="margin:0">A phone browser can't tune a real radio &mdash; there's no hardware access for it. So Olive does two things instead. <b>Live</b> looks up the broadcasters actually licensed around you, wherever in the country you are, and shows the dial position to turn to &mdash; many of them you can also stream right here. <b>The August route</b> is Olive's own hand-checked list for the trip, and it works with no signal at all.</p>
     </div>
   </div>
 </div>
@@ -917,17 +959,6 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 <div class="view" id="view-toolkit">
   <div class="stack">
 
-    <div class="card a-canyon">
-      <div class="card-h"><span class="ic">&#128652;</span><h3>RV Checklists</h3></div>
-      <div class="pills" id="ckTabs">
-        <button class="pill on" data-ck="depart">&#128682; Before we roll</button>
-        <button class="pill" data-ck="arrive">&#127957;&#65039; Setting up camp</button>
-        <button class="pill" data-ck="daily">&#9728;&#65039; Every morning</button>
-      </div>
-      <div id="ckList" style="margin-top:.9rem"></div>
-      <button class="btn sm ghost" id="ckReset" style="margin-top:.7rem">&#8635; Reset this list</button>
-    </div>
-
     <div class="card a-sky">
       <div class="card-h"><span class="ic">&#128179;</span><h3>Your Reservations</h3></div>
       <div id="resList"></div>
@@ -939,10 +970,6 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div id="medList"></div>
     </div>
 
-    <div class="card">
-      <div class="card-h"><span class="ic">&#129530;</span><h3>Packing Checklist</h3></div>
-      <div id="packList"></div>
-    </div>
 
     <div class="card a-gold">
       <div class="card-h"><span class="ic">&#128218;</span><h3>Travel Stories &amp; History</h3></div>
@@ -968,8 +995,8 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
 <div class="bottombar" role="navigation" aria-label="Quick">
   <a href="#/today" data-view="today"><span class="ic">&#127968;</span>Today</a>
-  <a href="#/journey" data-view="journey"><span class="ic">&#128506;&#65039;</span>Trail</a>
   <a href="#/nearby" data-view="nearby"><span class="ic">&#128205;</span>Nearby</a>
+  <a href="#/facts" data-view="facts"><span class="ic">&#128161;</span>Facts</a>
   <a href="#/radio" data-view="radio"><span class="ic">&#128251;</span>Radio</a>
   <a href="#/crew" data-view="crew"><span class="ic">&#128172;</span>Crew</a>
 </div>
@@ -980,7 +1007,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w6-2026-08-06";
+const OLIVE_BUILD="w7-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -1907,7 +1934,7 @@ applyFS();
 /* ============================================================
    ROUTING
    ============================================================ */
-const VIEWS=["today","journey","nearby","radio","bucket","memories","crew","toolkit"];
+const VIEWS=["today","journey","nearby","facts","radio","bucket","memories","crew","toolkit"];
 function showView(v){
   if(!VIEWS.includes(v))v="today";
   VIEWS.forEach(x=>{const el=$("view-"+x);if(el)el.classList.toggle("active",x===v)});
@@ -1916,7 +1943,8 @@ function showView(v){
   if(v==="nearby")renderNearby();
   if(v==="memories")renderFeed();
   if(v==="bucket")renderBucket();
-  if(v==="radio")renderRadio();
+  if(v==="facts")loadFacts();
+  if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();}
   if(v==="journey"){drawTrail();renderStays()}
   if(v==="crew"){unread=0;}
 }
@@ -2125,6 +2153,8 @@ function onFix(pos){
   checkAlerts();
   renderNearby();
   followRadio();                     /* stations follow you down the road */
+  if($("view-facts").classList.contains("active"))loadFacts();
+  if($("view-radio").classList.contains("active")&&radioSrc==="live")loadLiveStations();
   if(!lastFix||Date.now()-lastFix>15*60*1000){lastFix=Date.now();loadWeather();}
   if(locSharing)publishLoc();
 }
@@ -2777,35 +2807,6 @@ function cycleTimers(){
 /* ============================================================
    TOOLKIT
    ============================================================ */
-let ckKind="depart";
-$("ckTabs").addEventListener("click",e=>{
-  const b=e.target.closest("[data-ck]");if(!b)return;
-  ckKind=b.dataset.ck;$$("#ckTabs .pill").forEach(p=>p.classList.toggle("on",p===b));renderCheck();
-});
-function renderCheck(){
-  const saved=store.get("ck-"+ckKind,{});
-  $("ckList").innerHTML=`<div class="card tint">`+CHECK[ckKind].map((x,i)=>
-    `<label class="chk"><input type="checkbox" data-ci="${i}" ${saved[i]?"checked":""}><span>${esc(x)}</span></label>`).join("")+`</div>`;
-}
-$("ckList").addEventListener("change",e=>{
-  const c=e.target.closest("[data-ci]");if(!c)return;
-  const s=store.get("ck-"+ckKind,{});
-  if(c.checked)s[c.dataset.ci]=1;else delete s[c.dataset.ci];
-  store.set("ck-"+ckKind,s);
-  const total=CHECK[ckKind].length,done=Object.keys(s).length;
-  if(done===total){toast("&#9989; List complete — safe travels");addFeed("milestone","&#9989;","Completed the "+ckKind+" checklist","")}
-});
-$("ckReset").addEventListener("click",()=>{store.set("ck-"+ckKind,{});renderCheck();toast("Reset")});
-
-function renderPack(){
-  const s=store.get("pack",{});
-  $("packList").innerHTML=PACK.map((g,gi)=>`<div style="margin-bottom:1rem"><b class="eyebrow">${esc(g.g)}</b>`+
-    g.i.map((x,i)=>`<label class="chk"><input type="checkbox" data-pk="${gi}-${i}" ${s[gi+"-"+i]?"checked":""}><span>${esc(x)}</span></label>`).join("")+`</div>`).join("");
-}
-$("packList").addEventListener("change",e=>{
-  const c=e.target.closest("[data-pk]");if(!c)return;
-  const s=store.get("pack",{});if(c.checked)s[c.dataset.pk]=1;else delete s[c.dataset.pk];store.set("pack",s);
-});
 function renderResv(){
   const mine=myBookings();
   const mineKeys=Object.keys(mine).sort();
@@ -3796,6 +3797,277 @@ async function gpsDiag(){
 $("gpsCheck").addEventListener("click",gpsDiag);
 
 /* ============================================================
+   DID YOU KNOW - facts for wherever you actually are
+   Two layers: Olive's own written history for the route (offline,
+   narrated in her voice), and whatever else happened within a few
+   miles, pulled live. The live layer is what makes this work in
+   Arizona as well as Montana.
+   ============================================================ */
+let facts=[], factsAt=null, factsBusy=false;
+
+function curatedFacts(lat,lng){
+  const out=[];
+  /* town histories close enough to be about here */
+  Object.keys(STORIES).forEach(k=>{
+    const p=POI.find(x=>x.n.includes(k.split(",")[0])||k.includes(x.n.split(" ")[0]));
+    if(!p)return;
+    const d=dist(lat,lng,p.lat,p.lng);
+    if(d<40)out.push({t:k,x:STORIES[k],d,src:"olive",clip:(typeof STORY_CLIP!=="undefined")?STORY_CLIP[k]:null});
+  });
+  /* and the places themselves */
+  POI.forEach(p=>{
+    const d=dist(lat,lng,p.lat,p.lng);
+    if(d<25&&p.d&&p.d.length>60)out.push({t:p.n,x:p.d+(p.tip?" "+p.tip:""),d,src:"olive"});
+  });
+  return out.sort((a,b)=>a.d-b.d).slice(0,6);
+}
+
+/* Wikipedia caps a geosearch at 10km, which is only about six miles - thin at
+   highway speed. So sweep here AND a point up the road, and merge. */
+async function geoHits(lat,lng){
+  try{
+    const gs=await (await fetch("https://en.wikipedia.org/w/api.php?action=query&list=geosearch&gscoord="+
+      lat+"%7C"+lng+"&gsradius=10000&gslimit=14&format=json&origin=*")).json();
+    return (gs.query&&gs.query.geosearch)||[];
+  }catch(e){return []}
+}
+/* a point roughly `mi` miles along the current heading */
+function pointAhead(lat,lng,mi){
+  if(heading==null)return null;
+  const R=3958.8, br=heading*Math.PI/180, p=Math.PI/180;
+  const la1=lat*p, lo1=lng*p, dr=mi/R;
+  const la2=Math.asin(Math.sin(la1)*Math.cos(dr)+Math.cos(la1)*Math.sin(dr)*Math.cos(br));
+  const lo2=lo1+Math.atan2(Math.sin(br)*Math.sin(dr)*Math.cos(la1),Math.cos(dr)-Math.sin(la1)*Math.sin(la2));
+  return [la2/p, lo2/p];
+}
+
+async function liveFacts(lat,lng){
+  const out=[];
+  try{
+    const ahead=pointAhead(lat,lng,11);
+    const sets=await Promise.all([geoHits(lat,lng)].concat(ahead?[geoHits(ahead[0],ahead[1])]:[]));
+    const seenT=new Set();
+    const hits=[];
+    sets.forEach(arr=>arr.forEach(h=>{if(!seenT.has(h.title)){seenT.add(h.title);hits.push(h)}}));
+    /* skip the dull ones - road junctions, list pages, bare districts */
+    const skip=/^(list of|index of)|\b(census-designated|township|ZIP|Interstate \d|U\.S\. Route)\b/i;
+    const picks=hits.filter(h=>!skip.test(h.title)).slice(0,8);
+    const sums=await Promise.all(picks.map(async h=>{
+      try{
+        const s=await (await fetch("https://en.wikipedia.org/api/rest_v1/page/summary/"+
+                      encodeURIComponent(h.title.replace(/ /g,"_")))).json();
+        if(!s.extract||s.extract.length<80)return null;
+        return {t:h.title,x:s.extract,d:h.dist/1609,src:"wiki",
+                url:s.content_urls&&s.content_urls.desktop&&s.content_urls.desktop.page};
+      }catch(e){return null}
+    }));
+    sums.filter(Boolean).forEach(s=>out.push(s));
+  }catch(e){}
+  return out;
+}
+
+async function loadFacts(force){
+  if(!here){$("factsWhere").innerHTML="Olive needs your location to find facts about where you are. Turn on <b>Follow my journey</b> on the Today tab.";return}
+  if(factsBusy)return;
+  /* only re-dig when we've actually moved somewhere new */
+  if(!force&&factsAt&&dist(factsAt.lat,factsAt.lng,here.lat,here.lng)<10)return;
+  factsBusy=true;
+  factsAt={lat:here.lat,lng:here.lng};
+  const place=whereAmI.city?whereAmI.city+", "+whereAmI.state:(whereAmI.state||"here");
+  $("factsWhere").innerHTML="&#128269; Digging up what happened around <b>"+esc(place)+"</b>&hellip;";
+  const mine=curatedFacts(here.lat,here.lng);
+  facts=mine.slice();
+  renderFacts();
+  const live=await liveFacts(here.lat,here.lng);
+  /* de-duplicate: Olive's own write-up wins over the encyclopaedia entry */
+  const have=new Set(facts.map(f=>f.t.toLowerCase().split(",")[0].trim()));
+  live.forEach(f=>{if(!have.has(f.t.toLowerCase().split(",")[0].trim()))facts.push(f)});
+  facts.sort((a,b)=>a.d-b.d);
+  factsBusy=false;
+  renderFacts();
+  $("factsWhere").innerHTML="&#128205; <b>"+esc(place)+"</b> &mdash; "+facts.length+
+    " thing"+(facts.length===1?"":"s")+" worth knowing around here"+(heading!=null?" and up the road":"")+"."+
+    (live.length?"":" <span class='muted'>(Couldn't reach the live layer &mdash; showing Olive's own notes only.)</span>");
+}
+
+function renderFacts(){
+  if(!facts.length){
+    $("factsList").innerHTML='<div class="card"><p class="muted" style="margin:0">Nothing found here yet. Tap <b>Find facts here</b>, or wait until you are nearer a town.</p></div>';
+    return;
+  }
+  $("factsList").innerHTML=facts.map((f,i)=>`
+    <div class="card ${f.src==="olive"?"a-gold":"a-sky"}">
+      <div class="card-h">
+        <span class="ic">${f.src==="olive"?"&#129506;":"&#128218;"}</span>
+        <h3 style="font-size:1.05rem">${esc(f.t)}</h3>
+      </div>
+      <div class="pills" style="margin-bottom:.6rem">
+        <span class="pill ${f.src==="olive"?"gold":"sky"}">${f.src==="olive"?"Olive's own notes":"Nearby history"}</span>
+        <span class="pill">${f.d<1?"right here":fmtMi(f.d)+" away"}</span>
+      </div>
+      <p style="margin:0">${esc(f.x)}</p>
+      <div class="btnrow" style="margin-top:.8rem">
+        <button class="btn sm ghost" data-factread="${i}">&#128266; Read this</button>
+        ${f.url?`<a class="btn sm ghost" href="${f.url}" target="_blank" rel="noopener">Read more</a>`:""}
+      </div>
+    </div>`).join("");
+}
+$("factsList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-factread]");if(!b)return;
+  const f=facts[+b.dataset.factread];
+  speak(f.t+". "+f.x,true,f.clip||null);
+  toast("&#128266; Reading");
+});
+$("factsRefresh").addEventListener("click",()=>{loadFacts(true);toast("Looking&hellip;")});
+$("factsRead").addEventListener("click",()=>{
+  if(!facts.length)return toast("No facts yet");
+  const top=facts.slice(0,3);
+  speak(top.map(f=>f.t+". "+f.x).join(" "),true,top.length===1?top[0].clip:null);
+  toast("&#128266; Reading the top "+top.length);
+});
+$("factsSave").addEventListener("click",()=>{
+  if(!facts.length)return toast("No facts yet");
+  const place=whereAmI.city?whereAmI.city+", "+whereAmI.state:whereAmI.state;
+  addFeed("note","&#128161;","Facts from "+place,facts.slice(0,3).map(f=>f.t+": "+f.x.slice(0,140)).join("  |  "));
+  toast("&#128221; Saved to your journal");
+});
+
+/* ============================================================
+   LIVE RADIO - real broadcasters around you, anywhere
+   Radio Browser is a public, keyless directory. Most US entries
+   carry the call sign and dial position in the name, which is
+   what you actually need in a vehicle.
+   ============================================================ */
+let radioSrc="live", liveStations=[], liveFilter="all", radioAudio=null, liveAt=null, radioBusy=false;
+const RB="https://de1.api.radio-browser.info/json/stations/search";
+
+function parseStation(s){
+  const name=(s.name||"").trim();
+  const fm=name.match(/\b(8[7-9]|9\d|10[0-7])[.,](\d)\b/);
+  const am=name.match(/\b(\d{3,4})\s*(?:AM|am)\b/);
+  const call=(name.match(/\b([KW][A-Z]{2,3})(?:-(?:FM|AM))?\b/)||[])[1]||"";
+  const tags=(s.tags||"").toLowerCase();
+  let fmt="Music";
+  if(/news|talk|public radio|npr/.test(tags))fmt="News/Talk";
+  else if(/country/.test(tags))fmt="Country";
+  else if(/classical|public/.test(tags))fmt="Public";
+  else if(/rock|classic hits|oldies/.test(tags))fmt="Rock";
+  else if(/christian|gospel|religio/.test(tags))fmt="Religious";
+  else if(/spanish|latino|regional mexican/.test(tags))fmt="Spanish";
+  else if(/sport/.test(tags))fmt="Sports";
+  return {name,call,
+    freq: fm?(fm[1]+"."+fm[2]):(am?am[1]:""),
+    band: fm?"FM":(am?"AM":""),
+    fmt, url:s.url_resolved||s.url, votes:+s.votes||0,
+    state:s.state||"", homepage:s.homepage||""};
+}
+
+async function loadLiveStations(force){
+  if(!here){$("radioStatus").innerHTML="Olive needs your location to find stations around you. Turn on <b>Follow my journey</b> on the Today tab.";return}
+  if(radioBusy)return;
+  if(!force&&liveAt&&dist(liveAt.lat,liveAt.lng,here.lat,here.lng)<25)return;
+  radioBusy=true; liveAt={lat:here.lat,lng:here.lng};
+  const st=whereAmI.state||"";
+  $("radioStatus").innerHTML="&#128225; Finding stations around <b>"+esc(st||"you")+"</b>&hellip;";
+  try{
+    const u=RB+"?country=The%20United%20States&state="+encodeURIComponent(st)+
+            "&hidebroken=true&limit=120&order=votes&reverse=true";
+    const j=await (await fetch(u)).json();
+    const seen=new Set();
+    liveStations=j.map(parseStation)
+      .filter(s=>{const k=(s.call||s.name).toLowerCase();if(seen.has(k))return false;seen.add(k);return true})
+      /* a real dial position or a call sign means it's an actual broadcaster */
+      .sort((a,b)=>((b.freq?1:0)-(a.freq?1:0))||((b.call?1:0)-(a.call?1:0))||(b.votes-a.votes));
+    const onDial=liveStations.filter(s=>s.freq).length;
+    $("radioStatus").innerHTML="&#128225; <b>"+esc(st)+"</b> &mdash; "+liveStations.length+
+      " stations, "+onDial+" with a dial position you can tune to in the vehicle.";
+  }catch(e){
+    liveStations=[];
+    $("radioStatus").innerHTML="Couldn't reach the station directory &mdash; no signal. Switch to <b>The August route</b> for Olive's offline list.";
+  }
+  radioBusy=false;
+  renderLive();
+}
+
+function renderLive(){
+  let list=liveStations;
+  const f=liveFilter;
+  if(f==="fm")list=list.filter(s=>s.band==="FM");
+  else if(f==="am")list=list.filter(s=>s.band==="AM");
+  else if(f==="country")list=list.filter(s=>s.fmt==="Country");
+  else if(f==="news")list=list.filter(s=>s.fmt==="News/Talk");
+  else if(f==="public")list=list.filter(s=>s.fmt==="Public");
+  else if(f==="rock")list=list.filter(s=>s.fmt==="Rock");
+  $("stationList").innerHTML=list.length?list.slice(0,60).map((s,i)=>`
+    <div class="station" data-live="${i}">
+      <div class="f">${s.freq?esc(s.freq):"&#9835;"}${s.band?`<div style="font-size:.6rem;letter-spacing:.1em">${s.band}</div>`:""}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800">${esc(s.call||s.name.slice(0,30))}</div>
+        <div class="small muted">${esc(s.fmt)}${s.call&&s.name?" &mdash; "+esc(s.name.slice(0,44)):""}</div>
+      </div>
+      ${s.url?`<button class="btn sm ghost" data-play="${i}">&#9654;&#65039;</button>`:""}
+    </div>`).join(""):'<p class="small muted">No stations match that filter here.</p>';
+  /* keep indexes honest for the click handler */
+  $("stationList")._list=list;
+}
+
+$("radioSource").addEventListener("click",e=>{
+  const b=e.target.closest("[data-rsrc]");if(!b)return;
+  radioSrc=b.dataset.rsrc;
+  $$("#radioSource .pill").forEach(p=>p.classList.toggle("on",p===b));
+  $("liveRadioWrap").style.display=radioSrc==="live"?"block":"none";
+  $("routeRadioWrap").style.display=radioSrc==="route"?"block":"none";
+  if(radioSrc==="live"){loadLiveStations(true);renderLive()}else renderRadio();
+});
+$("liveFilters").addEventListener("click",e=>{
+  const b=e.target.closest("[data-lf]");if(!b)return;
+  liveFilter=b.dataset.lf;
+  $$("#liveFilters .pill").forEach(p=>p.classList.toggle("on",p===b));
+  renderLive();
+});
+$("stationList").addEventListener("click",e=>{
+  if(radioSrc!=="live")return;
+  const list=$("stationList")._list||[];
+  const play=e.target.closest("[data-play]");
+  if(play){e.stopPropagation();playStation(list[+play.dataset.play]);return}
+  const row=e.target.closest("[data-live]");
+  if(!row)return;
+  const s=list[+row.dataset.live];
+  $$("#stationList .station").forEach(x=>x.classList.toggle("on",x===row));
+  if(s.freq){
+    $("dialFreq").textContent=s.freq;
+    $("dialCall").textContent=s.call||s.name.slice(0,18);
+    $("dialFmt").textContent=s.fmt+" · "+s.band;
+    const n=parseFloat(s.freq);
+    let pct=s.band==="FM"?((n-88)/20)*100:((n-530)/1170)*100;
+    $("dialNeedle").style.left=Math.max(1,Math.min(99,pct))+"%";
+    speak("Tune to "+s.freq+" "+s.band+", "+(s.call||s.fmt));
+  }else{
+    $("dialFreq").textContent="&#9835;";
+    $("dialCall").textContent=s.call||s.name.slice(0,18);
+    $("dialFmt").textContent=s.fmt+" · online only";
+  }
+});
+function playStation(s){
+  if(!s||!s.url)return toast("No stream for that one");
+  if(radioAudio){try{radioAudio.pause()}catch(e){}radioAudio=null}
+  radioAudio=new Audio(s.url);
+  radioAudio.play().then(()=>{
+    $("nowPlaying").style.display="block";
+    $("nowPlaying").innerHTML=`<div class="row" style="border-color:var(--rust)">
+      <div class="ic">&#128266;</div><div class="bd">
+        <div class="t">Playing ${esc(s.call||s.name.slice(0,28))}</div>
+        <div class="s">${esc(s.fmt)}${s.freq?" &middot; "+esc(s.freq)+" "+s.band:""} &middot; streaming over data</div>
+      </div>
+      <button class="btn sm ghost" id="stopStream">&#9209;&#65039; Stop</button></div>`;
+    $("stopStream").addEventListener("click",()=>{
+      try{radioAudio.pause()}catch(e){}
+      radioAudio=null;$("nowPlaying").style.display="none";
+    });
+  }).catch(()=>toast("That stream wouldn't start &mdash; try another"));
+}
+
+/* ============================================================
    CREW CHAT  (ntfy.sh pub/sub - free, no accounts)
    ============================================================ */
 const CHAT_TOPIC="olive-crew-"+ROOM_SUFFIX, CHAT_URL="https://ntfy.sh/"+CHAT_TOPIC;
@@ -4115,10 +4387,10 @@ $("updateBar").addEventListener("click",()=>location.reload(true));
 function boot(){
   syncVoiceBtn();
   renderHero();renderDays();renderScenic();renderBucket();renderDash();
-  renderHealth();renderCheck();renderPack();renderResv();renderMed();
+  renderHealth();renderResv();renderMed();
   renderStories();renderSettings();renderNotif();renderFeed();renderGal();
   renderBriefing();renderNearby();netCheck();
-  renderStays();renderPins();renderPasses();renderClearance();renderRadio();drawTrail();
+  renderStays();renderPins();renderPasses();renderClearance();renderRadio();drawTrail();renderFacts();
   cycleTimers();
   loadWeather();
   chatSubscribe();locSubscribe();
