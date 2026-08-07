@@ -439,6 +439,12 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 .chk span{flex:1;line-height:1.45}
 .chk input:checked+span{text-decoration:line-through;color:var(--ink-faint)}
 
+/* live-search result markers, deliberately unlike Olive's own */
+.mk.find{background:linear-gradient(168deg,var(--brass-lt),var(--brass));color:var(--leather-dk);border-color:var(--leather-dk)}
+.findgrid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+@media(min-width:560px){.findgrid{grid-template-columns:repeat(3,1fr)}}
+.findgrid .btn{justify-content:flex-start;font-size:.86rem;padding-left:.6rem;padding-right:.6rem}
+
 /* ============ LIVE MAP ============ */
 #mapWrap{
   position:relative;width:100%;height:clamp(360px,58vh,620px);
@@ -556,6 +562,82 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 #updateBar{display:none;position:fixed;top:0;left:0;right:0;z-index:400;background:linear-gradient(170deg,var(--brass-lt),var(--brass));color:var(--leather-dk);text-align:center;padding:.7rem 1rem;font-weight:800;cursor:pointer;font-size:.93rem;border-bottom:3px solid var(--leather-dk)}
 #netPill{position:fixed;right:.7rem;bottom:calc(5.2rem + env(safe-area-inset-bottom));z-index:150;background:var(--leather-dk);color:var(--brass-lt);border:2px solid var(--brass);border-radius:2rem;padding:.35rem .8rem;font-size:.74rem;font-weight:800;display:none;box-shadow:var(--shadow)}
 #netPill.on{display:block}
+
+/* ============================================================
+   PHONES
+   At 360px the header, tab bar and bottom bar were eating 54% of
+   the screen before any content appeared. Everything below buys
+   that space back WITHOUT going under the 44px tap minimum.
+   ============================================================ */
+@media (max-width:560px){
+  /* header: less ceremony, same identity */
+  header.top{padding:calc(.5rem + env(safe-area-inset-top)) 0 2.1rem}
+  header.top::before{inset:.35rem .35rem 1.8rem;border-radius:9px}
+  header.top::after{height:1.9rem}
+  .logo{width:2.4rem;height:2.4rem}
+  .brandtxt h1{font-size:1.5rem}
+  .brandtxt .tag{font-size:.58rem;letter-spacing:.18em}
+  .brandtxt .tag::before,.brandtxt .tag::after{width:.6rem}
+  .icon-btn{min-width:2.9rem;min-height:2.9rem;font-size:1rem;border-radius:11px}
+  .hdr-actions{gap:.35rem}
+
+  /* tab bar: tighter, still 44px tall */
+  nav.tabs a{padding:.4rem .7rem;min-height:2.8rem;font-size:.86rem}
+  .tabscroll{padding:.35rem .6rem;gap:.25rem}
+
+  /* bottom bar */
+  .bottombar a{min-height:3.1rem;font-size:.58rem}
+  .bottombar a .ic{font-size:1.2rem}
+  body{padding-bottom:calc(4rem + env(safe-area-inset-bottom))}
+
+  /* cards + hero breathe less */
+  .wrap{padding:0 .7rem}
+  .card{padding:.9rem;border-radius:14px}
+  .hero{padding:1.05rem .95rem;border-radius:18px}
+  .hero h2{font-size:1.42rem}
+  .cd b{font-size:1.25rem}
+  .stack>*+*{margin-top:.75rem}
+
+  /* filter pill rows scroll sideways instead of stacking 260px tall */
+  #nearFilters,#liveFilters,#podGenres,#fmtFilters,#feedFilters,#ckTabs,#radioSource{
+    flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:.2rem;
+    -webkit-overflow-scrolling:touch;
+  }
+  #nearFilters::-webkit-scrollbar,#liveFilters::-webkit-scrollbar,#podGenres::-webkit-scrollbar,
+  #fmtFilters::-webkit-scrollbar,#feedFilters::-webkit-scrollbar{display:none}
+  #nearFilters .pill,#liveFilters .pill,#podGenres .pill,#fmtFilters .pill,#feedFilters .pill{flex:0 0 auto}
+
+  /* button rows: keep them to a line or two */
+  .btnrow{gap:.4rem}
+  .btn.sm{padding:.35rem .6rem;font-size:.82rem}
+
+  /* map: leave room for the page around it */
+  #mapWrap{height:clamp(300px,46vh,430px)}
+  .map-ctrl button{width:2.65rem;height:2.65rem;font-size:1rem}
+  #mapLayers button{padding:.55rem .6rem;font-size:.7rem;min-height:2.55rem}
+  #mapBar{padding:.55rem .7rem}
+  /* map pins are tap targets too - a thumb needs to land on them */
+  .mk{width:2.5rem;height:2.5rem;font-size:1.05rem;border-width:3px}
+  .mk-lbl{transform:translate(-50%,-2.9rem);font-size:.64rem}
+
+  /* the mic sits clear of the bottom bar */
+  #micBtn{width:3.1rem;height:3.1rem;bottom:calc(4.6rem + env(safe-area-inset-bottom))}
+  #micHeard{bottom:calc(8.2rem + env(safe-area-inset-bottom))}
+  #toast{bottom:calc(4.6rem + env(safe-area-inset-bottom))}
+}
+/* very small phones */
+@media (max-width:360px){
+  .brandtxt h1{font-size:1.32rem}
+  .findgrid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+}
+/* landscape in the car: chrome almost disappears */
+@media (max-height:480px) and (orientation:landscape){
+  header.top{padding:calc(.3rem + env(safe-area-inset-top)) 0 1.2rem}
+  header.top::after{height:1rem}
+  .brandtxt h1{font-size:1.2rem}
+  #mapWrap{height:78vh}
+}
 
 @media print{
   nav.tabs,.bottombar,.icon-btn,#toast,#netPill,.btn{display:none!important}
@@ -839,8 +921,19 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
     <div class="card a-sage">
       <div class="card-h"><span class="ic">&#128269;</span><h3>Find It Right Now</h3></div>
-      <p class="small muted">Live maps for the things that change too fast for any guide.</p>
-      <div class="grid g2" id="findNow"></div>
+      <p class="small muted">Live search for whatever you need this minute. Results land on the map above, in gold, alongside Olive's own places.</p>
+      <div class="field" style="margin:.7rem 0 0">
+        <label class="fld" for="findRadius">How far to look</label>
+        <select id="findRadius">
+          <option value="5">Within 5 miles</option>
+          <option value="15" selected>Within 15 miles</option>
+          <option value="30">Within 30 miles</option>
+          <option value="60">Within 60 miles</option>
+        </select>
+      </div>
+      <div class="findgrid" id="findNow" style="margin-top:.8rem"></div>
+      <div id="findStatus" class="small muted" style="margin-top:.8rem"></div>
+      <div id="findList" style="margin-top:.7rem"></div>
     </div>
 
     <div class="card a-gold">
@@ -1163,7 +1256,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w12-2026-08-06";
+const OLIVE_BUILD="w16-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -2272,7 +2365,7 @@ $("logFuel").addEventListener("click",()=>{
 /* ============================================================
    GPS ENGINE
    ============================================================ */
-let here=null, watchId=null, lastFix=null;
+let here=null, watchId=null, lastFix=null, lastWx=null;
 let alerted=new Set(store.get("alerted",[]));
 function saveAlerted(){store.set("alerted",Array.from(alerted).slice(-400))}
 
@@ -2669,12 +2762,7 @@ function poiSheet(name){
     </div>`);
 }
 
-/* ---------- Find It Now (live map searches) ---------- */
-function renderFindNow(){
-  $("findNow").innerHTML=FINDNOW.map(f=>
-    `<a class="btn ghost" style="justify-content:flex-start" href="${mapSearch(f.q,here?here.lat:null,here?here.lng:null)}" target="_blank" rel="noopener">${f.ic} ${f.n}</a>`
-  ).join("");
-}
+/* Find It Right Now now lives in its own module and draws onto the map. */
 function renderEvents(){
   const i=tripDayIndex();
   const rel=EVENTS.slice().sort((a,b)=>Math.abs((a.day||0)-(i>=0?DAYS[i].n:1))-Math.abs((b.day||0)-(i>=0?DAYS[i].n:1)));
@@ -2711,6 +2799,10 @@ async function loadWeather(){
       "&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=6";
     const r=await fetch(u);const j=await r.json();
     const cur=j.current,w=wmo(cur.weather_code);
+    lastWx={temp:Math.round(cur.temperature_2m),feels:Math.round(cur.apparent_temperature),
+            cond:w[0],wind:Math.round(cur.wind_speed_10m),
+            hi:Math.round(j.daily.temperature_2m_max[0]),lo:Math.round(j.daily.temperature_2m_min[0]),
+            rain:j.daily.precipitation_probability_max[0],at:Date.now()};
     $("wxNow").innerHTML=`
       <div style="display:flex;align-items:center;gap:1rem">
         <div style="font-size:3rem;line-height:1">${w[1]}</div>
@@ -4511,6 +4603,15 @@ function drawOverlay(o){
       html.push('<div class="mk-lbl" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px">'+
         esc(p.n.replace("Fuel - ","").slice(0,26))+'</div>');
   });
+  /* live search results, visually distinct from Olive's own places */
+  if(typeof found!=="undefined")found.forEach((f,i)=>{
+    if(!inView(f))return;
+    const q=toPx(f.lat,f.lng,o);
+    html.push('<button class="mk find" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px" '+
+      'data-fnd="'+i+'" title="'+esc(f.n)+'">'+f.ic+'</button>');
+    if(mapLabels&&mapZ>=13&&i<14)
+      html.push('<div class="mk-lbl" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px">'+esc(f.n.slice(0,22))+'</div>');
+  });
   pins().forEach((x,i)=>{
     if(!inView(x))return;
     const q=toPx(x.lat,x.lng,o);
@@ -4633,6 +4734,17 @@ $("mapLayers").addEventListener("click",e=>{
   drawMap();
 });
 $("mapMarkers").addEventListener("click",e=>{
+  const fnd=e.target.closest("[data-fnd]");
+  if(fnd){
+    const f=found[+fnd.dataset.fnd];
+    openSheet(esc(f.n),
+      `<div class="pills" style="margin-bottom:.7rem"><span class="pill">${f.ic} ${esc(FIND_TAGS[f.cat].n)}</span>
+       <span class="pill sky">${fmtMi(f._d)} away</span></div>`+
+      (f.info?`<p>${esc(f.info)}</p>`:"<p class='muted'>No further detail published.</p>")+
+      `<div class="btnrow"><a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=${f.lat},${f.lng}" target="_blank" rel="noopener">&#129517; Directions</a>
+       ${f.phone?`<a class="btn ghost" href="tel:${esc(f.phone.replace(/[^+\d]/g,""))}">&#128222; Call</a>`:""}</div>`);
+    return;
+  }
   const m=e.target.closest("[data-mk]");
   if(m){selectPOI(m.dataset.mk,"map");return}
   const p=e.target.closest("[data-pin]");
@@ -5031,15 +5143,58 @@ function heard(txt,ms){
   el.innerHTML=txt; el.style.display="block";
   clearTimeout(heard._t); heard._t=setTimeout(()=>el.style.display="none",ms||4200);
 }
+/* Somewhere to ask from even when the microphone is unavailable -
+   inside a preview frame, on iOS Safari, or with the mic refused. */
+const ASK_LIST=[
+ ["Where are we?","where are we"],
+ ["What's ahead?","what is ahead"],
+ ["Where's the next fuel?","where is the next fuel"],
+ ["Where should we eat?","where should we eat"],
+ ["What's the weather?","what is the weather"],
+ ["Tell me a fact","tell me a fact"],
+ ["What's the plan today?","what is the plan today"],
+ ["Where did we park?","where did we park"],
+ ["What's on the radio?","what is on the radio"]
+];
+function askSheet(why){
+  openSheet("Ask Olive",
+    (why?`<div class="note warn" style="margin-top:0">${why}</div>`:"")+
+    `<p class="small muted">Tap a question and she'll answer out loud.</p>`+
+    ASK_LIST.map((a,i)=>`<button class="btn ghost wide" style="justify-content:flex-start;margin-bottom:.45rem" data-ask2="${i}">${esc(a[0])}</button>`).join("")+
+    `<div id="askAnswer" class="note" style="display:none;margin-top:.8rem"></div>`);
+  $("shBody").addEventListener("click",e=>{
+    const b=e.target.closest("[data-ask2]");if(!b)return;
+    const a=ASK_LIST[+b.dataset.ask2];
+    const box=$("askAnswer");
+    box.style.display="block"; box.innerHTML="&hellip;";
+    answerAloud(a[1],txt=>{box.innerHTML="<b>"+esc(a[0])+"</b><br>"+esc(txt)});
+  });
+}
+async function micDiag(){
+  const framed=window.self!==window.top;
+  const secure=window.isSecureContext;
+  let perm="unknown";
+  try{if(navigator.permissions)perm=(await navigator.permissions.query({name:"microphone"})).state}catch(e){}
+  let why="";
+  if(!SR)why="<b>This browser can't do speech recognition.</b> iPhone Safari in particular is unreliable here. Everything still works by tapping.";
+  else if(framed)why="<b>You're in a preview frame, which blocks the microphone.</b> Open the real site at teond1090.github.io/olive-cabo-guide and it will listen.";
+  else if(!secure)why="<b>Needs a secure connection.</b> Open Olive over https.";
+  else if(perm==="denied")why="<b>Microphone is blocked for this site.</b> iPhone: Settings &rarr; Safari &rarr; Microphone. Android: tap the lock icon in the address bar &rarr; Permissions.";
+  askSheet(why||null);
+}
 function startListening(){
-  if(!SR)return toast("This browser can't listen");
+  if(!SR)return micDiag();
   if(listening){stopListening();return}
   try{
     rec=new SR();
     rec.lang="en-US"; rec.interimResults=false; rec.maxAlternatives=1; rec.continuous=false;
     rec.onstart=()=>{listening=true;$("micBtn").classList.add("hot");heard("Listening&hellip; ask me something.")};
-    rec.onerror=e=>{listening=false;$("micBtn").classList.remove("hot");
-      heard(e.error==="not-allowed"?"Microphone is blocked. Allow it in your browser settings.":"Didn't catch that.")};
+    rec.onerror=e=>{
+      listening=false;$("micBtn").classList.remove("hot");
+      if(e.error==="not-allowed"||e.error==="service-not-allowed"){micDiag()}
+      else if(e.error==="no-speech"){heard("Didn't hear anything &mdash; tap and speak straight after.")}
+      else{heard("Speech didn't work ("+esc(e.error||"unknown")+"). Tap and hold the button for a list instead.",6000)}
+    };
     rec.onend=()=>{listening=false;$("micBtn").classList.remove("hot")};
     rec.onresult=e=>{
       const said=(e.results[0][0].transcript||"").trim();
@@ -5047,63 +5202,207 @@ function startListening(){
       answerAloud(said);
     };
     rec.start();
-  }catch(e){toast("Couldn't start listening")}
+  }catch(e){micDiag()}
 }
 function stopListening(){try{rec&&rec.stop()}catch(e){}listening=false;$("micBtn").classList.remove("hot")}
 $("micBtn").addEventListener("click",startListening);
+let micHold=null;
+$("micBtn").addEventListener("pointerdown",()=>{micHold=setTimeout(()=>{stopListening();askSheet(null)},600)});
+["pointerup","pointerleave","pointercancel"].forEach(ev=>$("micBtn").addEventListener(ev,()=>clearTimeout(micHold)));
 
 /* Route a spoken question to the answer Olive already knows how to give. */
-function answerAloud(said){
-  const q=said.toLowerCase();
+function answerAloud(said,onText){
+  /* Match whole words only, on a padded, punctuation-stripped string.
+     Substring matching had "what's the WEATher" answering with a diner and
+     "HOTel" answering with the forecast. */
+  const q=" "+String(said).toLowerCase().replace(/[^a-z0-9' ]+/g," ").replace(/\s+/g," ").trim()+" ";
+  const has=(...words)=>words.some(w=>q.indexOf(" "+w+" ")>=0);
   let reply=null;
-  if(/where.*(am i|are we)|what town|what state/.test(q)){
+
+  /* Weather and location go first - their words hide inside other words. */
+  if(has("weather","forecast","rain","raining","storm","stormy","temperature","wind","windy","how hot","how cold")){
+    if(lastWx){
+      reply=lastWx.cond+", "+lastWx.temp+" degrees, feels like "+lastWx.feels+
+        ". High of "+lastWx.hi+", low "+lastWx.lo+
+        (lastWx.rain>=30?", and a "+lastWx.rain+" percent chance of rain":"")+
+        (lastWx.wind>=15?". Wind "+lastWx.wind+" miles an hour":"")+".";
+    }else{
+      reply="I haven't got the weather yet. Give it a moment and ask again.";
+      loadWeather();
+    }
+  }
+  else if(has("where am i","where are we","what town","what state","our location","where is this")){
     reply=whereAmI.city?("You're in "+whereAmI.city+", "+whereAmI.state+"."):(whereAmI.state?("You're in "+whereAmI.state+"."):"I don't have a fix yet.");
     const n=nearest(1)[0];
     if(n&&n._d<60)reply+=" Nearest thing I know is "+n.n+", "+fmtMi(n._d)+" away.";
   }
-  else if(/ahead|coming up|next stop/.test(q)){
+  else if(has("parked","where did we park","the truck","the car","the suv","the rv")){
+    const p=store.get("parked",null);
+    reply=(p&&here)?("You parked "+fmtMi(dist(here.lat,here.lng,p.lat,p.lng))+" from here. I've got it pinned."):"I haven't marked a parking spot yet.";
+  }
+  else if(has("ahead","coming up","next stop","nearby","near us","near me","around us","around here")){
     const a=nearest(null,null,120).filter(isAhead).slice(0,3);
     reply=a.length?("Ahead of you: "+a.map(p=>p.n+", "+fmtMi(p._d)).join(". ")+"."):"Nothing on my list ahead. Open country.";
   }
-  else if(/fuel|gas|diesel/.test(q)){
+  else if(has("fuel","gas","petrol","diesel","fill up","gas station")){
     const f=nearest(null,["fuel"],250).filter(isAhead)[0];
     reply=f?("Next fuel is "+f.n.replace("Fuel - ","")+", "+fmtMi(f._d)+", about "+eta(f._d)+"."):"No mapped fuel ahead. Use the live search on the Nearby tab.";
   }
-  else if(/eat|food|lunch|dinner|hungry|coffee/.test(q)){
+  else if(has("eat","food","lunch","dinner","breakfast","hungry","coffee","diner","restaurant","cafe")){
     const f=nearest(null,["food","gem"],80).filter(isAhead)[0];
     reply=f?(f.n+" is "+fmtMi(f._d)+" ahead. "+(f.d||"").split(".")[0]+"."):"Nothing good on my list nearby. Try the live search.";
   }
-  else if(/fact|interesting|tell me about|history|what happened/.test(q)){
-    if(facts.length)reply=facts[0].t+". "+facts[0].x.slice(0,340);
-    else{
-      heard("Digging something up&hellip;",4000);
-      loadFacts(true).then(()=>{
-        if(facts.length){heard("&ldquo;"+esc(said)+"&rdquo;<br><br>"+esc(facts[0].t),9000);speak(facts[0].t+". "+facts[0].x.slice(0,340),true,facts[0].clip||null)}
-        else speak("Nothing much on record right here.",true);
-      });
-      return;
-    }
+  else if(has("radio","station","stations","listen","podcast")){
+    const r=RADIO[nearestRegion()];
+    reply="Around here try "+r.s.slice(0,2).map(s=>s.f+" "+s.b).join(", ")+".";
   }
-  else if(/plan|today|schedule|itinerary/.test(q)){
+  else if(has("plan","schedule","itinerary","today","what are we doing")){
     const i=tripDayIndex();
     reply=i>=0?("Day "+DAYS[i].n+". "+DAYS[i].t+". "+DAYS[i].r+". Tonight you're at "+DAYS[i].stay+"."):
       ("You leave in "+daysBetween(todayISO(),TRIP_START)+" days.");
   }
-  else if(/weather|rain|storm|hot/.test(q)){
-    reply=($("wxNow").innerText||"").replace(/\s+/g," ").trim()||"I can't reach the weather right now.";
-  }
-  else if(/park|where did we park|the truck|the car|the suv|the rv/.test(q)){
-    const p=store.get("parked",null);
-    reply=p?("You parked "+fmtMi(dist(here.lat,here.lng,p.lat,p.lng))+" from here. I've got it pinned."):"I haven't marked a parking spot yet.";
-  }
-  else if(/radio|station|listen/.test(q)){
-    const r=RADIO[nearestRegion()];
-    reply="Around here try "+r.s.slice(0,2).map(s=>s.f+" "+s.b).join(", ")+".";
+  else if(has("fact","facts","interesting","history","historic","what happened","tell me about")){
+    if(facts.length)reply=facts[0].t+". "+facts[0].x.slice(0,340);
+    else{
+      heard("Digging something up&hellip;",4000);
+      loadFacts(true).then(()=>{
+        const t=facts.length?(facts[0].t+". "+facts[0].x.slice(0,340)):"Nothing much on record right here.";
+        heard("&ldquo;"+esc(said)+"&rdquo;<br><br>"+esc(t.slice(0,200)),9000);
+        if(onText)onText(t);
+        speak(t,true,facts.length?(facts[0].clip||null):null);
+      });
+      return;
+    }
   }
   else reply=oliveKnows(said)||"I didn't catch that. Try: what's ahead, where are we, next fuel, or tell me a fact.";
   heard("&ldquo;"+esc(said)+"&rdquo;<br><br>"+esc(reply.slice(0,220)),9000);
+  if(onText)onText(reply);
   speak(reply,true);
 }
+
+/* ============================================================
+   FIND IT RIGHT NOW - live places, on your own map
+   OpenStreetMap's Overpass service, free and keyless. Results land
+   as markers beside Olive's own places instead of throwing you out
+   to another app.
+   ============================================================ */
+const OVERPASS=["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter"];
+const FIND_TAGS={
+  fuel:      {t:['node["amenity"="fuel"]','way["amenity"="fuel"]'],ic:"&#9981;",n:"Fuel"},
+  diner:     {t:['node["amenity"="restaurant"]','node["amenity"="fast_food"]'],ic:"&#127869;&#65039;",n:"Food"},
+  coffee:    {t:['node["amenity"="cafe"]'],ic:"&#9749;",n:"Coffee"},
+  grocery:   {t:['node["shop"="supermarket"]','way["shop"="supermarket"]','node["shop"="convenience"]'],ic:"&#128722;",n:"Grocery"},
+  pharmacy:  {t:['node["amenity"="pharmacy"]','way["amenity"="pharmacy"]'],ic:"&#128138;",n:"Pharmacy"},
+  medical:   {t:['node["amenity"="clinic"]','node["amenity"="doctors"]','node["amenity"="hospital"]','way["amenity"="hospital"]'],ic:"&#127973;",n:"Medical"},
+  restroom:  {t:['node["highway"="rest_area"]','node["amenity"="toilets"]'],ic:"&#128701;",n:"Rest stop"},
+  repair:    {t:['node["shop"="car_repair"]','node["shop"="tyres"]'],ic:"&#128295;",n:"Car repair"},
+  carwash:   {t:['node["amenity"="car_wash"]'],ic:"&#128704;",n:"Car wash"},
+  hotel:     {t:['node["tourism"="hotel"]','way["tourism"="hotel"]','node["tourism"="motel"]'],ic:"&#127976;",n:"Hotel"},
+  camp:      {t:['node["tourism"="camp_site"]','way["tourism"="camp_site"]'],ic:"&#127957;&#65039;",n:"Campground"},
+  laundry:   {t:['node["shop"="laundry"]','node["shop"="dry_cleaning"]'],ic:"&#129529;",n:"Laundry"},
+  viewpoint: {t:['node["tourism"="viewpoint"]'],ic:"&#128247;",n:"Viewpoint"},
+  attraction:{t:['node["tourism"="attraction"]','node["historic"~"."]'],ic:"&#127963;&#65039;",n:"Sight"}
+};
+let found=[], findCat=null, findBusy=false;
+
+async function findNow(cat,radiusMi){
+  if(!here)return toast("Olive needs your location first");
+  const spec=FIND_TAGS[cat]; if(!spec)return;
+  if(findBusy)return;
+  findBusy=true; findCat=cat;
+  const r=Math.round((radiusMi||15)*1609);
+  $("findStatus").innerHTML="&#128269; Looking for "+spec.n.toLowerCase()+" within "+(radiusMi||15)+" miles&hellip; <span class=\"muted\">(a few seconds)</span>";
+  const q="[out:json][timeout:25];("+spec.t.map(t=>t+"(around:"+r+","+here.lat.toFixed(5)+","+here.lng.toFixed(5)+");").join("")+");out center 60;";
+  let els=null;
+  try{
+    for(const host of OVERPASS){
+      /* Overpass is free and sometimes very slow. Without a hard timeout a
+         hung request would leave the search locked for the rest of the trip. */
+      const ctl=new AbortController();
+      const kill=setTimeout(()=>ctl.abort(),9000);   /* 9s per host, 18s worst case */
+      try{
+        const res=await fetch(host,{method:"POST",body:"data="+encodeURIComponent(q),
+          headers:{"Content-Type":"application/x-www-form-urlencoded"},signal:ctl.signal});
+        clearTimeout(kill);
+        if(!res.ok)continue;
+        const j=await res.json();
+        els=j.elements||[]; break;
+      }catch(e){clearTimeout(kill)}
+    }
+  }finally{
+    findBusy=false;                 /* never leave the search jammed */
+  }
+  if(!els){
+    found=[];
+    /* give them a way through rather than a dead end */
+    $("findStatus").innerHTML="Couldn't reach the search &mdash; weak signal, or the free map service is busy."+
+      '<div class="btnrow" style="margin-top:.6rem">'+
+      '<button class="btn sm ghost" data-find="'+cat+'">&#8635; Try again</button>'+
+      '<a class="btn sm ghost" href="'+mapSearch(spec.n,here.lat,here.lng)+'" target="_blank" rel="noopener">&#128506;&#65039; Open in Google Maps</a>'+
+      "</div>";
+    renderFound(); drawMap(); return;
+  }
+  found=els.map(e=>{
+    const la=e.lat!=null?e.lat:(e.center&&e.center.lat), lo=e.lon!=null?e.lon:(e.center&&e.center.lon);
+    if(la==null)return null;
+    const tg=e.tags||{};
+    return {n:tg.name||tg.brand||tg.operator||("Unnamed "+spec.n.toLowerCase()),
+            lat:la,lng:lo,cat,ic:spec.ic,
+            info:[tg["addr:street"]&&((tg["addr:housenumber"]||"")+" "+tg["addr:street"]).trim(),
+                  tg.opening_hours,tg.phone||tg["contact:phone"],tg.cuisine].filter(Boolean).join(" · "),
+            phone:tg.phone||tg["contact:phone"]||"",
+            _d:dist(here.lat,here.lng,la,lo)};
+  }).filter(Boolean).sort((a,b)=>a._d-b._d).slice(0,40);
+  $("findStatus").innerHTML="&#128205; <b>"+found.length+" "+spec.n.toLowerCase()+"</b> within "+(radiusMi||15)+
+    " miles, nearest first. They're on the map in gold.";
+  renderFound(); drawMap();
+  if(found.length){
+    const f=found[0];
+    announce(spec.n+" found. Closest is "+f.n+", "+fmtMi(f._d)+" away.");
+  }
+}
+function renderFound(){
+  if(!found.length){$("findList").innerHTML="";return}
+  $("findList").innerHTML=found.slice(0,20).map((f,i)=>`
+    <div class="row clickable" data-found="${i}">
+      <div class="ic">${f.ic}</div>
+      <div class="bd"><div class="t">${esc(f.n)}</div>
+        ${f.info?`<div class="s">${esc(f.info.slice(0,80))}</div>`:""}</div>
+      <div class="rt"><div class="dist">${fmtMi(f._d)}</div><div class="eta">${eta(f._d)}</div></div>
+    </div>`).join("")+
+    `<button class="btn sm ghost" id="findClear" style="margin-top:.7rem">&#10005; Clear these from the map</button>`;
+  $("findClear").addEventListener("click",()=>{found=[];findCat=null;$("findStatus").innerHTML="";renderFound();drawMap()});
+}
+$("findList").addEventListener("click",e=>{
+  const r=e.target.closest("[data-found]");if(!r)return;
+  const f=found[+r.dataset.found];
+  mapC={lat:f.lat,lng:f.lng}; setFollow(false); if(mapZ<14)mapZ=14; drawMap();
+  openSheet(esc(f.n),
+    `<div class="pills" style="margin-bottom:.7rem"><span class="pill">${f.ic} ${esc(FIND_TAGS[f.cat].n)}</span>
+     <span class="pill sky">${fmtMi(f._d)} away</span><span class="pill">${eta(f._d)}</span></div>`+
+    (f.info?`<p>${esc(f.info)}</p>`:"<p class='muted'>No further detail published for this one.</p>")+
+    `<div class="btnrow" style="margin-top:.9rem">
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=${f.lat},${f.lng}" target="_blank" rel="noopener">&#129517; Directions</a>
+      ${f.phone?`<a class="btn ghost" href="tel:${esc(f.phone.replace(/[^+\d]/g,""))}">&#128222; Call</a>`:""}
+    </div>
+    <p class="small muted" style="margin-top:.8rem">From OpenStreetMap, kept up to date by volunteers. Hours and phone numbers can be stale &mdash; ring ahead if it matters.</p>`);
+});
+/* the category buttons */
+function renderFindNow(){
+  const cats=[["fuel","Fuel"],["diner","Food"],["coffee","Coffee"],["grocery","Grocery"],
+              ["pharmacy","Pharmacy"],["medical","Urgent care"],["restroom","Restrooms"],
+              ["repair","Car repair"],["hotel","Hotels"],["camp","Campgrounds"],
+              ["viewpoint","Viewpoints"],["attraction","Sights"],["carwash","Car wash"],["laundry","Laundry"]];
+  $("findNow").innerHTML=cats.map(([k,label])=>
+    `<button class="btn sm ghost" data-find="${k}" style="justify-content:flex-start">${FIND_TAGS[k].ic} ${label}</button>`).join("");
+}
+function findClickHandler(e){
+  const b=e.target.closest("[data-find]");if(!b)return;
+  $$("#findNow .btn").forEach(x=>x.classList.toggle("brass",x.dataset.find===b.dataset.find));
+  findNow(b.dataset.find,+($("findRadius")||{value:15}).value||15);
+}
+$("findNow").addEventListener("click",findClickHandler);
+$("findStatus").addEventListener("click",findClickHandler);   /* the retry button */
 
 /* ============================================================
    CREW CHAT  (ntfy.sh pub/sub - free, no accounts)
@@ -5428,7 +5727,7 @@ function boot(){
   renderHealth();renderResv();renderMed();
   renderStories();renderSettings();renderNotif();renderFeed();renderGal();
   renderBriefing();renderNearby();netCheck();
-  renderStays();renderPins();renderPasses();renderClearance();renderRadio();drawTrail();renderFacts();
+  renderFindNow();renderStays();renderPins();renderPasses();renderClearance();renderRadio();drawTrail();renderFacts();
   renderParkAlerts();loadParkAlerts();
   micShow(store.get('micOn',true)&&!!SR);
   if(radarOn){$('mapRadar').classList.add('on');loadRadarFrame().then(()=>{$('radarBar').style.display='block';drawMap();toggleRadarTimer()})}
