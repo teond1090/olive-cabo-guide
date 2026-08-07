@@ -439,6 +439,67 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 .chk span{flex:1;line-height:1.45}
 .chk input:checked+span{text-decoration:line-through;color:var(--ink-faint)}
 
+/* ============ LIVE MAP ============ */
+#mapWrap{
+  position:relative;width:100%;height:clamp(360px,58vh,620px);
+  overflow:hidden;background:#DCCFB4;touch-action:none;cursor:grab;
+  border-bottom:3px solid var(--leather);
+}
+#mapWrap.dragging{cursor:grabbing}
+#mapTiles,#mapMarkers{position:absolute;inset:0}
+#mapTiles img{position:absolute;width:256px;height:256px;user-select:none;-webkit-user-drag:none}
+#mapTrail{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.mk{
+  position:absolute;transform:translate(-50%,-50%);width:2rem;height:2rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:.95rem;cursor:pointer;
+  border:2.5px solid #FFF9ED;box-shadow:0 2px 6px rgba(0,0,0,.45);transition:transform .12s;
+}
+.mk:hover,.mk:focus-visible{transform:translate(-50%,-50%) scale(1.25);z-index:20}
+.mk.landmark{background:var(--rust)} .mk.park{background:var(--pine)}
+.mk.gem{background:var(--brass)}     .mk.food{background:#B5581F}
+.mk.fuel{background:var(--leather-2)} .mk.rv{background:var(--denim)}
+.mk.scenic{background:#7A6BA8}        .mk.wildlife{background:var(--sage)}
+.mk.pin{background:var(--brass);border-color:var(--leather-dk)}
+.mk-lbl{
+  position:absolute;transform:translate(-50%,-2.5rem);white-space:nowrap;pointer-events:none;
+  background:rgba(42,31,22,.86);color:#FFF3E2;font-size:.68rem;font-weight:700;
+  padding:.14rem .4rem;border-radius:5px;z-index:19;
+}
+#mapYou{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:30}
+#mapYou .dot{width:1.15rem;height:1.15rem;border-radius:50%;background:var(--denim);border:3px solid #FFF9ED;box-shadow:0 0 0 6px rgba(62,112,145,.25),0 2px 6px rgba(0,0,0,.4)}
+#mapYou .cone{
+  position:absolute;left:50%;top:50%;width:0;height:0;
+  border-left:14px solid transparent;border-right:14px solid transparent;
+  border-bottom:30px solid rgba(62,112,145,.42);
+  transform-origin:50% 100%;transform:translate(-50%,-100%);
+}
+#mapYou .ping{
+  position:absolute;left:50%;top:50%;width:1.15rem;height:1.15rem;margin:-.575rem 0 0 -.575rem;
+  border-radius:50%;background:rgba(62,112,145,.5);animation:ping 2.4s ease-out infinite;
+}
+@keyframes ping{0%{transform:scale(1);opacity:.7}100%{transform:scale(4.5);opacity:0}}
+.map-ctrl{position:absolute;right:.6rem;top:.6rem;display:flex;flex-direction:column;gap:.4rem;z-index:40}
+.map-ctrl button{
+  width:2.7rem;height:2.7rem;border-radius:10px;border:2px solid var(--leather-dk);
+  background:rgba(255,249,237,.95);color:var(--leather);font-size:1.05rem;font-weight:800;
+  cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;
+}
+.map-ctrl button:hover{background:var(--brass)}
+.map-ctrl button.on{background:var(--rust);color:#FFF3E2;border-color:var(--leather-dk)}
+.map-attr{
+  position:absolute;left:0;bottom:0;z-index:40;background:rgba(255,249,237,.85);
+  font-size:.58rem;padding:.12rem .4rem;border-top-right-radius:5px;color:var(--ink-soft);
+}
+.map-attr a{color:var(--ink-soft)}
+#mapLayers{position:absolute;left:.6rem;top:.6rem;z-index:40;display:flex;gap:.3rem}
+#mapLayers button{
+  padding:.32rem .6rem;border-radius:8px;border:2px solid var(--leather-dk);
+  background:rgba(255,249,237,.92);color:var(--leather);font-size:.72rem;font-weight:800;cursor:pointer;
+}
+#mapLayers button.on{background:var(--rust);color:#FFF3E2}
+#mapBar{padding:.7rem .9rem;background:var(--card-2);display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+#mapBar .sp{flex:1}
+
 /* ============ RADIO ============ */
 .dial{
   background:linear-gradient(168deg,#3A1D0D,#241007);border:3px solid var(--brass);border-radius:var(--r);
@@ -665,6 +726,38 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 <!-- ============================ NEARBY ============================ -->
 <div class="view" id="view-nearby">
   <div class="stack">
+
+    <!-- ---------- LIVE MAP ---------- -->
+    <div class="card a-canyon" style="padding:0;overflow:hidden">
+      <div id="mapWrap">
+        <div id="mapTiles"></div>
+        <svg id="mapTrail"><polyline id="mapTrailLine" fill="none" stroke="#A63A24" stroke-width="4"
+             stroke-linejoin="round" stroke-linecap="round" opacity=".9"/></svg>
+        <div id="mapMarkers"></div>
+        <div id="mapYou" style="display:none">
+          <div class="ping"></div><div class="cone" id="mapCone" style="display:none"></div><div class="dot"></div>
+        </div>
+        <div id="mapLayers">
+          <button data-layer="topo" class="on">Terrain</button>
+          <button data-layer="sat">Satellite</button>
+          <button data-layer="road">Roads</button>
+        </div>
+        <div class="map-ctrl">
+          <button id="mapIn" aria-label="Zoom in">&#43;</button>
+          <button id="mapOut" aria-label="Zoom out">&#8722;</button>
+          <button id="mapFollow" class="on" aria-label="Follow me" title="Follow me">&#127919;</button>
+          <button id="mapLabels" class="on" aria-label="Show names" title="Show names">&#127991;&#65039;</button>
+        </div>
+        <div class="map-attr" id="mapAttr"></div>
+      </div>
+      <div id="mapBar">
+        <span class="small muted" id="mapInfo">Finding you&hellip;</span>
+        <span class="sp"></span>
+        <button class="btn sm brass" id="mapPin">&#128204; Pin here</button>
+        <button class="btn sm ghost" id="mapNav">&#129517; Navigate</button>
+      </div>
+    </div>
+
     <div class="card a-canyon">
       <div class="card-h"><span class="ic">&#128205;</span><h3>What's Around You</h3></div>
       <div id="nearbyStatus" class="muted small">Finding you&hellip; this list re-sorts itself as you drive.</div>
@@ -765,6 +858,10 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <div class="card">
       <div class="card-h"><span class="ic">&#128251;</span><h3>Stations Near You</h3></div>
       <div id="radioStatus" class="small muted">Finding your area&hellip;</div>
+      <label class="switch" style="margin-top:.5rem">
+        <input type="checkbox" id="radioEnable" checked><span class="track"></span>
+        <span><b>Radio on</b><br><span class="small muted">Turn off to stop streaming and hide the play buttons. The dial and frequencies stay.</span></span>
+      </label>
       <div class="pills" style="margin-top:.8rem" id="radioSource">
         <button class="pill on" data-rsrc="live">&#128225; Live &mdash; wherever I am</button>
         <button class="pill" data-rsrc="route">&#128506;&#65039; The August route</button>
@@ -1007,7 +1104,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w7-2026-08-06";
+const OLIVE_BUILD="w8-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -1940,7 +2037,7 @@ function showView(v){
   VIEWS.forEach(x=>{const el=$("view-"+x);if(el)el.classList.toggle("active",x===v)});
   $$("nav.tabs a,.bottombar a").forEach(a=>a.classList.toggle("on",a.dataset.view===v));
   window.scrollTo({top:0,behavior:"instant"});
-  if(v==="nearby")renderNearby();
+  if(v==="nearby"){renderNearby();drawMap()}
   if(v==="memories")renderFeed();
   if(v==="bucket")renderBucket();
   if(v==="facts")loadFacts();
@@ -2153,6 +2250,7 @@ function onFix(pos){
   checkAlerts();
   renderNearby();
   followRadio();                     /* stations follow you down the road */
+  mapOnFix();
   if($("view-facts").classList.contains("active"))loadFacts();
   if($("view-radio").classList.contains("active")&&radioSrc==="live")loadLiveStations();
   if(!lastFix||Date.now()-lastFix>15*60*1000){lastFix=Date.now();loadWeather();}
@@ -2337,7 +2435,7 @@ $("nearFilters").addEventListener("click",e=>{
   const b=e.target.closest("[data-cat]");if(!b)return;
   nearCat=b.dataset.cat;
   $$("#nearFilters .pill").forEach(p=>p.classList.toggle("on",p===b));
-  renderNearby();
+  renderNearby();drawMap();
 });
 $("radiusSel").addEventListener("change",renderNearby);
 $("dirSel").addEventListener("change",renderNearby);
@@ -4005,7 +4103,7 @@ function renderLive(){
         <div style="font-weight:800">${esc(s.call||s.name.slice(0,30))}</div>
         <div class="small muted">${esc(s.fmt)}${s.call&&s.name?" &mdash; "+esc(s.name.slice(0,44)):""}</div>
       </div>
-      ${s.url?`<button class="btn sm ghost" data-play="${i}">&#9654;&#65039;</button>`:""}
+      ${(s.url&&radioOn)?`<button class="btn sm ghost" data-play="${i}">&#9654;&#65039;</button>`:""}
     </div>`).join(""):'<p class="small muted">No stations match that filter here.</p>';
   /* keep indexes honest for the click handler */
   $("stationList")._list=list;
@@ -4048,24 +4146,275 @@ $("stationList").addEventListener("click",e=>{
     $("dialFmt").textContent=s.fmt+" · online only";
   }
 });
-function playStation(s){
-  if(!s||!s.url)return toast("No stream for that one");
-  if(radioAudio){try{radioAudio.pause()}catch(e){}radioAudio=null}
-  radioAudio=new Audio(s.url);
-  radioAudio.play().then(()=>{
-    $("nowPlaying").style.display="block";
-    $("nowPlaying").innerHTML=`<div class="row" style="border-color:var(--rust)">
-      <div class="ic">&#128266;</div><div class="bd">
-        <div class="t">Playing ${esc(s.call||s.name.slice(0,28))}</div>
-        <div class="s">${esc(s.fmt)}${s.freq?" &middot; "+esc(s.freq)+" "+s.band:""} &middot; streaming over data</div>
-      </div>
-      <button class="btn sm ghost" id="stopStream">&#9209;&#65039; Stop</button></div>`;
-    $("stopStream").addEventListener("click",()=>{
-      try{radioAudio.pause()}catch(e){}
-      radioAudio=null;$("nowPlaying").style.display="none";
-    });
-  }).catch(()=>toast("That stream wouldn't start &mdash; try another"));
+/* ---- player: on/off master switch, mute, stop ---- */
+let radioOn=store.get("radioOn",true), radioMuted=store.get("radioMuted",false);
+function stopStream(){
+  if(radioAudio){try{radioAudio.pause();radioAudio.src=""}catch(e){}radioAudio=null}
+  $("nowPlaying").style.display="none";
 }
+function renderNowPlaying(s){
+  $("nowPlaying").style.display="block";
+  $("nowPlaying").innerHTML=`<div class="row" style="border-color:var(--rust)">
+    <div class="ic">${radioMuted?"&#128263;":"&#128266;"}</div>
+    <div class="bd">
+      <div class="t">${radioMuted?"Muted &mdash; ":"Playing "}${esc(s.call||s.name.slice(0,28))}</div>
+      <div class="s">${esc(s.fmt)}${s.freq?" &middot; "+esc(s.freq)+" "+s.band:""} &middot; streaming over data</div>
+    </div>
+    <div class="rt" style="display:flex;gap:.4rem">
+      <button class="btn sm ghost" id="muteStream">${radioMuted?"&#128266; Unmute":"&#128263; Mute"}</button>
+      <button class="btn sm ghost" id="stopStreamBtn">&#9209;&#65039; Stop</button>
+    </div></div>`;
+  $("muteStream").addEventListener("click",()=>{
+    radioMuted=!radioMuted; store.set("radioMuted",radioMuted);
+    if(radioAudio)radioAudio.muted=radioMuted;
+    renderNowPlaying(s); toast(radioMuted?"&#128263; Muted":"&#128266; Unmuted");
+  });
+  $("stopStreamBtn").addEventListener("click",()=>{stopStream();toast("Stopped")});
+}
+function playStation(s){
+  if(!radioOn)return toast("Radio is switched off");
+  if(!s||!s.url)return toast("No stream for that one");
+  stopStream();
+  radioAudio=new Audio(s.url);
+  radioAudio.muted=radioMuted;
+  radioAudio.play().then(()=>renderNowPlaying(s))
+    .catch(()=>{radioAudio=null;toast("That stream wouldn't start &mdash; try another")});
+}
+$("radioEnable").addEventListener("change",e=>{
+  radioOn=e.target.checked; store.set("radioOn",radioOn);
+  if(!radioOn)stopStream();
+  renderLive();
+  toast(radioOn?"&#128251; Radio on":"Radio off");
+});
+
+/* ============================================================
+   LIVE MAP
+   A real slippy map, built here rather than pulled from a library,
+   so the tiles cache offline with everything else and the overlay
+   knows about Olive's own places, your trail and your pins.
+   ============================================================ */
+const TILE=256;
+const LAYERS={
+  topo:{u:(z,x,y)=>"https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/"+z+"/"+y+"/"+x,
+        a:'Tiles &copy; Esri &mdash; topographic',max:19},
+  sat :{u:(z,x,y)=>"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/"+z+"/"+y+"/"+x,
+        a:'Imagery &copy; Esri, Maxar, Earthstar Geographics',max:18},
+  road:{u:(z,x,y)=>"https://tile.openstreetmap.org/"+z+"/"+x+"/"+y+".png",
+        a:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',max:19}
+};
+let mapLayer=store.get("mapLayer","topo");
+let mapZ=store.get("mapZ",11), mapC=store.get("mapC",null);   /* {lat,lng} */
+let mapFollow=true, mapLabels=true, mapReady=false;
+const tileEls=new Map();
+
+const lon2x=(lo,z)=>(lo+180)/360*Math.pow(2,z);
+const lat2y=(la,z)=>{const r=la*Math.PI/180;return (1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z)};
+const x2lon=(x,z)=>x/Math.pow(2,z)*360-180;
+const y2lat=(y,z)=>{const n=Math.PI-2*Math.PI*y/Math.pow(2,z);return 180/Math.PI*Math.atan(.5*(Math.exp(n)-Math.exp(-n)))};
+
+function mapCenter(){
+  if(mapC)return mapC;
+  if(here)return {lat:here.lat,lng:here.lng};
+  return {lat:44.5,lng:-108.0};                       /* the route, before you set off */
+}
+function mapSize(){const w=$("mapWrap");return {w:w.clientWidth||360,h:w.clientHeight||420}}
+
+/* world-pixel origin of the top-left corner */
+function mapOrigin(){
+  const c=mapCenter(),s=mapSize();
+  return {ox:lon2x(c.lng,mapZ)*TILE-s.w/2, oy:lat2y(c.lat,mapZ)*TILE-s.h/2, ...s};
+}
+const toPx=(la,lo,o)=>({x:lon2x(lo,mapZ)*TILE-o.ox, y:lat2y(la,mapZ)*TILE-o.oy});
+
+function drawTiles(o){
+  const L=LAYERS[mapLayer], n=Math.pow(2,mapZ);
+  const x0=Math.floor(o.ox/TILE), x1=Math.floor((o.ox+o.w)/TILE);
+  const y0=Math.floor(o.oy/TILE), y1=Math.floor((o.oy+o.h)/TILE);
+  const want=new Set();
+  const wrap=$("mapTiles");
+  for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){
+    if(y<0||y>=n)continue;
+    const tx=((x%n)+n)%n;
+    const key=mapLayer+"/"+mapZ+"/"+tx+"/"+y;
+    want.add(key);
+    let im=tileEls.get(key);
+    if(!im){
+      im=new Image();
+      im.decoding="async"; im.loading="eager"; im.alt="";
+      im.onerror=()=>{im.style.visibility="hidden"};
+      im.src=L.u(mapZ,tx,y);
+      tileEls.set(key,im); wrap.appendChild(im);
+    }
+    im.style.left=(x*TILE-o.ox)+"px";
+    im.style.top =(y*TILE-o.oy)+"px";
+  }
+  /* drop tiles that scrolled away, so memory stays flat on a long drive */
+  tileEls.forEach((im,key)=>{ if(!want.has(key)){im.remove();tileEls.delete(key)} });
+  $("mapAttr").innerHTML=L.a;
+}
+
+function drawOverlay(o){
+  /* --- your trail --- */
+  const t=trail();
+  const svg=$("mapTrail");
+  svg.setAttribute("viewBox","0 0 "+o.w+" "+o.h);
+  svg.setAttribute("width",o.w); svg.setAttribute("height",o.h);
+  if(t.length>1){
+    const pts=t.map(p=>{const q=toPx(p[0],p[1],o);return q.x.toFixed(1)+","+q.y.toFixed(1)}).join(" ");
+    $("mapTrailLine").setAttribute("points",pts);
+  }else $("mapTrailLine").setAttribute("points","");
+
+  /* --- what's around you --- */
+  const pad=90;
+  const inView=p=>{const q=toPx(p.lat,p.lng,o);return q.x>-pad&&q.x<o.w+pad&&q.y>-pad&&q.y<o.h+pad};
+  const cats=nearCat==="all"?null:[nearCat];
+  const near=POI.filter(p=>(!cats||cats.includes(p.c))&&inView(p));
+  /* nearest first so the cap keeps the most relevant ones */
+  if(here)near.forEach(p=>p._dd=dist(here.lat,here.lng,p.lat,p.lng));
+  near.sort((a,b)=>(a._dd||0)-(b._dd||0));
+  const show=near.slice(0,70);
+
+  const html=[];
+  show.forEach((p,i)=>{
+    const q=toPx(p.lat,p.lng,o);
+    html.push('<button class="mk '+p.c+'" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px" '+
+      'data-mk="'+esc(p.n)+'" title="'+esc(p.n)+'" aria-label="'+esc(p.n)+'">'+(CAT_IC[p.c]||"&#128205;")+'</button>');
+    if(mapLabels&&mapZ>=10&&i<26)
+      html.push('<div class="mk-lbl" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px">'+
+        esc(p.n.replace("Fuel - ","").slice(0,26))+'</div>');
+  });
+  pins().forEach((x,i)=>{
+    if(!inView(x))return;
+    const q=toPx(x.lat,x.lng,o);
+    html.push('<button class="mk pin" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px" '+
+      'data-pin="'+i+'" title="'+esc(x.n)+'">'+x.k+'</button>');
+  });
+  $("mapMarkers").innerHTML=html.join("");
+
+  /* --- you --- */
+  const you=$("mapYou");
+  if(here){
+    const q=toPx(here.lat,here.lng,o);
+    you.style.display="block";
+    you.style.left=q.x+"px"; you.style.top=q.y+"px";
+    const cone=$("mapCone");
+    if(heading!=null){cone.style.display="block";cone.style.transform="translate(-50%,-100%) rotate("+heading+"deg)"}
+    else cone.style.display="none";
+  }else you.style.display="none";
+
+  /* --- readout --- */
+  const c=mapCenter();
+  const place=whereAmI.city?whereAmI.city+", "+whereAmI.state:(whereAmI.state||"");
+  $("mapInfo").innerHTML=(here?"&#128205; <b>"+esc(place||"Tracking")+"</b> &middot; ":"")+
+    show.length+" place"+(show.length===1?"":"s")+" in view &middot; zoom "+mapZ+
+    (mapFollow?"":" &middot; <b>not following</b>");
+}
+
+let rafPending=false;
+function drawMap(){
+  if(!$("view-nearby").classList.contains("active"))return;
+  if(rafPending)return; rafPending=true;
+  const run=()=>{
+    rafPending=false;
+    const o=mapOrigin();
+    drawTiles(o); drawOverlay(o);
+    mapReady=true;
+  };
+  /* rAF is frozen while the tab is backgrounded, which would leave the map
+     blank on return - draw straight away in that case. */
+  if(document.hidden)run(); else requestAnimationFrame(run);
+}
+
+/* ---------- interaction ---------- */
+(function(){
+  const el=$("mapWrap");
+  const pts=new Map(); let last=null, pinchD=0;
+  el.addEventListener("pointerdown",e=>{
+    el.setPointerCapture(e.pointerId);
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size===1){last={x:e.clientX,y:e.clientY};el.classList.add("dragging")}
+    if(pts.size===2){const a=[...pts.values()];pinchD=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}
+  });
+  el.addEventListener("pointermove",e=>{
+    if(!pts.has(e.pointerId))return;
+    pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(pts.size===2){
+      const a=[...pts.values()];
+      const d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+      if(pinchD&&Math.abs(d-pinchD)>44){ setZoom(mapZ+(d>pinchD?1:-1)); pinchD=d; }
+      return;
+    }
+    if(!last)return;
+    const dx=e.clientX-last.x, dy=e.clientY-last.y;
+    if(!dx&&!dy)return;
+    last={x:e.clientX,y:e.clientY};
+    const c=mapCenter();
+    const cx=lon2x(c.lng,mapZ)*TILE-dx, cy=lat2y(c.lat,mapZ)*TILE-dy;
+    mapC={lat:y2lat(cy/TILE,mapZ), lng:x2lon(cx/TILE,mapZ)};
+    setFollow(false);
+    drawMap();
+  });
+  const up=e=>{
+    pts.delete(e.pointerId);
+    if(pts.size<2)pinchD=0;
+    if(!pts.size){last=null;el.classList.remove("dragging");store.set("mapC",mapC)}
+  };
+  el.addEventListener("pointerup",up); el.addEventListener("pointercancel",up);
+  el.addEventListener("wheel",e=>{e.preventDefault();setZoom(mapZ+(e.deltaY<0?1:-1))},{passive:false});
+  el.addEventListener("dblclick",e=>{e.preventDefault();setZoom(mapZ+1)});
+})();
+
+function setZoom(z){
+  const max=LAYERS[mapLayer].max;
+  z=Math.max(3,Math.min(max,z));
+  if(z===mapZ)return;
+  if(!mapC)mapC=mapCenter();
+  mapZ=z; store.set("mapZ",z);
+  drawMap();
+}
+function setFollow(on){
+  mapFollow=on;
+  $("mapFollow").classList.toggle("on",on);
+  if(on){mapC=null;store.set("mapC",null);drawMap()}
+}
+$("mapIn").addEventListener("click",()=>setZoom(mapZ+1));
+$("mapOut").addEventListener("click",()=>setZoom(mapZ-1));
+$("mapFollow").addEventListener("click",()=>setFollow(!mapFollow));
+$("mapLabels").addEventListener("click",()=>{
+  mapLabels=!mapLabels; $("mapLabels").classList.toggle("on",mapLabels); drawMap();
+});
+$("mapLayers").addEventListener("click",e=>{
+  const b=e.target.closest("[data-layer]");if(!b)return;
+  mapLayer=b.dataset.layer; store.set("mapLayer",mapLayer);
+  $$("#mapLayers button").forEach(x=>x.classList.toggle("on",x===b));
+  tileEls.forEach(im=>im.remove()); tileEls.clear();
+  if(mapZ>LAYERS[mapLayer].max)mapZ=LAYERS[mapLayer].max;
+  drawMap();
+});
+$("mapMarkers").addEventListener("click",e=>{
+  const m=e.target.closest("[data-mk]");
+  if(m){poiSheet(m.dataset.mk);return}
+  const p=e.target.closest("[data-pin]");
+  if(p){
+    const x=pins()[+p.dataset.pin];
+    openSheet(x.k+" "+esc(x.n),
+      (x.note?`<p>${esc(x.note)}</p>`:"")+
+      `<p class="small muted">Saved ${new Date(x.t).toLocaleString()}<br>${x.lat.toFixed(5)}, ${x.lng.toFixed(5)}</p>
+       <a class="btn" href="https://www.google.com/maps/search/?api=1&query=${x.lat},${x.lng}" target="_blank" rel="noopener">&#128506;&#65039; Directions</a>`);
+  }
+});
+$("mapPin").addEventListener("click",savePin);
+$("mapNav").addEventListener("click",()=>{
+  const c=mapCenter();
+  window.open("https://www.google.com/maps/dir/?api=1&destination="+c.lat+","+c.lng,"_blank");
+});
+
+/* keep the map honest as you drive */
+function mapOnFix(){
+  if(mapFollow)mapC=null;
+  drawMap();
+}
+window.addEventListener("resize",()=>{if(mapReady)drawMap()});
 
 /* ============================================================
    CREW CHAT  (ntfy.sh pub/sub - free, no accounts)
@@ -4391,6 +4740,8 @@ function boot(){
   renderStories();renderSettings();renderNotif();renderFeed();renderGal();
   renderBriefing();renderNearby();netCheck();
   renderStays();renderPins();renderPasses();renderClearance();renderRadio();drawTrail();renderFacts();
+  $("radioEnable").checked=radioOn;
+  $$('#mapLayers button').forEach(b=>b.classList.toggle('on',b.dataset.layer===mapLayer));
   cycleTimers();
   loadWeather();
   chatSubscribe();locSubscribe();

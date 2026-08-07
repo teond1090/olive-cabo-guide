@@ -2,7 +2,9 @@
    Cache-first for the app shell AND Olive's voice clips, so the whole guide
    plus every spoken line works with no signal - which is most of this route.
    Network-first for live data (weather, chat), which is useless when stale. */
-const CACHE="olive-west-v3";
+const CACHE="olive-west-v4";
+const TILES="olive-tiles-v1";
+const TILE_MAX=1200;   /* roughly 60-90MB of map, plenty for this route */
 const SHELL=["./","./index.html","./manifest.json"];
 const VOICE=[
   "./voice/air.mp3",
@@ -48,13 +50,33 @@ self.addEventListener("install",e=>{
 });
 self.addEventListener("activate",e=>{
   e.waitUntil(caches.keys()
-    .then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k))))
+    .then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!==TILES).map(k=>caches.delete(k))))
     .then(()=>self.clients.claim()));
 });
 self.addEventListener("fetch",e=>{
   const req=e.request;
   if(req.method!=="GET")return;
   const url=new URL(req.url);
+
+  /* map tiles: cache-first and keep them, so the roads you have driven
+     are still on the map when the signal goes. Trimmed when it gets big. */
+  if(/tile\.openstreetmap\.org|server\.arcgisonline\.com|basemaps\.cartocdn\.com/.test(url.hostname)){
+    e.respondWith((async()=>{
+      const c=await caches.open(TILES);
+      const hit=await c.match(req);
+      if(hit)return hit;
+      try{
+        const r=await fetch(req);
+        if(r.ok){
+          c.put(req,r.clone());
+          const keys=await c.keys();
+          if(keys.length>TILE_MAX)await Promise.all(keys.slice(0,keys.length-TILE_MAX).map(k=>c.delete(k)));
+        }
+        return r;
+      }catch(err){return new Response("",{status:504})}
+    })());
+    return;
+  }
 
   /* live services: always try the network, never serve a stale answer */
   if(/ntfy\.sh|open-meteo\.com|air-quality-api/.test(url.hostname)){
