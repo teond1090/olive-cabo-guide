@@ -923,6 +923,13 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="card-h"><span class="ic">&#128269;</span><h3>Find It Right Now</h3></div>
       <p class="small muted">Live search for whatever you need this minute. Results land on the map above, in gold, alongside Olive's own places.</p>
       <div class="field" style="margin:.7rem 0 0">
+        <label class="fld" for="searchBox">Looking for something specific?</label>
+        <div style="display:flex;gap:.5rem">
+          <input type="search" id="searchBox" placeholder="Wall Drug, pizza, hardware store&hellip;" enterkeyhint="search">
+          <button class="btn" id="searchGo" aria-label="Search">&#128269;</button>
+        </div>
+      </div>
+      <div class="field" style="margin:.7rem 0 0">
         <label class="fld" for="findRadius">How far to look</label>
         <select id="findRadius">
           <option value="5">Within 5 miles</option>
@@ -1256,7 +1263,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w16-2026-08-06";
+const OLIVE_BUILD="w17-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -2160,7 +2167,7 @@ function hasClip(key){
    The key is entered once per device and never leaves it: it is not in this
    file, not in the repository, and never sent anywhere but ElevenLabs.
    Every line she generates is cached, so repeats cost nothing and work offline. */
-const OLIVE_VOICE_ID="3QRk8bw47ASJl51zrtqJ";
+const OLIVE_VOICE_ID="tMXujoAjiboschVOhAnk";   /* Clara - the voice the Andersons already use */
 const TTS_CACHE="olive-tts-v1";
 async function sha(s){
   const b=await crypto.subtle.digest("SHA-1",new TextEncoder().encode(s));
@@ -5154,7 +5161,11 @@ const ASK_LIST=[
  ["Tell me a fact","tell me a fact"],
  ["What's the plan today?","what is the plan today"],
  ["Where did we park?","where did we park"],
- ["What's on the radio?","what is on the radio"]
+ ["What's on the radio?","what is on the radio"],
+ ["Show me gas stations","show me gas stations"],
+ ["Find somewhere to eat","find restaurants"],
+ ["Find a pharmacy","find a pharmacy"],
+ ["Show me viewpoints","show me viewpoints"]
 ];
 function askSheet(why){
   openSheet("Ask Olive",
@@ -5218,6 +5229,33 @@ function answerAloud(said,onText){
   const q=" "+String(said).toLowerCase().replace(/[^a-z0-9' ]+/g," ").replace(/\s+/g," ").trim()+" ";
   const has=(...words)=>words.some(w=>q.indexOf(" "+w+" ")>=0);
   let reply=null;
+
+  /* ---- spoken requests that should PUT SOMETHING ON THE MAP ----
+     "show me gas stations", "find a pharmacy", "where's the nearest coffee".
+     These run the real search and open the map, rather than just talking. */
+  const wantsMap=/\b(show|find|search|nearest|closest|any|where can (i|we)|is there)\b/.test(q);
+  if(wantsMap&&typeof catForQuery==="function"){
+    const cat=catForQuery(q);
+    if(cat){
+      const label=FIND_TAGS[cat].n.toLowerCase();
+      heard("Putting "+esc(label)+" on the map&hellip;",5000);
+      speak("Looking for "+label+" around you.",true);
+      location.hash="#/nearby";
+      setTimeout(()=>findNow(cat,+($("findRadius")||{value:15}).value||15),260);
+      if(onText)onText("Searching the map for "+label+".");
+      return;
+    }
+    /* a specific name rather than a category - free-text search it */
+    const m=q.match(/\b(?:show me|find|search for|looking for)\s+(.{3,40}?)\s*$/);
+    if(m&&typeof searchAnything==="function"){
+      const term=m[1].trim();
+      heard("Searching for &ldquo;"+esc(term)+"&rdquo;&hellip;",5000);
+      location.hash="#/nearby";
+      setTimeout(()=>searchAnything(term),260);
+      if(onText)onText("Searching for "+term+".");
+      return;
+    }
+  }
 
   /* Weather and location go first - their words hide inside other words. */
   if(has("weather","forecast","rain","raining","storm","stormy","temperature","wind","windy","how hot","how cold")){
@@ -5355,11 +5393,34 @@ async function findNow(cat,radiusMi){
   }).filter(Boolean).sort((a,b)=>a._d-b._d).slice(0,40);
   $("findStatus").innerHTML="&#128205; <b>"+found.length+" "+spec.n.toLowerCase()+"</b> within "+(radiusMi||15)+
     " miles, nearest first. They're on the map in gold.";
-  renderFound(); drawMap();
+  renderFound(); fitMapToFound();
   if(found.length){
     const f=found[0];
     announce(spec.n+" found. Closest is "+f.n+", "+fmtMi(f._d)+" away.");
   }
+}
+/* Put the results where they can actually be seen. */
+function fitMapToFound(){
+  if(!found.length||typeof mapZ==="undefined")return;
+  const pts=found.slice(0,20).map(f=>[f.lat,f.lng]);
+  if(here)pts.push([here.lat,here.lng]);
+  const las=pts.map(p=>p[0]), los=pts.map(p=>p[1]);
+  const minLa=Math.min(...las),maxLa=Math.max(...las);
+  const minLo=Math.min(...los),maxLo=Math.max(...los);
+  mapC={lat:(minLa+maxLa)/2,lng:(minLo+maxLo)/2};
+  setFollow(false);
+  const w=$("mapWrap").clientWidth||360, h=$("mapWrap").clientHeight||360;
+  let z=LAYERS[mapLayer].max;
+  while(z>3){
+    const sp=Math.pow(2,z)*256;
+    const dx=Math.abs(lon2x(maxLo,z)-lon2x(minLo,z))*256;
+    const dy=Math.abs(lat2y(minLa,z)-lat2y(maxLa,z))*256;
+    if(dx<w*0.82&&dy<h*0.82)break;
+    z--;
+  }
+  mapZ=Math.max(4,z); store.set("mapZ",mapZ);
+  if(typeof clearRadar==="function")clearRadar();
+  drawMap();
 }
 function renderFound(){
   if(!found.length){$("findList").innerHTML="";return}
@@ -5403,6 +5464,98 @@ function findClickHandler(e){
 }
 $("findNow").addEventListener("click",findClickHandler);
 $("findStatus").addEventListener("click",findClickHandler);   /* the retry button */
+
+/* ============================================================
+   SEARCH ANYTHING
+   Three sources, in the order that gets an answer fastest:
+   Olive's own places (instant, offline), then a category match,
+   then a free-text lookup for named businesses.
+   ============================================================ */
+const SEARCH_CATS={
+  fuel:["gas","gas station","fuel","petrol","diesel","fill up"],
+  diner:["food","eat","restaurant","diner","pizza","burger","burgers","mexican","chinese","steak","bbq","barbecue","sandwich","breakfast","lunch","dinner","tacos","noodles"],
+  coffee:["coffee","espresso","latte","cafe","starbucks"],
+  grocery:["grocery","groceries","supermarket","market","food store","walmart","safeway"],
+  pharmacy:["pharmacy","drugstore","drug store","chemist","prescription","walgreens","cvs"],
+  medical:["hospital","urgent care","clinic","doctor","emergency room","er"],
+  restroom:["restroom","bathroom","toilet","rest area","rest stop"],
+  repair:["mechanic","car repair","auto repair","tire","tires","garage","oil change"],
+  carwash:["car wash","carwash"],
+  hotel:["hotel","motel","inn","lodging","place to stay","room for the night"],
+  camp:["campground","camping","campsite","rv park"],
+  laundry:["laundry","laundromat","dry cleaning"],
+  viewpoint:["viewpoint","overlook","scenic view","photo spot"],
+  attraction:["attraction","sight","sights","museum","historic site","landmark","things to do"]
+};
+function catForQuery(q){
+  /* People say "viewpoints" and "hotels", not "viewpoint" and "hotel".
+     Compare on singularised words so plurals match too. */
+  const singular=w=>w.replace(/\b(\w{3,})ies\b/g,"$1y").replace(/\b(\w{4,}?)(?:es|s)\b/g,"$1");
+  const s=" "+singular(q.toLowerCase().replace(/[^a-z0-9' ]+/g," ").replace(/\s+/g," ").trim())+" ";
+  for(const cat in SEARCH_CATS)
+    for(const w of SEARCH_CATS[cat])
+      if(s.indexOf(" "+singular(w)+" ")>=0)return cat;
+  return null;
+}
+let searchBusy=false;
+async function searchAnything(raw){
+  const q=(raw||"").trim();
+  if(!q)return;
+  if(!here)return toast("Olive needs your location first");
+  if(searchBusy)return;
+  $("findStatus").innerHTML="&#128269; Searching for <b>"+esc(q)+"</b>&hellip;";
+
+  /* 1. Olive's own places - instant, works with no signal */
+  const words=q.toLowerCase().split(/\s+/).filter(Boolean);
+  const mine=POI.map(p=>{p._d=dist(here.lat,here.lng,p.lat,p.lng);return p})
+    .filter(p=>{const hay=(p.n+" "+(p.d||"")+" "+(p.tip||"")).toLowerCase();
+                return words.every(w=>hay.includes(w))})
+    /* a hit in the NAME beats a passing mention in the description */
+    .map(p=>{const nm=p.n.toLowerCase();
+             p._score=(words.every(w=>nm.includes(w))?0:1000)+p._d;return p})
+    .sort((a,b)=>a._score-b._score).slice(0,12);
+  if(mine.length){
+    found=mine.map(p=>({n:p.n,lat:p.lat,lng:p.lng,cat:"attraction",ic:CAT_IC[p.c]||"&#128205;",
+                        info:(p.d||"").slice(0,110),phone:"",_d:p._d,olive:true}));
+    $("findStatus").innerHTML="&#128205; <b>"+found.length+"</b> of Olive's own places match &ldquo;"+esc(q)+"&rdquo;. On the map in gold.";
+    renderFound(); fitMapToFound();
+    announce("Found "+found.length+" for "+q+". Closest is "+found[0].n+", "+fmtMi(found[0]._d)+" away.");
+    return;
+  }
+  /* 2. a category word - use the fast structured search */
+  const cat=catForQuery(q);
+  if(cat){await findNow(cat,+($("findRadius")||{value:15}).value||15);return}
+
+  /* 3. free text - named businesses and places */
+  searchBusy=true;
+  try{
+    const d=0.6;                                   /* rough box around you */
+    const vb=[here.lng-d,here.lat+d,here.lng+d,here.lat-d].join(",");
+    const ctl=new AbortController(); const kill=setTimeout(()=>ctl.abort(),9000);
+    const r=await fetch("https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(q)+
+      "&format=json&limit=20&viewbox="+vb+"&bounded=1",{signal:ctl.signal});
+    clearTimeout(kill);
+    const j=await r.json();
+    found=(j||[]).map(x=>({n:(x.display_name||"").split(",")[0]||q,
+      lat:+x.lat,lng:+x.lon,cat:"attraction",ic:"&#128269;",
+      info:(x.display_name||"").split(",").slice(1,4).join(",").trim(),
+      phone:"",_d:dist(here.lat,here.lng,+x.lat,+x.lon)}))
+      .sort((a,b)=>a._d-b._d).slice(0,25);
+  }catch(e){found=[]}
+  finally{searchBusy=false}
+
+  if(!found.length){
+    $("findStatus").innerHTML="Nothing found for &ldquo;"+esc(q)+"&rdquo; nearby."+
+      '<div class="btnrow" style="margin-top:.6rem"><a class="btn sm ghost" href="'+
+      mapSearch(q,here.lat,here.lng)+'" target="_blank" rel="noopener">&#128506;&#65039; Try Google Maps</a></div>';
+  }else{
+    $("findStatus").innerHTML="&#128205; <b>"+found.length+"</b> match &ldquo;"+esc(q)+"&rdquo;, nearest first. On the map in gold.";
+    announce("Found "+found.length+" for "+q+". Closest is "+found[0].n+", "+fmtMi(found[0]._d)+" away.");
+  }
+  renderFound(); fitMapToFound();
+}
+$("searchGo").addEventListener("click",()=>searchAnything($("searchBox").value));
+$("searchBox").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();searchAnything(e.target.value)}});
 
 /* ============================================================
    CREW CHAT  (ntfy.sh pub/sub - free, no accounts)
