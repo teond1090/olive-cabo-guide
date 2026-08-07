@@ -500,6 +500,35 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 #mapBar{padding:.7rem .9rem;background:var(--card-2);display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
 #mapBar .sp{flex:1}
 
+/* selection linking map <-> list */
+.mk.sel{transform:translate(-50%,-50%) scale(1.45);z-index:25;box-shadow:0 0 0 4px rgba(200,145,44,.75),0 3px 10px rgba(0,0,0,.5)}
+.row.sel{border-color:var(--brass);box-shadow:-4px 0 0 var(--brass);background:#FCF3DE}
+#mapSpot{
+  position:absolute;left:.6rem;right:.6rem;bottom:2.6rem;z-index:44;
+  background:linear-gradient(168deg,rgba(58,29,13,.95),rgba(90,48,24,.95));color:#F7E9CF;
+  border:2px solid var(--brass);border-radius:14px;padding:.7rem .85rem;display:none;
+  box-shadow:0 6px 20px rgba(0,0,0,.4);animation:slideIn .35s cubic-bezier(.2,.9,.3,1);
+}
+#mapSpot b{color:var(--brass-lt);font-family:Bitter,serif;display:block;font-size:1rem}
+#mapSpot .sx{position:absolute;top:.3rem;right:.4rem;background:transparent;border:0;color:#C8AC85;font-size:1rem;cursor:pointer}
+#radarBar{position:absolute;left:.6rem;bottom:.6rem;z-index:42;background:rgba(255,249,237,.9);
+  border:2px solid var(--leather-dk);border-radius:8px;padding:.2rem .5rem;font-size:.66rem;font-weight:800;color:var(--leather);display:none}
+/* hands-free mic */
+#micBtn{
+  position:fixed;right:.9rem;bottom:calc(5.4rem + env(safe-area-inset-bottom));z-index:160;
+  width:3.6rem;height:3.6rem;border-radius:50%;border:3px solid var(--brass);
+  background:linear-gradient(170deg,var(--rust),var(--rust-dk));color:#FFF3E2;font-size:1.4rem;
+  cursor:pointer;box-shadow:0 4px 14px rgba(58,29,13,.4);display:none;align-items:center;justify-content:center;
+}
+#micBtn.on{display:flex}
+#micBtn.hot{background:linear-gradient(170deg,var(--brass-lt),var(--brass));color:var(--leather-dk);animation:ping2 1.4s infinite}
+@keyframes ping2{0%,100%{box-shadow:0 4px 14px rgba(58,29,13,.4)}50%{box-shadow:0 4px 14px rgba(58,29,13,.4),0 0 0 12px rgba(200,145,44,.25)}}
+#micHeard{
+  position:fixed;right:.9rem;bottom:calc(9.3rem + env(safe-area-inset-bottom));z-index:160;
+  background:var(--leather-dk);color:#F7E9CF;border:2px solid var(--brass);border-radius:12px;
+  padding:.5rem .8rem;font-size:.82rem;max-width:72vw;display:none;box-shadow:var(--shadow-lg);
+}
+
 /* ============ RADIO ============ */
 .dial{
   background:linear-gradient(168deg,#3A1D0D,#241007);border:3px solid var(--brass);border-radius:var(--r);
@@ -589,6 +618,10 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     </div>
 
     <div id="liveAlerts" class="stack"></div>
+    <div class="card a-canyon" id="parkAlertCard" style="display:none">
+      <div class="card-h"><span class="ic">&#9888;&#65039;</span><h3>Park &amp; Road Alerts</h3></div>
+      <div id="parkAlerts"></div>
+    </div>
 
     <div class="card a-gold">
       <div class="card-h"><span class="ic">&#9749;</span><h3>Trail Boss Briefing</h3></div>
@@ -747,7 +780,10 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
           <button id="mapOut" aria-label="Zoom out">&#8722;</button>
           <button id="mapFollow" class="on" aria-label="Follow me" title="Follow me">&#127919;</button>
           <button id="mapLabels" class="on" aria-label="Show names" title="Show names">&#127991;&#65039;</button>
+          <button id="mapRadar" aria-label="Weather radar" title="Weather radar">&#127783;&#65039;</button>
         </div>
+        <div id="mapSpot"><button class="sx" id="spotX" aria-label="Dismiss">&#10005;</button><div id="spotBody"></div></div>
+        <div id="radarBar"></div>
         <div class="map-attr" id="mapAttr"></div>
       </div>
       <div id="mapBar">
@@ -1108,6 +1144,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
 </main>
 
+<div id="micHeard"></div>
+<button id="micBtn" aria-label="Ask Olive out loud" title="Ask Olive out loud">&#127908;</button>
+
 <div class="bottombar" role="navigation" aria-label="Quick">
   <a href="#/today" data-view="today"><span class="ic">&#127968;</span>Today</a>
   <a href="#/nearby" data-view="nearby"><span class="ic">&#128205;</span>Nearby</a>
@@ -1122,7 +1161,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w10-2026-08-06";
+const OLIVE_BUILD="w11-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -2310,6 +2349,7 @@ function onFix(pos){
   if(prev&&store.get("autoTrack",true)){
     const d=dist(prev.lat,prev.lng,lat,lng);
     const dt=(here.t-prev.t)/1000;                      /* seconds between fixes */
+    here._lastMoveDist=d;
     const ok = d>0.03 && d<600 && (dt<5 ? d<25 : (d/(dt/3600))<95);
     if(ok){const s=stats();s.mi+=d;saveStats(s);trailPush(lat,lng)}
   }else if(!prev){
@@ -2327,6 +2367,8 @@ function onFix(pos){
   renderNearby();
   followRadio();                     /* stations follow you down the road */
   mapOnFix();
+  if(typeof spotlightWatch==='function')spotlightWatch();
+  if(typeof parkWatch==='function')parkWatch();
   if($("view-facts").classList.contains("active"))loadFacts();
   if($("view-radio").classList.contains("active")&&radioSrc==="live")loadLiveStations();
   if(!lastFix||Date.now()-lastFix>15*60*1000){lastFix=Date.now();loadWeather();}
@@ -2566,7 +2608,7 @@ const CAT_NM={landmark:"Landmark",gem:"Hidden gem",food:"Local eats",wildlife:"W
 function cardList(list,withDist){
   const favs=store.get("favs",[]);
   return list.map(p=>`
-    <div class="row" data-card="${esc(p.n)}">
+    <div class="row${p.n===(typeof selPOI!=="undefined"?selPOI:null)?" sel":""}" data-card="${esc(p.n)}">
       <div class="ic">${CAT_IC[p.c]||"&#128205;"}</div>
       <div class="bd">
         <div class="t" data-poi="${esc(p.n)}" style="cursor:pointer">${esc(p.n)}</div>
@@ -2591,8 +2633,9 @@ function cardList(list,withDist){
 function emptyMsg(){return `<div class="card"><p class="muted" style="margin:0">Nothing in that category yet.</p></div>`}
 
 $("nearbyList").addEventListener("click",e=>{
-  const r=e.target.closest("[data-poi]");if(!r)return;
-  poiSheet(r.dataset.poi);
+  if(e.target.closest(".btn")||e.target.closest("a"))return;   /* let the row's own buttons work */
+  const r=e.target.closest("[data-card]");
+  if(r){selectPOI(r.dataset.card,"list");return}
 });
 function poiSheet(name){
   const p=POI.find(x=>x.n===name);if(!p)return;
@@ -3074,7 +3117,20 @@ function renderSettings(){
     <label class="switch"><input type="checkbox" id="setMiles" ${store.get("autoTrack",true)?"checked":""}><span class="track"></span>
       <span><b>Track miles automatically</b><br><span class="small muted">Counts distance from your GPS while location is on</span></span></label>
     <hr class="hr">
+    <div class="field">
+      <label class="fld" for="setNps">Park Service key (optional, free)</label>
+      <input type="password" id="setNps" placeholder="for live park alerts" autocomplete="off" spellcheck="false">
+      <p class="small muted" style="margin-top:.35rem">Olive already carries the known 2026 Glacier, Yellowstone and Little Bighorn constraints offline. A free key from <b>nps.gov</b> makes the alerts live instead.</p>
+      <div class="btnrow" style="margin-top:.4rem">
+        <button class="btn sm ghost" id="npsSave">Save</button>
+        <button class="btn sm ghost" id="npsClear">Remove</button>
+      </div>
+    </div>
+    <label class="switch" style="margin-top:.6rem"><input type="checkbox" id="setMic"><span class="track"></span>
+      <span><b>Hands-free button</b><br><span class="small muted">A microphone button so the driver can ask without touching anything</span></span></label>
+    <hr class="hr">
     <div class="btnrow">
+      <button class="btn sm ghost" id="setPark">&#128663; Back to the vehicle</button>
       <button class="btn sm ghost" id="setExport">&#128229; Back up my data</button>
       <button class="btn sm ghost" id="setReset">&#9888;&#65039; Reset trip data</button>
     </div>
@@ -3086,6 +3142,15 @@ function renderSettings(){
   $("setVoiceMode").addEventListener("change",e=>{voiceMode=e.target.value;store.set("voiceMode",voiceMode);
     speak(VOICE_LINES["voice-on"],true,"voice-on")});
   $("setVoiceTest").addEventListener("click",()=>speak(VOICE_LINES.fuel,true,"fuel"));
+  $("npsSave").addEventListener("click",()=>{
+    const v=$("setNps").value.trim();
+    if(!v)return toast("Paste a key first");
+    store.set("npsKey",v);$("setNps").value="";loadParkAlerts();toast("Saved — alerts are live now");
+  });
+  $("npsClear").addEventListener("click",()=>{store.del("npsKey");loadParkAlerts();toast("Removed")});
+  $("setPark").addEventListener("click",backToVehicle);
+  $("setMic").checked=store.get("micOn",true);
+  $("setMic").addEventListener("change",e=>{store.set("micOn",e.target.checked);micShow(e.target.checked&&!!SR)});
 
   /* --- live voice key, kept on this device only --- */
   const xiStat=()=>{
@@ -4326,6 +4391,7 @@ const LAYERS={
 let mapLayer=store.get("mapLayer","topo");
 let mapZ=store.get("mapZ",11), mapC=store.get("mapC",null);   /* {lat,lng} */
 let mapFollow=true, mapLabels=true, mapReady=false;
+let selPOI=null;                 /* the place highlighted on BOTH map and list */
 const tileEls=new Map();
 
 /* A blank map is a mystery; say why. Tiles fail for exactly two reasons:
@@ -4420,7 +4486,7 @@ function drawOverlay(o){
   const html=[];
   show.forEach((p,i)=>{
     const q=toPx(p.lat,p.lng,o);
-    html.push('<button class="mk '+p.c+'" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px" '+
+    html.push('<button class="mk '+p.c+(p.n===selPOI?' sel':'')+'" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px" '+
       'data-mk="'+esc(p.n)+'" title="'+esc(p.n)+'" aria-label="'+esc(p.n)+'">'+(CAT_IC[p.c]||"&#128205;")+'</button>');
     if(mapLabels&&mapZ>=10&&i<26)
       html.push('<div class="mk-lbl" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px">'+
@@ -4460,7 +4526,7 @@ function drawMap(){
   const run=()=>{
     rafPending=false;
     const o=mapOrigin();
-    drawTiles(o); drawOverlay(o);
+    drawTiles(o); if(typeof drawRadar==='function')drawRadar(o); drawOverlay(o);
     mapReady=true;
   };
   /* rAF is frozen while the tab is backgrounded, which would leave the map
@@ -4523,6 +4589,7 @@ function setZoom(z){
   if(z===mapZ)return;
   if(!mapC)mapC=mapCenter();
   mapZ=z; store.set("mapZ",z);
+  if(typeof clearRadar==='function')clearRadar();
   drawMap();
 }
 function setFollow(on){
@@ -4541,13 +4608,14 @@ $("mapLayers").addEventListener("click",e=>{
   mapLayer=b.dataset.layer; store.set("mapLayer",mapLayer);
   $$("#mapLayers button").forEach(x=>x.classList.toggle("on",x===b));
   tileEls.forEach(im=>im.remove()); tileEls.clear();
+  if(typeof clearRadar==='function')clearRadar();
   tileOK=0;tileFail=0;{const n=$('mapNote');if(n)n.remove()}
   if(mapZ>LAYERS[mapLayer].max)mapZ=LAYERS[mapLayer].max;
   drawMap();
 });
 $("mapMarkers").addEventListener("click",e=>{
   const m=e.target.closest("[data-mk]");
-  if(m){poiSheet(m.dataset.mk);return}
+  if(m){selectPOI(m.dataset.mk,"map");return}
   const p=e.target.closest("[data-pin]");
   if(p){
     const x=pins()[+p.dataset.pin];
@@ -4562,6 +4630,86 @@ $("mapNav").addEventListener("click",()=>{
   const c=mapCenter();
   window.open("https://www.google.com/maps/dir/?api=1&destination="+c.lat+","+c.lng,"_blank");
 });
+
+/* ---------- one selection, shared by the map and the list ---------- */
+function selectPOI(name,from){
+  const p=POI.find(x=>x.n===name);
+  if(!p)return;
+  selPOI=(selPOI===name&&from==="map")?null:name;
+  if(selPOI&&from==="list"){          /* bring it into view on the map */
+    mapC={lat:p.lat,lng:p.lng};
+    setFollow(false);
+    if(mapZ<12)mapZ=12;
+  }
+  drawMap();
+  renderNearby();
+  if(selPOI){
+    showSpotlight(p,from==="map");
+    if(from==="map"){
+      const row=document.querySelector('#nearbyList [data-card="'+CSS.escape(name)+'"]');
+      if(row)row.scrollIntoView({behavior:"smooth",block:"center"});
+    }
+  }else hideSpotlight();
+}
+/* ---------- spotlight card over the map ---------- */
+function showSpotlight(p,speakIt){
+  const d=here?dist(here.lat,here.lng,p.lat,p.lng):null;
+  $("spotBody").innerHTML=
+    "<b>"+(CAT_IC[p.c]||"")+" "+esc(p.n)+"</b>"+
+    (d!=null?'<div class="small" style="color:#C8AC85">'+fmtMi(d)+" away &middot; "+eta(d)+" &middot; "+CAT_NM[p.c]+"</div>":"")+
+    '<div class="small" style="margin-top:.35rem">'+esc((p.d||"").slice(0,150))+((p.d||"").length>150?"…":"")+"</div>"+
+    '<div class="btnrow" style="margin-top:.55rem">'+
+      '<button class="btn sm brass" data-spot-more="'+esc(p.n)+'">Tell me more</button>'+
+      '<a class="btn sm ghost" href="'+mapUrl(p)+'" target="_blank" rel="noopener">&#128506;&#65039; Go</a>'+
+      '<button class="btn sm ghost" data-spot-speak="'+esc(p.n)+'">&#128266;</button>'+
+    "</div>";
+  $("mapSpot").style.display="block";
+  if(speakIt)speakPlace(p);
+}
+function hideSpotlight(){$("mapSpot").style.display="none"}
+$("spotX").addEventListener("click",()=>{selPOI=null;hideSpotlight();drawMap();renderNearby()});
+$("mapSpot").addEventListener("click",e=>{
+  const m=e.target.closest("[data-spot-more]");
+  if(m){poiSheet(m.dataset.spotMore);return}
+  const sp=e.target.closest("[data-spot-speak]");
+  if(sp){const p=POI.find(x=>x.n===sp.dataset.spotSpeak);if(p)speakPlace(p);return}
+});
+/* Olive introducing a place, in her voice where she has one */
+function speakPlace(p){
+  const d=here?dist(here.lat,here.lng,p.lat,p.lng):null;
+  const lead=d!=null&&d>1.5?("About "+fmtMi(d)+" ahead. "):"";
+  const story=Object.keys(STORIES).find(k=>p.n.includes(k.split(",")[0])||k.includes(p.n.split(" ")[0]));
+  if(story&&typeof STORY_CLIP!=="undefined"&&STORY_CLIP[story]){
+    speak(STORIES[story],true,STORY_CLIP[story]);
+  }else{
+    speak(lead+p.n+". "+(p.d||"")+(p.tip?" "+p.tip:""),true);
+  }
+}
+
+/* ---------- worth pulling over for ---------- */
+const NOTABLE=["Mount Rushmore National Memorial","Crazy Horse Memorial","Custer State Park Wildlife Loop",
+"Badlands National Park - Big Badlands Overlook","Wall Drug Store","Minuteman Missile NHS",
+"Theodore Roosevelt NP - South Unit Loop","Painted Canyon Overlook","Enchanted Highway",
+"Havre Beneath the Streets","Going-to-the-Sun Road","Logan Pass","Wild Goose Island Overlook",
+"Many Glacier Hotel","Old Faithful","Grand Prismatic Spring","Artist Point","Lamar Valley",
+"Hayden Valley","Buffalo Bill Center of the West","Little Bighorn Battlefield NM","Irma Hotel, Cody",
+"Red Rocks Park & Amphitheatre","Beartooth Highway","Pekin Noodle Parlor, Butte","Sip 'n Dip Lounge, Great Falls",
+"Quake Lake","Berkeley Pit","Salem Sue, New Salem","Occidental Hotel, Buffalo"];
+let spotAlerted=new Set(store.get("spotAlerted",[]));
+let lastSpotAt=0;
+/* As they drive, put the genuinely good ones on screen and say so.
+   One at a time, with room to breathe - the Black Hills would otherwise
+   fire four of these inside a mile and talk over itself. */
+function spotlightWatch(){
+  if(!here||!$("view-nearby").classList.contains("active"))return;
+  if(Date.now()-lastSpotAt < 90*1000)return;
+  const cand=nearest(null,null,14).filter(p=>NOTABLE.includes(p.n)&&isAhead(p)&&!spotAlerted.has(p.n));
+  if(!cand.length)return;
+  lastSpotAt=Date.now();
+  const p=cand[0];
+  spotAlerted.add(p.n); store.set("spotAlerted",Array.from(spotAlerted).slice(-200));
+  selPOI=p.n; drawMap(); renderNearby(); showSpotlight(p,true);
+}
 
 /* keep the map honest as you drive */
 function mapOnFix(){
@@ -4692,6 +4840,250 @@ $("podList").addEventListener("click",async e=>{
 function podFallback(p,why){
   $("shBody").innerHTML=`<p>${esc(why)} You can still listen in your usual podcast app.</p>`+
     (p.link?`<a class="btn" href="${esc(p.link)}" target="_blank" rel="noopener">Open in Apple Podcasts</a>`:"");
+}
+
+/* ============================================================
+   WEATHER RADAR
+   RainViewer's public frames, laid over the map. Afternoon storms
+   build fast over these mountains and you can usually see them
+   coming half an hour out.
+   ============================================================ */
+let radarOn=store.get("radarOn",false), radarHost="", radarPath="", radarT=null;
+const radarEls=new Map();
+
+async function loadRadarFrame(){
+  try{
+    const j=await (await fetch("https://api.rainviewer.com/public/weather-maps.json",{cache:"no-store"})).json();
+    const past=(j.radar&&j.radar.past)||[];
+    if(!past.length)return false;
+    radarHost=j.host; radarPath=past[past.length-1].path;
+    const t=new Date(past[past.length-1].time*1000);
+    $("radarBar").textContent="Radar "+t.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+    return true;
+  }catch(e){return false}
+}
+function clearRadar(){radarEls.forEach(im=>im.remove());radarEls.clear()}
+function drawRadar(o){
+  if(!radarOn||!radarPath){clearRadar();return}
+  const n=Math.pow(2,mapZ);
+  const x0=Math.floor(o.ox/TILE), x1=Math.floor((o.ox+o.w)/TILE);
+  const y0=Math.floor(o.oy/TILE), y1=Math.floor((o.oy+o.h)/TILE);
+  const want=new Set();
+  const wrap=$("mapTiles");
+  for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++){
+    if(y<0||y>=n)continue;
+    const tx=((x%n)+n)%n;
+    const key=radarPath+"/"+mapZ+"/"+tx+"/"+y;
+    want.add(key);
+    let im=radarEls.get(key);
+    if(!im){
+      im=new Image();
+      im.style.cssText="position:absolute;width:256px;height:256px;opacity:.62;pointer-events:none;mix-blend-mode:multiply";
+      im.onerror=()=>{im.style.visibility="hidden"};
+      /* colour scheme 4, smoothed, no snow shading */
+      im.src=radarHost+radarPath+"/256/"+mapZ+"/"+tx+"/"+y+"/4/1_1.png";
+      radarEls.set(key,im); wrap.appendChild(im);
+    }
+    im.style.left=(x*TILE-o.ox)+"px";
+    im.style.top =(y*TILE-o.oy)+"px";
+  }
+  radarEls.forEach((im,key)=>{if(!want.has(key)){im.remove();radarEls.delete(key)}});
+}
+async function toggleRadar(on){
+  radarOn=(on===undefined)?!radarOn:on;
+  store.set("radarOn",radarOn);
+  $("mapRadar").classList.toggle("on",radarOn);
+  $("radarBar").style.display=radarOn?"block":"none";
+  clearTimeout(radarT);
+  if(radarOn){
+    const ok=await loadRadarFrame();
+    if(!ok){toast("Radar needs a signal");radarOn=false;$("mapRadar").classList.remove("on");$("radarBar").style.display="none";return}
+    drawMap();
+    radarT=setTimeout(async()=>{if(radarOn){await loadRadarFrame();clearRadar();drawMap();toggleRadarTimer()}},5*60*1000);
+    toast("&#127783;&#65039; Radar on");
+  }else{clearRadar();drawMap()}
+}
+function toggleRadarTimer(){
+  clearTimeout(radarT);
+  radarT=setTimeout(async()=>{if(radarOn){await loadRadarFrame();clearRadar();drawMap();toggleRadarTimer()}},5*60*1000);
+}
+$("mapRadar").addEventListener("click",()=>toggleRadar());
+
+/* ============================================================
+   PARK & ROAD ALERTS
+   The known 2026 constraints ship with the app so they work with
+   no signal. A free Park Service key upgrades this to live.
+   ============================================================ */
+const ALERTS_BASE=[
+ {p:"Glacier",d:5,t:"Logan Pass parking capped at 3 hours",
+  x:"New for 2026. The lot also fills by mid-morning in August. The ticketed shuttle is the reliable way up.",sev:"info"},
+ {p:"Glacier",d:7,t:"Going-to-the-Sun vehicle limits are enforced",
+  x:"Nothing over 21 ft long, 8 ft wide or 10 ft high between Avalanche Creek and Rising Sun. An RV cannot make this drive.",sev:"warn"},
+ {p:"Glacier",d:7,t:"No vehicle reservation needed in 2026",
+  x:"But entrances can close temporarily when they fill. Being through the gate before 7:30am avoids the whole problem.",sev:"info"},
+ {p:"Yellowstone",d:10,t:"Road construction, several projects",
+  x:"Allow 30-45 minutes of slack on any park day. Delays of 15-30 minutes turn up without warning.",sev:"warn"},
+ {p:"Yellowstone",d:11,t:"Dunraven Pass closes for work regularly",
+  x:"Canyon to Tower. Check before committing; the detour round the lower loop is long.",sev:"warn"},
+ {p:"Little Bighorn",d:12,t:"Visitor centre construction continues",
+  x:"Parking and services are limited through 2026. The tour road still closes at 5:00pm.",sev:"info"},
+ {p:"Theodore Roosevelt",d:5,t:"South Unit loop fully reopened",
+  x:"All 36 miles are drivable again after several years of closure.",sev:"good"},
+ {p:"Beartooth Highway",d:11,t:"Closes without warning, even in August",
+  x:"Snow and ice at 10,947 ft. Wapiti Valley is the dependable route to Cody.",sev:"warn"}
+];
+async function loadParkAlerts(){
+  const key=store.get("npsKey","");
+  let live=[];
+  if(key&&navigator.onLine){
+    try{
+      const codes="glac,yell,thro,libi,badl,moru";
+      const j=await (await fetch("https://developer.nps.gov/api/v1/alerts?parkCode="+codes+"&limit=30&api_key="+encodeURIComponent(key))).json();
+      live=(j.data||[]).map(a=>({p:a.parkCode?a.parkCode.toUpperCase():"",t:a.title,
+        x:(a.description||"").slice(0,300),sev:/clos|danger|warn/i.test(a.category||a.title||"")?"warn":"info",url:a.url}));
+    }catch(e){}
+  }
+  renderParkAlerts(live);
+}
+function renderParkAlerts(live){
+  const i=tripDayIndex(), day=i>=0?DAYS[i].n:0;
+  /* what matters today and in the next couple of days */
+  const soon=ALERTS_BASE.filter(a=>!day||Math.abs(a.d-day)<=2);
+  const show=(live&&live.length?live:soon.length?soon:ALERTS_BASE.slice(0,4));
+  if(!show.length){$("parkAlertCard").style.display="none";return}
+  $("parkAlertCard").style.display="block";
+  $("parkAlerts").innerHTML=
+    (live&&live.length?'<p class="small muted" style="margin-top:0">Live from the Park Service.</p>'
+     :'<p class="small muted" style="margin-top:0">Olive\'s own 2026 notes, and they work with no signal. Add a free Park Service key in Settings for live alerts.</p>')+
+    show.slice(0,6).map(a=>`
+      <div class="row" style="${a.sev==="warn"?"border-color:var(--danger)":a.sev==="good"?"border-color:var(--ok)":""}">
+        <div class="ic">${a.sev==="warn"?"&#9888;&#65039;":a.sev==="good"?"&#9989;":"&#8505;&#65039;"}</div>
+        <div class="bd"><div class="t">${esc(a.t)}</div>
+          <div class="s">${esc(a.x)}</div>
+          <div class="pills" style="margin-top:.35rem"><span class="pill">${esc(a.p)}</span>${a.d?`<span class="pill">Day ${a.d}</span>`:""}</div>
+          ${a.url?`<a class="btn sm ghost" href="${esc(a.url)}" target="_blank" rel="noopener" style="margin-top:.4rem">Details</a>`:""}
+        </div></div>`).join("");
+}
+
+/* ============================================================
+   WHERE DID WE PARK
+   After driving, a few minutes stationary means you've parked.
+   Drop the pin before anyone thinks to.
+   ============================================================ */
+let stillSince=null, lastMoveAt=Date.now(), parkedPin=null, hasDriven=false;
+function parkWatch(){
+  if(!here)return;
+  const t=Date.now();
+  if(here._pv==null)here._pv=0;
+  const moving=(here._lastMoveDist||0)>0.05;
+  if(moving){stillSince=null;lastMoveAt=t;hasDriven=true;return}
+  if(!hasDriven)return;                       /* never driven yet - not a parking event */
+  if(!stillSince)stillSince=t;
+  /* four minutes stationary after real driving = parked */
+  if(t-stillSince>4*60*1000&&(!parkedPin||dist(parkedPin.lat,parkedPin.lng,here.lat,here.lng)>0.15)){
+    parkedPin={lat:here.lat,lng:here.lng,t};
+    store.set("parked",parkedPin);
+    const p=pins();
+    p.unshift({n:"Parked here",note:whereAmI.city?("in "+whereAmI.city+", "+whereAmI.state):"",
+               k:"🚗",lat:here.lat,lng:here.lng,t});
+    store.set("pins",p.slice(0,120));
+    renderPins(); drawTrail(); drawMap();
+    pushAlert({ic:"&#128663;",cls:"",t:"Parked &mdash; pin dropped",
+      s:"Olive remembered where you left the vehicle. It's on the map and in Saved Places."});
+    announce("I've marked where you parked.");
+    hasDriven=false;
+  }
+}
+function backToVehicle(){
+  const p=store.get("parked",null);
+  if(!p)return toast("No parking spot saved yet");
+  window.open("https://www.google.com/maps/dir/?api=1&destination="+p.lat+","+p.lng+"&travelmode=walking","_blank");
+}
+
+/* ============================================================
+   HANDS-FREE
+   A driver should never be reaching for the phone. Tap once and ask.
+   ============================================================ */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+let rec=null, listening=false;
+function micShow(on){$("micBtn").classList.toggle("on",!!on)}
+function heard(txt,ms){
+  const el=$("micHeard");
+  el.innerHTML=txt; el.style.display="block";
+  clearTimeout(heard._t); heard._t=setTimeout(()=>el.style.display="none",ms||4200);
+}
+function startListening(){
+  if(!SR)return toast("This browser can't listen");
+  if(listening){stopListening();return}
+  try{
+    rec=new SR();
+    rec.lang="en-US"; rec.interimResults=false; rec.maxAlternatives=1; rec.continuous=false;
+    rec.onstart=()=>{listening=true;$("micBtn").classList.add("hot");heard("Listening&hellip; ask me something.")};
+    rec.onerror=e=>{listening=false;$("micBtn").classList.remove("hot");
+      heard(e.error==="not-allowed"?"Microphone is blocked. Allow it in your browser settings.":"Didn't catch that.")};
+    rec.onend=()=>{listening=false;$("micBtn").classList.remove("hot")};
+    rec.onresult=e=>{
+      const said=(e.results[0][0].transcript||"").trim();
+      heard("&ldquo;"+esc(said)+"&rdquo;",6000);
+      answerAloud(said);
+    };
+    rec.start();
+  }catch(e){toast("Couldn't start listening")}
+}
+function stopListening(){try{rec&&rec.stop()}catch(e){}listening=false;$("micBtn").classList.remove("hot")}
+$("micBtn").addEventListener("click",startListening);
+
+/* Route a spoken question to the answer Olive already knows how to give. */
+function answerAloud(said){
+  const q=said.toLowerCase();
+  let reply=null;
+  if(/where.*(am i|are we)|what town|what state/.test(q)){
+    reply=whereAmI.city?("You're in "+whereAmI.city+", "+whereAmI.state+"."):(whereAmI.state?("You're in "+whereAmI.state+"."):"I don't have a fix yet.");
+    const n=nearest(1)[0];
+    if(n&&n._d<60)reply+=" Nearest thing I know is "+n.n+", "+fmtMi(n._d)+" away.";
+  }
+  else if(/ahead|coming up|next stop/.test(q)){
+    const a=nearest(null,null,120).filter(isAhead).slice(0,3);
+    reply=a.length?("Ahead of you: "+a.map(p=>p.n+", "+fmtMi(p._d)).join(". ")+"."):"Nothing on my list ahead. Open country.";
+  }
+  else if(/fuel|gas|diesel/.test(q)){
+    const f=nearest(null,["fuel"],250).filter(isAhead)[0];
+    reply=f?("Next fuel is "+f.n.replace("Fuel - ","")+", "+fmtMi(f._d)+", about "+eta(f._d)+"."):"No mapped fuel ahead. Use the live search on the Nearby tab.";
+  }
+  else if(/eat|food|lunch|dinner|hungry|coffee/.test(q)){
+    const f=nearest(null,["food","gem"],80).filter(isAhead)[0];
+    reply=f?(f.n+" is "+fmtMi(f._d)+" ahead. "+(f.d||"").split(".")[0]+"."):"Nothing good on my list nearby. Try the live search.";
+  }
+  else if(/fact|interesting|tell me about|history|what happened/.test(q)){
+    if(facts.length)reply=facts[0].t+". "+facts[0].x.slice(0,340);
+    else{
+      heard("Digging something up&hellip;",4000);
+      loadFacts(true).then(()=>{
+        if(facts.length){heard("&ldquo;"+esc(said)+"&rdquo;<br><br>"+esc(facts[0].t),9000);speak(facts[0].t+". "+facts[0].x.slice(0,340),true,facts[0].clip||null)}
+        else speak("Nothing much on record right here.",true);
+      });
+      return;
+    }
+  }
+  else if(/plan|today|schedule|itinerary/.test(q)){
+    const i=tripDayIndex();
+    reply=i>=0?("Day "+DAYS[i].n+". "+DAYS[i].t+". "+DAYS[i].r+". Tonight you're at "+DAYS[i].stay+"."):
+      ("You leave in "+daysBetween(todayISO(),TRIP_START)+" days.");
+  }
+  else if(/weather|rain|storm|hot/.test(q)){
+    reply=($("wxNow").innerText||"").replace(/\s+/g," ").trim()||"I can't reach the weather right now.";
+  }
+  else if(/park|where did we park|the truck|the car|the rv/.test(q)){
+    const p=store.get("parked",null);
+    reply=p?("You parked "+fmtMi(dist(here.lat,here.lng,p.lat,p.lng))+" from here. I've got it pinned."):"I haven't marked a parking spot yet.";
+  }
+  else if(/radio|station|listen/.test(q)){
+    const r=RADIO[nearestRegion()];
+    reply="Around here try "+r.s.slice(0,2).map(s=>s.f+" "+s.b).join(", ")+".";
+  }
+  else reply=oliveKnows(said)||"I didn't catch that. Try: what's ahead, where are we, next fuel, or tell me a fact.";
+  heard("&ldquo;"+esc(said)+"&rdquo;<br><br>"+esc(reply.slice(0,220)),9000);
+  speak(reply,true);
 }
 
 /* ============================================================
@@ -5018,6 +5410,9 @@ function boot(){
   renderStories();renderSettings();renderNotif();renderFeed();renderGal();
   renderBriefing();renderNearby();netCheck();
   renderStays();renderPins();renderPasses();renderClearance();renderRadio();drawTrail();renderFacts();
+  renderParkAlerts();loadParkAlerts();
+  micShow(store.get('micOn',true)&&!!SR);
+  if(radarOn){$('mapRadar').classList.add('on');loadRadarFrame().then(()=>{$('radarBar').style.display='block';drawMap();toggleRadarTimer()})}
   $("radioEnable").checked=radioOn;
   $$('#mapLayers button').forEach(b=>b.classList.toggle('on',b.dataset.layer===mapLayer));
   cycleTimers();
