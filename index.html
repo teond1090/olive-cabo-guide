@@ -1104,7 +1104,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w8-2026-08-06";
+const OLIVE_BUILD="w9-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -1999,10 +1999,68 @@ function hasClip(key){
   if(typeof VOICE_LONG!=="undefined"&&VOICE_LONG.indexOf(key)>=0)return true;
   return false;
 }
+/* ---------- Olive's live voice ----------
+   For anything that was never pre-recorded - a fact pulled off the wire,
+   your briefing with today's weather in it - Olive can speak it in her own
+   voice instead of the phone's robot.
+   The key is entered once per device and never leaves it: it is not in this
+   file, not in the repository, and never sent anywhere but ElevenLabs.
+   Every line she generates is cached, so repeats cost nothing and work offline. */
+const OLIVE_VOICE_ID="3QRk8bw47ASJl51zrtqJ";
+const TTS_CACHE="olive-tts-v1";
+async function sha(s){
+  const b=await crypto.subtle.digest("SHA-1",new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+function playBlob(blob,onFail){
+  stopSpeaking();
+  try{
+    const a=new Audio(URL.createObjectURL(blob));
+    a.onerror=()=>{curAudio=null;onFail&&onFail()};
+    curAudio=a;
+    const p=a.play();
+    if(p&&p.catch)p.catch(()=>{curAudio=null;onFail&&onFail()});
+  }catch(e){onFail&&onFail()}
+}
+let ttsSpend=store.get("ttsChars",0);
+async function oliveTTS(text){
+  const key=store.get("xiKey","");
+  if(!key)return false;
+  const clean=String(text).replace(/\s+/g," ").trim().slice(0,1500);
+  if(!clean)return false;
+  try{
+    const id="/olive-tts/"+await sha(OLIVE_VOICE_ID+"|"+clean);
+    let cache=null,res=null;
+    /* the cache is a bonus, never a requirement - if it is unavailable
+       (private mode, storage full) she should still speak */
+    try{cache=await caches.open(TTS_CACHE);res=await cache.match(id)}catch(e){}
+    if(!res){
+      if(!navigator.onLine)return false;
+      const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+OLIVE_VOICE_ID+"?output_format=mp3_44100_64",{
+        method:"POST",
+        headers:{"xi-api-key":key,"Content-Type":"application/json"},
+        body:JSON.stringify({text:clean,model_id:"eleven_turbo_v2_5",
+          voice_settings:{stability:.6,similarity_boost:.8,style:.25,use_speaker_boost:true}})
+      });
+      if(!r.ok)return false;
+      if(cache){try{await cache.put(id,r.clone())}catch(e){}}
+      ttsSpend+=clean.length; store.set("ttsChars",ttsSpend);
+      res=r;
+    }
+    const blob=await res.blob();
+    if(!blob||blob.size<200)return false;
+    playBlob(blob);
+    return true;
+  }catch(e){return false}
+}
 function speak(text,force,key){
   if(!voiceOn&&!force)return;
   if(voiceMode==="olive"&&hasClip(key)){
     playClip(key,(typeof VOICE_LINES!=="undefined"&&VOICE_LINES[key])||text);
+    return;
+  }
+  if(voiceMode==="olive"&&store.get("xiKey","")){
+    oliveTTS(text).then(ok=>{if(!ok)browserSpeak(text)});
     return;
   }
   browserSpeak(text);
@@ -2980,6 +3038,21 @@ function renderSettings(){
       <p class="small muted" style="margin-top:.35rem">Olive's own voice is used for the lines she says most. Anything she has to read out loud on the spot &mdash; your briefing, a landmark write-up &mdash; uses the phone's voice, pitched down to match.</p>
       <button class="btn sm ghost" id="setVoiceTest" style="margin-top:.4rem">&#128266; Hear her</button>
     </div>
+    <div class="card tint" style="margin-top:.9rem">
+      <div class="card-h"><span class="ic">&#127908;</span><h4 style="margin:0">Her voice on everything</h4></div>
+      <p class="small muted">Olive has 66 lines recorded. Anything she has to read on the spot &mdash; a fact off the wire, your briefing with today's weather &mdash; uses the phone's robot voice instead. Paste an ElevenLabs key here and she reads <b>everything</b> in her own voice.</p>
+      <div class="field">
+        <label class="fld" for="setXi">ElevenLabs API key (this phone only)</label>
+        <input type="password" id="setXi" placeholder="sk_&hellip;" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="btnrow" style="margin-top:.6rem">
+        <button class="btn sm" id="xiSave">&#128190; Save key</button>
+        <button class="btn sm ghost" id="xiTest">&#128266; Test her voice</button>
+        <button class="btn sm ghost" id="xiClear">&#128465;&#65039; Remove</button>
+      </div>
+      <div id="xiStatus" class="small muted" style="margin-top:.6rem"></div>
+      <div class="note senior small" style="margin-top:.7rem"><b>Where the key lives:</b> only in this browser, on this phone. It is not in the app's code and not on GitHub, so nobody visiting the site gets it &mdash; but anyone holding this unlocked phone could read it, so treat it like a saved password. Every line she speaks is cached, so the same text never costs twice and still plays with no signal.</div>
+    </div>
     <label class="switch"><input type="checkbox" id="setMiles" ${store.get("autoTrack",true)?"checked":""}><span class="track"></span>
       <span><b>Track miles automatically</b><br><span class="small muted">Counts distance from your GPS while location is on</span></span></label>
     <hr class="hr">
@@ -2995,6 +3068,36 @@ function renderSettings(){
   $("setVoiceMode").addEventListener("change",e=>{voiceMode=e.target.value;store.set("voiceMode",voiceMode);
     speak(VOICE_LINES["voice-on"],true,"voice-on")});
   $("setVoiceTest").addEventListener("click",()=>speak(VOICE_LINES.fuel,true,"fuel"));
+
+  /* --- live voice key, kept on this device only --- */
+  const xiStat=()=>{
+    const has=!!store.get("xiKey","");
+    $("xiStatus").innerHTML=has
+      ? "&#9989; <b>Live voice is on.</b> Olive reads everything herself. "+
+        (ttsSpend?"About "+ttsSpend.toLocaleString()+" characters generated on this phone so far.":"")
+      : "Not set &mdash; anything unrecorded falls back to the phone's voice.";
+  };
+  if(store.get("xiKey",""))$("setXi").value="";
+  xiStat();
+  $("xiSave").addEventListener("click",()=>{
+    const v=$("setXi").value.trim();
+    if(!v)return toast("Paste a key first");
+    store.set("xiKey",v); $("setXi").value=""; xiStat();
+    toast("&#128190; Saved to this phone");
+    speak("That's better. I'll read everything myself from now on.",true);
+  });
+  $("xiTest").addEventListener("click",async()=>{
+    if(!store.get("xiKey",""))return toast("Save a key first");
+    $("xiStatus").innerHTML="Generating&hellip;";
+    const ok=await oliveTTS("This is my own voice, reading something I was never recorded saying. "+
+      "Anything you tap now comes out sounding like this.");
+    xiStat();
+    if(!ok){$("xiStatus").innerHTML="&#10060; That key was refused, or there's no signal. Check it and try again.";toast("Failed")}
+    else toast("&#128266; That's her");
+  });
+  $("xiClear").addEventListener("click",()=>{
+    store.del("xiKey"); $("setXi").value=""; xiStat(); toast("Key removed from this phone");
+  });
   $("setMiles").addEventListener("change",e=>store.set("autoTrack",e.target.checked));
   $("setExport").addEventListener("click",()=>{
     const dump={};["feed","stats","states","parks","bucket","favs","pack","health","media"].forEach(k=>dump[k]=store.get(k,null));
@@ -4207,6 +4310,27 @@ let mapZ=store.get("mapZ",11), mapC=store.get("mapC",null);   /* {lat,lng} */
 let mapFollow=true, mapLabels=true, mapReady=false;
 const tileEls=new Map();
 
+/* A blank map is a mystery; say why. Tiles fail for exactly two reasons:
+   no signal, or the page is in a preview frame that blocks outside images. */
+let tileOK=0,tileFail=0,tileNoteT=null;
+function noteTiles(){
+  clearTimeout(tileNoteT);
+  tileNoteT=setTimeout(()=>{
+    let el=$("mapNote");
+    if(tileFail>2&&tileOK===0){
+      if(!el){
+        el=document.createElement("div");el.id="mapNote";
+        el.style.cssText="position:absolute;inset:auto 1rem 3rem 1rem;z-index:45;background:rgba(58,29,13,.92);"+
+          "color:#F3E6CE;padding:.8rem 1rem;border-radius:12px;font-size:.84rem;line-height:1.45;border:2px solid var(--brass)";
+        $("mapWrap").appendChild(el);
+      }
+      el.innerHTML=(window.self!==window.top)
+        ? "<b>Map tiles can't load in this preview.</b> Preview pages block outside images, so all three map styles come up blank here. Open the real site &mdash; <b>teond1090.github.io/olive-cabo-guide</b> &mdash; and the map works."
+        : "<b>No signal for map tiles.</b> Your position, trail and every place marker still work. Roads you've already driven stay on the map from cache.";
+    }else if(el&&tileOK>0){el.remove()}
+  },1200);
+}
+
 const lon2x=(lo,z)=>(lo+180)/360*Math.pow(2,z);
 const lat2y=(la,z)=>{const r=la*Math.PI/180;return (1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z)};
 const x2lon=(x,z)=>x/Math.pow(2,z)*360-180;
@@ -4241,7 +4365,8 @@ function drawTiles(o){
     if(!im){
       im=new Image();
       im.decoding="async"; im.loading="eager"; im.alt="";
-      im.onerror=()=>{im.style.visibility="hidden"};
+      im.onerror=()=>{im.style.visibility="hidden";tileFail++;noteTiles()};
+      im.onload=()=>{tileOK++;noteTiles()};
       im.src=L.u(mapZ,tx,y);
       tileEls.set(key,im); wrap.appendChild(im);
     }
@@ -4328,11 +4453,17 @@ function drawMap(){
 /* ---------- interaction ---------- */
 (function(){
   const el=$("mapWrap");
-  const pts=new Map(); let last=null, pinchD=0;
+  const pts=new Map(); let last=null, pinchD=0, moved=0;
+  /* Buttons and markers sit on top of the map. A tap on one of those must
+     never be treated as a drag, or the map pans out from under your thumb
+     and quietly switches off follow-me. */
+  const isControl=t=>!!(t&&t.closest&&t.closest("#mapLayers,.map-ctrl,.mk,.mk-lbl,.map-attr"));
   el.addEventListener("pointerdown",e=>{
-    el.setPointerCapture(e.pointerId);
+    if(isControl(e.target))return;
+    /* capture is a nicety - if the browser refuses it, panning must still work */
+    try{el.setPointerCapture(e.pointerId)}catch(err){}
     pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(pts.size===1){last={x:e.clientX,y:e.clientY};el.classList.add("dragging")}
+    if(pts.size===1){last={x:e.clientX,y:e.clientY};moved=0}
     if(pts.size===2){const a=[...pts.values()];pinchD=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}
   });
   el.addEventListener("pointermove",e=>{
@@ -4347,6 +4478,10 @@ function drawMap(){
     if(!last)return;
     const dx=e.clientX-last.x, dy=e.clientY-last.y;
     if(!dx&&!dy)return;
+    /* a real finger always wobbles a few pixels - that is a tap, not a drag */
+    moved+=Math.abs(dx)+Math.abs(dy);
+    if(moved<8)return;
+    el.classList.add("dragging");
     last={x:e.clientX,y:e.clientY};
     const c=mapCenter();
     const cx=lon2x(c.lng,mapZ)*TILE-dx, cy=lat2y(c.lat,mapZ)*TILE-dy;
@@ -4357,7 +4492,7 @@ function drawMap(){
   const up=e=>{
     pts.delete(e.pointerId);
     if(pts.size<2)pinchD=0;
-    if(!pts.size){last=null;el.classList.remove("dragging");store.set("mapC",mapC)}
+    if(!pts.size){last=null;moved=0;el.classList.remove("dragging");store.set("mapC",mapC)}
   };
   el.addEventListener("pointerup",up); el.addEventListener("pointercancel",up);
   el.addEventListener("wheel",e=>{e.preventDefault();setZoom(mapZ+(e.deltaY<0?1:-1))},{passive:false});
@@ -4388,6 +4523,7 @@ $("mapLayers").addEventListener("click",e=>{
   mapLayer=b.dataset.layer; store.set("mapLayer",mapLayer);
   $$("#mapLayers button").forEach(x=>x.classList.toggle("on",x===b));
   tileEls.forEach(im=>im.remove()); tileEls.clear();
+  tileOK=0;tileFail=0;{const n=$('mapNote');if(n)n.remove()}
   if(mapZ>LAYERS[mapLayer].max)mapZ=LAYERS[mapLayer].max;
   drawMap();
 });
