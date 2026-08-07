@@ -1263,7 +1263,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w17-2026-08-06";
+const OLIVE_BUILD="w19-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -1936,35 +1936,35 @@ const HIWAY=[
    pre-recorded clip in voice/<key>.mp3 when one has been made.
    ============================================================ */
 const VOICE_LINES={
-"voice-on":"Alright. I'm listening. I'll speak up when something's worth stopping for.",
-"water":"Drink some water. You're higher and drier up here than you think, and it sneaks up on people.",
-"stretch":"Next wide spot, pull over and get all the way out. Ten minutes now beats a bad back at dinner.",
-"meds":"Medication. Now, not in a minute.",
-"sunset":"Sun's down in about half an hour. Find something facing west and quit talking for a minute.",
-"stars":"Sky's clear and the moon's barely there. Step away from the lights, give your eyes fifteen minutes, and look up. You don't get this at home.",
-"heat":"It's going to be a hot one, and there's no shade on those boardwalks. Water and a hat. I'm not asking.",
-"air":"Air quality's poor today. Probably smoke. Keep it short outside if anybody's got a bad chest.",
-"fuel":"Fuel's coming up. Take it. What's after this is a long stretch of nothing and no sympathy.",
-"fuel-gap":"Fill up here. The next pump is a long way off, and running dry out here is a very bad afternoon.",
-"bison":"Bison ahead. They've got the right of way and they know it. Stay in the vehicle and let them work.",
-"bear":"Bear country through here. A hundred yards, minimum. That's what the zoom is for.",
-"wolf":"Wolves through here, if you're patient and quiet. Look for the crowd with the spotting scopes. That's where they are.",
-"goat":"Mountain goats up here. They'll walk right past you like they own the place. They do. Twenty-five yards.",
-"wildlife":"Wildlife country. Eyes up, and nobody gets out to pose for a picture.",
-"boardwalk":"Stay on the boardwalk. The crust is thin and what's under it is boiling. People have made that mistake.",
-"altitude":"You're up high now. Move slow getting out, go easy on the drinks tonight, and drink water like it's your job.",
-"state":"New state line. Add it to the list.",
-"video":"Your video's finished. Go watch it.",
-"bucket":"That's one off the list.",
-"arrive":"You're here. Take your time.",
-"briefing":"Morning. Here's your day.",
-"landmark":"Something worth stopping for coming up.",
-"gem":"There's a good one just ahead. Most people drive right past it.",
-"food":"Decent food ahead. Better than whatever's in the cooler.",
-"storm":"Weather's turning. Look at the sky before you commit to anything.",
-"pass":"Long grade coming. Low gear, easy on the brakes, and take your time.",
-"clearance":"Your SUV clears every limit on this route. Going-to-the-Sun, the Needles, all of it. Fold your mirrors in the tight tunnel and enjoy yourself.",
-"offline":"No signal out here. Doesn't matter. Everything you need is already on the phone."
+"voice-on":"Well hello, and welcome to the Great American West. I'm Olive, and I'll be riding along with the three of you for the next two weeks. I know every mile of this road, from the Black Hills all the way up to Glacier and back down through Yellowstone. I'll let you know when something wonderful is coming up, nudge you about water and stretching your legs, and tell you a story or two along the way. Anything you'd like to know, just ask. Let's go and see some country.",
+"water":"Time for a little water. You're higher and drier out here than it feels, and it does creep up on you.",
+"stretch":"How about a proper stop at the next wide spot? All the way out of the vehicle, a little walk around. Ten minutes now and you'll feel so much better at dinner.",
+"meds":"A gentle reminder about your medication. Now is a good moment, before the day carries you off somewhere.",
+"sunset":"The sun goes down in about half an hour. If you can find somewhere facing west, this is the part of the day worth stopping for.",
+"stars":"Oh, tonight is going to be lovely. The sky is clear and there's barely any moon. Step away from the lights, give your eyes a quarter of an hour, and look up. You truly don't get this at home.",
+"heat":"It's going to be a warm one today, and there's no shade at all on those boardwalks. Water and a hat, please. I'll only nag you the once.",
+"air":"The air quality isn't wonderful today, most likely smoke. If anyone's chest is at all sensitive, keep the outdoor time short and you'll be fine.",
+"fuel":"There's fuel coming up shortly. I'd take it if I were you. What's after this is a long, beautiful stretch of absolutely nothing.",
+"fuel-gap":"Let's fill up here. The next pump is a good long way off, and running low out in this country makes for a very long afternoon.",
+"bison":"Bison up ahead. They have the right of way and they know it, so stay in the vehicle, enjoy the view, and let them take their time.",
+"bear":"We're in bear country now. A hundred yards is the rule, and that's what the zoom on your camera is for.",
+"wolf":"Wolves through here, if you're patient and quiet about it. Look for the little crowd with the spotting scopes. That's always where they are.",
+"goat":"Mountain goats up here, and they'll walk right past you as though they own the place. Which, to be fair, they do. Twenty-five yards.",
+"wildlife":"Lovely wildlife country through here. Keep your eyes up and stay in the vehicle. Everyone gets a better look that way.",
+"boardwalk":"Do stay on the boardwalk. The crust is thinner than it looks and what's underneath is boiling. It's the one rule out here that really matters.",
+"altitude":"You're up quite high now. Take your time getting out, go easy on the wine tonight, and drink more water than you think you need.",
+"state":"A new state line. That's another one for the collection.",
+"video":"Your video is finished and it looks wonderful. Go and have a watch.",
+"bucket":"That's another one off the list. Well done, you.",
+"arrive":"Here we are. Take your time with this one, there's no rush at all.",
+"briefing":"Good morning, all. Let me tell you about your day.",
+"landmark":"Oh, there's something rather good coming up.",
+"gem":"Now this one is lovely, and most people drive straight past it.",
+"food":"There's proper food ahead, and it's a good deal better than whatever's left in the cooler.",
+"storm":"The weather's turning. Have a look at the sky before you commit to anything outdoors.",
+"pass":"A long climb coming up. Low gear, easy on the brakes, and enjoy the view.",
+"clearance":"Good news. Your SUV clears every limit on this route, Going-to-the-Sun and the Needles included. Fold your mirrors in for the tight tunnel and enjoy yourselves.",
+"offline":"No signal out here, and it doesn't matter a bit. Everything you need is already on your phone."
 };
 /* Filled in by the build once clips are generated. Empty = device voice only. */
 const VOICE_CLIPS=["air","altitude","arrive","bear","bison","boardwalk","briefing","bucket","clearance","food","fuel","fuel-gap","gem","goat","heat","landmark","meds","offline","pass","stars","state","storm","stretch","sunset","video","voice-on","water","wildlife","wolf"];
@@ -3236,6 +3236,11 @@ function renderSettings(){
         <button class="btn sm ghost" id="npsClear">Remove</button>
       </div>
     </div>
+    <div class="note senior small" style="margin-top:.7rem">
+      <b>Voice sounding old, or mixed between two people?</b> Your phone keeps a copy of her recordings so they play with no signal &mdash; which means a fresh recording can hide behind the old one.
+      <div class="btnrow" style="margin-top:.5rem"><button class="btn sm brass" id="voiceRefresh">&#8635; Get her newest voice</button></div>
+      <div id="voiceRefreshMsg" class="small muted" style="margin-top:.4rem"></div>
+    </div>
     <label class="switch" style="margin-top:.6rem"><input type="checkbox" id="setSpot"><span class="track"></span>
       <span><b>Speak up about landmarks</b><br><span class="small muted">Olive introduces notable places as you approach. Turn off to keep alerts silent but still see them.</span></span></label>
     <label class="switch"><input type="checkbox" id="setChime"><span class="track"></span>
@@ -3262,6 +3267,36 @@ function renderSettings(){
     store.set("npsKey",v);$("setNps").value="";loadParkAlerts();toast("Saved — alerts are live now");
   });
   $("npsClear").addEventListener("click",()=>{store.del("npsKey");loadParkAlerts();toast("Removed")});
+  /* Re-fetch every recording, bypassing the stored copies. */
+  $("voiceRefresh").addEventListener("click",async()=>{
+    const b=$("voiceRefresh"), msg=$("voiceRefreshMsg");
+    b.disabled=true; msg.textContent="Fetching her newest recordings…";
+    let got=0, all=[].concat(VOICE_CLIPS, (typeof VOICE_LONG!=="undefined"?VOICE_LONG:[]));
+    try{
+      if("caches" in window){
+        /* drop anything cached under voice/ so the new files win */
+        for(const name of await caches.keys()){
+          const c=await caches.open(name);
+          for(const req of await c.keys()) if(req.url.indexOf("/voice/")>=0) await c.delete(req);
+        }
+        const c=await caches.open("olive-west-v5");
+        for(const k of all){
+          try{
+            const r=await fetch("voice/"+k+".mp3?v="+Date.now(),{cache:"reload"});
+            if(r.ok){await c.put("voice/"+k+".mp3",r.clone());got++}
+          }catch(e){}
+          if(got%10===0)msg.textContent="Fetched "+got+" of "+all.length+"…";
+        }
+      }
+      /* her live-generated lines were made with the old voice too */
+      try{await caches.delete("olive-tts-v1")}catch(e){}
+      stopSpeaking();
+      msg.innerHTML="<b>&#9989; "+got+" recordings refreshed.</b> That's her newest voice everywhere.";
+      toast("&#127908; Voice refreshed");
+      speak(VOICE_LINES["voice-on"],true,"voice-on");
+    }catch(e){ msg.textContent="Couldn't refresh — check your signal and try again."; }
+    b.disabled=false;
+  });
   $("setPark").addEventListener("click",backToVehicle);
   $("setSpot").checked=store.get("spotVoice",true);
   $("setSpot").addEventListener("change",e=>store.set("spotVoice",e.target.checked));
@@ -5343,14 +5378,21 @@ const FIND_TAGS={
 };
 let found=[], findCat=null, findBusy=false;
 
+/* Search from wherever the map is looking when there's no GPS fix yet.
+   Waiting on satellites should never stop someone finding a chemist. */
+function searchOrigin(){
+  if(here)return {lat:here.lat,lng:here.lng,live:true};
+  const c=(typeof mapCenter==="function")?mapCenter():{lat:44.5,lng:-108.0};
+  return {lat:c.lat,lng:c.lng,live:false};
+}
 async function findNow(cat,radiusMi){
-  if(!here)return toast("Olive needs your location first");
+  const O=searchOrigin();
   const spec=FIND_TAGS[cat]; if(!spec)return;
   if(findBusy)return;
   findBusy=true; findCat=cat;
   const r=Math.round((radiusMi||15)*1609);
   $("findStatus").innerHTML="&#128269; Looking for "+spec.n.toLowerCase()+" within "+(radiusMi||15)+" miles&hellip; <span class=\"muted\">(a few seconds)</span>";
-  const q="[out:json][timeout:25];("+spec.t.map(t=>t+"(around:"+r+","+here.lat.toFixed(5)+","+here.lng.toFixed(5)+");").join("")+");out center 60;";
+  const q="[out:json][timeout:25];("+spec.t.map(t=>t+"(around:"+r+","+O.lat.toFixed(5)+","+O.lng.toFixed(5)+");").join("")+");out center 60;";
   let els=null;
   try{
     for(const host of OVERPASS){
@@ -5376,7 +5418,7 @@ async function findNow(cat,radiusMi){
     $("findStatus").innerHTML="Couldn't reach the search &mdash; weak signal, or the free map service is busy."+
       '<div class="btnrow" style="margin-top:.6rem">'+
       '<button class="btn sm ghost" data-find="'+cat+'">&#8635; Try again</button>'+
-      '<a class="btn sm ghost" href="'+mapSearch(spec.n,here.lat,here.lng)+'" target="_blank" rel="noopener">&#128506;&#65039; Open in Google Maps</a>'+
+      '<a class="btn sm ghost" href="'+mapSearch(spec.n,O.lat,O.lng)+'" target="_blank" rel="noopener">&#128506;&#65039; Open in Google Maps</a>'+
       "</div>";
     renderFound(); drawMap(); return;
   }
@@ -5389,10 +5431,11 @@ async function findNow(cat,radiusMi){
             info:[tg["addr:street"]&&((tg["addr:housenumber"]||"")+" "+tg["addr:street"]).trim(),
                   tg.opening_hours,tg.phone||tg["contact:phone"],tg.cuisine].filter(Boolean).join(" · "),
             phone:tg.phone||tg["contact:phone"]||"",
-            _d:dist(here.lat,here.lng,la,lo)};
+            _d:dist(O.lat,O.lng,la,lo)};
   }).filter(Boolean).sort((a,b)=>a._d-b._d).slice(0,40);
   $("findStatus").innerHTML="&#128205; <b>"+found.length+" "+spec.n.toLowerCase()+"</b> within "+(radiusMi||15)+
-    " miles, nearest first. They're on the map in gold.";
+    " miles, nearest first. They're on the map in gold."+
+    (O.live?"":" <span class=\"muted\">Measured from the middle of the map &mdash; Olive hasn't got a GPS fix yet.</span>");
   renderFound(); fitMapToFound();
   if(found.length){
     const f=found[0];
@@ -5501,13 +5544,13 @@ let searchBusy=false;
 async function searchAnything(raw){
   const q=(raw||"").trim();
   if(!q)return;
-  if(!here)return toast("Olive needs your location first");
+  const O=searchOrigin();
   if(searchBusy)return;
   $("findStatus").innerHTML="&#128269; Searching for <b>"+esc(q)+"</b>&hellip;";
 
   /* 1. Olive's own places - instant, works with no signal */
   const words=q.toLowerCase().split(/\s+/).filter(Boolean);
-  const mine=POI.map(p=>{p._d=dist(here.lat,here.lng,p.lat,p.lng);return p})
+  const mine=POI.map(p=>{p._d=dist(O.lat,O.lng,p.lat,p.lng);return p})
     .filter(p=>{const hay=(p.n+" "+(p.d||"")+" "+(p.tip||"")).toLowerCase();
                 return words.every(w=>hay.includes(w))})
     /* a hit in the NAME beats a passing mention in the description */
@@ -5530,7 +5573,7 @@ async function searchAnything(raw){
   searchBusy=true;
   try{
     const d=0.6;                                   /* rough box around you */
-    const vb=[here.lng-d,here.lat+d,here.lng+d,here.lat-d].join(",");
+    const vb=[O.lng-d,O.lat+d,O.lng+d,O.lat-d].join(",");
     const ctl=new AbortController(); const kill=setTimeout(()=>ctl.abort(),9000);
     const r=await fetch("https://nominatim.openstreetmap.org/search?q="+encodeURIComponent(q)+
       "&format=json&limit=20&viewbox="+vb+"&bounded=1",{signal:ctl.signal});
@@ -5539,7 +5582,7 @@ async function searchAnything(raw){
     found=(j||[]).map(x=>({n:(x.display_name||"").split(",")[0]||q,
       lat:+x.lat,lng:+x.lon,cat:"attraction",ic:"&#128269;",
       info:(x.display_name||"").split(",").slice(1,4).join(",").trim(),
-      phone:"",_d:dist(here.lat,here.lng,+x.lat,+x.lon)}))
+      phone:"",_d:dist(O.lat,O.lng,+x.lat,+x.lon)}))
       .sort((a,b)=>a._d-b._d).slice(0,25);
   }catch(e){found=[]}
   finally{searchBusy=false}
@@ -5547,7 +5590,7 @@ async function searchAnything(raw){
   if(!found.length){
     $("findStatus").innerHTML="Nothing found for &ldquo;"+esc(q)+"&rdquo; nearby."+
       '<div class="btnrow" style="margin-top:.6rem"><a class="btn sm ghost" href="'+
-      mapSearch(q,here.lat,here.lng)+'" target="_blank" rel="noopener">&#128506;&#65039; Try Google Maps</a></div>';
+      mapSearch(q,O.lat,O.lng)+'" target="_blank" rel="noopener">&#128506;&#65039; Try Google Maps</a></div>';
   }else{
     $("findStatus").innerHTML="&#128205; <b>"+found.length+"</b> match &ldquo;"+esc(q)+"&rdquo;, nearest first. On the map in gold.";
     announce("Found "+found.length+" for "+q+". Closest is "+found[0].n+", "+fmtMi(found[0]._d)+" away.");
@@ -5839,7 +5882,7 @@ if("serviceWorker" in navigator){
 $("cacheNow").addEventListener("click",async()=>{
   try{
     if("caches" in window){
-      const c=await caches.open("olive-west-v3");
+      const c=await caches.open("olive-west-v5");
       await c.addAll(["./","./index.html","./manifest.json"]);
       /* her voice too - individually, so one miss can't abort the lot */
       let got=0;
