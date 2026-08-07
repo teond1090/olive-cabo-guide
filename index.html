@@ -895,6 +895,24 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div id="nowPlaying" style="display:none;margin-top:.9rem"></div>
     </div>
 
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#127911;</span><h3>Podcasts</h3></div>
+      <p class="small muted">What the country is listening to right now, plus a few picked for these particular roads. Episodes play right here &mdash; good for the long empty stretches where the radio gives up.</p>
+      <div class="pills" style="margin-top:.8rem" id="podGenres">
+        <button class="pill on" data-pg="trip">&#129517; For this trip</button>
+        <button class="pill" data-pg="top">&#128293; Top overall</button>
+        <button class="pill" data-pg="1487">&#127963;&#65039; History</button>
+        <button class="pill" data-pg="1489">&#128240; News</button>
+        <button class="pill" data-pg="1324">&#127759; Society</button>
+        <button class="pill" data-pg="1303">&#128514; Comedy</button>
+        <button class="pill" data-pg="1488">&#128373;&#65039; True Crime</button>
+        <button class="pill" data-pg="1533">&#128301; Science</button>
+        <button class="pill" data-pg="1310">&#127925; Music</button>
+      </div>
+      <div id="podStatus" class="small muted" style="margin-top:.8rem"></div>
+      <div id="podList" style="margin-top:.8rem"></div>
+    </div>
+
     <div class="card a-canyon">
       <div class="card-h"><span class="ic">&#9888;&#65039;</span><h3>NOAA Weather Radio</h3></div>
       <p class="small muted">Seven frequencies, nationwide, 24 hours a day. When a storm is coming and your phone has no bars, this still works. Most RV and marine radios receive these.</p>
@@ -1104,7 +1122,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w9-2026-08-06";
+const OLIVE_BUILD="w10-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -2099,7 +2117,7 @@ function showView(v){
   if(v==="memories")renderFeed();
   if(v==="bucket")renderBucket();
   if(v==="facts")loadFacts();
-  if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();}
+  if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();if(!podList.length)loadPods();}
   if(v==="journey"){drawTrail();renderStays()}
   if(v==="crew"){unread=0;}
 }
@@ -4551,6 +4569,130 @@ function mapOnFix(){
   drawMap();
 }
 window.addEventListener("resize",()=>{if(mapReady)drawMap()});
+
+/* ============================================================
+   PODCASTS
+   Apple's public charts (no key, no account) plus a handful chosen
+   for this particular drive. Episodes stream in the app, using the
+   same player - and the same mute and off switch - as the radio.
+   ============================================================ */
+const POD_TRIP=[
+  {q:"American History Tellers",why:"Long-form American history. Their Wild West and national-parks runs suit this route exactly."},
+  {q:"The Rest Is History",why:"Two historians, very good company, episodes long enough for a real driving leg."},
+  {q:"National Park After Dark",why:"The stories the visitor centres leave out, park by park."},
+  {q:"Lore",why:"American folklore and the strange corners of small towns."},
+  {q:"Dan Carlin Hardcore History",why:"Episodes run four hours. Built for the Hi-Line."},
+  {q:"Throughline",why:"NPR - how the past shaped the present. Digestible and well made."},
+  {q:"Yellowstone To Yukon",why:"The landscape you'll be driving through, explained."},
+  {q:"Cowboy Up",why:"Working ranch life and rodeo, straight from the people doing it."}
+];
+let podGenre="trip", podList=[], podBusy=false;
+
+async function loadPods(g){
+  if(podBusy)return; podBusy=true;
+  podGenre=g||podGenre;
+  $("podStatus").innerHTML="&#128269; Fetching&hellip;";
+  try{
+    if(podGenre==="trip"){
+      const res=await Promise.all(POD_TRIP.map(async p=>{
+        try{
+          const j=await (await fetch("https://itunes.apple.com/search?media=podcast&limit=1&term="+
+                        encodeURIComponent(p.q))).json();
+          const r=j.results&&j.results[0];
+          return r?{name:r.collectionName,art:r.artworkUrl100,feed:r.feedUrl,
+                    author:r.artistName,link:r.collectionViewUrl,why:p.why}:null;
+        }catch(e){return null}
+      }));
+      podList=res.filter(Boolean);
+      $("podStatus").innerHTML="&#129517; <b>"+podList.length+" picked for these roads.</b> Long episodes, western subjects, nothing that needs you to have heard part one.";
+    }else{
+      const url=podGenre==="top"
+        ? "https://itunes.apple.com/us/rss/toppodcasts/limit=24/json"
+        : "https://itunes.apple.com/us/rss/toppodcasts/genre="+podGenre+"/limit=24/json";
+      const j=await (await fetch(url)).json();
+      const e=(j.feed&&j.feed.entry)||[];
+      podList=e.map(x=>({
+        name:x["im:name"]&&x["im:name"].label,
+        art:(x["im:image"]&&x["im:image"][1]&&x["im:image"][1].label)||"",
+        author:(x["im:artist"]&&x["im:artist"].label)||"",
+        link:(x.link&&(x.link.attributes||{}).href)||"",
+        id:(x.id&&x.id.attributes&&x.id.attributes["im:id"])||""
+      }));
+      $("podStatus").innerHTML="&#128293; <b>Top "+podList.length+" right now.</b> Tap one to see its latest episodes.";
+    }
+  }catch(e){
+    podList=[];
+    $("podStatus").innerHTML="Couldn't reach the podcast charts &mdash; no signal. Anything you've already played is still cached.";
+  }
+  podBusy=false; renderPods();
+}
+
+function renderPods(){
+  if(!podList.length){$("podList").innerHTML="";return}
+  $("podList").innerHTML=podList.map((p,i)=>`
+    <div class="station" data-pod="${i}">
+      ${p.art?`<img src="${esc(p.art)}" alt="" width="46" height="46" style="border-radius:8px;flex:0 0 auto;border:1.5px solid var(--line-2)">`
+             :`<div class="f">&#127911;</div>`}
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800">${esc((p.name||"").slice(0,42))}</div>
+        <div class="small muted">${esc((p.author||"").slice(0,34))}${p.why?" &mdash; "+esc(p.why.slice(0,60)):""}</div>
+      </div>
+      <span class="small muted">&#9654;&#65039;</span>
+    </div>`).join("");
+}
+$("podGenres").addEventListener("click",e=>{
+  const b=e.target.closest("[data-pg]");if(!b)return;
+  $$("#podGenres .pill").forEach(p=>p.classList.toggle("on",p===b));
+  loadPods(b.dataset.pg);
+});
+
+/* ---- episodes ---- */
+$("podList").addEventListener("click",async e=>{
+  const row=e.target.closest("[data-pod]");if(!row)return;
+  const p=podList[+row.dataset.pod];
+  openSheet(esc(p.name||"Podcast"),'<p class="muted">Loading episodes&hellip;</p>');
+  let feed=p.feed;
+  if(!feed&&p.id){
+    try{
+      const j=await (await fetch("https://itunes.apple.com/lookup?id="+p.id)).json();
+      feed=j.results&&j.results[0]&&j.results[0].feedUrl;
+    }catch(err){}
+  }
+  if(!feed)return podFallback(p,"Apple doesn't publish a feed for this one.");
+  let eps=[];
+  try{
+    const txt=await (await fetch(feed)).text();
+    const doc=new DOMParser().parseFromString(txt,"text/xml");
+    eps=[...doc.querySelectorAll("item")].slice(0,12).map(it=>{
+      const enc=it.querySelector("enclosure");
+      return {t:(it.querySelector("title")||{}).textContent||"Episode",
+              url:enc?enc.getAttribute("url"):"",
+              date:(it.querySelector("pubDate")||{}).textContent||"",
+              dur:(it.getElementsByTagName("itunes:duration")[0]||{}).textContent||""};
+    }).filter(x=>x.url);
+  }catch(err){
+    return podFallback(p,"This show's feed won't open in a browser.");
+  }
+  if(!eps.length)return podFallback(p,"No playable episodes in that feed.");
+  $("shBody").innerHTML=
+    (p.why?`<div class="note" style="margin-top:0"><b>Why this one:</b> ${esc(p.why)}</div>`:"")+
+    eps.map((x,i)=>`<div class="row clickable" data-ep="${i}">
+      <div class="ic">&#9654;&#65039;</div><div class="bd">
+        <div class="t" style="font-size:.96rem">${esc(x.t.slice(0,72))}</div>
+        <div class="s">${esc((x.date||"").slice(0,16))}${x.dur?" &middot; "+esc(x.dur):""}</div>
+      </div></div>`).join("")+
+    (p.link?`<a class="btn sm ghost" href="${esc(p.link)}" target="_blank" rel="noopener" style="margin-top:.8rem">Open in Apple Podcasts</a>`:"");
+  $("shBody").addEventListener("click",ev=>{
+    const b=ev.target.closest("[data-ep]");if(!b)return;
+    const x=eps[+b.dataset.ep];
+    closeSheet();
+    playStation({name:p.name+" — "+x.t,call:"",freq:"",band:"",fmt:"Podcast",url:x.url});
+  });
+});
+function podFallback(p,why){
+  $("shBody").innerHTML=`<p>${esc(why)} You can still listen in your usual podcast app.</p>`+
+    (p.link?`<a class="btn" href="${esc(p.link)}" target="_blank" rel="noopener">Open in Apple Podcasts</a>`:"");
+}
 
 /* ============================================================
    CREW CHAT  (ntfy.sh pub/sub - free, no accounts)
