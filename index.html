@@ -4,19 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#5A3018">
-<title>Olive &middot; Great American West RV Companion</title>
-<meta name="description" content="Olive - your RV trail boss for the Great American West. Landmarks, hidden gems, wildlife, eats, fuel, radio and memories, mile by mile.">
+<title>Great American West Journey &middot; Anderson Family</title>
+<meta name="description" content="The Anderson family's Great American West journey. Landmarks, hidden gems, wildlife, eats, fuel, radio and memories, mile by mile.">
 <link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Olive">
+<meta name="apple-mobile-web-app-title" content="Great American West">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%235A3018'/%3E%3Cpath d='M32 6 l6.2 12.6 13.9 2-10 9.8 2.4 13.8L32 37.7 19.5 44.2l2.4-13.8-10-9.8 13.9-2z' fill='%23D9A32E'/%3E%3Cpath d='M8 50 h48 v6 H8z' fill='%23A63A24'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rye&family=Bitter:wght@600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   OLIVE - GREAT AMERICAN WEST
+   GREAT AMERICAN WEST - ANDERSON FAMILY JOURNEY
    Theme: Americana / cowboy. Saddle leather, barn red, brass,
    big sky denim, aged parchment.
    Legibility rules for older eyes still win every time:
@@ -580,10 +580,11 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <circle cx="32" cy="30" r="4.6" fill="#A63A24"/>
     </svg>
     <div class="brandtxt">
-      <div class="tag">Great American West</div>
-      <h1>Olive</h1>
+      <div class="tag">Anderson Family Journey</div>
+      <h1>Great American West</h1>
     </div>
     <div class="hdr-actions">
+      <button class="icon-btn" id="btnHush" title="Stop talking now" aria-label="Stop talking now">&#128263;</button>
       <button class="icon-btn" id="btnVoice" aria-pressed="false" title="Voice companion on/off" aria-label="Voice companion on or off">&#128264;</button>
       <button class="icon-btn" id="btnText" title="Text size" aria-label="Change text size"><b style="font-size:.9rem">A</b><b style="font-size:1.2rem">A</b></button>
     </div>
@@ -687,10 +688,11 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
   <div class="stack">
 
     <div class="poster">
-      <span class="western">The Great American West</span>
+      <span class="western">The Anderson Family</span>
+      <div class="western" style="font-size:1.15rem;color:var(--rust)">Great American West Journey</div>
       <div class="small muted" style="letter-spacing:.16em;text-transform:uppercase;font-weight:800">August 17 &ndash; 31, 2026</div>
       <hr class="rope">
-      <p class="small" style="margin:0">Three travelers, six states, five national parks. Scenic driving, history and wildlife at an easy pace &mdash; with one optional item every day you can drop without spoiling a thing.</p>
+      <p class="small" style="margin:0">Three Andersons, six states, five national parks. Scenic driving, history and wildlife at an easy pace &mdash; with one optional item every day you can drop without spoiling a thing.</p>
       <div class="pills" style="margin-top:.9rem;justify-content:center">
         <span class="pill sage">&#128663; ~3,400 miles</span>
         <span class="pill sky">&#127957;&#65039; 5 parks</span>
@@ -744,13 +746,13 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
     <div class="card a-canyon">
       <div class="card-h"><span class="ic">&#9968;&#65039;</span><h3>Mountain Passes &amp; Grades</h3></div>
-      <p class="small muted">Every serious climb on your route, with what it asks of a heavy vehicle.</p>
+      <p class="small muted">Every serious climb on your route, and what each one asks of you.</p>
       <div id="passList"></div>
     </div>
 
     <div class="card tint">
-      <div class="card-h"><span class="ic">&#128507;</span><h3>Clearance &amp; Size Limits</h3></div>
-      <p class="small muted">Places on this route that will physically stop an RV. Worth knowing before you're committed.</p>
+      <div class="card-h"><span class="ic">&#128507;</span><h3>Roads With Limits</h3></div>
+      <p class="small muted">Narrow tunnels and posted vehicle limits on this route &mdash; and whether your SUV clears them. Mostly good news.</p>
       <div id="clearList"></div>
     </div>
   </div>
@@ -804,7 +806,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <button class="pill" data-cat="landmark">&#127963;&#65039; Landmarks</button>
         <button class="pill" data-cat="gem">&#128142; Hidden gems</button>
         <button class="pill" data-cat="wildlife">&#129454; Wildlife</button>
-        <button class="pill" data-cat="rv">&#128650; RV services</button>
+        <button class="pill" data-cat="rv">&#127957;&#65039; Camping</button>
         <button class="pill" data-cat="scenic">&#128247; Viewpoints</button>
         <button class="pill" data-cat="park">&#127957;&#65039; Parks</button>
       </div>
@@ -830,7 +832,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
     <div class="card a-sun" id="fuelPlanner">
       <div class="card-h"><span class="ic">&#9981;</span><h3>Fuel Watch</h3></div>
-      <div id="fuelInfo" class="small muted">Turn on location and Olive warns you before the long empty stretches &mdash; the Hi&#8209;Line and central Montana have real gaps.</div>
+      <div id="fuelInfo" class="small muted">Olive warns you before the long empty stretches &mdash; the Hi&#8209;Line and central Montana have real gaps.</div>
     </div>
 
     <div id="nearbyList" class="stack"></div>
@@ -1161,7 +1163,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w11-2026-08-06";
+const OLIVE_BUILD="w12-2026-08-06";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 
@@ -1200,7 +1202,7 @@ const POI=[
 {n:"Mount Rushmore National Memorial",c:"park",lat:43.8791,lng:-103.4591,st:"SD",d:"Gutzon Borglum's 60-foot presidents, carved 1927-1941 by 400 workers - not one of whom died on the job.",tip:"Parking is charged separately from your park pass. Age 62+ gets a reduced rate.",senior:"Grand View Terrace is elevator-accessible with gentle grades and lots of benches. Skip the Presidential Trail stairs."},
 {n:"Crazy Horse Memorial",c:"landmark",lat:43.8368,lng:-103.6236,st:"SD",d:"Begun 1948 and still carving. Takes no federal money, by the family's choice. The face alone is 87 feet tall.",tip:"Give it 2-3 hours - the orientation film and Indian Museum of North America are the real substance.",senior:"Extensive indoor exhibits, seating everywhere, viewing veranda faces the mountain."},
 {n:"Custer State Park Wildlife Loop",c:"wildlife",lat:43.7494,lng:-103.4110,st:"SD",d:"An 18-mile loop through 71,000 acres holding roughly 1,400 bison, plus pronghorn, elk and the famous begging burros.",tip:"Drive it early morning or the last two hours of light. Bison have right of way, always.",senior:"This is the best wildlife viewing of the trip and you never leave your seat."},
-{n:"Needles Highway",c:"scenic",lat:43.8258,lng:-103.5261,st:"SD",d:"Fourteen miles of granite spires and one-lane tunnels. The Needles Eye tunnel is 8 feet 4 inches wide.",tip:"Not for big rigs - measure before you commit. In an RV, take Iron Mountain Road instead.",senior:"One person can wait at the vehicle while others walk to the Needles Eye viewpoint."},
+{n:"Needles Highway",c:"scenic",lat:43.8258,lng:-103.5261,st:"SD",d:"Fourteen miles of granite spires and one-lane tunnels. The Needles Eye tunnel is 8 feet 4 inches wide.",tip:"Your SUV clears the 8-foot-4 Needles Eye tunnel - fold the mirrors and take it slowly. Do not skip this road.",senior:"One person can wait at the vehicle while others walk to the Needles Eye viewpoint."},
 {n:"Iron Mountain Road",c:"scenic",lat:43.8530,lng:-103.4130,st:"SD",d:"Pigtail bridges and three tunnels deliberately framed on Mount Rushmore. Peter Norbeck laid it out on horseback.",tip:"Drive it northbound toward Rushmore so the tunnel framing works."},
 {n:"Wind Cave National Park",c:"park",lat:43.5567,lng:-103.4783,st:"SD",d:"One of the world's longest caves under one of America's oldest bison herds. Sacred emergence place for the Lakota.",senior:"The prairie loop drive gives you bison and prairie dogs with no cave descent required."},
 {n:"Jewel Cave National Monument",c:"park",lat:43.7311,lng:-103.8294,st:"SD",d:"Third-longest cave on earth - over 220 mapped miles of calcite crystal.",senior:"Scenic tour involves 700+ stairs. The visitor center and surface trail are the gentle option."},
@@ -1633,16 +1635,18 @@ const GAPS=[
    LIVE-SEARCH CATEGORIES (things too fresh for a static guide)
    ============================================================ */
 const FINDNOW=[
-{n:"Campgrounds & RV parks",q:"RV park campground",ic:"&#128650;"},
-{n:"Dump station",q:"RV dump station",ic:"&#128704;"},
-{n:"Propane refill",q:"propane refill",ic:"&#128293;"},
-{n:"Fuel / truck stop",q:"truck stop diesel gas station",ic:"&#9981;"},
-{n:"RV repair & tires",q:"RV repair service tire",ic:"&#128295;"},
+{n:"Fuel / gas station",q:"gas station",ic:"&#9981;"},
+{n:"Local diner",q:"diner cafe local breakfast",ic:"&#127869;&#65039;"},
+{n:"Coffee",q:"coffee shop",ic:"&#9749;"},
 {n:"Grocery store",q:"grocery store supermarket",ic:"&#128722;"},
 {n:"Pharmacy",q:"pharmacy",ic:"&#128138;"},
 {n:"Urgent care",q:"urgent care clinic",ic:"&#127973;"},
-{n:"Laundromat",q:"laundromat",ic:"&#129529;"},
-{n:"Local diner",q:"diner cafe local breakfast",ic:"&#127869;&#65039;"}
+{n:"Restrooms / rest area",q:"rest area public restroom",ic:"&#128701;"},
+{n:"Car repair & tires",q:"auto repair tire shop",ic:"&#128295;"},
+{n:"Car wash",q:"car wash",ic:"&#128704;"},
+{n:"Hotels tonight",q:"hotel",ic:"&#127976;"},
+{n:"Campgrounds",q:"campground RV park",ic:"&#127957;&#65039;"},
+{n:"Laundromat",q:"laundromat",ic:"&#129529;"}
 ];
 
 /* ============================================================
@@ -1859,7 +1863,7 @@ const VOICE_LINES={
 "food":"Decent food ahead. Better than whatever's in the cooler.",
 "storm":"Weather's turning. Look at the sky before you commit to anything.",
 "pass":"Long grade coming. Low gear, easy on the brakes, and take your time.",
-"clearance":"Don't take that road in this rig. It won't fit, and turning around won't be an option.",
+"clearance":"Your SUV clears every limit on this route. Going-to-the-Sun, the Needles, all of it. Fold your mirrors in the tight tunnel and enjoy yourself.",
 "offline":"No signal out here. Doesn't matter. Everything you need is already on the phone."
 };
 /* Filled in by the build once clips are generated. Empty = device voice only. */
@@ -1877,37 +1881,37 @@ const STORY_CLIP={"Custer, SD":"story/custer-sd","Mount Rushmore":"story/mount-r
 const PASSES=[
 {n:"Marias Pass",rt:"US-2",el:5213,st:"MT",day:6,grade:"Gentle, about 3%",
  d:"The lowest crossing of the Continental Divide in Montana, and the reason US-2 is such a good road. Follows the southern edge of Glacier.",
- rv:"The easiest major pass on your whole route. No concerns in any rig."},
+ rv:"The easiest crossing of the Divide on your route. Nothing to think about."},
 {n:"Logan Pass",rt:"Going-to-the-Sun Road",el:6646,st:"MT",day:7,grade:"Sustained 6%, narrow, no shoulder",
  d:"The high point of Going-to-the-Sun Road, on the Continental Divide.",
- rv:"HARD LIMIT: vehicles over 21 ft long, 8 ft wide (with mirrors) or 10 ft high are prohibited between Avalanche Creek and Rising Sun. An RV cannot make this drive - take the shuttle or a Red Bus tour.",warn:true},
+ rv:"YES - the 21-foot limit that bans motorhomes does not touch you. Drive it. Be through the gate by 7:30am, and remember the 3-hour parking cap at the top."},
 {n:"Homestake Pass",rt:"I-90",el:6329,st:"MT",day:9,grade:"6% both sides",
  d:"Interstate crossing of the Divide east of Butte, through granite boulder country.",
- rv:"Interstate grades and wide lanes. Use a low gear descending and watch your brakes."},
+ rv:"Interstate grades and wide lanes. Low gear on the descent and watch your brake temperature."},
 {n:"MacDonald Pass",rt:"US-12",el:6320,st:"MT",day:9,grade:"6-7%, winding",
  d:"West of Helena. Beautiful, and steeper than it looks on a map.",
- rv:"Manageable but twisty. I-15 to I-90 is the calmer option in a big rig."},
+ rv:"Twisty but perfectly manageable. Pretty, too."},
 {n:"Craig Pass",rt:"Grand Loop Rd",el:8262,st:"WY",day:10,grade:"Moderate, winding",
  d:"Between Old Faithful and West Thumb, crossing the Divide twice.",
- rv:"Fine for most RVs but slow. Expect wildlife stops and construction delays in 2026."},
+ rv:"Fine. Slow going for wildlife and construction rather than for the grade."},
 {n:"Dunraven Pass",rt:"Grand Loop Rd",el:8878,st:"WY",day:11,grade:"8%, narrow, big drop-offs",
  d:"Highest road in Yellowstone, between Canyon and Tower.",
- rv:"Not recommended for large rigs - narrow with sharp switchbacks and limited pullouts. Check status; it closes for work regularly.",warn:true},
+ rv:"Doable in an SUV - narrow with sharp switchbacks, so take your time. Check it is open; it closes for work regularly.",warn:true},
 {n:"Sylvan Pass",rt:"US-14/16/20",el:8530,st:"WY",day:11,grade:"8%, avalanche terrain",
  d:"Yellowstone's east entrance road toward Cody.",
- rv:"Doable but demanding. Descend in low gear. The Wapiti Valley below is the reward."},
+ rv:"Fine. Descend in low gear and enjoy the Wapiti Valley below."},
 {n:"Dead Indian Pass",rt:"Chief Joseph Byway (WY-296)",el:8048,st:"WY",day:11,grade:"8%, long switchbacks",
  d:"The Nez Perce escaped through here in 1877. The overlook at the top is extraordinary.",
- rv:"Wide, well-engineered switchbacks - easier than the Beartooth by a wide margin. A good RV choice."},
+ rv:"Wide, well-engineered switchbacks and an extraordinary overlook at the top."},
 {n:"Beartooth Pass",rt:"US-212",el:10947,st:"MT",day:11,grade:"8-10%, no guardrails in places",
  d:"One of the highest paved roads in the northern Rockies. Kuralt called it the most beautiful drive in America.",
- rv:"STRONGLY DISCOURAGED in an RV. Extreme altitude, tight switchbacks, sheer drops, and it closes without warning even in August. Take Wapiti Valley instead.",warn:true},
+ rv:"YES, and it is worth planning the day around. Extreme altitude and exposure, so go early, keep to low gear coming down, and confirm it is open before you commit."},
 {n:"Powder River Pass",rt:"US-16, Bighorns",el:9666,st:"WY",day:13,grade:"7-8%",
  d:"The Cloud Peak Skyway over the Bighorn Mountains.",
- rv:"Only if you deliberately choose it. I-25 south from Buffalo is far easier and faster."},
+ rv:"Only if you want the scenery. I-25 south from Buffalo is faster and duller."},
 {n:"Granite Pass",rt:"US-14, Bighorns",el:8950,st:"WY",day:13,grade:"Up to 10% on the west side",
  d:"Descends the Shell Canyon toward Greybull.",
- rv:"The west descent is genuinely steep and long. Not the route to pick with a heavy vehicle."}
+ rv:"The west descent is long and steep. Fine in an SUV with low gear, but not the quick way anywhere."}
 ];
 
 /* ============================================================
@@ -1915,23 +1919,23 @@ const PASSES=[
    ============================================================ */
 const CLEARANCE=[
 {n:"Needles Eye Tunnel",rt:"Needles Highway, SD-87",dim:"8 ft 4 in wide × 9 ft 9 in high",st:"SD",day:2,
- d:"The famous one. Genuinely too small for almost anything larger than a car or small van.",
- alt:"Take Iron Mountain Road instead - same country, no squeeze.",warn:true},
+ d:"The famous squeeze. A full-size SUV is about 6 ft 6 in across the body and 7 ft 6 in with the mirrors out, so you clear it - but not by much.",
+ alt:"YES, you fit. Fold the mirrors in, take it at walking pace, and let anyone coming the other way clear first. Worth doing: this is one of the best drives in the Black Hills."},
 {n:"Iron Mountain Road tunnels",rt:"US-16A",dim:"Roughly 9-13 ft wide, 11-12 ft high",st:"SD",day:2,
- d:"Three tunnels, each framing Mount Rushmore. Tighter than a normal highway tunnel but passable in most motorhomes.",
- alt:"Measure your rig and check the posted signs at each tunnel mouth - they are marked."},
+ d:"Three tunnels, each cut to frame Mount Rushmore as you come through.",
+ alt:"YES, comfortably. No thinking required in an SUV."},
 {n:"Going-to-the-Sun Road",rt:"Glacier NP",dim:"21 ft long × 8 ft wide × 10 ft high maximum",st:"MT",day:7,
- d:"Between Avalanche Creek and Rising Sun. Width includes mirrors; length includes bumpers and racks. Strictly enforced.",
- alt:"Park at Apgar and take the free shuttle, or book a Red Bus tour. This is the right answer in an RV.",warn:true},
-{n:"Yellowstone campgrounds",rt:"Yellowstone NP",dim:"Varies - many sites cap at 30-40 ft",st:"WY",day:10,
- d:"Park roads themselves take RVs fine, but campground sites vary enormously and the older loops are small.",
- alt:"Fishing Bridge RV Park is the only full-hookup option in the park and books out months ahead."},
-{n:"Chief Joseph Scenic Byway",rt:"WY-296",dim:"No posted limit",st:"WY",day:11,
- d:"Wide modern engineering with generous switchbacks.",
- alt:"The comfortable RV route between Yellowstone's northeast side and Cody."},
-{n:"Wildlife Loop Road",rt:"Custer State Park",dim:"No limit",st:"SD",day:2,
- d:"Paved, wide, gentle. Perfectly fine in any rig.",
- alt:"The best wildlife viewing of the trip, and no size worries at all."}
+ d:"The limit that stops motorhomes and buses. A large SUV runs about 17 ft long, 6 ft 6 in wide and 6 ft 3 in high.",
+ alt:"YES - you can drive the whole road, end to end. This is the single best thing you'll do all fortnight, and in an SUV there is nothing standing in your way."},
+{n:"Beartooth Highway",rt:"US-212",dim:"No posted vehicle limit",st:"MT",day:11,
+ d:"Switchbacks to 10,947 ft with long drops and no guardrail in places. It is the height and the exposure that matter here, not your size.",
+ alt:"YES in an SUV, and it is spectacular. Go in the morning before cloud builds, use low gear coming down, and check it is open - it closes for snow even in August."},
+{n:"Chief Joseph Scenic Byway",rt:"WY-296",dim:"No limit",st:"WY",day:11,
+ d:"Wide modern engineering with generous switchbacks over Dead Indian Pass.",
+ alt:"YES. The gentler of the two routes to Cody if the Beartooth looks uninviting that morning."},
+{n:"Custer State Park Wildlife Loop",rt:"Custer State Park",dim:"No limit",st:"SD",day:2,
+ d:"Paved, wide and gentle the whole way round.",
+ alt:"YES. Best wildlife of the trip and no size worries at all."}
 ];
 
 /* ============================================================
@@ -2128,6 +2132,12 @@ function syncVoiceBtn(){
   b.innerHTML=voiceOn?"&#128266;":"&#128264;";
   b.title=voiceOn?"Voice companion is ON":"Voice companion is OFF";
 }
+/* one tap to shut her up mid-sentence, without turning the companion off */
+$("btnHush").addEventListener("click",()=>{
+  stopSpeaking();
+  if(typeof radioAudio!=="undefined"&&radioAudio){try{radioAudio.pause()}catch(e){}}
+  toast("&#128263; Quiet");
+});
 $("btnVoice").addEventListener("click",()=>{
   voiceOn=!voiceOn;store.set("voice",voiceOn);syncVoiceBtn();
   if(voiceOn)speak(VOICE_LINES["voice-on"],true,"voice-on");
@@ -2487,7 +2497,8 @@ $("liveAlerts").addEventListener("click",e=>{
   if(w)worthDetour(w.dataset.detour);
 });
 function announce(text,key){
-  if(voiceOn)speak(text,false,key);
+  const chatty=["water","stretch","meds"].indexOf(key)<0||store.get("chimeVoice",true);
+  if(voiceOn&&chatty)speak(text,false,key);
   if(store.get("notif",false)&&document.hidden&&"Notification" in window&&Notification.permission==="granted"){
     try{new Notification("Olive",{body:text.slice(0,160),tag:"olive-alert"})}catch(e){}
   }
@@ -2867,7 +2878,7 @@ function renderScenic(){
       <div class="t">${esc(s.t)}</div>
       <div class="small muted" style="margin:.15rem 0 .35rem">instead of ${esc(s.f)} · <b>${esc(s.add)}</b></div>
       <div class="s">${esc(s.w)}</div>
-      <div class="note senior small" style="margin-top:.5rem"><b>In an RV:</b> ${esc(s.rv)}</div>
+      <div class="note senior small" style="margin-top:.5rem"><b>Driving it:</b> ${esc(s.rv)}</div>
     </div></div>`).join("");
 }
 
@@ -3126,6 +3137,10 @@ function renderSettings(){
         <button class="btn sm ghost" id="npsClear">Remove</button>
       </div>
     </div>
+    <label class="switch" style="margin-top:.6rem"><input type="checkbox" id="setSpot"><span class="track"></span>
+      <span><b>Speak up about landmarks</b><br><span class="small muted">Olive introduces notable places as you approach. Turn off to keep alerts silent but still see them.</span></span></label>
+    <label class="switch"><input type="checkbox" id="setChime"><span class="track"></span>
+      <span><b>Reminders out loud</b><br><span class="small muted">Water, stretch and medication prompts spoken as well as shown</span></span></label>
     <label class="switch" style="margin-top:.6rem"><input type="checkbox" id="setMic"><span class="track"></span>
       <span><b>Hands-free button</b><br><span class="small muted">A microphone button so the driver can ask without touching anything</span></span></label>
     <hr class="hr">
@@ -3149,6 +3164,10 @@ function renderSettings(){
   });
   $("npsClear").addEventListener("click",()=>{store.del("npsKey");loadParkAlerts();toast("Removed")});
   $("setPark").addEventListener("click",backToVehicle);
+  $("setSpot").checked=store.get("spotVoice",true);
+  $("setSpot").addEventListener("change",e=>store.set("spotVoice",e.target.checked));
+  $("setChime").checked=store.get("chimeVoice",true);
+  $("setChime").addEventListener("change",e=>store.set("chimeVoice",e.target.checked));
   $("setMic").checked=store.get("micOn",true);
   $("setMic").addEventListener("change",e=>{store.set("micOn",e.target.checked);micShow(e.target.checked&&!!SR)});
 
@@ -3525,7 +3544,7 @@ function savePin(){
         <option value="&#128247;">Great view / photo</option>
         <option value="&#127869;&#65039;">Food</option>
         <option value="&#9981;">Fuel</option>
-        <option value="&#128650;">Camp / overnight</option>
+        <option value="&#127976;">Where we stayed</option>
         <option value="&#129454;">Wildlife</option>
         <option value="&#128663;">Where we parked</option>
       </select></div>
@@ -3820,7 +3839,7 @@ function renderPasses(){
         <div class="pills" style="margin:.3rem 0"><span class="pill gold">${p.el.toLocaleString()} ft</span>
           <span class="pill">${esc(p.grade)}</span><span class="pill">Day ${p.day}</span></div>
         <div class="s">${esc(p.d)}</div>
-        <div class="note ${p.warn?"warn":"rv"} small" style="margin-top:.5rem"><b>In an RV:</b> ${esc(p.rv)}</div>
+        <div class="note ${p.warn?"warn":"rv"} small" style="margin-top:.5rem"><b>Driving it:</b> ${esc(p.rv)}</div>
       </div></div>`).join("");
 }
 function renderClearance(){
@@ -3830,9 +3849,9 @@ function renderClearance(){
         <div class="t">${esc(c.n)}</div>
         <div class="pills" style="margin:.3rem 0"><span class="pill ${c.warn?"danger":""}">${esc(c.dim)}</span><span class="pill">${esc(c.rt)}</span></div>
         <div class="s">${esc(c.d)}</div>
-        <div class="note ${c.warn?"warn":"senior"} small" style="margin-top:.5rem"><b>What to do:</b> ${esc(c.alt)}</div>
+        <div class="note ${c.warn?"warn":"senior"} small" style="margin-top:.5rem"><b>Does your SUV fit?</b> ${esc(c.alt)}</div>
       </div></div>`).join("")+
-    `<p class="small muted" style="margin-top:.8rem">Dimensions are as posted at build time. Always trust the sign at the tunnel mouth over any app.</p>`;
+    `<p class="small muted" style="margin-top:.8rem">Dimensions are as posted at build time, and a large SUV is taken as about 17 ft long, 6 ft 6 in wide and 6 ft 3 in high. Always trust the sign at the tunnel mouth over any app.</p>`;
 }
 
 /* ============================================================
@@ -4708,7 +4727,7 @@ function spotlightWatch(){
   lastSpotAt=Date.now();
   const p=cand[0];
   spotAlerted.add(p.n); store.set("spotAlerted",Array.from(spotAlerted).slice(-200));
-  selPOI=p.n; drawMap(); renderNearby(); showSpotlight(p,true);
+  selPOI=p.n; drawMap(); renderNearby(); showSpotlight(p,store.get('spotVoice',true));
 }
 
 /* keep the map honest as you drive */
@@ -5073,7 +5092,7 @@ function answerAloud(said){
   else if(/weather|rain|storm|hot/.test(q)){
     reply=($("wxNow").innerText||"").replace(/\s+/g," ").trim()||"I can't reach the weather right now.";
   }
-  else if(/park|where did we park|the truck|the car|the rv/.test(q)){
+  else if(/park|where did we park|the truck|the car|the suv|the rv/.test(q)){
     const p=store.get("parked",null);
     reply=p?("You parked "+fmtMi(dist(here.lat,here.lng,p.lat,p.lng))+" from here. I've got it pinned."):"I haven't marked a parking spot yet.";
   }

@@ -1,7 +1,7 @@
 {
-  "name": "Olive - Great American West RV Companion",
-  "short_name": "Olive",
-  "description": "Your RV trail boss for the Great American West. Landmarks, hidden gems, wildlife, eats, fuel, radio and memories, mile by mile.",
+  "name": "Great American West Journey - Anderson Family",
+  "short_name": "Great American West",
+  "description": "The Anderson family's Great American West journey. Landmarks, hidden gems, wildlife, eats, fuel, radio and memories, mile by mile.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
