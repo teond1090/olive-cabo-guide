@@ -1239,7 +1239,8 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <div class="card tint">
       <div class="card-h"><span class="ic">&#128246;</span><h3>Works Without Signal</h3></div>
       <p class="small" id="offlineTxt">Olive saves itself to your phone the first time you open it. Every day plan, landmark, story, checklist, radio frequency and phone number works with no bars at all &mdash; only live weather and the crew chat need a signal.</p>
-      <div class="btnrow"><button class="btn sm sage" id="cacheNow">&#128190; Save for offline now</button></div>
+      <div class="btnrow"><button class="btn sm sage" id="cacheNow">&#128190; Save for offline now</button>
+      <a class="btn sm ghost" href="training.html">&#127916; How this app works</a></div>
     </div>
   </div>
 </div>
@@ -1263,9 +1264,10 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w19-2026-08-06";
+const OLIVE_BUILD="w20-2026-08-12";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
+const LODGING_TOTAL=4275.84;   /* from the Aug 2026 planning sheet */
 
 /* ---------- tiny localStorage wrapper ---------- */
 const store={
@@ -1463,14 +1465,14 @@ const DAYS=[
  sen:["Rushmore's main viewing area has elevators and gentle grades.","The Wildlife Loop is superb viewing without leaving your seat.","At Needles Eye, one person can stay with the vehicle."],
  note:"Rushmore parking is charged separately from your park pass, and 62+ gets a reduced rate."},
 
-{d:"2026-08-19",n:3,t:"Crazy Horse, Deadwood & Spearfish Canyon",r:"Custer → Crazy Horse → Deadwood → Spearfish Canyon",mi:140,hr:"3-4 hr driving",stay:"Spearfish or Rapid City",
+{d:"2026-08-19",n:3,t:"Crazy Horse, Deadwood & Spearfish Canyon",r:"Custer → Crazy Horse → Deadwood → Spearfish Canyon → back to Custer",mi:170,hr:"4-5 hr driving",stay:"Airbnb, Custer SD (3rd night)",
  am:["Two to three hours at Crazy Horse Memorial - orientation film, museum, viewing veranda, cultural exhibits."],
  md:["Drive to Deadwood for lunch.","Park once and walk the historic downtown rather than moving the vehicle repeatedly."],
  pm:["Mt. Moriah Cemetery only if the uphill walk is comfortable.","Drive Spearfish Canyon Scenic Byway - Bridal Veil Falls and the easy Roughlock viewpoint."],
- ev:["Check in early, dinner in Spearfish or Rapid City."],
+ ev:["Drive back to Custer for a third night in the same Airbnb. Dinner in town."],
  opt:["Adams Museum, Deadwood.","Short stroll along Spearfish Creek."],
- sen:["Crazy Horse is largely indoors with abundant seating.","Bridal Veil Falls is visible from the roadside - no walking.","Use the Deadwood trolley or one central parking spot."],
- note:"A full day. If fatigue sets in, drop the cemetery and keep the canyon drive - it is the better use of energy."},
+ sen:["Crazy Horse is largely indoors with abundant seating.","Bridal Veil Falls is visible from the roadside - no walking.","Use the Deadwood trolley or one central parking spot.","You return to the same bed all three nights - nothing to pack or unpack until Thursday."],
+ note:"You now sleep in Custer all three nights, so this is a loop rather than a move. It adds about 45 minutes of driving back from Spearfish, and saves you packing twice."},
 
 {d:"2026-08-20",n:4,t:"Badlands & the road to Dickinson",r:"Spearfish → Badlands Loop → Wall → Dickinson, ND",mi:365,hr:"6-7 hr plus stops",stay:"Baymont by Wyndham, Dickinson ND",
  am:["Enter Badlands early and drive the paved Loop Road.","Stop at Big Badlands Overlook, Panorama Point, Yellow Mounds and Pinnacles."],
@@ -1517,43 +1519,43 @@ const DAYS=[
  sen:["Lodge porches give you the view with a chair under you.","Boat tours are scenery without walking.","Never stack Red Bus, Many Glacier and Two Medicine into one day."],
  note:"The recommendation is Red Bus plus Many Glacier Hotel - the most scenery, history and comfort for travelers who are not hiking."},
 
-{d:"2026-08-25",n:9,t:"Glacier to West Yellowstone",r:"Whitefish → Helena/Butte corridor → West Yellowstone",mi:390,hr:"6.5-8 hr",stay:"West Yellowstone",
+{d:"2026-08-25",n:9,t:"Glacier to Island Park",r:"Whitefish → Helena/Butte corridor → Island Park, ID",mi:410,hr:"7-8.5 hr",stay:"Airbnb, Island Park ID (Aug 25-28)",
  am:["Leave by 7:00am. Stop every 90-120 minutes - long rural stretches with few services."],
  md:["Lunch near Helena, Butte or Ennis depending on your pace.","Pekin Noodle Parlor in Butte is worth the detour if the timing works."],
- pm:["Arrive West Yellowstone, check in, dinner.","Quake Lake is right on the route and takes fifteen minutes."],
+ pm:["Through West Yellowstone and on another 20 miles to Island Park. Check in, then dinner.","Quake Lake is right on the route and takes fifteen minutes."],
  ev:["Keep it light. Tomorrow is the big thermal day."],
- opt:["Grizzly & Wolf Discovery Center if you arrive early enough.","Old Faithful this evening only as a bonus, never as a requirement."],
- sen:["Choose a place where you can walk to dinner so the vehicle stays parked.","Do not force an evening Old Faithful run with a tired driver."],
- note:"Long haul. Treat anything past check-in as a gift, not a plan."},
+ opt:["Grizzly & Wolf Discovery Center in West Yellowstone as you pass through.","Old Faithful this evening only as a bonus, never as a requirement."],
+ sen:["Island Park is quiet and wooded - lovely, but eat before you arrive or bring supplies. Services are thin.","Do not force an evening Old Faithful run with a tired driver."],
+ note:"Your base for three nights is Island Park, Idaho, about 20-25 minutes west of Yellowstone's west gate. One unpack, three nights, and the park is close each morning."},
 
-{d:"2026-08-26",n:10,t:"Yellowstone thermal wonders",r:"West Yellowstone → Old Faithful → Grand Prismatic → Norris → Mammoth",mi:130,hr:"park driving",stay:"Airbnb (Aug 26-28)",
- am:["Enter early and go straight to Old Faithful. Check the posted prediction, then explore the Inn."],
+{d:"2026-08-26",n:10,t:"Yellowstone thermal wonders",r:"Island Park → Old Faithful → Grand Prismatic → Norris → back",mi:160,hr:"park driving",stay:"Airbnb, Island Park ID",
+ am:["Leave Island Park by 7:00am - the west gate is 25 minutes away and the queue builds fast.","Go straight to Old Faithful. Check the posted prediction, then explore the Inn."],
  md:["Grand Prismatic via the Midway boardwalk - skip the uphill overlook trail.","Fountain Paint Pot if parking is reasonable."],
- pm:["Norris Geyser Basin selectively - the Porcelain Basin overlook is enough.","On to Mammoth Hot Springs and the lower terraces."],
- ev:["Settle in. Elk are usually on the Mammoth lawns at dusk."],
+ pm:["Norris Geyser Basin selectively - the Porcelain Basin overlook is enough.","Turn back west rather than pushing on to Mammoth; it is a long way home from up there."],
+ ev:["Back to Island Park for dinner and an early night."],
  opt:["Upper Terrace Loop drive at Mammoth where open."],
  sen:["Boardwalks are uneven, hot and exposed - take sections, not every loop.","Carry water and wear hats; thermal basins have no shade.","Never step off a boardwalk. The crust is thin and the water is boiling."],
  note:"2026 road projects can add 15-30 minutes anywhere in the park. Do not book dinner tightly."},
 
-{d:"2026-08-27",n:11,t:"Canyon, valleys & over to Cody",r:"Canyon → Hayden Valley → Lamar Valley → Cody",mi:170,hr:"park day + 2.5-3.5 hr",stay:"Cody, Wyoming",
- am:["Grand Canyon of the Yellowstone. Artist Point first, then Lookout Point.","Skip Brink of Lower Falls unless everyone is confident on a steep return climb."],
+{d:"2026-08-27",n:11,t:"Canyon, Hayden & Lamar",r:"Island Park → Canyon → Hayden → Lamar → back to Island Park",mi:200,hr:"full park day, 5-6 hr driving",stay:"Airbnb, Island Park ID (last night)",
+ am:["Out the door by 6:30am. Lamar Valley is a long way east and wolves only show at first light.","Grand Canyon of the Yellowstone on the way: Artist Point first, then Lookout Point.","Skip Brink of Lower Falls unless everyone is confident on a steep return climb."],
  md:["Hayden Valley for bison. Lunch at Canyon or packed."],
- pm:["Toward Tower Junction and Lamar Valley - pullouts only, never the travel lane.","Exit and run to Cody. Wapiti Valley is the comfortable route; the Beartooth is the dramatic one."],
- ev:["Check in late afternoon. Cody Nite Rodeo runs nightly through Aug 31."],
- opt:["Tower Fall if parking is easy.","Irma Hotel gunfight show before dinner."],
- sen:["Artist Point is a major view for very little walking.","Wildlife watching is best from the vehicle or an established pullout.","Binoculars, and 100 yards from bears and wolves, 25 from everything else."],
- note:"Arguably the most beautiful day of the trip. Leave room for wildlife jams and do not chase every overlook."},
+ pm:["Tower Junction and Lamar Valley - pullouts only, never the travel lane.","Then the long drive back west across the park to Island Park."],
+ ev:["Home late. Pack tonight - tomorrow is the longest day of the trip and it starts early."],
+ opt:["Tower Fall if parking is easy.","Mammoth Hot Springs, if you skipped it yesterday and have the energy."],
+ sen:["Artist Point is a major view for very little walking.","Wildlife watching is best from the vehicle or an established pullout.","This is now an out-and-back rather than a transfer, so it is a genuinely long day in the car. Share the driving.","Binoculars, and 100 yards from bears and wolves, 25 from everything else."],
+ note:"Because you now sleep at Island Park rather than Cody, this became a 200-mile loop instead of a one-way run. Beautiful, but pace it - and get to bed early."},
 
-{d:"2026-08-28",n:12,t:"Buffalo Bill, Little Bighorn & Billings",r:"Cody → Crow Agency → Billings",mi:250,hr:"4.5-5 hr plus stops",stay:"Billings (airport side)",
- am:["Buffalo Bill Center of the West at opening. Two and a half to three hours - pick two or three of the five museums."],
- md:["Early lunch in Cody, then north and east toward Little Bighorn."],
- pm:["Ninety minutes to two hours at Little Bighorn: visitor center, Indian Memorial, Last Stand Hill, driving tour.","Arrive by about 3:00pm - the tour road closes at 5:00."],
- ev:["Into Billings, check in near the airport, refuel, organize luggage for tomorrow's flight."],
- opt:["Ranger program at Little Bighorn if the timing lines up.","Pompeys Pillar, right off I-94 east of Billings."],
- sen:["The Buffalo Bill Center is the most comfortable major stop of the trip - elevators, seating, five museums indoors.","At Little Bighorn use the driving tour to conserve energy.","2026 construction may limit visitor-center parking."],
- note:"Buffalo Bill Center runs 8am-6pm in late August. Little Bighorn's gate is generally 8:30am-5:30pm with the tour road closing at 5:00."},
+{d:"2026-08-28",n:12,t:"Island Park to Billings - the long one",r:"Island Park → Yellowstone east → Cody → Little Bighorn → Billings",mi:361,hr:"8 hr driving before any stop",stay:"FairBridge Inn Express, Billings Airport",
+ am:["Leave Island Park at 6:00am. This is not a day you can start slowly.","Across Yellowstone and out the east gate over Sylvan Pass, down the Wapiti Valley to Cody. About 3.5-4 hours."],
+ md:["Cody around 10:00am. Buffalo Bill Center of the West - but two hours, not three, and pick two museums.","Quick lunch in Cody, then north and east toward Little Bighorn."],
+ pm:["Little Bighorn by about 3:00pm at the latest - the tour road closes at 5:00.","Ninety minutes there: visitor center, Indian Memorial, Last Stand Hill, driving tour."],
+ ev:["Into Billings, check in at the FairBridge near the airport, refuel, organise luggage for the morning flight."],
+ opt:["Everything on this day is optional except reaching Billings. Drop whatever the clock says to drop."],
+ sen:["THIS IS THE HARDEST DAY OF THE TRIP - about 8 hours of driving plus two major sights, 12-14 hours door to door if you attempt all of it.","Strong recommendation: pick ONE of Buffalo Bill Center or Little Bighorn, not both. Little Bighorn is the shorter stop and closer to Billings.","Swap drivers at Cody and again at Little Bighorn.","Sylvan Pass is 8,530 ft with an 8% descent - low gear, easy on the brakes, and it is better done in morning light."],
+ note:"HEADS UP: sleeping at Island Park instead of Cody turned this into a 361-mile day with two big stops. It was 250 miles when Cody was the overnight. Buffalo Bill Center opens at 8am and Little Bighorn's road closes at 5pm - the clock, not the mileage, is what makes this tight."},
 
-{d:"2026-08-29",n:13,t:"Billings flight & south to Cheyenne",r:"Billings airport → Sheridan/Buffalo → Cheyenne",mi:455,hr:"6.75-7.75 hr",stay:"Cheyenne",
+{d:"2026-08-29",n:13,t:"Billings flight & south to Cheyenne",r:"Billings airport → Sheridan/Buffalo → Cheyenne",mi:455,hr:"6.75-7.75 hr",stay:"Airbnb, Capital City Getaway, Cheyenne",
  am:["Generous time for airport check-in and luggage.","After departure, head south on I-90."],
  md:["Lunch in Sheridan or Buffalo - the Occidental Hotel in Buffalo is a proper break, not a gas-station stop."],
  pm:["South through Wyoming. Fuel before the long empty stretches and swap drivers."],
@@ -1562,7 +1564,7 @@ const DAYS=[
  sen:["Another long drive - stop at least every two hours.","Pick an I-25 hotel with an elevator and easy parking."],
  note:"The whole point of last night in Billings was protecting this flight. Everything after the airport is optional."},
 
-{d:"2026-08-30",n:14,t:"Red Rocks & Denver",r:"Cheyenne → Red Rocks Park → Denver",mi:130,hr:"2.5 hr plus touring",stay:"Denver, near the airport",
+{d:"2026-08-30",n:14,t:"Red Rocks & Denver",r:"Cheyenne → Red Rocks Park → Denver",mi:130,hr:"2.5 hr plus touring",stay:"Hotel near Denver International",
  am:["Relaxed breakfast, leave Cheyenne once rush hour eases."],
  md:["Red Rocks Park and Amphitheatre. Check the event schedule - setup days can limit access.","Use the upper lot and viewpoints; the stairs are extensive."],
  pm:["Lunch near Morrison or in Denver.","Pick one relaxed thing: a scenic drive, the Museum of Nature & Science, or simply rest."],
@@ -1710,26 +1712,20 @@ const MEDICAL=[
    RESERVATIONS - from your confirmations
    ============================================================ */
 const RESV=[
-{t:"Baymont by Wyndham Dickinson",d:"2026-08-20",out:"2026-08-21",a:"3233 Legend Drive, Dickinson, ND 58601",p:"+1 701 483 6900",
- conf:"5383.475.759",pin:"2974",det:"2 rooms - King Studio + Studio with 2 Queens. 3 adults. Breakfast included. Total $240.46.",
- note:"Arrival requested 7-8pm. Free cancellation until 1 day before. Front desk hours are limited - use the courtesy phone. Free parking, free WiFi.",lat:46.8792,lng:-102.7896},
-{t:"Best Western Plus Havre Inn & Suites",d:"2026-08-21",out:"2026-08-22",a:"1425 Highway 2 NW, Havre, MT 59501",p:"+1 406 265 2888",
- conf:"5612.031.307",pin:"0978",det:"1 room - Queen Suite with Sofa Bed. 3 adults. Breakfast included. Total $234.17.",
- note:"NON-REFUNDABLE - no refund if cancelled. Arrival requested 3-4pm. Free parking. NO INTERNET ACCESS at this property - download maps and anything you need before you arrive.",lat:48.5567,lng:-109.7057,warn:true},
-{t:"Airbnb - Whitefish / Columbia Falls area",d:"2026-08-22",out:"2026-08-25",a:"See your Airbnb app for the address",p:"",
- conf:"",pin:"",det:"3 nights - your Glacier base.",note:"Confirm check-in instructions and the door code before you lose signal on the Hi-Line.",url:"https://www.airbnb.com/l/LR5Y6Vbr?s=2&unique_share_id=3a441301-5a7d-4b21-b98d-ae47da530e9b"},
-{t:"Airbnb - Yellowstone area",d:"2026-08-26",out:"2026-08-28",a:"See your Airbnb app for the address",p:"",
- conf:"",pin:"",det:"2 nights - your Yellowstone base.",note:"Confirm check-in details in advance; cell coverage inside the park is poor to nonexistent.",url:"https://www.airbnb.com/l/1mL3GRKus=2&unique_share_id=5ca94f9d-8637-4c63-8924-4099ed80fe3b"}
+{t:"Airbnb - Custer, South Dakota",d:"2026-08-17",out:"2026-08-20",a:"Custer, SD - see your Airbnb app for the address",p:"",conf:"",pin:"",det:"3 nights, 3 adults. Your Black Hills base for Rushmore, Crazy Horse and Deadwood.",note:"You now sleep here all three nights, so Deadwood and Spearfish Canyon are a day loop rather than a move. Confirm the door code before you leave Denver.",url:"https://www.airbnb.com/rooms/1326244332115941316",lat:43.7666,lng:-103.5991,cost:1081.57},
+{t:"Baymont by Wyndham Dickinson",d:"2026-08-20",out:"2026-08-21",a:"3233 Legend Drive, Dickinson, ND 58601",p:"+1 701 483 6900",conf:"5383.475.759",pin:"2974",det:"2 rooms - King Studio + Studio with 2 Queens. 3 adults. Breakfast included.",note:"Arrival requested 7-8pm. Free cancellation until 1 day before. Front desk hours are limited - use the courtesy phone. Free parking and WiFi.",url:"",lat:46.8792,lng:-102.7896,cost:240.46},
+{t:"Best Western Plus Havre Inn & Suites",d:"2026-08-21",out:"2026-08-22",a:"1425 Highway 2 NW, Havre, MT 59501",p:"+1 406 265 2888",conf:"5612.031.307",pin:"0978",det:"1 room - Queen Suite with Sofa Bed. 3 adults. Breakfast included.",note:"NON-REFUNDABLE. Arrival requested 3-4pm. NO INTERNET ACCESS at this property - download maps and Olive's narrations before you arrive.",url:"",lat:48.5567,lng:-109.7057,cost:234.17,warn:true},
+{t:"Airbnb - Whitefish, Montana",d:"2026-08-22",out:"2026-08-25",a:"Whitefish / Columbia Falls area - see your Airbnb app",p:"",conf:"",pin:"",det:"3 nights, 3 adults. Your Glacier base.",note:"Confirm check-in instructions and the door code before you lose signal on the Hi-Line.",url:"https://www.airbnb.com/rooms/25802057",lat:48.4111,lng:-114.3376,cost:1019.64},
+{t:"Airbnb - Island Park, Idaho",d:"2026-08-25",out:"2026-08-28",a:"Island Park, ID - see your Airbnb app",p:"",conf:"",pin:"",det:"3 nights, 3 adults. Your Yellowstone base, about 25 minutes west of the west gate.",note:"NEW: this replaces the old West Yellowstone and Cody nights. Island Park is quiet and wooded with thin services - bring supplies. It also means Aug 28 becomes a very long drive; see that day's note.",url:"https://www.airbnb.com/rooms/49065630",lat:44.4169,lng:-111.3661,cost:1200.0},
+{t:"FairBridge Inn Express, Billings Airport",d:"2026-08-28",out:"2026-08-29",a:"Billings, MT - airport side",p:"",conf:"",pin:"",det:"2 rooms, 3 adults. Positioned for the morning flight.",note:"The whole point of this night is protecting the Billings departure. Refuel and organise luggage before bed.",url:"",lat:45.8077,lng:-108.543,cost:200.0},
+{t:"Airbnb - Capital City Getaway, Cheyenne",d:"2026-08-29",out:"2026-08-30",a:"Cheyenne, WY - see your Airbnb app",p:"",conf:"",pin:"",det:"1 night, 2 adults after the Billings departure.",note:"Backup option noted in your planning sheet: A Wanderer's Wonder, also on Airbnb.",url:"",lat:41.14,lng:-104.8202,cost:150.0},
+{t:"Hotel near Denver International",d:"2026-08-30",out:"2026-08-31",a:"Denver airport area",p:"",conf:"",pin:"",det:"1 night, 2 adults. Final night before flying home.",note:"Booked through Booking.com for the DIA area. Near-airport lodging is right for an early Aug 31 flight.",url:"",lat:39.8561,lng:-104.6737,cost:150.0}
 ];
 
 /* ============================================================
    GAPS - nights not yet booked (flagged honestly)
    ============================================================ */
-const GAPS=[
-{d:"2026-08-17",p:"Custer, SD"},{d:"2026-08-18",p:"Custer, SD"},{d:"2026-08-19",p:"Spearfish or Rapid City, SD"},
-{d:"2026-08-25",p:"West Yellowstone, MT"},{d:"2026-08-28",p:"Billings, MT (airport side)"},
-{d:"2026-08-29",p:"Cheyenne, WY"},{d:"2026-08-30",p:"Denver, CO (near airport)"}
-];
+const GAPS=[];   /* every night of the trip is booked */
 
 /* ============================================================
    LIVE-SEARCH CATEGORIES (things too fresh for a static guide)
@@ -1790,6 +1786,12 @@ POI.push(
 {n:"Fuel - Hardin, MT",c:"fuel",lat:45.7333,lng:-107.6117,st:"MT",d:"Closest fuel to Little Bighorn Battlefield."},
 {n:"Fuel - Cody, WY",c:"fuel",lat:44.5263,lng:-109.0565,st:"WY",d:"Fill before the Wapiti Valley or Chief Joseph routes - nothing between here and the park gate."},
 
+{n:"Island Park, Idaho",c:"gem",lat:44.4169,lng:-111.3661,st:"ID",d:"Your Yellowstone base. A long thin resort town on US-20 with one of the longest main streets in America, wrapped in lodgepole pine and trout water.",tip:"Services are spread out and thin. Buy groceries in West Yellowstone or before you leave Whitefish."},
+{n:"Fuel - Island Park, ID",c:"fuel",lat:44.4169,lng:-111.3661,st:"ID",d:"Limited pumps along US-20. Fill in West Yellowstone if you are running low."},
+{n:"Fuel - Ashton, ID",c:"fuel",lat:44.0713,lng:-111.4483,st:"ID",d:"The dependable stop south of Island Park on US-20."},
+{n:"Big Springs, Island Park",c:"scenic",lat:44.5003,lng:-111.2547,st:"ID",d:"One of the largest natural springs in the country, pouring 120 million gallons a day at a constant 52 degrees. Enormous trout hang in the current, and you can watch them from the bank.",senior:"Level, short walk from the parking area. Ten minutes well spent."},
+{n:"Mesa Falls Scenic Byway",c:"scenic",lat:44.1875,lng:-111.3319,st:"ID",d:"Upper Mesa Falls drops 114 feet and you can stand on a boardwalk almost in the spray. The last major undisturbed waterfall on the Snake River.",senior:"Boardwalk and viewing platforms, no scrambling required.",tip:"Fifteen minutes south of Island Park - an easy morning if you want a slow start."},
+{n:"Harriman State Park",c:"wildlife",lat:44.3494,lng:-111.4636,st:"ID",d:"A former railroad-baron ranch, now a refuge for trumpeter swans, moose and elk on the Henrys Fork.",senior:"Flat meadow trails and a good visitor centre."},
 /* ---- more local eats along the way ---- */
 {n:"Black Hills Burger & Bun, Custer",c:"food",lat:43.7666,lng:-103.5985,st:"SD",d:"A tiny place that people plan their day around. Get there before the line does."},
 {n:"Sage Creek Grille, Custer",c:"food",lat:43.7671,lng:-103.5973,st:"SD",d:"The nicer dinner in Custer, still relaxed. Bison meatloaf is the move."},
@@ -2929,7 +2931,7 @@ function renderDays(){
         ${seg("Morning",d.am)}${seg("Midday",d.md)}${seg("Afternoon",d.pm)}${seg("Evening",d.ev)}
         ${d.opt&&d.opt.length?seg("Optional if energy allows",d.opt):""}
         ${d.sen&&d.sen.length?`<div class="note senior"><b>Taking it easy</b><ul style="margin:.4rem 0 0;padding-left:1.1rem">${d.sen.map(x=>"<li>"+esc(x)+"</li>").join("")}</ul></div>`:""}
-        ${d.note?`<div class="note${d.n===5?" warn":""}"><b>Day note:</b> ${esc(d.note)}</div>`:""}
+        ${d.note?`<div class="note${(d.n===5||d.n===12)?" warn":""}"><b>Day note:</b> ${esc(d.note)}</div>`:""}
         <div class="btnrow" style="margin-top:.9rem">
           <button class="btn sm ghost" data-daymap="${d.n}">&#128506;&#65039; Stops on this day</button>
           <button class="btn sm ghost" data-dayread="${d.n}">&#128266; Read this day</button>
@@ -3160,7 +3162,7 @@ function renderResv(){
         <div class="small muted">${fmtDate(r.d)} &rarr; ${fmtDate(r.out)}</div>
         <div class="s" style="margin-top:.3rem">${esc(r.det)}</div>
         ${r.a?`<div class="small muted" style="margin-top:.3rem">${esc(r.a)}</div>`:""}
-        ${r.conf?`<div class="pills" style="margin-top:.45rem"><span class="pill">Conf ${esc(r.conf)}</span><span class="pill">PIN ${esc(r.pin)}</span></div>`:""}
+        <div class="pills" style="margin-top:.45rem">${r.conf?`<span class="pill">Conf ${esc(r.conf)}</span><span class="pill">PIN ${esc(r.pin)}</span>`:""}${r.cost?`<span class="pill gold">$${r.cost.toFixed(2)}</span>`:""}</div>
         ${r.note?`<div class="note ${r.warn?"warn":""} small" style="margin-top:.5rem">${esc(r.note)}</div>`:""}
         <div class="btnrow" style="margin-top:.6rem">
           ${r.p?`<a class="btn sm ghost" href="tel:${r.p.replace(/[^+\d]/g,"")}">&#128222; Call</a>`:""}
@@ -5882,7 +5884,7 @@ if("serviceWorker" in navigator){
 $("cacheNow").addEventListener("click",async()=>{
   try{
     if("caches" in window){
-      const c=await caches.open("olive-west-v5");
+      const c=await caches.open("olive-west-v6");
       await c.addAll(["./","./index.html","./manifest.json"]);
       /* her voice too - individually, so one miss can't abort the lot */
       let got=0;
