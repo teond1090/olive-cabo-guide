@@ -1264,7 +1264,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w21-2026-08-12";
+const OLIVE_BUILD="w22-2026-08-12";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4275.84;   /* from the Aug 2026 planning sheet */
@@ -1974,7 +1974,7 @@ const VOICE_CLIPS=["air","altitude","arrive","bear","bison","boardwalk","briefin
 /* Long-form narration: town stories and full day plans, in Olive's voice.
    ~24MB, so these are NOT precached - they stream once and are then kept
    by the service worker for offline use. */
-const VOICE_LONG=["day/1","day/10","day/11","day/12","day/13","day/14","day/15","day/2","day/3","day/4","day/5","day/6","day/7","day/8","day/9","story/badlands","story/buffalo-wy","story/butte-mt","story/cheyenne-wy","story/cody-wy","story/crazy-horse","story/custer-sd","story/deadwood-sd","story/denver-co","story/glacier-np","story/great-falls-mt","story/havre-mt","story/little-bighorn","story/medora-nd","story/mount-rushmore","story/red-rocks-co","story/sheridan-wy","story/theodore-roosevelt-np","story/wall-sd","story/west-yellowstone-mt","story/whitefish-mt","story/yellowstone"];
+const VOICE_LONG=["brief/1","brief/10","brief/11","brief/12","brief/13","brief/14","brief/15","brief/2","brief/3","brief/4","brief/5","brief/6","brief/7","brief/8","brief/9","brief/post","brief/pre1","brief/pre2","brief/pre3","brief/pre4","brief/pre5","brief/pre6","brief/pre7","day/1","day/10","day/11","day/12","day/13","day/14","day/15","day/2","day/3","day/4","day/5","day/6","day/7","day/8","day/9","poi/ab-camping-rv-park-cheyenne","poi/alpine-inn-hill-city","poi/artist-point","poi/backslope-brewing-columbia-falls","poi/badlands-national-park-big-badlands-overlook","poi/badlands-panorama-point","poi/badlands-pinnacles-overlook","poi/badlands-yellow-mounds-overlook","poi/beartooth-highway","poi/ben-reifel-visitor-center","poi/big-springs-island-park","poi/billings-montana","poi/billings-village-rv-park","poi/black-hills-burger-and-bun-custer","poi/boots-bar-and-grill-medora","poi/bozeman-museum-of-the-rockies","poi/brickhouse-grille-dickinson","poi/buffalo-bill-center-of-the-west","poi/buffalo-bill-dam-and-visitor-center","poi/buffalo-bill-grave-and-museum","poi/buffalo-cafe-whitefish","poi/butte-berkeley-pit","poi/cheyenne-crossing-store-lead","poi/cheyenne-frontier-days-old-west-museum","poi/chief-joseph-scenic-byway","poi/cody-nite-rodeo","poi/columbia-falls","poi/crazy-horse-memorial","poi/custer-state-park-wildlife-loop","poi/custers-gulch-rv-park","poi/deadwood-historic-district","poi/deadwood-social-club","poi/denver-east-strasburg-koa","poi/denver-international-airport","poi/denver-museum-of-nature-and-science","poi/dickinson-north-dakota","poi/enchanted-highway","poi/ennis-montana","poi/farmhouse-cafe-medora","poi/flathead-lake","poi/fort-benton","poi/fort-laramie-national-historic-site","poi/fort-phil-kearny","poi/fountain-paint-pot","poi/fuel-ashton-id","poi/fuel-belfield-nd","poi/fuel-billings-mt","poi/fuel-buffalo-wy","poi/fuel-butte-mt","poi/fuel-cheyenne-wy","poi/fuel-cody-wy","poi/fuel-columbia-falls-kalispell","poi/fuel-custer-sd","poi/fuel-cut-bank-mt","poi/fuel-dickinson-nd","poi/fuel-douglas-wy","poi/fuel-ennis-mt","poi/fuel-gardiner-mt","poi/fuel-glasgow-mt","poi/fuel-glendive-mt","poi/fuel-great-falls-mt","poi/fuel-hardin-mt","poi/fuel-havre-mt","poi/fuel-island-park-id","poi/fuel-kadoka-sd","poi/fuel-lusk-wy","poi/fuel-malta-mt","poi/fuel-newcastle-wy","poi/fuel-old-faithful-in-park","poi/fuel-rapid-city-sd","poi/fuel-shelby-mt","poi/fuel-sheridan-wy","poi/fuel-spearfish-sd","poi/fuel-wall-sd","poi/fuel-west-yellowstone-mt","poi/gardiner-and-the-roosevelt-arch","poi/giant-springs-state-park","poi/glacier-campground-west-glacier","poi/glacier-np-apgar-village-and-lake-mcdonald","poi/going-to-the-sun-road","poi/grand-prismatic-spring","poi/grand-union-hotel-dining-fort-benton","poi/grannys-restaurant-cody","poi/grizzly-and-wolf-discovery-center","poi/grizzly-rv-park-west-yellowstone","poi/guernsey-oregon-trail-ruts","poi/harriman-state-park","poi/hart-ranch-rushmore-shadows-rapid-city","poi/havre-beneath-the-streets","poi/havre-montana","poi/hayden-valley","poi/helena-montana","poi/irma-hotel-cody","poi/irma-hotel-restaurant-cody","poi/iron-mountain-road","poi/island-park-idaho","poi/jackson-glacier-overlook","poi/jewel-cave-national-monument","poi/lake-mcdonald-lodge","poi/lamar-valley","poi/lewis-and-clark-interpretive-center-great-falls","poi/little-bighorn-battlefield-nm","poi/livingston-montana","poi/logan-pass","poi/lookout-point","poi/loulas-cafe-whitefish","poi/lusk-wyoming","poi/luxury-diner-cheyenne","poi/mammoth-hot-springs","poi/many-glacier-hotel","poi/medora-musical","poi/medora-north-dakota","poi/mesa-falls-scenic-byway","poi/mint-bar-sheridan","poi/minuteman-missile-nhs","poi/montanas-rib-and-chop-house-billings","poi/mount-rushmore-national-memorial","poi/mt-moriah-cemetery","poi/mud-volcano","poi/nalivkas-original-pizza-havre","poi/needles-highway","poi/norris-geyser-basin","poi/occidental-hotel-buffalo","poi/old-faithful","poi/old-faithful-inn","poi/old-faithful-inn-dining-room","poi/old-trail-town","poi/painted-canyon-overlook","poi/pekin-noodle-parlor-butte","poi/pictograph-cave-state-park","poi/pitchfork-steak-fondue","poi/pompeys-pillar-national-monument","poi/ponderosa-campground-cody","poi/ptarmigan-dining-room-many-glacier","poi/purple-pie-place-custer","poi/quake-lake","poi/red-rocks-park-and-amphitheatre","poi/red-trail-campground-medora","poi/roadhouse-diner-great-falls","poi/roughlock-falls","poi/running-bear-pancake-house","poi/sage-creek-grille-custer","poi/salem-sue-new-salem","poi/sanfords-grub-and-pub-spearfish","poi/sanfords-sheridan","poi/sheridan-big-horn-mountains-koa","poi/sheridan-wyoming","poi/sip-n-dip-lounge-great-falls","poi/sleepy-hollow-rv-park-wall","poi/spearfish-canyon-scenic-byway","poi/stellas-kitchen-and-bakery-billings","poi/sturgis","poi/terry-bison-ranch","poi/the-fort-restaurant-morrison","poi/theodore-roosevelt-np-south-unit-loop","poi/tower-fall","poi/tupelo-grille-whitefish","poi/two-medicine","poi/two-sisters-cafe-st-mary","poi/wahkpa-chugn-buffalo-jump","poi/walkers-grill-billings","poi/wall-drug-cafe","poi/wall-drug-store","poi/wapiti-valley-north-fork-highway","poi/weeping-wall","poi/west-yellowstone","poi/whitefish-montana","poi/whitefish-rv-park","poi/wild-goose-island-overlook","poi/wild-west-pizzeria-west-yellowstone","poi/wind-cave-national-park","poi/wyoming-state-capitol-cheyenne","poi/yellowstone-grill-gardiner","poi/yellowstone-lake","story/badlands","story/buffalo-wy","story/butte-mt","story/cheyenne-wy","story/cody-wy","story/crazy-horse","story/custer-sd","story/deadwood-sd","story/denver-co","story/glacier-np","story/great-falls-mt","story/havre-mt","story/little-bighorn","story/medora-nd","story/mount-rushmore","story/red-rocks-co","story/sheridan-wy","story/theodore-roosevelt-np","story/wall-sd","story/west-yellowstone-mt","story/whitefish-mt","story/yellowstone"];
 const STORY_CLIP={"Custer, SD":"story/custer-sd","Mount Rushmore":"story/mount-rushmore","Crazy Horse":"story/crazy-horse","Deadwood, SD":"story/deadwood-sd","Badlands":"story/badlands","Wall, SD":"story/wall-sd","Medora, ND":"story/medora-nd","Theodore Roosevelt NP":"story/theodore-roosevelt-np","Havre, MT":"story/havre-mt","Great Falls, MT":"story/great-falls-mt","Glacier NP":"story/glacier-np","Whitefish, MT":"story/whitefish-mt","Butte, MT":"story/butte-mt","West Yellowstone, MT":"story/west-yellowstone-mt","Yellowstone":"story/yellowstone","Cody, WY":"story/cody-wy","Little Bighorn":"story/little-bighorn","Sheridan, WY":"story/sheridan-wy","Buffalo, WY":"story/buffalo-wy","Cheyenne, WY":"story/cheyenne-wy","Red Rocks, CO":"story/red-rocks-co","Denver, CO":"story/denver-co"};
 
 /* ============================================================
@@ -2161,6 +2161,24 @@ function hasClip(key){
   if(typeof VOICE_CLIPS!=="undefined"&&VOICE_CLIPS.indexOf(key)>=0)return true;
   if(typeof VOICE_LONG!=="undefined"&&VOICE_LONG.indexOf(key)>=0)return true;
   return false;
+}
+/* Every place description is recorded in her voice. The slug here must match
+   the one the recorder used, or she falls back to the phone's robot. */
+function poiClip(name){
+  if(!name)return null;
+  const s=String(name).toLowerCase().normalize("NFD")
+    .replace(/[̀-ͯ]/g,"")
+    .replace(/&/g," and ").replace(/['’]/g,"")
+    .replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,52);
+  return hasClip("poi/"+s)?"poi/"+s:null;
+}
+/* Her morning briefing, recorded per trip day and per countdown day. */
+function briefClip(){
+  const i=tripDayIndex();
+  if(i>=0)return hasClip("brief/"+DAYS[i].n)?"brief/"+DAYS[i].n:null;
+  const to=daysBetween(todayISO(),TRIP_START);
+  if(to>0)return hasClip("brief/pre"+to)?"brief/pre"+to:null;
+  return hasClip("brief/post")?"brief/post":null;
 }
 /* ---------- Olive's live voice ----------
    For anything that was never pre-recorded - a fact pulled off the wire,
@@ -2896,7 +2914,8 @@ document.addEventListener("click",e=>{
   const d=e.target.closest("[data-detour]");
   if(d&&!e.target.closest("#liveAlerts")){worthDetour(d.dataset.detour);return}
   const s=e.target.closest("[data-speak]");
-  if(s){const p=POI.find(x=>x.n===s.dataset.speak);if(p)speak(p.n+". "+p.d+(p.tip?" Tip: "+p.tip:""),true);return}
+  if(s){const p=POI.find(x=>x.n===s.dataset.speak);
+        if(p)speak(p.n+". "+p.d+(p.tip?" Tip: "+p.tip:""),true,poiClip(p.n));return}
   const g=e.target.closest("[data-goto]");
   if(g){location.hash="#/"+g.dataset.goto;return}
 });
@@ -3383,7 +3402,7 @@ function renderBriefing(){$("briefing").innerHTML=buildBriefing()}
 $("brRefresh").addEventListener("click",()=>{renderBriefing();loadWeather();toast("Refreshed")});
 $("brRead").addEventListener("click",()=>{
   const txt=$("briefing").textContent.replace(/\s+/g," ").trim();
-  speak(txt,true);toast("&#128266; Reading your briefing");
+  speak(txt,true,briefClip());toast("&#128266; Reading your briefing");
 });
 
 /* ============================================================
@@ -4256,7 +4275,8 @@ function curatedFacts(lat,lng){
   /* and the places themselves */
   POI.forEach(p=>{
     const d=dist(lat,lng,p.lat,p.lng);
-    if(d<25&&p.d&&p.d.length>60)out.push({t:p.n,x:p.d+(p.tip?" "+p.tip:""),d,src:"olive"});
+    if(d<25&&p.d&&p.d.length>60)out.push({t:p.n,x:p.d+(p.tip?" "+p.tip:""),d,src:"olive",
+      clip:(typeof poiClip==="function")?poiClip(p.n):null});
   });
   return out.sort((a,b)=>a.d-b.d).slice(0,6);
 }
@@ -4857,7 +4877,11 @@ function speakPlace(p){
   if(story&&typeof STORY_CLIP!=="undefined"&&STORY_CLIP[story]){
     speak(STORIES[story],true,STORY_CLIP[story]);
   }else{
-    speak(lead+p.n+". "+(p.d||"")+(p.tip?" "+p.tip:""),true);
+    /* her own recording of this place, if there is one - the "About 8 miles
+       ahead" lead is dropped in that case, since it is not in the recording */
+    const k=(typeof poiClip==="function")?poiClip(p.n):null;
+    if(k)speak(p.n+". "+(p.d||"")+(p.tip?" Tip: "+p.tip:""),true,k);
+    else speak(lead+p.n+". "+(p.d||"")+(p.tip?" "+p.tip:""),true);
   }
 }
 
@@ -5884,7 +5908,7 @@ if("serviceWorker" in navigator){
 $("cacheNow").addEventListener("click",async()=>{
   try{
     if("caches" in window){
-      const c=await caches.open("olive-west-v6");
+      const c=await caches.open("olive-west-v7");
       await c.addAll(["./","./index.html","./manifest.json"]);
       /* her voice too - individually, so one miss can't abort the lot */
       let got=0;
@@ -5892,15 +5916,19 @@ $("cacheNow").addEventListener("click",async()=>{
       toast("&#128190; Saved — guide + "+got+" voice lines");
       const long=(typeof VOICE_LONG!=="undefined")?VOICE_LONG.length:0;
       $("offlineTxt").innerHTML="<b>&#9989; Saved to this device.</b> Every day plan, landmark, story, checklist, radio frequency and phone number &mdash; plus all "+got+" of Olive's short spoken lines &mdash; now works with no bars at all. Only live weather and crew chat need a signal."+
-        (long?`<br><br>Her ${long} full narrations (every town story and day plan read aloud) are about 24&nbsp;MB and are <b>not</b> included &mdash; they save themselves as you play them. On wifi before you leave, tap below to grab the lot.
-        <div class="btnrow" style="margin-top:.6rem"><button class="btn sm ghost" id="cacheLong">&#127908; Also save her narrations (24 MB)</button></div>
+        (long?`<br><br>Her ${long} full narrations &mdash; every morning briefing, day plan, town story and place description read aloud in her own voice &mdash; are about 62&nbsp;MB and are <b>not</b> included. They save themselves as you play them. On wifi before you leave, tap below to grab the lot at once.
+        <div class="btnrow" style="margin-top:.6rem"><button class="btn sm ghost" id="cacheLong">&#127908; Also save her narrations (62 MB)</button></div>
         <div id="longProg" class="small muted" style="margin-top:.4rem"></div>`:"");
       const bl=$("cacheLong");
       if(bl)bl.addEventListener("click",async()=>{
         bl.disabled=true;let n=0;
-        for(const k of VOICE_LONG){
-          try{await c.add("./voice/"+k+".mp3")}catch(e){}
-          n++;$("longProg").textContent="Saved "+n+" of "+VOICE_LONG.length+"…";
+        /* four at a time - 234 files one after another takes far too long
+           to sit and watch, and any more than this stalls on hotel wifi */
+        for(let i=0;i<VOICE_LONG.length;i+=4){
+          await Promise.all(VOICE_LONG.slice(i,i+4).map(k=>
+            c.add("./voice/"+k+".mp3").catch(()=>{}).then(()=>{
+              n++;$("longProg").textContent="Saved "+n+" of "+VOICE_LONG.length+"…";
+            })));
         }
         $("longProg").innerHTML="<b>&#9989; All "+n+" narrations saved.</b> Olive can now read every story and day plan with no signal.";
         toast("&#127908; Narrations saved");
