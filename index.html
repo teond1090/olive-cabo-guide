@@ -1296,7 +1296,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w25-2026-08-12";
+const OLIVE_BUILD="w26-2026-08-12";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4275.84;   /* from the Aug 2026 planning sheet */
@@ -2338,8 +2338,14 @@ document.addEventListener("click",e=>{
 });
 /* keep the active tab in view when the strip is wider than the screen */
 function scrollTabIntoView(v){
-  const a=document.querySelector('nav.tabs a[data-view="'+v+'"]');
-  if(a&&a.scrollIntoView)try{a.scrollIntoView({block:"nearest",inline:"center",behavior:"smooth"})}catch(e){}
+  const s=document.querySelector(".tabscroll");
+  const a=s&&s.querySelector('a[data-view="'+v+'"]');
+  if(!s||!a)return;
+  /* set scrollLeft outright rather than scrollIntoView - that one also drags
+     the page itself around, and browsers skip it while the tab is hidden */
+  const want=a.offsetLeft-(s.clientWidth-a.offsetWidth)/2;
+  const max=s.scrollWidth-s.clientWidth;
+  s.scrollLeft=Math.max(0,Math.min(max,want));
 }
 /* The tour is the training page shown inside the app. It is loaded the first
    time the tab is opened, not on boot - it pulls eleven narration files and
