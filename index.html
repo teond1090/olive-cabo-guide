@@ -1281,7 +1281,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w23-2026-08-12";
+const OLIVE_BUILD="w24-2026-08-12";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4275.84;   /* from the Aug 2026 planning sheet */
@@ -2323,13 +2323,23 @@ function mountTour(){
   tourFrame.loading="lazy";
   tourFrame.setAttribute("scrolling","no");
   host.appendChild(tourFrame);
-  /* the frame has no scrollbar of its own, so it has to grow to its content */
+  /* The frame has no scrollbar of its own, so it has to grow to its content.
+     A ResizeObserver on the inner body catches everything that changes the
+     height - fonts finishing, the phone turning, the status line growing -
+     which a one-shot measurement on load does not. */
   const fit=()=>{try{
     const d=tourFrame.contentDocument;
     if(d&&d.body)tourFrame.style.height=(d.body.scrollHeight+24)+"px";
   }catch(e){}};
-  tourFrame.addEventListener("load",()=>{fit();setTimeout(fit,400);setTimeout(fit,1500)});
-  window.addEventListener("resize",fit);
+  tourFrame.addEventListener("load",()=>{
+    fit();
+    try{
+      const d=tourFrame.contentDocument;
+      if(window.ResizeObserver&&d&&d.body)new ResizeObserver(fit).observe(d.body);
+      else[300,900,2000].forEach(ms=>setTimeout(fit,ms));
+    }catch(e){[300,900,2000].forEach(ms=>setTimeout(fit,ms))}
+  });
+  window.addEventListener("resize",()=>{fit();setTimeout(fit,250)});
 }
 /* leaving the tab must silence Clara mid-sentence, not let her talk on */
 function stopTour(){
