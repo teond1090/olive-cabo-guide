@@ -1264,7 +1264,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w20-2026-08-12";
+const OLIVE_BUILD="w21-2026-08-12";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4275.84;   /* from the Aug 2026 planning sheet */
@@ -3931,7 +3931,7 @@ function renderStays(){
   const open=list.filter(n=>!(n.res||n.mine)).length;
   $("staysList").insertAdjacentHTML("afterbegin",
     open?`<div class="note warn" style="margin-top:0"><b>${open} night${open===1?"":"s"} still open.</b> With Glacier and Yellowstone in peak season, these are worth doing now rather than on the road.</div>`
-        :`<div class="note senior" style="margin-top:0"><b>Every night is booked.</b> Nicely done.</div>`);
+        :`<div class="note senior" style="margin-top:0"><b>Every night is booked.</b> All fifteen nights, ${RESV.length} reservations, $${LODGING_TOTAL.toLocaleString(undefined,{minimumFractionDigits:2})} in lodging. Nicely done.</div>`);
 }
 $("staysList").addEventListener("click",e=>{
   const b=e.target.closest("[data-book]")||e.target.closest("[data-unbook]");
