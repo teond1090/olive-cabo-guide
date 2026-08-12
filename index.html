@@ -142,6 +142,11 @@ nav.tabs{
 }
 .tabscroll{display:flex;gap:.32rem;overflow-x:auto;scrollbar-width:none;padding:.5rem 1rem;max-width:var(--wrap);margin:0 auto}
 .tabscroll::-webkit-scrollbar{display:none}
+/* only three tabs fit on a phone, so the strip has to LOOK scrollable -
+   a soft fade off the right edge is the cue that there is more over there */
+nav.tabs{position:sticky}
+nav.tabs::after{content:"";position:absolute;top:0;right:0;bottom:3px;width:2.2rem;
+  pointer-events:none;background:linear-gradient(90deg,rgba(238,224,197,0),rgba(236,221,192,.97))}
 nav.tabs a{
   flex:0 0 auto;display:flex;align-items:center;gap:.4rem;
   padding:.55rem .9rem;min-height:var(--tap);border-radius:11px;
@@ -680,12 +685,12 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <a href="#/today"    data-view="today"><span class="ic">&#127968;</span> Today</a>
     <a href="#/journey"  data-view="journey"><span class="ic">&#128506;&#65039;</span> Journey</a>
     <a href="#/nearby"   data-view="nearby"><span class="ic">&#128205;</span> Nearby</a>
+    <a href="#/tour"     data-view="tour"><span class="ic">&#127916;</span> How It Works</a>
     <a href="#/facts"    data-view="facts"><span class="ic">&#128161;</span> Did You Know</a>
     <a href="#/radio"    data-view="radio"><span class="ic">&#128251;</span> Radio</a>
     <a href="#/bucket"   data-view="bucket"><span class="ic">&#127919;</span> Bucket List</a>
     <a href="#/memories" data-view="memories"><span class="ic">&#128248;</span> Memories</a>
     <a href="#/crew"     data-view="crew"><span class="ic">&#128172;</span> Crew</a>
-    <a href="#/tour"     data-view="tour"><span class="ic">&#127916;</span> How It Works</a>
     <a href="#/toolkit"  data-view="toolkit"><span class="ic">&#129520;</span> Toolkit</a>
   </div>
 </nav>
@@ -701,6 +706,16 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <h2 id="heroTitle">Great American West</h2>
       <p id="heroSub">Denver &rarr; Black Hills &rarr; Glacier &rarr; Yellowstone &rarr; Denver</p>
       <div class="countdown" id="countdown"></div>
+    </div>
+
+    <!-- shown until they have watched it, then it gets out of the way -->
+    <div class="card a-gold" id="tourPrompt" style="display:none">
+      <div class="card-h"><span class="ic">&#127916;</span><h3>New here? Start with the tour</h3></div>
+      <p style="margin:0 0 .7rem">Three minutes, narrated by Clara &mdash; every tab, what it does, and the few things worth doing before you leave Denver.</p>
+      <div class="btnrow">
+        <a class="btn brass" href="#/tour">&#9654;&#65039; Watch the tour</a>
+        <button class="btn sm ghost" id="tourPromptHide">Not now</button>
+      </div>
     </div>
 
     <div id="liveAlerts" class="stack"></div>
@@ -1281,7 +1296,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w24-2026-08-12";
+const OLIVE_BUILD="w25-2026-08-12";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4275.84;   /* from the Aug 2026 planning sheet */
@@ -2298,6 +2313,7 @@ function showView(v){
   if(!VIEWS.includes(v))v="today";
   VIEWS.forEach(x=>{const el=$("view-"+x);if(el)el.classList.toggle("active",x===v)});
   $$("nav.tabs a,.bottombar a").forEach(a=>a.classList.toggle("on",a.dataset.view===v));
+  scrollTabIntoView(v);
   window.scrollTo({top:0,behavior:"instant"});
   if(v==="nearby"){renderNearby();drawMap()}
   if(v==="memories")renderFeed();
@@ -2306,8 +2322,24 @@ function showView(v){
   if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();if(!podList.length)loadPods();}
   if(v==="journey"){drawTrail();renderStays()}
   if(v==="crew"){unread=0;}
-  if(v==="tour")mountTour();
+  if(v==="tour"){mountTour();store.set("tour-seen",true);syncTourPrompt()}
   else stopTour();
+}
+/* The tab strip scrolls, and on a phone only three tabs fit - so the tour
+   gets a card on Today too, until they have actually opened it once. */
+function syncTourPrompt(){
+  const el=$("tourPrompt");if(!el)return;
+  el.style.display=store.get("tour-seen",false)?"none":"";
+}
+document.addEventListener("click",e=>{
+  if(!e.target.closest("#tourPromptHide"))return;
+  store.set("tour-seen",true);syncTourPrompt();
+  toast("Hidden. It's still on the <b>&#127916; How It Works</b> tab.");
+});
+/* keep the active tab in view when the strip is wider than the screen */
+function scrollTabIntoView(v){
+  const a=document.querySelector('nav.tabs a[data-view="'+v+'"]');
+  if(a&&a.scrollIntoView)try{a.scrollIntoView({block:"nearest",inline:"center",behavior:"smooth"})}catch(e){}
 }
 /* The tour is the training page shown inside the app. It is loaded the first
    time the tab is opened, not on boot - it pulls eleven narration files and
@@ -6011,7 +6043,7 @@ function boot(){
   renderHero();renderDays();renderScenic();renderBucket();renderDash();
   renderHealth();renderResv();renderMed();
   renderStories();renderSettings();renderNotif();renderFeed();renderGal();
-  renderBriefing();renderNearby();netCheck();
+  renderBriefing();renderNearby();netCheck();syncTourPrompt();
   renderFindNow();renderStays();renderPins();renderPasses();renderClearance();renderRadio();drawTrail();renderFacts();
   renderParkAlerts();loadParkAlerts();
   micShow(store.get('micOn',true)&&!!SR);
