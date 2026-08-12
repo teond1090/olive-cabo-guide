@@ -646,6 +646,8 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
   .card,.day{break-inside:avoid;box-shadow:none}
 }
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* the narrated tour, shown inside the How It Works tab */
+.tour-host iframe{width:100%;border:0;display:block;min-height:34rem;overflow:hidden}
 </style>
 </head>
 <body>
@@ -683,6 +685,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <a href="#/bucket"   data-view="bucket"><span class="ic">&#127919;</span> Bucket List</a>
     <a href="#/memories" data-view="memories"><span class="ic">&#128248;</span> Memories</a>
     <a href="#/crew"     data-view="crew"><span class="ic">&#128172;</span> Crew</a>
+    <a href="#/tour"     data-view="tour"><span class="ic">&#127916;</span> How It Works</a>
     <a href="#/toolkit"  data-view="toolkit"><span class="ic">&#129520;</span> Toolkit</a>
   </div>
 </nav>
@@ -1208,6 +1211,20 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
   </div>
 </div>
 
+<!-- ========================== HOW IT WORKS ========================= -->
+<div class="view" id="view-tour">
+  <div class="stack">
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#127916;</span><h3>How This App Works</h3></div>
+      <p style="margin:0">A short tour, about three minutes, narrated by Clara. It walks through every tab and the few things worth doing before you leave Denver. Press <b>Preview</b> to watch it here, or <b>Create the video</b> to save it as a file you can text to anyone.</p>
+      <div class="note" style="margin-top:.7rem"><b>Turn your sound up.</b> Clara does the talking.</div>
+    </div>
+    <div id="tourHost" class="tour-host">
+      <div class="card"><p class="muted" style="margin:0">Loading the tour&hellip;</p></div>
+    </div>
+  </div>
+</div>
+
 <!-- ============================ TOOLKIT ============================ -->
 <div class="view" id="view-toolkit">
   <div class="stack">
@@ -1240,7 +1257,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="card-h"><span class="ic">&#128246;</span><h3>Works Without Signal</h3></div>
       <p class="small" id="offlineTxt">Olive saves itself to your phone the first time you open it. Every day plan, landmark, story, checklist, radio frequency and phone number works with no bars at all &mdash; only live weather and the crew chat need a signal.</p>
       <div class="btnrow"><button class="btn sm sage" id="cacheNow">&#128190; Save for offline now</button>
-      <a class="btn sm ghost" href="training.html">&#127916; How this app works</a></div>
+      <a class="btn sm ghost" href="#/tour">&#127916; How this app works</a></div>
     </div>
   </div>
 </div>
@@ -1264,7 +1281,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w22-2026-08-12";
+const OLIVE_BUILD="w23-2026-08-12";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4275.84;   /* from the Aug 2026 planning sheet */
@@ -2276,7 +2293,7 @@ applyFS();
 /* ============================================================
    ROUTING
    ============================================================ */
-const VIEWS=["today","journey","nearby","facts","radio","bucket","memories","crew","toolkit"];
+const VIEWS=["today","journey","nearby","facts","radio","bucket","memories","crew","tour","toolkit"];
 function showView(v){
   if(!VIEWS.includes(v))v="today";
   VIEWS.forEach(x=>{const el=$("view-"+x);if(el)el.classList.toggle("active",x===v)});
@@ -2289,6 +2306,38 @@ function showView(v){
   if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();if(!podList.length)loadPods();}
   if(v==="journey"){drawTrail();renderStays()}
   if(v==="crew"){unread=0;}
+  if(v==="tour")mountTour();
+  else stopTour();
+}
+/* The tour is the training page shown inside the app. It is loaded the first
+   time the tab is opened, not on boot - it pulls eleven narration files and
+   nobody should pay for that just by starting the app. */
+let tourFrame=null;
+function mountTour(){
+  if(tourFrame)return;
+  const host=$("tourHost");if(!host)return;
+  host.innerHTML="";
+  tourFrame=document.createElement("iframe");
+  tourFrame.src="training.html?embed=1";
+  tourFrame.title="How this app works - a narrated tour";
+  tourFrame.loading="lazy";
+  tourFrame.setAttribute("scrolling","no");
+  host.appendChild(tourFrame);
+  /* the frame has no scrollbar of its own, so it has to grow to its content */
+  const fit=()=>{try{
+    const d=tourFrame.contentDocument;
+    if(d&&d.body)tourFrame.style.height=(d.body.scrollHeight+24)+"px";
+  }catch(e){}};
+  tourFrame.addEventListener("load",()=>{fit();setTimeout(fit,400);setTimeout(fit,1500)});
+  window.addEventListener("resize",fit);
+}
+/* leaving the tab must silence Clara mid-sentence, not let her talk on */
+function stopTour(){
+  if(!tourFrame)return;
+  try{
+    const w=tourFrame.contentWindow;
+    if(w&&typeof w.haltTour==="function")w.haltTour();
+  }catch(e){}
 }
 function route(){showView((location.hash||"#/today").replace("#/",""))}
 window.addEventListener("hashchange",route);

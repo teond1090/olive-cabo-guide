@@ -33,6 +33,12 @@ canvas{width:100%;border-radius:12px;border:2px solid var(--line-2);background:#
 ol{padding-left:1.2rem}
 li{margin-bottom:.35rem}
 #status{margin-top:.8rem;font-weight:600}
+/* embed=1: this page is shown inside the app's own Tour tab, which already
+   supplies the header and the frame. Drop our chrome so it reads as one app. */
+body.embed{background:transparent;padding:0}
+body.embed header,body.embed .backlink{display:none}
+body.embed .wrap{padding:0;max-width:none}
+body.embed .card{border-radius:14px}
 .bar{height:.8rem;background:var(--line);border-radius:1rem;overflow:hidden;margin-top:.5rem;border:1.5px solid var(--line-2)}
 .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--brass),var(--rust));transition:width .3s}
 </style>
@@ -55,7 +61,7 @@ li{margin-bottom:.35rem}
     <div class="row">
       <button class="btn" id="play">&#9654;&#65039; Preview</button>
       <button class="btn" id="make">&#127916; Create the video</button>
-      <a class="btn ghost" href="index.html">&larr; Back to the app</a>
+      <a class="btn ghost backlink" href="index.html">&larr; Back to the app</a>
     </div>
     <div id="status" class="small muted">Loading Clara&rsquo;s narration&hellip;</div>
     <div class="bar"><i id="prog"></i></div>
@@ -78,6 +84,7 @@ li{margin-bottom:.35rem}
    Training video: rendered on a canvas and recorded live, so it
    needs no editing software and no upload anywhere.
    ============================================================ */
+if(/[?&]embed=1/.test(location.search))document.body.classList.add("embed");
 const cv=document.getElementById("v"), cx=cv.getContext("2d");
 const W=cv.width, H=cv.height;
 const RUST="#A63A24", BRASS="#C8912C", BRASSL="#E5BB63", PARCH="#F3E6CE",
@@ -323,6 +330,11 @@ function run(onDone,onTick,speakOut){
   })();
   return TOTAL;
 }
+/* the app calls this when you navigate away from the Tour tab */
+window.haltTour=function(){
+  running=false; stopNarration();
+  document.getElementById("play").innerHTML="&#9654;&#65039; Preview";
+};
 document.getElementById("play").addEventListener("click",()=>{
   if(running){running=false;document.getElementById("play").innerHTML="&#9654;&#65039; Preview";return}
   document.getElementById("play").innerHTML="&#9209;&#65039; Stop";
