@@ -137,7 +137,11 @@ nav.tabs{
   display:none;   /* phones navigate with the big bottom bar + More menu */
 }
 @media(min-width:980px){nav.tabs{display:block}}
-.tabscroll{display:flex;gap:.32rem;overflow-x:auto;scrollbar-width:none;padding:.5rem 1rem;max-width:var(--wrap);margin:0 auto}
+.tabscroll{display:flex;gap:.32rem;overflow-x:auto;scrollbar-width:none;padding:.5rem 1rem;max-width:var(--wrap);margin:0 auto;position:relative}
+@media(min-width:980px){
+  .tabscroll{flex-wrap:wrap;justify-content:center;overflow:visible}
+  nav.tabs::after{display:none}   /* nothing scrolls, so no fade cue */
+}
 .tabscroll::-webkit-scrollbar{display:none}
 nav.tabs::after{content:"";position:absolute;top:0;right:0;bottom:3px;width:2.2rem;
   pointer-events:none;background:linear-gradient(90deg,rgba(246,238,238,0),rgba(245,236,238,.97))}
@@ -1141,7 +1145,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-15";
+const BUILD="chris-2026-08-13-16";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1564,7 +1568,10 @@ function showView(v){
   const mt=$("moreTab");if(mt)mt.classList.toggle("on",!onBar);
   window.scrollTo({top:0,behavior:"instant"});
   const s=document.querySelector(".tabscroll"),a=s&&s.querySelector('a[data-view="'+ok+'"]');
-  if(a)s.scrollTo({left:Math.max(0,a.offsetLeft-s.clientWidth/2+a.clientWidth/2),behavior:"smooth"});
+  if(a&&s.scrollWidth>s.clientWidth+4){
+    const left=a.getBoundingClientRect().left-s.getBoundingClientRect().left+s.scrollLeft;
+    s.scrollTo({left:Math.max(0,left-s.clientWidth/2+a.clientWidth/2),behavior:"smooth"});
+  }
   if(ok!=="camera")camStop();
   if(ok==="friends")drawFriendMap();
 }
