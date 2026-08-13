@@ -1145,7 +1145,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-18";
+const BUILD="chris-2026-08-13-19";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -3384,6 +3384,7 @@ function voiceTrouble(){
     <div class="btnrow" style="margin-top:.8rem">
       <button class="btn" id="vtFix">&#128260; Fix it for me</button>
       <button class="btn sm ghost" id="vtCheck">&#129658; Run the check-up again</button>
+      ${store.get("xiKey","")?'<button class="btn sm ghost" id="vtShow">&#128065;&#65039; Show the saved key</button>':""}
     </div>
     <div id="xiDiag" class="small" style="margin-top:.6rem"></div>
     <hr class="hr">
@@ -3396,6 +3397,13 @@ function voiceTrouble(){
     it's the phone: flip the ring/silent switch on the side and turn the volume up.</p>`);
   $("vtCheck").addEventListener("click",vtReport);
   $("vtFix").addEventListener("click",vtFix);
+  const sh=$("vtShow");
+  if(sh)sh.addEventListener("click",()=>{
+    const k=store.get("xiKey","");
+    $("xiDiag").innerHTML="The key saved on <b>this device</b> — if the voice works here, this is the good one:"+
+      '<br><code style="word-break:break-all;user-select:all;font-size:.85em">'+esc(k)+"</code>"+
+      '<br><span class="tiny">Copy it into another phone&rsquo;s Voice setup — or send it to your builder to build into the app for every phone.</span>';
+  });
   $("vtSave").addEventListener("click",()=>{
     const v=$("vtKey").value.trim();
     if(!v)return toast("Paste the key first");
