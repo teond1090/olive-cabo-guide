@@ -1120,7 +1120,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-5";
+const BUILD="chris-2026-08-13-6";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1756,8 +1756,9 @@ function pushAlert(a){
   const el=document.createElement("div");
   el.className="alert "+(a.cls||"info");
   el.innerHTML=`<div class="ic">${a.ic}</div><div class="bd"><div class="t">${esc(a.t)}</div><div class="s">${esc(a.s)}</div>
-    ${(a.place||a.swap)?`<div class="btnrow" style="margin-top:.6rem">
+    ${(a.place||a.swap||a.say)?`<div class="btnrow" style="margin-top:.6rem">
       ${a.swap?`<button class="btn sm" data-rainswap="1">&#9748; Swap for an indoor day</button>`:""}
+      ${a.say?`<button class="btn sm" data-alert-say="${esc(a.say)}">&#128266; Hear her</button>`:""}
       ${a.place?`<button class="btn sm ghost" data-alert-open="${esc(a.place)}">Tell me more</button>
       <a class="btn sm ghost" href="${mapUrl(byName(a.place))}" target="_blank" rel="noopener">&#129517; Take me there</a>`:""}</div>`:""}
     </div><button class="x" aria-label="Dismiss">&#10005;</button>`;
@@ -1767,7 +1768,8 @@ function pushAlert(a){
 }
 $("liveAlerts").addEventListener("click",e=>{
   const b=e.target.closest("[data-alert-open]");if(b){placeSheet(b.dataset.alertOpen);return}
-  const r=e.target.closest("[data-rainswap]");if(r){swapIndoor();r.closest(".alert").remove()}
+  const r=e.target.closest("[data-rainswap]");if(r){swapIndoor();r.closest(".alert").remove();return}
+  const sy=e.target.closest("[data-alert-say]");if(sy)speak(sy.dataset.alertSay,true);
 });
 function notify(title,body){
   if(!store.get("notif",false)||!("Notification" in window)||Notification.permission!=="granted")return;
@@ -3234,6 +3236,40 @@ function renderNotif(){
 /* ============================================================
    TOOLKIT
    ============================================================ */
+/* One tap, one honest answer: does the key work, how much of the month's
+   allowance is used, and is her voice actually in this account. Also
+   pre-resolves the voice so even the first spoken line is the right one. */
+async function xiCheck(){
+  const out=$("xiDiag");if(!out)return;
+  const key=store.get("xiKey","");
+  if(!key){out.innerHTML="No key saved on this phone yet.";return}
+  out.innerHTML="Checking with ElevenLabs&hellip;";
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/user/subscription",{headers:{"xi-api-key":key}});
+    if(r.status===401){
+      out.innerHTML="&#10060; <b>ElevenLabs says this key is not valid.</b> Copy a fresh one from elevenlabs.io &mdash; profile picture, API keys &mdash; then tap <i>Change the key</i> and paste it in.";
+      return;
+    }
+    if(!r.ok){out.innerHTML="ElevenLabs answered with an error ("+r.status+"). Give it a minute and try again.";return}
+    const j=await r.json();
+    const used=j.character_count||0,limit=j.character_limit||0;
+    let vmsg="";
+    try{
+      const rv=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
+      if(rv.ok){
+        const vs=(await rv.json()).voices||[];
+        const dg=vs.find(v=>/dreaded grizzly bear/i.test(v.name||""))||vs.find(v=>/clara/i.test(v.name||""))||vs.find(v=>v.category&&v.category!=="premade");
+        if(dg){
+          if(store.get("xiVoice","")!==dg.voice_id){store.set("xiVoice",dg.voice_id);store.set("xiVoiceName",dg.name||"")}
+          vmsg=" Her voice &mdash; <b>"+esc(dg.name||"")+"</b> &mdash; is in the account and ready.";
+        }else vmsg=" "+vs.length+" voices in the account, none custom &mdash; she'll use the first one.";
+      }
+    }catch(e){}
+    out.innerHTML="&#9989; <b>The key works.</b>"+
+      (limit?" "+used.toLocaleString()+" of "+limit.toLocaleString()+" characters used this month.":"")+vmsg+
+      " Now tap <i>Hear her</i>.";
+  }catch(e){out.innerHTML="Couldn't reach ElevenLabs &mdash; weak signal, or the network is blocking it. Try again outside."}
+}
 let voiceEdit=false;
 function renderVoicePanel(){
   const has=!!store.get("xiKey","");
@@ -3244,12 +3280,15 @@ function renderVoicePanel(){
       She reads the briefing, the day plans, the diary, every place description and the camera countdown out loud.</p>
       <div class="btnrow">
         <button class="btn sm" id="xiTest">&#128266; Hear her</button>
+        <button class="btn sm ghost" id="xiCheckBtn">&#129658; Check the key</button>
         <button class="btn sm ghost" id="xiEdit">Change the key</button>
       </div>
+      <div id="xiDiag" class="small" style="margin-top:.6rem"></div>
       <p class="tiny" style="margin-top:.7rem">About ${ttsSpend.toLocaleString()} characters spoken so far.
       Every line is cached — repeats are free and work offline. The key lives only on this phone.</p>`;
     $("xiTest").addEventListener("click",()=>speak("Hello Chris. It's Clara. Littleton is a mile above the sea, so drink more water than you think you need, and I'll tell you when something worth seeing is close.",true));
     $("xiEdit").addEventListener("click",()=>{voiceEdit=true;renderVoicePanel()});
+    $("xiCheckBtn").addEventListener("click",xiCheck);
     return;
   }
   $("voicePanel").innerHTML=`
@@ -3259,8 +3298,10 @@ function renderVoicePanel(){
       <input type="password" id="xiKey" placeholder="${has?"a key is already saved":"sk_…"}" autocomplete="off"></div>
     <div class="btnrow" style="margin-top:.6rem">
       <button class="btn sm" id="xiSave">Save the key</button>
+      <button class="btn sm ghost" id="xiCheckBtn2">&#129658; Check the key</button>
       ${has?'<button class="btn sm ghost" id="xiBack">Never mind</button><button class="btn sm ghost" id="xiClear" style="color:var(--danger)">Remove it</button>':''}
     </div>
+    <div id="xiDiag" class="small" style="margin-top:.6rem"></div>
     <p class="tiny" style="margin-top:.7rem">The key is never sent anywhere except ElevenLabs, is not in this file, and is not in the repository.
     Tip: there is also a one-time setup link — open <code>&hellip;/chris/#xi=YOUR_KEY</code> once on any phone and it does all of this itself, then wipes the key from the address bar.</p>`;
   $("xiSave").addEventListener("click",()=>{
@@ -3270,6 +3311,7 @@ function renderVoicePanel(){
     toast("&#128266; Saved — Clara has her voice");
     speak("Hello Chris. It's Clara. I'll be with you all week.",true);
   });
+  $("xiCheckBtn2").addEventListener("click",xiCheck);
   const bk=$("xiBack");
   if(bk)bk.addEventListener("click",()=>{voiceEdit=false;renderVoicePanel()});
   const cl=$("xiClear");
@@ -4145,7 +4187,12 @@ async function boot(){
   try{history.replaceState(null,"",location.pathname+location.search)}catch(e){location.hash=""}
   setTimeout(()=>{
     toast("&#128266; Clara's voice is set up on this phone");
+    /* iPhones block audio that no finger asked for, so the greeting is
+       best-effort and the alert below gives her a button that always works */
     speak("Hello — it's Clara. My voice is set up on this phone now, and it stays here.",true);
+    pushAlert({ic:"&#128266;",cls:"go",t:"Clara's voice is set up",
+      s:"Tap Hear her to check it worked. Toolkit — Clara's Voice can check the key any time.",
+      say:"Hello — it's Clara. It's lovely to be on this phone. I'll read the plans, the briefings and the diary, and I'll speak up when something good is close."});
   },1500);
 })();
 boot();
