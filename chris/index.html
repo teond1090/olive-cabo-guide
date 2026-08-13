@@ -1127,7 +1127,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-10";
+const BUILD="chris-2026-08-13-11";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -3278,8 +3278,11 @@ async function xiCheck(){
   }catch(e){}
   /* then the real test: speak */
   let pr=await xiProbe(key);
-  if(!pr.ok&&(pr.status===404||pr.status===400||/voice/i.test(pr.code))){
-    /* the wired-in voice isn't in this account - resolve hers and retry */
+  if(!pr.ok&&pr.code!=="invalid_api_key"&&pr.code!=="quota_exceeded"&&pr.code!=="network"){
+    /* Any other failure can simply mean the wired-in voice does not
+       exist in THIS account - ElevenLabs sometimes reports that as a
+       permissions problem. Resolve a voice the account really owns
+       and try once more before passing any verdict. */
     if(await resolveVoice(key))pr=await xiProbe(key);
   }
   if(pr.ok){
@@ -3291,7 +3294,9 @@ async function xiCheck(){
     return;
   }
   if(pr.code==="missing_permissions"){
-    out.innerHTML="&#9888;&#65039; <b>The key is real but was created with limited permissions.</b> Make a new key at elevenlabs.io &mdash; profile picture, API keys &mdash; and leave every permission ticked.";
+    out.innerHTML=vmsg
+      ?"&#9888;&#65039; <b>The key is real and can see the voices, but it isn't allowed to speak.</b> On elevenlabs.io &mdash; profile picture, API Keys &mdash; make one more key and if there is a <i>Restrict key</i> switch, leave it OFF. The permission that matters is <b>Text to Speech</b>."
+      :"&#9888;&#65039; <b>The key is real but can't use the account's voices at all.</b> Two possible reasons: the key was created restricted (make a new one with <i>Restrict key</i> OFF), or &mdash; just as likely &mdash; <b>this ElevenLabs login doesn't contain the Clara voice</b>. Check: on elevenlabs.io, open <i>Voices &rarr; My Voices</i>. If Clara isn't listed there, this is the wrong account &mdash; sign in with the email you used when the Olive app was built.";
     return;
   }
   if(pr.status===401||pr.code==="invalid_api_key"){
