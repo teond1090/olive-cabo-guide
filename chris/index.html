@@ -1127,7 +1127,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-9";
+const BUILD="chris-2026-08-13-10";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -3246,36 +3246,63 @@ function renderNotif(){
 /* One tap, one honest answer: does the key work, how much of the month's
    allowance is used, and is her voice actually in this account. Also
    pre-resolves the voice so even the first spoken line is the right one. */
+async function xiProbe(key){
+  /* the ground truth: can this key actually make Clara speak?
+     Costs about three characters of quota per press. */
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+claraVoiceId()+"?output_format=mp3_44100_64",{
+      method:"POST",headers:{"xi-api-key":key,"Content-Type":"application/json"},
+      body:JSON.stringify({text:"Hi.",model_id:"eleven_turbo_v2_5"})});
+    if(r.ok)return{ok:true};
+    let d=null;try{d=(await r.json()).detail}catch(e){}
+    return{ok:false,status:r.status,code:(d&&d.status)||"",msg:(d&&d.message)||""};
+  }catch(e){return{ok:false,status:0,code:"network"}}
+}
 async function xiCheck(){
   const out=$("xiDiag");if(!out)return;
   const key=store.get("xiKey","");
-  if(!key){out.innerHTML="No key saved on this phone yet.";return}
+  if(!key){out.innerHTML="No key saved on this phone yet. Paste one above and Save first.";return}
   out.innerHTML="Checking with ElevenLabs&hellip;";
+  /* name her voice if the key is allowed to list voices */
+  let vmsg="";
   try{
-    const r=await fetch("https://api.elevenlabs.io/v1/user/subscription",{headers:{"xi-api-key":key}});
-    if(r.status===401){
-      out.innerHTML="&#10060; <b>ElevenLabs says this key is not valid.</b> Copy a fresh one from elevenlabs.io &mdash; profile picture, API keys &mdash; then tap <i>Change the key</i> and paste it in.";
-      return;
+    const rv=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
+    if(rv.ok){
+      const vs=(await rv.json()).voices||[];
+      const dg=vs.find(v=>/clara/i.test(v.name||""))||vs.find(v=>/dreaded grizzly bear/i.test(v.name||""))||vs.find(v=>v.category&&v.category!=="premade");
+      if(dg){
+        if(store.get("xiVoice","")!==dg.voice_id){store.set("xiVoice",dg.voice_id);store.set("xiVoiceName",dg.name||"")}
+        vmsg=" Her voice here is <b>"+esc(dg.name||"")+"</b>.";
+      }else if(vs.length)vmsg=" "+vs.length+" voices in the account, none custom.";
     }
-    if(!r.ok){out.innerHTML="ElevenLabs answered with an error ("+r.status+"). Give it a minute and try again.";return}
-    const j=await r.json();
-    const used=j.character_count||0,limit=j.character_limit||0;
-    let vmsg="";
-    try{
-      const rv=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
-      if(rv.ok){
-        const vs=(await rv.json()).voices||[];
-        const dg=vs.find(v=>/clara/i.test(v.name||""))||vs.find(v=>/dreaded grizzly bear/i.test(v.name||""))||vs.find(v=>v.category&&v.category!=="premade");
-        if(dg){
-          if(store.get("xiVoice","")!==dg.voice_id){store.set("xiVoice",dg.voice_id);store.set("xiVoiceName",dg.name||"")}
-          vmsg=" Her voice &mdash; <b>"+esc(dg.name||"")+"</b> &mdash; is in the account and ready.";
-        }else vmsg=" "+vs.length+" voices in the account, none custom &mdash; she'll use the first one.";
-      }
-    }catch(e){}
-    out.innerHTML="&#9989; <b>The key works.</b>"+
-      (limit?" "+used.toLocaleString()+" of "+limit.toLocaleString()+" characters used this month.":"")+vmsg+
-      " Now tap <i>Hear her</i>.";
-  }catch(e){out.innerHTML="Couldn't reach ElevenLabs &mdash; weak signal, or the network is blocking it. Try again outside."}
+  }catch(e){}
+  /* then the real test: speak */
+  let pr=await xiProbe(key);
+  if(!pr.ok&&(pr.status===404||pr.status===400||/voice/i.test(pr.code))){
+    /* the wired-in voice isn't in this account - resolve hers and retry */
+    if(await resolveVoice(key))pr=await xiProbe(key);
+  }
+  if(pr.ok){
+    out.innerHTML="&#9989; <b>The key works and Clara can speak.</b>"+vmsg+" Now tap <i>Hear her</i>.";
+    return;
+  }
+  if(pr.code==="quota_exceeded"){
+    out.innerHTML="&#9888;&#65039; <b>The key is real, but the account has run out of ElevenLabs characters this month.</b> She'll use the phone's voice until the month rolls over or the plan is topped up at elevenlabs.io.";
+    return;
+  }
+  if(pr.code==="missing_permissions"){
+    out.innerHTML="&#9888;&#65039; <b>The key is real but was created with limited permissions.</b> Make a new key at elevenlabs.io &mdash; profile picture, API keys &mdash; and leave every permission ticked.";
+    return;
+  }
+  if(pr.status===401||pr.code==="invalid_api_key"){
+    out.innerHTML="&#10060; <b>ElevenLabs says this key is not valid.</b> Make sure it was copied from <b>elevenlabs.io</b> while signed in &mdash; profile picture, API keys &mdash; not from HeyGen or anywhere else."+(pr.msg?" <span class='muted'>(They said: "+esc(pr.msg.slice(0,120))+")</span>":"");
+    return;
+  }
+  if(pr.code==="network"){
+    out.innerHTML="Couldn't reach ElevenLabs &mdash; weak signal, or the network is blocking it. Try again outside or on wifi.";
+    return;
+  }
+  out.innerHTML="ElevenLabs answered with an error ("+pr.status+(pr.code?" &middot; "+esc(pr.code):"")+"). "+(pr.msg?esc(pr.msg.slice(0,140)):"Give it a minute and try again.");
 }
 let voiceEdit=false;
 function renderVoicePanel(){
