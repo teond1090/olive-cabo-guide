@@ -1145,7 +1145,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-16";
+const BUILD="chris-2026-08-13-17";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1493,7 +1493,7 @@ async function claraTTS(text,_retried){
         /* a stale pasted key (from old experiments) beats the good
            built-in one - if the pasted key is dead, drop it and let
            the built-in key take over on the spot */
-        if(!_retried&&r.status===401&&store.get("xiKey","")&&store.get("xiKey","")!==XI_EMB){
+        if(!_retried&&(r.status===400||r.status===401)&&store.get("xiKey","")&&store.get("xiKey","")!==XI_EMB){
           let code="";try{code=((await r.clone().json()).detail||{}).status||""}catch(e){}
           if(code==="invalid_api_key"||code==="api_key_id_used_as_api_key"){
             store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");
@@ -3324,6 +3324,14 @@ async function xiCheck(){
   }catch(e){}
   /* then the real test: speak */
   let pr=await xiProbe(key);
+  if(!pr.ok&&(pr.code==="invalid_api_key"||pr.code==="api_key_id_used_as_api_key")
+     &&store.get("xiKey","")&&store.get("xiKey","")!==XI_EMB){
+    /* the saved key is dead and a built-in one exists - heal, then recheck */
+    store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");
+    try{renderVoicePanel()}catch(e){}
+    out.innerHTML="&#128295; The saved key on this phone was dead — <b>switched to the built-in key.</b> Checking again&hellip;";
+    return xiCheck();
+  }
   if(!pr.ok&&pr.code!=="invalid_api_key"&&pr.code!=="quota_exceeded"&&pr.code!=="network"){
     /* Any other failure can simply mean the wired-in voice does not
        exist in THIS account - ElevenLabs sometimes reports that as a
