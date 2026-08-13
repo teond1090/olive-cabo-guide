@@ -1120,7 +1120,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-3";
+const BUILD="chris-2026-08-13-4";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -3205,31 +3205,48 @@ function renderNotif(){
 /* ============================================================
    TOOLKIT
    ============================================================ */
+let voiceEdit=false;
 function renderVoicePanel(){
   const has=!!store.get("xiKey","");
+  if(has&&!voiceEdit){
+    /* the everyday view: no key, no field, nothing to worry about */
+    $("voicePanel").innerHTML=`
+      <p style="margin-top:0">&#9989; <b>Clara has her real voice on this phone.</b>
+      She reads the briefing, the day plans, the diary, every place description and the camera countdown out loud.</p>
+      <div class="btnrow">
+        <button class="btn sm" id="xiTest">&#128266; Hear her</button>
+        <button class="btn sm ghost" id="xiEdit">Change the key</button>
+      </div>
+      <p class="tiny" style="margin-top:.7rem">About ${ttsSpend.toLocaleString()} characters spoken so far.
+      Every line is cached — repeats are free and work offline. The key lives only on this phone.</p>`;
+    $("xiTest").addEventListener("click",()=>speak("Hello Chris. It's Clara. Littleton is a mile above the sea, so drink more water than you think you need, and I'll tell you when something worth seeing is close.",true));
+    $("xiEdit").addEventListener("click",()=>{voiceEdit=true;renderVoicePanel()});
+    return;
+  }
   $("voicePanel").innerHTML=`
     <p style="margin-top:0">Clara reads the briefing, the day plan, every place description and the countdown on the camera.
     Without a key she uses the phone's own voice. With one, it is <b>Clara herself</b> — the same voice as the Olive app.</p>
     <div class="field"><label class="fld" for="xiKey">ElevenLabs key (stays on this phone only)</label>
-      <input type="password" id="xiKey" placeholder="${has?"••••••••••  saved":"sk_…"}" autocomplete="off"></div>
+      <input type="password" id="xiKey" placeholder="${has?"a key is already saved":"sk_…"}" autocomplete="off"></div>
     <div class="btnrow" style="margin-top:.6rem">
       <button class="btn sm" id="xiSave">Save the key</button>
-      <button class="btn sm ghost" id="xiTest">&#128266; Test her voice</button>
-      ${has?'<button class="btn sm ghost" id="xiClear">Remove it</button>':""}
+      ${has?'<button class="btn sm ghost" id="xiBack">Never mind</button><button class="btn sm ghost" id="xiClear" style="color:var(--danger)">Remove it</button>':''}
     </div>
-    <p class="tiny" style="margin-top:.7rem">${has?"Key saved. About "+ttsSpend.toLocaleString()+" characters spoken so far. ":""}
-    The key is never sent anywhere except ElevenLabs, is not in this file, and is not in the repository. Every line she says is cached, so hearing it twice costs nothing and works offline.</p>`;
+    <p class="tiny" style="margin-top:.7rem">The key is never sent anywhere except ElevenLabs, is not in this file, and is not in the repository.
+    Tip: there is also a one-time setup link — open <code>&hellip;/chris/#xi=YOUR_KEY</code> once on any phone and it does all of this itself, then wipes the key from the address bar.</p>`;
   $("xiSave").addEventListener("click",()=>{
     const v=$("xiKey").value.trim();
     if(!v)return toast("Paste the key first");
-    store.set("xiKey",v);$("xiKey").value="";renderVoicePanel();
-    toast("&#128266; Saved — Clara has her voice back");
+    store.set("xiKey",v);voiceEdit=false;renderVoicePanel();
+    toast("&#128266; Saved — Clara has her voice");
     speak("Hello Chris. It's Clara. I'll be with you all week.",true);
   });
-  $("xiTest").addEventListener("click",()=>speak("Hello Chris. It's Clara. Littleton is a mile above the sea, so drink more water than you think you need, and I'll tell you when something worth seeing is close.",true));
+  const bk=$("xiBack");
+  if(bk)bk.addEventListener("click",()=>{voiceEdit=false;renderVoicePanel()});
   const cl=$("xiClear");
-  if(cl)cl.addEventListener("click",()=>{store.del("xiKey");renderVoicePanel();toast("Key removed")});
+  if(cl)cl.addEventListener("click",()=>{store.del("xiKey");voiceEdit=false;renderVoicePanel();toast("Key removed")});
 }
+
 const PACK=[
  "Layers — a fleece and a light jacket, even in August",
  "Broad-brim hat and high-factor sunscreen",
@@ -4085,6 +4102,22 @@ async function boot(){
   document.addEventListener("visibilitychange",()=>{if(!document.hidden){netCheck();reviveGPS();checkUpdate()}});
   checkUpdate();
 }
+/* ---------- the magic setup link ----------
+   Open  .../chris/#xi=YOUR_ELEVENLABS_KEY  once on a phone and the key
+   is stored on that device, wiped from the address bar and from the
+   browser history, and never appears anywhere in the app again.
+   The key is not in this file, not in the repository, and is only ever
+   sent to ElevenLabs. */
+(function(){
+  const m=location.hash.match(/^#xi=([A-Za-z0-9_.\-]{12,80})$/);
+  if(!m)return;
+  store.set("xiKey",m[1]);
+  try{history.replaceState(null,"",location.pathname+location.search)}catch(e){location.hash=""}
+  setTimeout(()=>{
+    toast("&#128266; Clara's voice is set up on this phone");
+    speak("Hello — it's Clara. My voice is set up on this phone now, and it stays here.",true);
+  },1500);
+})();
 boot();
 </script>
 </body>
