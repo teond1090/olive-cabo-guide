@@ -645,6 +645,13 @@ html[data-hc] .card{border-width:3px}
       <p class="tiny" style="margin:.8rem 0 0">&#127908; Or just ask her out loud &mdash; the microphone button up top. "Where's the nearest coffee?" "What's tomorrow?" "Spin the wheel."</p>
     </div>
 
+    <div class="card a-rose" id="avatarCard" style="display:none">
+      <div class="card-h"><span class="ic">&#127909;</span><h3>Meet Clara</h3></div>
+      <video id="avatarVid" controls playsinline preload="metadata" src="clara-welcome.mp4"
+        style="width:100%;border-radius:14px;border:2px solid var(--line-2);background:#000"></video>
+      <p class="tiny" style="margin:.6rem 0 0">Thirty seconds from Clara herself &mdash; who she is, what she can do, and how to ask.</p>
+    </div>
+
     <div class="card a-plum" id="diaryCard" style="display:none">
       <div class="card-h"><span class="ic">&#128213;</span><h3>Clara's Diary &mdash; <span id="diaryDayLbl"></span></h3></div>
       <div id="diaryOut"></div>
@@ -1120,7 +1127,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-6";
+const BUILD="chris-2026-08-13-7";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -4173,6 +4180,22 @@ async function boot(){
   document.addEventListener("visibilitychange",()=>{if(!document.hidden){netCheck();reviveGPS();checkUpdate()}});
   checkUpdate();
 }
+/* ---------- the Meet Clara video ----------
+   If a clip named clara-welcome.mp4 sits beside this file (a HeyGen
+   avatar welcome, for instance), the card lights up. No file, no card,
+   no error - the slot costs nothing until the video exists. */
+(function(){
+  const v=$("avatarVid");if(!v)return;
+  const sync=()=>{
+    /* the video may have loaded (or failed) before this script ran */
+    if(v.error){$("avatarCard").style.display="none";return}
+    if(v.readyState>=1)$("avatarCard").style.display="block";
+  };
+  v.addEventListener("loadedmetadata",sync);
+  v.addEventListener("error",sync);
+  sync();
+})();
+
 /* ---------- the magic setup link ----------
    Open  .../chris/#xi=YOUR_ELEVENLABS_KEY  once on a phone and the key
    is stored on that device, wiped from the address bar and from the
