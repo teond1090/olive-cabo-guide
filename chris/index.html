@@ -1145,7 +1145,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-17";
+const BUILD="chris-2026-08-13-18";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -3380,31 +3380,59 @@ function renderVoicePanel(){
 /* everything key-shaped lives in here now, out of everyday sight */
 function voiceTrouble(){
   openSheet("&#128295; Voice setup",`
-    <p class="small muted" style="margin-top:0">Only needed if her voice ever stops working. Start with the check — it says exactly what's wrong, in plain words.</p>
-    <div class="btnrow"><button class="btn sm" id="vtCheck">&#129658; Check the key</button></div>
+    <div class="note" id="vtReport">Running the check-up&hellip;</div>
+    <div class="btnrow" style="margin-top:.8rem">
+      <button class="btn" id="vtFix">&#128260; Fix it for me</button>
+      <button class="btn sm ghost" id="vtCheck">&#129658; Run the check-up again</button>
+    </div>
     <div id="xiDiag" class="small" style="margin-top:.6rem"></div>
     <hr class="hr">
-    <div class="field"><label class="fld" for="vtKey">Paste a new ElevenLabs key</label>
+    <div class="field"><label class="fld" for="vtKey">Paste a new ElevenLabs key (rarely needed)</label>
       <input type="password" id="vtKey" placeholder="sk_… (shown once, when the key is created)" autocomplete="off"></div>
     <div class="btnrow" style="margin-top:.6rem">
-      <button class="btn sm" id="vtSave">Save it</button>
-      ${store.get("xiKey","")?'<button class="btn sm ghost" id="vtClear" style="color:var(--danger)">Remove the saved key</button>':""}
+      <button class="btn sm ghost" id="vtSave">Save it</button>
     </div>
-    <p class="tiny" style="margin-top:.7rem">Keys never leave this phone except to ElevenLabs, and are never shown again once saved.</p>`);
-  $("vtCheck").addEventListener("click",xiCheck);
+    <p class="tiny" style="margin-top:.7rem">If the check-up says all is well but you hear nothing at all,
+    it's the phone: flip the ring/silent switch on the side and turn the volume up.</p>`);
+  $("vtCheck").addEventListener("click",vtReport);
+  $("vtFix").addEventListener("click",vtFix);
   $("vtSave").addEventListener("click",()=>{
     const v=$("vtKey").value.trim();
     if(!v)return toast("Paste the key first");
     store.set("xiKey",v);store.del("xiVoice");store.del("xiVoiceName");
-    closeSheet();renderVoicePanel();
-    toast("&#128266; Saved — Clara has her voice");
-    speak("Hello Chris. It's Clara. I'll be with you all week.",true);
+    renderVoicePanel();toast("&#128266; Saved");vtReport();
   });
-  const cl=$("vtClear");
-  if(cl)cl.addEventListener("click",()=>{
-    store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");
-    closeSheet();renderVoicePanel();toast("Back to the built-in key");
-  });
+  vtReport();
+}
+/* the whole voice story on one screen - screenshot-friendly */
+async function vtReport(){
+  const el=$("vtReport");if(!el)return;
+  const saved=store.get("xiKey","");
+  const lines=[];
+  lines.push("<b>App build:</b> "+BUILD);
+  lines.push("<b>Signal:</b> "+(navigator.onLine?"online":"OFFLINE — her voice needs a signal for new lines"));
+  lines.push("<b>Key in use:</b> "+(saved?(saved===XI_EMB?"built-in":"saved on this phone (&hellip;"+esc(saved.slice(-4))+")"):"built-in"));
+  lines.push("<b>Voice chosen:</b> "+(store.get("xiVoiceName","")?esc(store.get("xiVoiceName","")):"automatic (finds Clara by name)"));
+  let cached=0;
+  try{const c=await caches.open(TTS_CACHE);cached=(await c.keys()).length}catch(e){}
+  lines.push("<b>Saved spoken lines:</b> "+cached);
+  el.innerHTML=lines.join("<br>")+"<br><b>Speech test:</b> running&hellip;";
+  const pr=await xiProbe(xiKey());
+  el.innerHTML=lines.join("<br>")+"<br><b>Speech test:</b> "+
+    (pr.ok?"&#9989; ElevenLabs spoke — the voice works on this phone"
+          :"&#10060; failed ("+(pr.status||"no network")+(pr.code?" &middot; "+esc(pr.code):"")+")"+
+           (pr.msg?" — "+esc(String(pr.msg).slice(0,110)):""));
+}
+/* one tap: clear every piece of voice state and start clean */
+async function vtFix(){
+  const b=$("vtFix");b.disabled=true;b.innerHTML="&#128260; Fixing&hellip;";
+  store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");
+  try{await caches.delete(TTS_CACHE)}catch(e){}
+  try{renderVoicePanel()}catch(e){}
+  await vtReport();
+  b.disabled=false;b.innerHTML="&#128260; Fix it for me";
+  toast("&#128260; Fresh start — built-in key, her voice found anew");
+  speak("Right — fresh start. It's Clara, and this is the voice you'll hear from now on.",true);
 }
 /* ---------- the More menu ---------- */
 function openMore(){
