@@ -105,11 +105,14 @@ header.top::after{
   content:"";position:absolute;left:0;right:0;bottom:-1px;height:2.9rem;pointer-events:none;
   background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,120 L0,84 L110,44 L190,80 L300,28 L415,86 L520,52 L640,92 L760,46 L880,80 L1000,38 L1110,76 L1200,52 L1200,120 Z' fill='%23FBF5F1'/%3E%3C/svg%3E") bottom/100% 100% no-repeat;
 }
-.brandbar{display:flex;align-items:center;gap:.7rem;position:relative;z-index:2}
+.brandbar{display:flex;align-items:center;gap:.7rem;position:relative;z-index:2;flex-wrap:wrap}
+/* four header buttons no longer fit beside the title on a phone -
+   they drop to their own row instead of squeezing the name out */
+.hdr-actions{margin-left:auto}
 .logo{width:2.7rem;height:2.7rem;flex:0 0 auto;filter:drop-shadow(0 3px 6px rgba(0,0,0,.42))}
 /* the header has to survive a 360px phone at extra-large text, so the
    brand block is allowed to shrink and clip rather than push the buttons off */
-.brandtxt{flex:1;min-width:0}
+.brandtxt{flex:1 1 12rem;min-width:12rem}
 .brandtxt .tag{
   font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-lt);
   font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
@@ -468,6 +471,62 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
   border:2px solid var(--rose);border-radius:14px;padding:.7rem .85rem;box-shadow:var(--shadow-lg);display:none;
 }
 
+/* ============ LIVING SKY ============ */
+.sky{position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:inherit;transition:background 2.5s ease}
+.hero>*:not(.sky){position:relative;z-index:2}
+.sky .orb{position:absolute;width:3.4rem;height:3.4rem;border-radius:50%;transition:left 2s,top 2s}
+.sky .orb.sun{background:radial-gradient(circle at 35% 35%,#FFF6D0,#F0CE86 58%,rgba(240,206,134,0) 76%);box-shadow:0 0 46px 16px rgba(240,206,134,.5)}
+.sky .orb.moon{background:radial-gradient(circle at 62% 38%,#F6F1E6 0 44%,#C9CFDC 74%);box-shadow:0 0 28px 8px rgba(215,225,255,.35)}
+.sky .st{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.2}50%{opacity:1}}
+.sky .cl{position:absolute;height:2.4rem;background:rgba(255,255,255,.32);border-radius:2rem;filter:blur(9px);animation:drift linear infinite}
+@keyframes drift{from{transform:translateX(-16rem)}to{transform:translateX(72rem)}}
+.sky.rain::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(115deg,rgba(255,255,255,.13) 0 1px,transparent 1px 8px);animation:rainfall .45s linear infinite}
+@keyframes rainfall{to{background-position:-14px 30px}}
+
+/* ============ CONFETTI ============ */
+.fetti{position:fixed;top:0;z-index:130;pointer-events:none;will-change:transform}
+
+/* ============ TICK-OFF ============ */
+.tickb{
+  flex:0 0 auto;width:1.7rem;height:1.7rem;border-radius:50%;border:3px solid var(--line-2);
+  background:var(--card);color:transparent;cursor:pointer;font-size:.85rem;line-height:1;
+  display:inline-grid;place-items:center;margin-top:.05rem;
+}
+.tickb.on{background:var(--sage);border-color:var(--sage-dk);color:#fff}
+.tl .item.did .what span,.tl .item.did .what a{text-decoration:line-through;color:var(--ink-faint)}
+.tl .item.did .why{color:var(--ink-faint)}
+
+/* ============ LIGHTBOX ============ */
+.lightbox{position:fixed;inset:0;z-index:120;background:rgba(16,12,15,.95);display:none;flex-direction:column}
+.lightbox.on{display:flex}
+.lightbox .bar{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.7rem .9rem}
+.lightbox .bar:first-child{padding-top:calc(.7rem + env(safe-area-inset-top))}
+.lightbox .bar:last-child{padding-bottom:calc(.9rem + env(safe-area-inset-bottom))}
+.lightbox img{flex:1;min-height:0;object-fit:contain;max-width:100vw;margin:auto}
+
+/* ============ ENTRANCES ============ */
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.view.active>.stack>*{animation:rise .45s cubic-bezier(.2,.8,.3,1) both}
+.view.active>.stack>*:nth-child(2){animation-delay:.06s}
+.view.active>.stack>*:nth-child(3){animation-delay:.12s}
+.view.active>.stack>*:nth-child(4){animation-delay:.18s}
+.view.active>.stack>*:nth-child(5){animation-delay:.24s}
+.view.active>.stack>*:nth-child(6){animation-delay:.3s}
+@media(prefers-reduced-motion:reduce){
+  .view.active>.stack>*{animation:none}
+  .sky .cl,.sky .st,.sky.rain::after{animation:none}
+}
+
+/* ============ LAPTOP LAYOUT ============ */
+@media(min-width:980px){
+  main .view>.stack{column-count:2;column-gap:1.1rem}
+  main .view>.stack>*{break-inside:avoid;margin:0 0 1.1rem}
+  main .view>.stack>.hero{column-span:all}
+  .bottom{display:none}
+  body{padding-bottom:2rem}
+}
+
 /* ============ MISC BARS ============ */
 #updateBar{
   display:none;position:sticky;top:0;z-index:80;background:var(--gold);color:#3D1A31;
@@ -501,6 +560,7 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
       <h1>Chris in Littleton</h1>
     </div>
     <div class="hdr-actions">
+      <button class="icon-btn" id="btnFull" title="Full screen" aria-label="Full screen on or off">&#9974;</button>
       <button class="icon-btn" id="btnHush" title="Stop talking now" aria-label="Stop talking now">&#128263;</button>
       <button class="icon-btn" id="btnVoice" aria-pressed="false" title="Clara's voice on or off" aria-label="Voice on or off">&#128264;</button>
       <button class="icon-btn" id="btnText" title="Text size" aria-label="Change text size"><b style="font-size:.85rem">A</b><b style="font-size:1.15rem">A</b></button>
@@ -528,6 +588,7 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
   <div class="stack">
 
     <div class="hero">
+      <div class="sky" id="skyLayer" aria-hidden="true"></div>
       <div class="lbl" id="heroLbl">Littleton, Colorado</div>
       <h2 id="heroTitle">Chris's Girls' Trip</h2>
       <p id="heroSub">Foothills, gardens, Main Street and Red Rocks &mdash; at your own pace.</p>
@@ -562,6 +623,12 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
         <a class="btn sm ghost" href="#/agenda">&#128197; Whole trip</a>
         <button class="btn sm ghost" id="planShuffle">&#127922; Give me something else</button>
       </div>
+    </div>
+
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#127920;</span><h3>Can't Decide?</h3></div>
+      <p style="margin-top:0">Two of you want gardens and one wants a brewery? Let the wheel settle it. Nobody argues with the wheel.</p>
+      <button class="btn big gold" id="spinBtn">&#127920; Spin the wheel</button>
     </div>
 
     <div class="card a-sage">
@@ -948,6 +1015,19 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
   <a href="#/friends" data-view="friends"><span class="ic">&#128101;</span>Friends</a>
 </nav>
 
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <div class="bar">
+    <div id="lbCap" class="small" style="color:#F6E7EE"></div>
+    <button class="icon-btn" id="lbClose" aria-label="Close" style="border-color:rgba(255,255,255,.4)">&#10005;</button>
+  </div>
+  <img id="lbImg" alt="Photo">
+  <div class="bar">
+    <button class="btn sm ghost" id="lbPrev">&#8592; Previous</button>
+    <button class="btn sm gold" id="lbSave">&#11015;&#65039; Save</button>
+    <button class="btn sm ghost" id="lbNext">Next &#8594;</button>
+  </div>
+</div>
+
 <div class="sheet" id="sheet" role="dialog" aria-modal="true">
   <div class="pane">
     <div class="grab"></div>
@@ -962,7 +1042,7 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-12-1";
+const BUILD="chris-2026-08-13-2";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1397,6 +1477,7 @@ $("setupHide").addEventListener("click",()=>{store.set("setup-hide",true);$("set
    HERO + COUNTDOWN
    ============================================================ */
 function renderHero(){
+  skyRender();
   const t=trip(),d=tripDay();
   $("setupCard").style.display=(t.start||store.get("setup-hide",false))?"none":"block";
   if(!t.start||!t.end){
@@ -1461,6 +1542,7 @@ async function loadWeather(){
     advice.push("Sunset tonight at <b>"+sun+"</b>.");
     $("wxAdvice").innerHTML=advice.join("<br><br>");
     $("wxAdvice").style.display="block";
+    skyRender();
     loadAir(c);
     renderBriefing();
   }catch(e){$("wxNow").innerHTML='<p class="muted small" style="margin:0">Weather needs a signal. Everything else here works without one.</p>'}
@@ -1884,6 +1966,7 @@ function buildAgenda(reshuffle){
   saveAgenda(days);
   renderAgenda();renderHero();renderTodayPlan();renderTripForm();
   toast("&#10024; "+days.length+" days planned");
+  celebrate("plan");
   speak("Your agenda is ready. "+days.length+" days, starting with "+days[0].title+".",true);
   location.hash="#/agenda";
 }
@@ -1986,13 +2069,31 @@ function renderTodayPlan(){
       : '<p class="muted" style="margin:0">No agenda yet. Give Clara your dates on the Agenda tab and she\'ll do the rest.</p>';
     return;
   }
+  const done=store.get("done-"+todayISO(),[]);
   $("todayPlan").innerHTML=`<h3 style="margin:0 0 .2rem">${esc(day.title)}</h3>
     <div class="small muted" style="margin-bottom:.7rem">${esc(day.sub||"")}</div>
-    <div class="tl">${day.items.map(it=>`<div class="item ${it.opt?"opt":(it.kind==="eat"?"meal":"")}">
+    <div class="tl">${day.items.map((it,k)=>`<div class="item ${it.opt?"opt":(it.kind==="eat"?"meal":"")}${done.includes(k)?" did":""}">
       <div class="when">${esc(it.when)}${it.opt?" · optional":""}</div>
-      <div class="what">${it.place?`<a href="#" data-place="${esc(it.place)}" style="text-decoration:none;color:inherit;border-bottom:2px dotted var(--rose)">${esc(it.what)}</a>`:esc(it.what)}</div>
+      <div class="what" style="display:flex;align-items:flex-start;gap:.55rem">
+        <button class="tickb${done.includes(k)?" on":""}" data-tick="${k}" aria-label="Mark done">&#10003;</button>
+        <span>${it.place?`<a href="#" data-place="${esc(it.place)}" style="text-decoration:none;color:inherit;border-bottom:2px dotted var(--rose)">${esc(it.what)}</a>`:esc(it.what)}</span></div>
       <div class="why">${esc(it.why)}</div></div>`).join("")}</div>`;
 }
+$("todayPlan").addEventListener("click",e=>{
+  const b=e.target.closest("[data-tick]");if(!b)return;
+  const k=+b.dataset.tick,key="done-"+todayISO(),done=store.get(key,[]);
+  const nd=done.includes(k)?done.filter(x=>x!==k):done.concat(k);
+  store.set(key,nd);renderTodayPlan();
+  const A=agenda(),d=tripDay();
+  if(d>0&&A[d-1]){
+    const need=A[d-1].items.map((x,i)=>i).filter(i=>!A[d-1].items[i].opt);
+    if(need.length&&need.every(i=>nd.includes(i))&&!store.get("celeb-"+todayISO(),false)){
+      store.set("celeb-"+todayISO(),true);
+      celebrate("done");toast("&#127881; The whole day, done!");
+      speak("That's the whole day done. Well played, ladies.");
+    }
+  }
+});
 $("planShuffle").addEventListener("click",()=>{const d=tripDay();if(d>0)swapDay(d-1);else toast("Not on the trip yet")});
 
 /* ---------- calendar, sharing ---------- */
@@ -2412,6 +2513,7 @@ function buildStrip(){
         x.fillText(new Date().toLocaleDateString([],{weekday:"long",month:"long",day:"numeric"}),c.width/2,c.height-20);
         stripURL=c.toDataURL("image/jpeg",.9);
         $("stripCard").style.display="block";
+        celebrate("photo");
         $("stripOut").innerHTML='<img src="'+stripURL+'" alt="Photo strip" style="border-radius:12px;border:2px solid var(--line-2);max-width:min(100%,22rem);margin:0 auto">';
       }
     };
@@ -2436,7 +2538,7 @@ function renderCamGal(){
   const today=media.filter(m=>Date.now()-m.t<24*3600*1000);
   $("camGalEmpty").style.display=today.length?"none":"block";
   $("camGal").innerHTML=today.slice(0,24).map(m=>
-    `<figure><img src="${m.src}" alt=""><button class="del" data-del="${m.id}" aria-label="Delete">&#10005;</button>
+    `<figure><img src="${m.src}" data-lb="${m.id}" alt=""><button class="del" data-del="${m.id}" aria-label="Delete">&#10005;</button>
      ${m.place?'<span class="star">&#128205;</span>':""}</figure>`).join("");
 }
 $("camGal").addEventListener("click",async e=>{
@@ -2474,7 +2576,7 @@ function handleFiles(files){
 }
 function renderGal(){
   $("mediaGal").innerHTML=media.slice(0,60).map(m=>
-    `<figure><img src="${m.src}" alt=""><button class="del" data-mdel="${m.id}" aria-label="Remove">&#10005;</button></figure>`).join("");
+    `<figure><img src="${m.src}" data-lb="${m.id}" alt=""><button class="del" data-mdel="${m.id}" aria-label="Remove">&#10005;</button></figure>`).join("");
   $("vidControls").style.display=media.length?"block":"none";
   if(media.length)drawFrame(0,0);
 }
@@ -2651,6 +2753,7 @@ $("vidMake").addEventListener("click",async()=>{
     btn.disabled=false;btn.innerHTML="&#127916; Create the video";
     $("vidStatus").innerHTML="&#9989; <b>Your film is ready.</b> "+activePics().length+" photos, saved to your downloads.";
     $("vidShare").style.display="inline-flex";
+    celebrate("photo");
     $("vidShare").onclick=async()=>{
       const file=new File([blob],"littleton-girls-trip."+ext,{type:blob.type});
       if(navigator.canShare&&navigator.canShare({files:[file]})){
@@ -3049,6 +3152,11 @@ $("packList").addEventListener("click",e=>{
   const i=+b.dataset.pk,done=store.get("pack",[]);
   store.set("pack",done.includes(i)?done.filter(x=>x!==i):done.concat(i));
   renderPack();
+  const nd=store.get("pack",[]);
+  if(nd.length===PACK.length&&!done.includes(i)){
+    celebrate("done");
+    speak("Packed and ready. Colorado won't know what hit it.");
+  }
 });
 const NUMBERS=[
  ["Emergency","911","&#128680;"],
@@ -3094,7 +3202,7 @@ function renderSettings(){
 $("cacheNow").addEventListener("click",async()=>{
   try{
     if(!("caches" in window))return toast("This browser can't store offline");
-    const c=await caches.open("chris-v1");
+    const c=await caches.open("chris-v2");
     await c.addAll(["./","./index.html","./manifest.json"]);
     toast("&#128190; Saved to this phone");
     $("offlineTxt").innerHTML="<b>&#9989; Saved.</b> Every place, the whole agenda, the checklists and the phone numbers now work with no signal at all. Only live weather, the group chat and the friends map need bars.";
@@ -3115,6 +3223,198 @@ function checkUpdate(){
   }).catch(()=>{});
 }
 $("updateBar").addEventListener("click",()=>location.reload(true));
+
+/* ============================================================
+   THE IMMERSIVE LAYER
+   The living sky, the confetti, the wheel, full screen and the
+   photo viewer. All decoration degrades to nothing: reduced-motion
+   phones get a still sky and no confetti, and every one of these
+   works with zero signal.
+   ============================================================ */
+
+/* ---------- living sky ----------
+   The hero banner is a real-time Colorado sky: the sun tracks the
+   actual hour, stars come out at night, clouds match the real
+   forecast, and rain streaks when it is actually raining. */
+function skyRender(){
+  const el=$("skyLayer");if(!el)return;
+  const now=new Date(),h=now.getHours()+now.getMinutes()/60;
+  let phase,grad;
+  if(h<5||h>=21){phase="night";grad="linear-gradient(168deg,#25314E 0%,#141F38 55%,#0C1526 100%)"}
+  else if(h<7.5){phase="dawn";grad="linear-gradient(168deg,#7A6796 0%,#C4517A 52%,#E8A25C 100%)"}
+  else if(h<17){phase="day";grad="linear-gradient(160deg,#4E6E8C 0%,#38536E 48%,#2B4159 100%)"}
+  else if(h<19.5){phase="gold";grad="linear-gradient(165deg,#5E6E9A 0%,#B0627E 55%,#E0955C 100%)"}
+  else{phase="dusk";grad="linear-gradient(168deg,#4A4470 0%,#7E4468 55%,#3A2C50 100%)"}
+  const code=wx&&wx.current?wx.current.weather_code:2;
+  const rain=code>=51&&code<80;
+  const clouds=(code===0||code===1)?1:(code===2?3:5);
+  el.style.background=grad;
+  el.classList.toggle("rain",!!rain);
+  const key=phase+"|"+clouds+"|"+(rain?1:0);
+  if(el.dataset.key!==key){
+    el.dataset.key=key;
+    let inner="";
+    if(phase==="night"||phase==="dusk"){
+      const nStars=phase==="night"?34:12;
+      for(let i=0;i<nStars;i++)
+        inner+=`<i class="st" style="left:${(Math.random()*100).toFixed(1)}%;top:${(Math.random()*62).toFixed(1)}%;animation-delay:${(Math.random()*2.4).toFixed(2)}s"></i>`;
+    }
+    inner+=`<div class="orb ${phase==="night"?"moon":"sun"}" id="skyOrb"></div>`;
+    for(let i=0;i<clouds;i++)
+      inner+=`<div class="cl" style="top:${(6+Math.random()*40).toFixed(0)}%;width:${(7+Math.random()*8).toFixed(1)}rem;animation-duration:${(48+Math.random()*50).toFixed(0)}s;animation-delay:-${(Math.random()*60).toFixed(0)}s"></div>`;
+    el.innerHTML=inner;
+  }
+  const orb=el.querySelector("#skyOrb");
+  if(orb){
+    /* sun rides an arc across the banner through the day;
+       the moon does the same through the night */
+    let t;
+    if(phase==="night")t=((h>=21?h-21:h+3))/9;
+    else t=Math.max(0,Math.min(1,(h-5.5)/15));
+    orb.style.left=(6+80*t).toFixed(1)+"%";
+    orb.style.top=(14+56*Math.pow(2*t-1,2)).toFixed(1)+"%";
+  }
+}
+
+/* ---------- confetti ---------- */
+const REDUCED=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+function celebrate(kind){
+  if(REDUCED||!document.body.animate)return;
+  const EMO=kind==="photo"?["\u{1F4F8}","\u2728","\u{1F496}","\u{1F31F}"]
+           :kind==="done"?["\u{1F389}","\u2B50","\u2728","\u{1F38A}"]
+           :["\u{1F338}","\u{1F33C}","\u{1F33A}","\u2728","\u{1F49B}"];
+  for(let i=0;i<26;i++){
+    const f=document.createElement("div");
+    f.className="fetti";f.textContent=EMO[i%EMO.length];
+    f.style.left=(Math.random()*100)+"vw";
+    f.style.fontSize=(1+Math.random()*1.3)+"rem";
+    document.body.appendChild(f);
+    const spin=(Math.random()<.5?-1:1)*(160+Math.random()*380);
+    f.animate(
+      [{transform:"translateY(-8vh) rotate(0deg)",opacity:1},
+       {transform:"translateY(106vh) rotate("+spin+"deg)",opacity:.85}],
+      {duration:2500+Math.random()*2300,delay:Math.random()*450,easing:"cubic-bezier(.25,.6,.4,1)",fill:"forwards"}
+    ).onfinish=()=>f.remove();
+  }
+}
+
+/* ---------- full screen ---------- */
+(function(){
+  const b=$("btnFull");
+  const standalone=matchMedia&&matchMedia("(display-mode: standalone)").matches;
+  if(!document.documentElement.requestFullscreen||standalone){b.style.display="none";return}
+  b.addEventListener("click",async()=>{
+    try{
+      if(document.fullscreenElement)await document.exitFullscreen();
+      else await document.documentElement.requestFullscreen();
+    }catch(e){toast("Full screen isn't available here")}
+  });
+  document.addEventListener("fullscreenchange",()=>{
+    const on=!!document.fullscreenElement;
+    b.setAttribute("aria-pressed",on?"true":"false");
+    b.title=on?"Leave full screen":"Full screen";
+  });
+})();
+
+/* ---------- the wheel ---------- */
+let wheelCtx=null;
+function wheelTick(){
+  try{
+    wheelCtx=wheelCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=wheelCtx.createOscillator(),g=wheelCtx.createGain();
+    o.type="square";o.frequency.value=980;
+    g.gain.setValueAtTime(.05,wheelCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,wheelCtx.currentTime+.05);
+    o.connect(g);g.connect(wheelCtx.destination);
+    o.start();o.stop(wheelCtx.currentTime+.06);
+  }catch(e){}
+}
+function spinWheel(){
+  const o=here||HOME,favSet=new Set(favs());
+  let pool=PLACES.map(p=>Object.assign({},p,{_d:dist(o.lat,o.lng,p.lat,p.lng)}))
+    .filter(p=>p.c!=="eat"&&p.c!=="sip"&&p._d<40);
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+  /* a starred place wins more often than chance - the wheel is loyal */
+  const starred=pool.filter(p=>favSet.has(p.n));
+  const winner=(starred.length&&Math.random()<.45)?starred[Math.floor(Math.random()*starred.length)]:pool[0];
+  openSheet("&#127920; The wheel decides",`
+    <div style="min-height:9.5rem;display:grid;place-items:center;text-align:center">
+      <div>
+        <div id="wheelIc" style="font-size:3.4rem;line-height:1.2">&#127920;</div>
+        <div id="wheelName" style="font-family:Fraunces,serif;font-weight:900;font-size:1.45rem;margin-top:.45rem">&hellip;</div>
+        <div id="wheelSub" class="small muted" style="margin-top:.2rem"></div>
+      </div>
+    </div>
+    <div id="wheelBtns" class="btnrow" style="margin-top:1rem;visibility:hidden">
+      <a class="btn" id="wheelGo" target="_blank" rel="noopener">&#129517; Take me there</a>
+      <button class="btn sm ghost" id="wheelMore">Tell me more</button>
+      <button class="btn sm gold" id="wheelAgain">&#127920; Spin again</button>
+    </div>`);
+  let i=0,delay=55;
+  (function step(){
+    if(!$("wheelName"))return;             /* sheet was closed mid-spin */
+    const land=delay>330;
+    const p=land?winner:pool[i++%pool.length];
+    $("wheelIc").innerHTML=CATS[p.c].ic;
+    $("wheelName").textContent=p.n;
+    $("wheelSub").textContent=fmtMi(p._d)+" away · "+CATS[p.c].n;
+    if(land){
+      celebrate("plan");
+      $("wheelBtns").style.visibility="visible";
+      $("wheelGo").href="https://www.google.com/maps/dir/?api=1&destination="+p.lat+","+p.lng;
+      $("wheelMore").addEventListener("click",()=>placeSheet(p.n));
+      $("wheelAgain").addEventListener("click",spinWheel);
+      speak("The wheel says "+p.n+". "+p.d.split(". ")[0]+".",true);
+      return;
+    }
+    wheelTick();
+    delay*=1.13;
+    setTimeout(step,delay);
+  })();
+}
+$("spinBtn").addEventListener("click",spinWheel);
+
+/* ---------- photo lightbox ---------- */
+let lbIdx=0;
+function lbOpen(id){
+  const i=media.findIndex(m=>m.id===id);
+  if(i<0)return;
+  lbIdx=i;lbShow();
+  $("lightbox").classList.add("on");document.body.style.overflow="hidden";
+}
+function lbShow(){
+  const m=media[lbIdx];if(!m)return lbClose();
+  $("lbImg").src=m.src;
+  $("lbCap").textContent=(m.place?m.place+" · ":"")+
+    new Date(m.t).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})+
+    "  ("+(lbIdx+1)+" of "+media.length+")";
+}
+function lbClose(){$("lightbox").classList.remove("on");document.body.style.overflow=""}
+$("lbClose").addEventListener("click",lbClose);
+$("lbPrev").addEventListener("click",()=>{if(!media.length)return;lbIdx=(lbIdx-1+media.length)%media.length;lbShow()});
+$("lbNext").addEventListener("click",()=>{if(!media.length)return;lbIdx=(lbIdx+1)%media.length;lbShow()});
+$("lbSave").addEventListener("click",()=>{
+  const m=media[lbIdx];if(!m)return;
+  const a=document.createElement("a");a.href=m.src;a.download="littleton-photo.jpg";a.click();
+  toast("&#11015;&#65039; Saved to your downloads");
+});
+let lbX=null;
+$("lightbox").addEventListener("touchstart",e=>{lbX=e.touches[0].clientX},{passive:true});
+$("lightbox").addEventListener("touchend",e=>{
+  if(lbX==null)return;
+  const dx=e.changedTouches[0].clientX-lbX;lbX=null;
+  if(Math.abs(dx)>50){(dx<0?$("lbNext"):$("lbPrev")).click()}
+},{passive:true});
+document.addEventListener("keydown",e=>{
+  if(!$("lightbox").classList.contains("on"))return;
+  if(e.key==="Escape")lbClose();
+  if(e.key==="ArrowRight")$("lbNext").click();
+  if(e.key==="ArrowLeft")$("lbPrev").click();
+});
+document.addEventListener("click",e=>{
+  const im=e.target.closest("img[data-lb]");
+  if(im)lbOpen(+im.dataset.lb);
+});
 
 /* ============================================================
    BOOT
