@@ -1120,7 +1120,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-4";
+const BUILD="chris-2026-08-13-5";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1418,24 +1418,53 @@ function playBlob(blob,onFail){
     if(p&&p.catch)p.catch(()=>{curAudio=null;onFail&&onFail()});
   }catch(e){onFail&&onFail()}
 }
-async function claraTTS(text){
+/* The voice ID above is the one the Olive app uses. Custom voices are
+   account-scoped, so on a different ElevenLabs account that ID may not
+   exist. When that happens Clara resolves her own voice from the
+   account's library - preferring "Dreaded Grizzly Bear", then anything
+   named Clara, then the first custom voice - and remembers the answer. */
+function claraVoiceId(){return store.get("xiVoice","")||CLARA_VOICE_ID}
+async function resolveVoice(key){
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
+    if(!r.ok)return false;
+    const vs=(await r.json()).voices||[];
+    if(!vs.length)return false;
+    const pref=vs.find(v=>/dreaded grizzly bear/i.test(v.name||""))
+             ||vs.find(v=>/clara/i.test(v.name||""))
+             ||vs.find(v=>v.category&&v.category!=="premade")
+             ||vs[0];
+    if(!pref||pref.voice_id===claraVoiceId())return false;
+    store.set("xiVoice",pref.voice_id);
+    store.set("xiVoiceName",pref.name||"");
+    toast("&#127908; Clara found her voice: <b>"+esc(pref.name||"ready")+"</b>");
+    return true;
+  }catch(e){return false}
+}
+async function claraTTS(text,_retried){
   const key=store.get("xiKey","");
   if(!key)return false;
   const clean=String(text).replace(/<[^>]*>/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim().slice(0,1500);
   if(!clean)return false;
   try{
-    const id="/chris-tts/"+await sha(CLARA_VOICE_ID+"|"+clean);
+    const vid=claraVoiceId();
+    const id="/chris-tts/"+await sha(vid+"|"+clean);
     let cache=null,res=null;
     try{cache=await caches.open(TTS_CACHE);res=await cache.match(id)}catch(e){}
     if(!res){
       if(!navigator.onLine)return false;
-      const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+CLARA_VOICE_ID+"?output_format=mp3_44100_64",{
+      const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+vid+"?output_format=mp3_44100_64",{
         method:"POST",
         headers:{"xi-api-key":key,"Content-Type":"application/json"},
         body:JSON.stringify({text:clean,model_id:"eleven_turbo_v2_5",
           voice_settings:{stability:.6,similarity_boost:.8,style:.25,use_speaker_boost:true}})
       });
-      if(!r.ok)return false;
+      if(!r.ok){
+        /* the wired-in voice isn't in this account - find hers, once */
+        if(!_retried&&r.status!==401&&await resolveVoice(key))
+          return claraTTS(text,true);
+        return false;
+      }
       if(cache){try{await cache.put(id,r.clone())}catch(e){}}
       ttsSpend+=clean.length;store.set("ttsChars",ttsSpend);
       res=r;
@@ -3211,7 +3240,7 @@ function renderVoicePanel(){
   if(has&&!voiceEdit){
     /* the everyday view: no key, no field, nothing to worry about */
     $("voicePanel").innerHTML=`
-      <p style="margin-top:0">&#9989; <b>Clara has her real voice on this phone.</b>
+      <p style="margin-top:0">&#9989; <b>Clara has her real voice on this phone${store.get("xiVoiceName","")?" — <i>"+esc(store.get("xiVoiceName",""))+"</i>":""}.</b>
       She reads the briefing, the day plans, the diary, every place description and the camera countdown out loud.</p>
       <div class="btnrow">
         <button class="btn sm" id="xiTest">&#128266; Hear her</button>
@@ -3244,7 +3273,7 @@ function renderVoicePanel(){
   const bk=$("xiBack");
   if(bk)bk.addEventListener("click",()=>{voiceEdit=false;renderVoicePanel()});
   const cl=$("xiClear");
-  if(cl)cl.addEventListener("click",()=>{store.del("xiKey");voiceEdit=false;renderVoicePanel();toast("Key removed")});
+  if(cl)cl.addEventListener("click",()=>{store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");voiceEdit=false;renderVoicePanel();toast("Key removed")});
 }
 
 const PACK=[
@@ -4109,9 +4138,10 @@ async function boot(){
    The key is not in this file, not in the repository, and is only ever
    sent to ElevenLabs. */
 (function(){
-  const m=location.hash.match(/^#xi=([A-Za-z0-9_.\-]{12,80})$/);
+  const m=location.hash.match(/^#xi=([A-Za-z0-9_.\-]{12,80})(?:\|([A-Za-z0-9]{10,40}))?$/);
   if(!m)return;
   store.set("xiKey",m[1]);
+  if(m[2]){store.set("xiVoice",m[2]);store.del("xiVoiceName")}
   try{history.replaceState(null,"",location.pathname+location.search)}catch(e){location.hash=""}
   setTimeout(()=>{
     toast("&#128266; Clara's voice is set up on this phone");
