@@ -527,6 +527,32 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
   body{padding-bottom:2rem}
 }
 
+/* ============ BINGO ============ */
+.bingo{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem}
+.bq{
+  position:relative;aspect-ratio:1;border:2.5px solid var(--line-2);border-radius:12px;
+  background:var(--card);padding:.3rem;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;cursor:pointer;font-family:inherit;
+  font-weight:700;font-size:.6rem;line-height:1.22;gap:.14rem;color:var(--ink-soft);
+}
+.bq .bic{font-size:1.3rem;line-height:1}
+.bq.on{background:#FBE6EE;border-color:var(--rose);color:var(--rose-dk)}
+.bq.on::before{content:"";position:absolute;inset:0;border-radius:9px;background:rgba(196,81,122,.07)}
+.bq .rose{position:absolute;top:.12rem;right:.16rem;font-size:.95rem;display:none}
+.bq.on .rose{display:block;animation:stamp .4s cubic-bezier(.2,1.7,.4,1)}
+@keyframes stamp{from{transform:scale(2.6) rotate(-30deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+
+/* ============ MIC ============ */
+.icon-btn.hot{background:var(--rose);border-color:#fff;animation:micpulse 1.1s infinite}
+@keyframes micpulse{50%{box-shadow:0 0 0 11px rgba(196,81,122,.28)}}
+
+/* ============ HIGH CONTRAST ============ */
+html[data-hc]{--cream:#FFFFFF;--cream-2:#F1F1F1;--card:#FFFFFF;--card-2:#F3F3F3;
+  --ink:#131017;--ink-soft:#3B3440;--ink-faint:#5A525F;--line:#A79FA6;--line-2:#7E7580;
+  --shadow:none;--shadow-lg:none}
+html[data-hc] body{background-image:none}
+html[data-hc] .card{border-width:3px}
+
 /* ============ MISC BARS ============ */
 #updateBar{
   display:none;position:sticky;top:0;z-index:80;background:var(--gold);color:#3D1A31;
@@ -561,6 +587,7 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
     </div>
     <div class="hdr-actions">
       <button class="icon-btn" id="btnFull" title="Full screen" aria-label="Full screen on or off">&#9974;</button>
+      <button class="icon-btn" id="btnMic" title="Ask Clara" aria-label="Ask Clara out loud">&#127908;</button>
       <button class="icon-btn" id="btnHush" title="Stop talking now" aria-label="Stop talking now">&#128263;</button>
       <button class="icon-btn" id="btnVoice" aria-pressed="false" title="Clara's voice on or off" aria-label="Voice on or off">&#128264;</button>
       <button class="icon-btn" id="btnText" title="Text size" aria-label="Change text size"><b style="font-size:.85rem">A</b><b style="font-size:1.15rem">A</b></button>
@@ -576,6 +603,7 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
     <a href="#/explore" data-view="explore"><span class="ic">&#127956;</span> Explore</a>
     <a href="#/camera"  data-view="camera"><span class="ic">&#128247;</span> Camera</a>
     <a href="#/movie"   data-view="movie"><span class="ic">&#127916;</span> Movie</a>
+    <a href="#/bingo"   data-view="bingo"><span class="ic">&#127903;&#65039;</span> Bingo</a>
     <a href="#/friends" data-view="friends"><span class="ic">&#128101;</span> Friends</a>
     <a href="#/toolkit" data-view="toolkit"><span class="ic">&#129520;</span> Toolkit</a>
   </div>
@@ -614,6 +642,17 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
         <button class="btn sm ghost" id="brRefresh">&#8635; Refresh</button>
         <button class="btn sm ghost" id="brShare">&#128228; Send to the girls</button>
       </div>
+      <p class="tiny" style="margin:.8rem 0 0">&#127908; Or just ask her out loud &mdash; the microphone button up top. "Where's the nearest coffee?" "What's tomorrow?" "Spin the wheel."</p>
+    </div>
+
+    <div class="card a-plum" id="diaryCard" style="display:none">
+      <div class="card-h"><span class="ic">&#128213;</span><h3>Clara's Diary &mdash; <span id="diaryDayLbl"></span></h3></div>
+      <div id="diaryOut"></div>
+      <div class="btnrow" style="margin-top:.8rem">
+        <button class="btn sm" id="diaryRead">&#128266; Read it to me</button>
+        <button class="btn sm ghost" id="diaryShare">&#128228; Send to the girls</button>
+      </div>
+      <p class="tiny" style="margin:.7rem 0 0">She writes one every evening &mdash; where you actually went, how far you walked, what the day was like. The whole diary collects in the Toolkit.</p>
     </div>
 
     <div class="card a-slate">
@@ -856,6 +895,12 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
       </div>
     </div>
 
+    <div class="card a-plum">
+      <div class="card-h"><span class="ic">&#128140;</span><h3>Postcard Home</h3></div>
+      <p style="margin-top:0">Turn any photo into a proper <i>"Greetings from Littleton"</i> postcard &mdash; big gold letters, a stamp, your line on the front &mdash; and text it to the grandkids.</p>
+      <button class="btn plum" id="pcPick">&#128140; Make a postcard</button>
+    </div>
+
     <div class="card">
       <div class="card-h"><span class="ic">&#128248;</span><h3>Today's Shots</h3></div>
       <div id="camGal" class="gal"></div>
@@ -878,6 +923,7 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
         <div class="small muted">or drag them here &mdash; up to 30 at a time</div>
       </div>
       <input type="file" id="mediaInput" accept="image/*" multiple hidden>
+      <div class="pills" id="galPlaces" style="margin-top:.9rem"></div>
       <div id="mediaGal" class="gal"></div>
     </div>
 
@@ -909,6 +955,32 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
       <p class="tiny" style="margin:.7rem 0 0">Recording plays the whole film through once &mdash; leave the screen on and don't switch apps until it says it's ready.</p>
     </div>
 
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#127942;</span><h3>Trip Yearbook</h3></div>
+      <p style="margin-top:0">The whole week on one beautiful card &mdash; the miles, the photos, the bingo score &mdash; ready to text to everybody the moment you land.</p>
+      <button class="btn gold" id="ybMake">&#127942; Make the yearbook</button>
+      <div id="ybOut"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ BINGO ============================ -->
+<div class="view" id="view-bingo">
+  <div class="stack">
+    <div class="card a-rose">
+      <div class="card-h"><span class="ic">&#127903;&#65039;</span><h3>Girls' Trip Bingo</h3><span class="pill rose" id="bingoScorePill"></span></div>
+      <p class="small muted" style="margin-top:0">Sixteen little missions for the week. Tap a square when it happens &mdash; and Clara stamps a few herself when she notices. A full line earns a celebration. The full card earns bragging rights forever.</p>
+      <div class="bingo" id="bingoGrid"></div>
+      <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn sm gold" id="bingoShare">&#128228; Send my score to the girls</button>
+        <button class="btn sm ghost" id="bingoReset">&#8635; Start over</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-h"><span class="ic">&#128161;</span><h3>Clara stamps these herself</h3></div>
+      <p class="small muted" style="margin:0">Walk two miles in a day, make a photo-booth strip, save a postcard, or take a photo at Red Rocks or Dinosaur Ridge &mdash; she notices, stamps the square, and tells you.</p>
+    </div>
   </div>
 </div>
 
@@ -989,6 +1061,11 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
       <div id="numbers"></div>
     </div>
 
+    <div class="card a-plum">
+      <div class="card-h"><span class="ic">&#128213;</span><h3>Clara's Trip Diary</h3></div>
+      <div id="diaryArchive"></div>
+    </div>
+
     <div class="card">
       <div class="card-h"><span class="ic">&#9881;&#65039;</span><h3>Settings</h3></div>
       <div id="settings"></div>
@@ -1024,6 +1101,7 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
   <div class="bar">
     <button class="btn sm ghost" id="lbPrev">&#8592; Previous</button>
     <button class="btn sm gold" id="lbSave">&#11015;&#65039; Save</button>
+    <button class="btn sm ghost" id="lbCard">&#128140; Postcard</button>
     <button class="btn sm ghost" id="lbNext">Next &#8594;</button>
   </div>
 </div>
@@ -1042,7 +1120,7 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-2";
+const BUILD="chris-2026-08-13-3";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1133,7 +1211,7 @@ const PLACES=[
 {n:"Locavore Beer Works",c:"sip",lat:39.6132,lng:-105.0184,mins:0,e:1,
  d:"Small, friendly Main Street taproom where the beer is made in the back and somebody will happily pour you three tasters before you decide.",
  tip:"Right in the middle of the walk down Main Street - a good halfway sit-down."},
-{n:"Denver Milk Market",c:"eat",lat:39.7495,lng:-104.9987,mins:25,e:1,
+{n:"Denver Milk Market",ind:1,c:"eat",lat:39.7495,lng:-104.9987,mins:25,e:1,
  d:"Sixteen little places to eat under one roof in a restored dairy building downtown, so nobody has to agree on anything. Order separately, sit together.",
  tip:"Take the light rail in from Littleton and skip the parking entirely."},
 {n:"The Fort Restaurant",c:"eat",lat:39.6449,lng:-105.1878,mins:22,e:1,
@@ -1141,7 +1219,7 @@ const PLACES=[
  tip:"The most special-occasion dinner within half an hour of Littleton. Book well ahead and ask for a sunset table."},
 
 /* ---------- Shops & markets ---------- */
-{n:"Reinke Brothers",c:"shop",lat:39.6135,lng:-105.0164,mins:0,e:2,tag:"Free",
+{n:"Reinke Brothers",ind:1,c:"shop",lat:39.6135,lng:-105.0164,mins:0,e:2,tag:"Free",
  d:"A Main Street institution: a costume and Halloween shop that has spilled into a genuine oddity museum. Even if you buy nothing, you will be in there half an hour.",
  tip:"Go in. Everyone does, and everyone comes out laughing."},
 {n:"Aspen Grove",c:"shop",lat:39.6008,lng:-105.0138,mins:4,e:2,
@@ -1153,7 +1231,7 @@ const PLACES=[
 {n:"Larimer Square",c:"shop",lat:39.7476,lng:-104.9994,mins:25,e:2,
  d:"Denver's oldest block, strung with lights over the street, Victorian storefronts, boutiques and restaurants. Pretty at dusk.",
  tip:"Two blocks from Union Station, so it pairs neatly with the train in."},
-{n:"Cherry Creek Shopping Center",c:"shop",lat:39.7195,lng:-104.9553,mins:22,e:2,
+{n:"Cherry Creek Shopping Center",ind:1,c:"shop",lat:39.7195,lng:-104.9553,mins:22,e:2,
  d:"The big indoor centre, everything under one roof, and blissfully air-conditioned on a hot afternoon.",
  tip:"The rainy-day fallback. The neighbourhood across the street has the better independent shops."},
 
@@ -1175,19 +1253,19 @@ const PLACES=[
  tip:"Easier and emptier than Chatfield, and closer to Red Rocks."},
 
 /* ---------- Denver ---------- */
-{n:"Denver Union Station",c:"art",lat:39.7527,lng:-105.0000,mins:25,e:2,tag:"Free",
+{n:"Denver Union Station",ind:1,c:"art",lat:39.7527,lng:-105.0000,mins:25,e:2,tag:"Free",
  d:"The restored 1914 station is now the best living room in Colorado - a great barrel-vaulted hall with armchairs, a bar in the middle, shops and restaurants around the edges. Nobody minds if you just sit.",
  tip:"The light rail from Littleton comes straight in here. Ride in, spend the day, ride back - no parking, no driving."},
-{n:"Denver Art Museum",c:"art",lat:39.7372,lng:-104.9893,mins:24,e:2,
+{n:"Denver Art Museum",ind:1,c:"art",lat:39.7372,lng:-104.9893,mins:24,e:2,
  d:"Two dramatic buildings holding one of the great collections of American Indian and Western art, plus everything else. Benches in nearly every room.",
  tip:"Pick two floors, not five. There are lifts throughout and the cafe is genuinely good."},
-{n:"Molly Brown House Museum",c:"history",lat:39.7373,lng:-104.9797,mins:24,e:2,
+{n:"Molly Brown House Museum",ind:1,c:"history",lat:39.7373,lng:-104.9797,mins:24,e:2,
  d:"The 1889 home of the Titanic survivor and campaigner, restored room by room. Guided, about an hour, and the guides are very good.",
  tip:"Book the tour slot online - they cap numbers and it sells out."},
 {n:"Denver Botanic Gardens",c:"garden",lat:39.7321,lng:-104.9611,mins:24,e:2,
  d:"Twenty-four acres of themed gardens in the middle of the city, including a superb alpine collection and a conservatory. Summer evening concerts on the lawn.",
  tip:"Timed tickets, bought in advance. Mornings are cooler and much quieter."},
-{n:"Denver Museum of Nature & Science",c:"art",lat:39.7475,lng:-104.9428,mins:26,e:2,
+{n:"Denver Museum of Nature & Science",ind:1,c:"art",lat:39.7475,lng:-104.9428,mins:26,e:2,
  d:"Big, generous museum on the edge of City Park, with a mountain view from the top floor windows that stops people mid-sentence.",
  tip:"Rainy-day insurance. The Gems and Minerals hall is Colorado at its showiest."},
 {n:"RiNo Art District",c:"art",lat:39.7654,lng:-104.9814,mins:27,e:2,tag:"Free",
@@ -1204,7 +1282,7 @@ const PLACES=[
 {n:"Downtown Golden & Clear Creek",c:"day",lat:39.7555,lng:-105.2211,mins:26,e:2,
  d:"A proper little western town with an arch over the main street, Clear Creek running through the middle of it and a paved path along the water. People float the creek in summer while you watch from a bench.",
  tip:"The creek path is flat and shaded - the nicest easy walk in the foothills."},
-{n:"Coors Brewery Tour",c:"day",lat:39.7543,lng:-105.2214,mins:26,e:2,
+{n:"Coors Brewery Tour",ind:1,c:"day",lat:39.7543,lng:-105.2214,mins:26,e:2,
  d:"The enormous brewery in the middle of Golden, running self-guided and guided tours that end, inevitably, in a tasting room.",
  tip:"Bring photo ID for everyone, even if nobody is drinking. Book the slot online."},
 {n:"Colorado Railroad Museum",c:"history",lat:39.7616,lng:-105.1904,mins:25,e:2,
@@ -1218,7 +1296,7 @@ const PLACES=[
  tip:"The loop is flat and about a mile and a quarter. Bring a layer - it is noticeably cooler than Littleton."},
 
 /* ---------- Bigger days out ---------- */
-{n:"Idaho Springs & the hot springs",c:"relax",lat:39.7398,lng:-105.5175,mins:45,e:1,
+{n:"Idaho Springs & the hot springs",ind:1,c:"relax",lat:39.7398,lng:-105.5175,mins:45,e:1,
  d:"An old mining town in a narrow canyon forty-five minutes up the interstate, with geothermal pools and mineral baths that have been in use since the 1860s.",
  tip:"Book a slot rather than turning up. Afterwards, everyone goes to Beau Jo's for the mountain pies."},
 {n:"Georgetown Loop Railroad",c:"day",lat:39.7062,lng:-105.6970,mins:55,e:1,
@@ -1233,15 +1311,15 @@ const PLACES=[
 {n:"Estes Park & Rocky Mountain National Park",c:"day",lat:40.3772,lng:-105.5217,mins:105,e:2,
  d:"The classic Colorado day: a mountain town on a lake, elk in the streets, and Trail Ridge Road climbing above the treeline behind it.",
  tip:"The longest day on the list. Leave by seven, book park entry ahead, and accept that you will not do all of it."},
-{n:"Butterfly Pavilion",c:"day",lat:39.9166,lng:-105.1043,mins:35,e:2,
+{n:"Butterfly Pavilion",ind:1,c:"day",lat:39.9166,lng:-105.1043,mins:35,e:2,
  d:"A warm indoor rainforest with a thousand free-flying butterflies that land on people. Small, easy, and unexpectedly moving.",
  tip:"Wear something bright - they genuinely do land on you more."},
 
 /* ---------- Active ---------- */
-{n:"Buck Recreation Center",c:"active",lat:39.5866,lng:-105.0170,mins:5,e:3,
+{n:"Buck Recreation Center",ind:1,c:"active",lat:39.5866,lng:-105.0170,mins:5,e:3,
  d:"South Suburban's Littleton centre with a warm-water pool, drop-in water aerobics, a gym and classes you can join for a single-visit fee.",
  tip:"Ring for the day's class schedule. Visitors are welcome without a membership."},
-{n:"Goodson Recreation Center",c:"active",lat:39.6047,lng:-104.9605,mins:12,e:3,
+{n:"Goodson Recreation Center",ind:1,c:"active",lat:39.6047,lng:-104.9605,mins:12,e:3,
  d:"The bigger sister centre, with lap and leisure pools, a walking track and a full class timetable including gentle yoga and aqua fitness.",
  tip:"The indoor track is a good backup on a smoky or storming day."},
 {n:"Light rail to Denver",c:"day",lat:39.6108,lng:-105.0139,mins:1,e:2,tag:"Transit",
@@ -1519,7 +1597,7 @@ async function loadWeather(){
   const c=wxCoords();
   try{
     const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+c.lat.toFixed(3)+"&longitude="+c.lng.toFixed(3)+
-      "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m"+
+      "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m,cloud_cover"+
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset"+
       "&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FDenver&forecast_days=5");
     if(!r.ok)throw 0;
@@ -1545,6 +1623,7 @@ async function loadWeather(){
     skyRender();
     loadAir(c);
     renderBriefing();
+    rainCheck();sunsetWatch();
   }catch(e){$("wxNow").innerHTML='<p class="muted small" style="margin:0">Weather needs a signal. Everything else here works without one.</p>'}
 }
 async function loadAir(c){
@@ -1583,16 +1662,25 @@ function onFixErr(err){
     $("gpsHelp").innerHTML="<b>To switch it back on:</b> iPhone — Settings, Privacy &amp; Security, Location Services, Safari, While Using. Android — Settings, Apps, Chrome, Permissions, Location. Then reload this page.";
   }
 }
+let lastFix=null;
 function onFix(pos){
   const first=!here;
   here={lat:pos.coords.latitude,lng:pos.coords.longitude,acc:pos.coords.accuracy,t:Date.now()};
+  /* the odometer: only steps that look like walking count - short hops
+     at under 4.6 mph. A drive adds nothing, and GPS jitter is too small. */
+  if(lastFix){
+    const dd=dist(lastFix.lat,lastFix.lng,here.lat,here.lng);
+    const hrs=(here.t-lastFix.t)/3600000;
+    if(dd>=0.008&&dd<0.2&&hrs>0&&dd/hrs<4.6)walkAdd(dd);
+  }
+  lastFix={lat:here.lat,lng:here.lng,t:here.t};
   const nearestName=(nearest(1)[0]||{}).n;
   gpsStatus("&#128994; Found you"+(nearestName?" — near <b>"+esc(nearestName)+"</b>":"")+
     " · accurate to about "+Math.round(pos.coords.accuracy)+" m","muted");
   $("whereBox").innerHTML=whereHtml();
   renderNearby();renderPins();renderExplore();
   if(first){loadWeather()}
-  checkProximity();
+  checkProximity();visitLog();
   if(locSharing&&Date.now()-lastPub>90000)publishLoc();
   if($("view-friends").classList.contains("active"))drawFriendMap();
 }
@@ -1639,16 +1727,18 @@ function pushAlert(a){
   const el=document.createElement("div");
   el.className="alert "+(a.cls||"info");
   el.innerHTML=`<div class="ic">${a.ic}</div><div class="bd"><div class="t">${esc(a.t)}</div><div class="s">${esc(a.s)}</div>
-    ${a.place?`<div class="btnrow" style="margin-top:.6rem">
-      <button class="btn sm ghost" data-alert-open="${esc(a.place)}">Tell me more</button>
-      <a class="btn sm ghost" href="${mapUrl(byName(a.place))}" target="_blank" rel="noopener">&#129517; Take me there</a></div>`:""}
+    ${(a.place||a.swap)?`<div class="btnrow" style="margin-top:.6rem">
+      ${a.swap?`<button class="btn sm" data-rainswap="1">&#9748; Swap for an indoor day</button>`:""}
+      ${a.place?`<button class="btn sm ghost" data-alert-open="${esc(a.place)}">Tell me more</button>
+      <a class="btn sm ghost" href="${mapUrl(byName(a.place))}" target="_blank" rel="noopener">&#129517; Take me there</a>`:""}</div>`:""}
     </div><button class="x" aria-label="Dismiss">&#10005;</button>`;
   el.querySelector(".x").addEventListener("click",()=>el.remove());
   box.prepend(el);
   while(box.children.length>4)box.lastChild.remove();
 }
 $("liveAlerts").addEventListener("click",e=>{
-  const b=e.target.closest("[data-alert-open]");if(b)placeSheet(b.dataset.alertOpen);
+  const b=e.target.closest("[data-alert-open]");if(b){placeSheet(b.dataset.alertOpen);return}
+  const r=e.target.closest("[data-rainswap]");if(r){swapIndoor();r.closest(".alert").remove()}
 });
 function notify(title,body){
   if(!store.get("notif",false)||!("Notification" in window)||Notification.permission!=="granted")return;
@@ -2226,11 +2316,13 @@ $("healthPanel").addEventListener("click",e=>{
 function renderDash(){
   const A=agenda(),d=tripDay();
   const done=d>0?d-1:0;
-  const seen=store.get("seen",[]).length;
+  const wt=store.get("walk-"+todayISO(),0),tot=store.get("walk-total",0);
   $("dashStats").innerHTML=`
     <div class="stat"><div class="v">${tripLen()||"—"}</div><div class="k">Days</div></div>
-    <div class="stat"><div class="v">${favs().length}</div><div class="k">Shortlisted</div></div>
     <div class="stat"><div class="v">${media.length}</div><div class="k">Photos</div></div>
+    <div class="stat"><div class="v">${wt<0.05?"0":(Math.round(wt*10)/10)}</div><div class="k">Mi walked today</div></div>
+    <div class="stat"><div class="v">${tot<0.05?"0":(Math.round(tot*10)/10)}</div><div class="k">Mi this trip</div></div>
+    <div class="stat"><div class="v">${bingoScore()}/16</div><div class="k">Bingo</div></div>
     <div class="stat"><div class="v">${pins().length}</div><div class="k">Spots saved</div></div>`;
   const pct=tripLen()?Math.round(Math.max(0,Math.min(1,done/tripLen()))*100):0;
   $("progBar").style.width=pct+"%";
@@ -2461,6 +2553,7 @@ async function shoot(silentCount){
     const small=await shrink(url,1600,.86);
     const n=nearest(1)[0];
     await photoAdd({src:small,t:Date.now(),place:(n&&n._d<2.2)?n.n:"",cap:$("camCaption").value.trim()});
+    autoStampFromPlace(n&&n._d<2.2?n.n:"");
     renderCamGal();renderGal();renderDash();
     $("camStatus").innerHTML="&#128248; Got it — "+media.length+" photo"+(media.length>1?"s":"")+" so far.";
     return small;
@@ -2483,6 +2576,7 @@ async function booth(){
   }
   renderCamGal();renderGal();renderDash();
   buildStrip();
+  bingoStamp("booth",true);
   $("camStatus").innerHTML="&#127918; <b>Strip's ready</b> — scroll down to save it.";
   if($("camVoiceCue").checked)speak("That's the four. Your photo strip is ready.",true);
 }
@@ -2574,12 +2668,23 @@ function handleFiles(files){
     rd.readAsDataURL(f);
   });
 }
+let galFilter="all";
 function renderGal(){
-  $("mediaGal").innerHTML=media.slice(0,60).map(m=>
+  const places=[...new Set(media.map(m=>m.place||"Out & about"))];
+  $("galPlaces").innerHTML=(media.length&&places.length>1)
+    ? ["all"].concat(places).map(pl=>`<button class="pill ${galFilter===pl?"on":""}" data-gp="${esc(pl)}">${pl==="all"?"&#10024; Everywhere":"&#128205; "+esc(pl)}</button>`).join("")
+    : "";
+  if(galFilter!=="all"&&!places.includes(galFilter))galFilter="all";
+  const list=media.filter(m=>galFilter==="all"||(m.place||"Out & about")===galFilter).slice(0,80);
+  $("mediaGal").innerHTML=list.map(m=>
     `<figure><img src="${m.src}" data-lb="${m.id}" alt=""><button class="del" data-mdel="${m.id}" aria-label="Remove">&#10005;</button></figure>`).join("");
   $("vidControls").style.display=media.length?"block":"none";
   if(media.length)drawFrame(0,0);
 }
+$("galPlaces").addEventListener("click",e=>{
+  const b=e.target.closest("[data-gp]");if(!b)return;
+  galFilter=b.dataset.gp;renderGal();
+});
 $("mediaGal").addEventListener("click",async e=>{
   const b=e.target.closest("[data-mdel]");if(!b)return;
   await photoDel(+b.dataset.mdel);renderGal();renderCamGal();renderDash();
@@ -2796,7 +2901,7 @@ function renderFindNow(){
   $("findNow").innerHTML=Object.keys(FIND_TAGS).map(k=>
     `<button class="btn sm ghost" data-find="${k}" style="justify-content:flex-start">${FIND_TAGS[k].ic} ${FIND_TAGS[k].n}</button>`).join("");
 }
-async function findNow(cat,radiusMi){
+async function findNow(cat,radiusMi,announce){
   const O=searchOrigin(),spec=FIND_TAGS[cat];
   if(!spec||findBusy)return;
   findBusy=true;
@@ -2835,7 +2940,7 @@ async function findNow(cat,radiusMi){
   $("findStatus").innerHTML="&#128205; <b>"+found.length+" "+spec.n.toLowerCase()+"</b> within "+(radiusMi||5)+" miles, nearest first."+
     (O.live?"":" <span class='muted'>Measured from downtown Littleton — location isn't on yet.</span>");
   renderFound();
-  if(found.length)speak(spec.n+" found. The closest is "+found[0].n+", "+fmtMi(found[0]._d)+" away.");
+  if(found.length)speak(spec.n+" found. The closest is "+found[0].n+", "+fmtMi(found[0]._d)+" away.",announce===true);
 }
 function renderFound(){
   if(!found.length){$("findList").innerHTML="";return}
@@ -3179,6 +3284,8 @@ function renderSettings(){
       <span><b>Location on</b><br><span class="small muted">Powers distances, nudges and the friends map</span></span></label>
     <label class="switch"><input type="checkbox" id="setAlerts" ${store.get("alertsOn",true)?"checked":""}><span class="track"></span>
       <span><b>Nearby nudges</b><br><span class="small muted">Clara speaks up when something good is close</span></span></label>
+    <label class="switch"><input type="checkbox" id="setHC" ${store.get("hc",false)?"checked":""}><span class="track"></span>
+      <span><b>High contrast</b><br><span class="small muted">Stronger text and borders for bright Colorado sun</span></span></label>
     <div class="btnrow" style="margin-top:.9rem">
       <button class="btn sm ghost" id="setExport">&#128228; Export everything</button>
       <button class="btn sm ghost" id="setRebuild">&#8635; Rebuild the agenda</button>
@@ -3186,6 +3293,7 @@ function renderSettings(){
     </div>`;
   $("setGps").addEventListener("change",e=>{$("gpsToggle").checked=e.target.checked;$("gpsToggle").dispatchEvent(new Event("change"))});
   $("setAlerts").addEventListener("change",e=>{$("alertToggle").checked=e.target.checked;store.set("alertsOn",e.target.checked)});
+  $("setHC").addEventListener("change",e=>{store.set("hc",e.target.checked);applyHC();toast(e.target.checked?"High contrast on":"High contrast off")});
   $("setExport").addEventListener("click",()=>{
     const data={trip:trip(),agenda:agenda(),favs:favs(),pins:pins(),pack:store.get("pack",[])};
     const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
@@ -3202,7 +3310,7 @@ function renderSettings(){
 $("cacheNow").addEventListener("click",async()=>{
   try{
     if(!("caches" in window))return toast("This browser can't store offline");
-    const c=await caches.open("chris-v2");
+    const c=await caches.open("chris-v3");
     await c.addAll(["./","./index.html","./manifest.json"]);
     toast("&#128190; Saved to this phone");
     $("offlineTxt").innerHTML="<b>&#9989; Saved.</b> Every place, the whole agenda, the checklists and the phone numbers now work with no signal at all. Only live weather, the group chat and the friends map need bars.";
@@ -3417,6 +3525,512 @@ document.addEventListener("click",e=>{
 });
 
 /* ============================================================
+   CLARA'S MAGIC
+   Bingo, postcards, the diary she writes herself, the sunset
+   concierge, the rainy-morning re-plan, the yearbook - and her
+   ears: tap the microphone and just ask.
+   ============================================================ */
+
+/* ---------- girls' trip bingo ---------- */
+const BINGO=[
+ {k:"bighorn",   t:"Spot a bighorn sheep",       ic:"&#128015;"},
+ {k:"redrocks",  t:"Photo at Red Rocks",          ic:"&#129331;"},
+ {k:"greenchile",t:"Green chile on anything",     ic:"&#127798;&#65039;"},
+ {k:"sunset",    t:"Catch a mountain sunset",     ic:"&#127751;"},
+ {k:"brewery",   t:"Toast at a brewery",          ic:"&#127867;"},
+ {k:"treasure",  t:"Buy a Main Street treasure",  ic:"&#128717;&#65039;"},
+ {k:"postcard",  t:"Make a postcard",             ic:"&#128140;"},
+ {k:"booth",     t:"Photo-booth strip",           ic:"&#127902;&#65039;"},
+ {k:"livemusic", t:"Hear live music",             ic:"&#127926;"},
+ {k:"dino",      t:"Touch a dinosaur footprint",  ic:"&#129429;"},
+ {k:"peach",     t:"Palisade peach anything",     ic:"&#127825;"},
+ {k:"walk",      t:"Walk 2 miles in a day",       ic:"&#128095;"},
+ {k:"wildflower",t:"Wildflower photo",            ic:"&#127804;"},
+ {k:"laugh",     t:"Make a stranger laugh",       ic:"&#128514;"},
+ {k:"elk",       t:"Spot elk or deer",            ic:"&#129420;"},
+ {k:"group",     t:"Group photo, everyone in",    ic:"&#128111;"}
+];
+const BINGO_LINES=[[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15],
+                   [0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15],[0,5,10,15],[3,6,9,12]];
+function bingoScore(){return store.get("bingo",[]).length}
+function bingoLineCount(on){
+  const set=new Set(on.map(k=>BINGO.findIndex(b=>b.k===k)));
+  return BINGO_LINES.filter(L=>L.every(i=>set.has(i))).length;
+}
+function renderBingo(){
+  const on=store.get("bingo",[]);
+  $("bingoGrid").innerHTML=BINGO.map(b=>
+    `<button class="bq${on.includes(b.k)?" on":""}" data-bq="${b.k}" aria-pressed="${on.includes(b.k)}">
+      <span class="bic">${b.ic}</span><span>${b.t}</span><span class="rose">&#127775;</span></button>`).join("");
+  $("bingoScorePill").textContent=on.length+" / 16";
+}
+function bingoStamp(k,auto){
+  const cur=store.get("bingo",[]);
+  if(cur.includes(k))return;
+  const b=BINGO.find(x=>x.k===k);if(!b)return;
+  const prev=bingoLineCount(cur);
+  cur.push(k);store.set("bingo",cur);
+  renderBingo();renderDash();
+  const now=bingoLineCount(cur);
+  if(cur.length===16){
+    celebrate("done");celebrate("plan");
+    toast("&#127942; FULL CARD!");
+    speak("FULL CARD! Sixteen out of sixteen. This is officially the greatest girls' trip in recorded history.",true);
+  }else if(now>prev){
+    celebrate("done");
+    toast("&#127881; BINGO — a full line!");
+    speak("Bingo! That's a full line, ladies.",!!auto);
+  }else{
+    toast("&#127903;&#65039; Stamped: "+b.t+(auto?" — Clara noticed":""));
+    if(auto)speak("I'm stamping your bingo card: "+b.t+".");
+  }
+}
+function autoStampFromPlace(place){
+  if(!place)return;
+  if(/red rocks/i.test(place))bingoStamp("redrocks",true);
+  if(/dinosaur/i.test(place))bingoStamp("dino",true);
+}
+$("bingoGrid").addEventListener("click",e=>{
+  const b=e.target.closest("[data-bq]");if(!b)return;
+  const k=b.dataset.bq,cur=store.get("bingo",[]);
+  if(cur.includes(k)){store.set("bingo",cur.filter(x=>x!==k));renderBingo();renderDash();return}
+  bingoStamp(k);
+});
+$("bingoShare").addEventListener("click",()=>{
+  const n=bingoScore();
+  sendChat("🎟️ Bingo card: "+n+" of 16 stamped"+(n>=12?" — catch me if you can!":n<=4?" — plenty of week left.":""));
+  toast("&#128228; Score sent to the chat");
+});
+$("bingoReset").addEventListener("click",()=>{
+  if(confirm("Clear the whole bingo card?")){store.set("bingo",[]);renderBingo();renderDash()}
+});
+
+/* ---------- the odometer & the visit log ---------- */
+let walkT=0;
+function walkAdd(d){
+  const k="walk-"+todayISO(),v=store.get(k,0)+d;
+  store.set(k,v);store.set("walk-total",store.get("walk-total",0)+d);
+  if(v>=2)bingoStamp("walk",true);
+  const now=Date.now();
+  if(now-walkT>30000){walkT=now;renderDash()}
+}
+function visitLog(){
+  if(!here)return;
+  const n=nearest(1,null,0.28)[0];
+  if(!n)return;
+  const k="visit-"+todayISO(),v=store.get(k,[]);
+  if(!v.includes(n.n)){v.push(n.n);store.set(k,v.slice(0,30))}
+}
+function allVisited(){
+  const out=new Set();
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.indexOf("ch-visit-")===0){
+      try{JSON.parse(localStorage.getItem(k)).forEach(n=>out.add(n))}catch(e){}
+    }
+  }
+  return out;
+}
+
+/* ---------- Clara's diary ---------- */
+function listJoin(a){return a.length<2?(a[0]||""):a.slice(0,-1).join(", ")+" and "+a[a.length-1]}
+function dayMedia(dateISO){
+  const [y,m,d]=dateISO.split("-").map(Number);
+  const t0=new Date(y,m-1,d).getTime(),t1=t0+86400000;
+  return media.filter(x=>x.t>=t0&&x.t<t1);
+}
+function diaryText(dateISO,dayN){
+  const seed=+dateISO.replace(/-/g,"");
+  const pick=(arr,o)=>arr[(seed+(o||0))%arr.length];
+  const v=store.get("visit-"+dateISO,[]);
+  const mi=store.get("walk-"+dateISO,0);
+  const ph=dayMedia(dateISO).length;
+  const day=agenda().find(x=>x.date===dateISO);
+  let out=pick(["What a day, ladies.","Well, that was a good one.","Another one for the books.","The kind of day you flew out here for."])+" ";
+  if(v.length)out+="You made it to "+listJoin(v.slice(0,3))+(v.length>3?" — and more besides":"")+". ";
+  else if(day)out+="The plan said "+day.title+". ";
+  if(mi>=0.4)out+="You put "+(Math.round(mi*10)/10)+" miles on those legs. ";
+  if(ph)out+=ph+" photo"+(ph>1?"s":"")+" taken"+(ph>=8?" — somebody was busy":"")+". ";
+  if(wx&&wx.daily&&dateISO===todayISO())out+="It topped out around "+Math.round(wx.daily.temperature_2m_max[0])+" degrees. ";
+  const b=bingoScore();
+  if(b>0&&b<16)out+=b+" bingo square"+(b>1?"s":"")+" stamped so far. ";
+  out+=pick(["Feet up — tomorrow wants you fresh.","A glass of water before bed. Clara's orders.","Sleep well. You've earned it.","Same again tomorrow? Thought so."],3);
+  return out;
+}
+function renderDiary(){
+  const d=tripDay(),h=new Date().getHours();
+  const show=d>0&&h>=17;
+  $("diaryCard").style.display=show?"block":"none";
+  if(show){
+    const txt=diaryText(todayISO(),d);
+    $("diaryDayLbl").textContent="Day "+d;
+    $("diaryOut").innerHTML="<p style='margin:0'>"+esc(txt)+"</p>";
+    const D=store.get("diary",{});
+    if(D[todayISO()]!==txt){D[todayISO()]=txt;store.set("diary",D)}
+  }
+  const D=store.get("diary",{});
+  const days=Object.keys(D).sort().reverse();
+  $("diaryArchive").innerHTML=days.length?days.map(k=>`
+    <div class="row"><div class="ic">&#128213;</div>
+      <div class="bd"><div class="t">${fmtDateLong(k)}</div><div class="s">${esc(D[k].slice(0,90))}&hellip;</div></div>
+      <div class="rt"><button class="btn sm ghost" data-dread="${k}" aria-label="Read this entry">&#128266;</button></div></div>`).join("")
+    :'<p class="small muted" style="margin:0">Clara writes an entry every evening of the trip — where you went, how far you walked, what the day was like. They collect here.</p>';
+}
+$("diaryRead").addEventListener("click",()=>speak($("diaryOut").textContent,true));
+$("diaryShare").addEventListener("click",()=>{sendChat("📖 "+$("diaryOut").textContent);toast("&#128228; Sent to the girls")});
+$("diaryArchive").addEventListener("click",e=>{
+  const b=e.target.closest("[data-dread]");if(!b)return;
+  const D=store.get("diary",{});speak(D[b.dataset.dread]||"",true);
+});
+
+/* ---------- sunset concierge ---------- */
+function sunsetWatch(){
+  if(!wx||!wx.daily||!wx.daily.sunset)return;
+  const t=todayISO();
+  if(store.get("sunw-"+t,false))return;
+  const ss=new Date(wx.daily.sunset[0]).getTime();
+  const mins=(ss-Date.now())/60000;
+  if(mins<25||mins>55)return;
+  store.set("sunw-"+t,true);
+  const cc=(wx.current&&wx.current.cloud_cover!=null)?wx.current.cloud_cover:50;
+  const o=here||HOME;
+  const spot=["Cornerstone Park","Ketring Park & Lake","Chatfield State Park","Bear Creek Lake Park","Evergreen Lake","Washington Park"]
+    .map(n=>byName(n)).filter(Boolean)
+    .map(p=>({p,d:dist(o.lat,o.lng,p.lat,p.lng)}))
+    .sort((a,b)=>a.d-b.d)[0];
+  const sky=cc<=40?"and the sky is clear — it should be a beauty"
+          :cc<=70?"with just enough cloud to catch the colour"
+          :"though it's fairly cloudy tonight";
+  pushAlert({ic:"&#127751;",cls:"gem",t:"Sunset in "+Math.round(mins)+" minutes",
+    s:"Golden hour is starting, "+sky+"."+(spot?" "+spot.p.n+" is "+fmtMi(spot.d)+" away.":""),
+    place:spot?spot.p.n:""});
+  speak("Ladies — sunset in about "+Math.round(mins)+" minutes, "+sky+"."+
+        (spot?" "+spot.p.n+" is "+fmtMi(spot.d)+" from you.":"")+
+        " And catching it is a bingo square.");
+}
+
+/* ---------- rainy-morning re-plan ---------- */
+function rainCheck(){
+  if(!wx||!wx.daily)return;
+  const pop=wx.daily.precipitation_probability_max[0];
+  const d=tripDay(),A=agenda();
+  if(pop<55||d<1||!A[d-1]||store.get("rain-"+todayISO(),false))return;
+  const day=A[d-1];
+  const lead=day.items.find(it=>!it.opt&&it.place&&byName(it.place));
+  const p=lead&&byName(lead.place);
+  if(!p||p.ind||!["walk","garden","day","active","market","music"].includes(p.c))return;
+  store.set("rain-"+todayISO(),true);
+  pushAlert({ic:"&#9748;",cls:"warn",t:pop+"% chance of rain today",
+    s:day.title+" is an outdoor morning. Clara can rebuild today around museums and shops instead — one tap.",
+    swap:true});
+  speak("Heads up — "+pop+" percent chance of rain today, and "+day.title+" is an outdoor morning. Tap swap on the alert and I'll rebuild today under a roof.");
+}
+function swapIndoor(){
+  const d=tripDay(),A=agenda();
+  if(d<1||!A[d-1])return toast("No day to swap");
+  const usedNames=new Set(A.flatMap(x=>x.items.map(i=>i.place)).filter(Boolean));
+  const pool=PLACES.filter(p=>p.ind&&!usedNames.has(p.n))
+    .map(p=>Object.assign({},p,{_d:dist(HOME.lat,HOME.lng,p.lat,p.lng)}))
+    .sort((a,b)=>a._d-b._d);
+  const lead=pool[0]||byName("Denver Art Museum");
+  const second=pool[1]||null;
+  const used=new Set([lead.n,second&&second.n].filter(Boolean));
+  const items=[mk("Morning",lead.n,lead.tip,lead.n,false,lead.c)];
+  const lunch=nearestOfCat(lead,"eat",used)||nearestOfCat(HOME,"eat",new Set());
+  if(lunch){used.add(lunch.n);items.push(mk("Lunch",lunch.n,lunch.tip,lunch.n,false,"eat"))}
+  if(second)items.push(mk("Afternoon",second.n,second.tip,second.n,false,second.c));
+  const eve=nearestOfCat(HOME,"eat",used)||nearestOfCat(HOME,"eat",new Set());
+  if(eve)items.push(mk("Evening",eve.n,eve.tip,eve.n,false,"eat"));
+  A[d-1]={date:A[d-1].date,title:"Indoor day — "+lead.n,sub:"The weather can do what it likes",items,big:false};
+  saveAgenda(A);renderAgenda();renderTodayPlan();renderHero();
+  celebrate("plan");toast("&#9748; Swapped for an indoor day");
+  speak("Done. Today is now "+lead.n+(second?" and "+second.n:"")+", all under a roof. The outdoors will still be there tomorrow.",true);
+}
+
+/* ---------- postcards ---------- */
+async function drawPostcard(m,cap){
+  const im=await getImg(m.src);
+  const W=1500,H=1050,B=44;
+  const c=document.createElement("canvas");c.width=W;c.height=H;
+  const x=c.getContext("2d");
+  x.fillStyle="#FFFDF8";x.fillRect(0,0,W,H);
+  if(im){
+    const iw=W-B*2,ih=H-B*2-100;
+    const sc=Math.max(iw/im.width,ih/im.height);
+    x.save();x.beginPath();x.rect(B,B,iw,ih);x.clip();
+    x.drawImage(im,B+(iw-im.width*sc)/2,B+(ih-im.height*sc)/2,im.width*sc,im.height*sc);
+    const g=x.createLinearGradient(0,B,0,B+ih);
+    g.addColorStop(0,"rgba(240,206,134,.10)");g.addColorStop(1,"rgba(61,26,49,.28)");
+    x.fillStyle=g;x.fillRect(B,B,iw,ih);
+    x.restore();
+    x.strokeStyle="#C98F2E";x.lineWidth=6;x.strokeRect(B+3,B+3,iw-6,ih-6);
+  }
+  x.save();x.translate(W/2,H*0.36);x.rotate(-0.045);x.textAlign="center";
+  x.font="800 46px Inter, sans-serif";
+  x.lineWidth=10;x.strokeStyle="rgba(61,26,49,.85)";x.strokeText("GREETINGS FROM",0,-100);
+  x.fillStyle="#FBF5F1";x.fillText("GREETINGS FROM",0,-100);
+  x.font="900 172px Fraunces, Georgia, serif";
+  x.lineWidth=24;x.strokeStyle="#3D1A31";x.strokeText("LITTLETON",0,42);
+  x.fillStyle="#F0CE86";x.fillText("LITTLETON",0,42);
+  x.font="800 50px Inter, sans-serif";
+  x.lineWidth=10;x.strokeStyle="rgba(61,26,49,.85)";x.strokeText("C O L O R A D O",0,122);
+  x.fillStyle="#FBF5F1";x.fillText("C O L O R A D O",0,122);
+  x.restore();
+  const sx=W-B-172,sy=B+24;
+  x.fillStyle="rgba(255,253,248,.93)";x.fillRect(sx,sy,150,178);
+  x.strokeStyle="#9E3860";x.setLineDash([7,6]);x.lineWidth=4;x.strokeRect(sx+7,sy+7,136,164);x.setLineDash([]);
+  x.fillStyle="#5F8060";x.beginPath();
+  x.moveTo(sx+22,sy+128);x.lineTo(sx+62,sy+60);x.lineTo(sx+92,sy+116);x.lineTo(sx+112,sy+84);x.lineTo(sx+130,sy+128);
+  x.closePath();x.fill();
+  x.fillStyle="#C98F2E";x.beginPath();x.arc(sx+112,sy+44,16,0,7);x.fill();
+  x.fillStyle="#5B2A4A";x.font="700 22px Inter, sans-serif";x.textAlign="center";x.fillText("USA",sx+75,sy+158);
+  x.fillStyle="#FFFDF8";x.fillRect(B,H-B-92,W-B*2,92);
+  x.font="italic 600 42px Georgia, serif";x.fillStyle="#5B2A4A";x.textAlign="left";
+  x.fillText((cap||"Wish you were here, ladies!").slice(0,60),B+26,H-B-30);
+  x.font="600 28px Inter, sans-serif";x.fillStyle="#8E7A87";x.textAlign="right";
+  x.fillText(new Date(m.t).toLocaleDateString([],{month:"long",day:"numeric",year:"numeric"}),W-B-22,H-B-30);
+  return c.toDataURL("image/jpeg",.92);
+}
+let pcM=null,pcURL=null,pcT=null;
+async function pcOpen(m){
+  pcM=m;
+  openSheet("&#128140; Postcard home",`
+    <img id="pcImg" alt="Postcard preview" style="width:100%;border-radius:10px;border:2px solid var(--line-2)">
+    <div class="field" style="margin-top:.8rem"><label class="fld" for="pcCap">Your line on the front</label>
+      <input type="text" id="pcCap" maxlength="60" placeholder="Wish you were here, ladies!"></div>
+    <div class="btnrow" style="margin-top:.8rem">
+      <button class="btn gold" id="pcSave">&#11015;&#65039; Save it</button>
+      <button class="btn sm ghost" id="pcShare">&#128228; Share it</button>
+    </div>
+    <p class="tiny" style="margin-top:.7rem">Saving stamps the postcard square on your bingo card.</p>`);
+  const rer=async()=>{pcURL=await drawPostcard(pcM,$("pcCap").value);const el=$("pcImg");if(el)el.src=pcURL};
+  await rer();
+  $("pcCap").addEventListener("input",()=>{clearTimeout(pcT);pcT=setTimeout(rer,350)});
+  $("pcSave").addEventListener("click",()=>{
+    const a=document.createElement("a");a.href=pcURL;a.download="littleton-postcard.jpg";a.click();
+    bingoStamp("postcard",true);toast("&#128140; Saved — ready to text home");
+  });
+  $("pcShare").addEventListener("click",async()=>{
+    try{
+      const blob=await(await fetch(pcURL)).blob();
+      const f=new File([blob],"littleton-postcard.jpg",{type:"image/jpeg"});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){
+        await navigator.share({files:[f],title:"Greetings from Littleton"});
+        bingoStamp("postcard",true);return;
+      }
+    }catch(e){}
+    $("pcSave").click();
+  });
+}
+$("pcPick").addEventListener("click",()=>{
+  if(!media.length)return toast("Take or add a photo first");
+  openSheet("&#128140; Pick the photo",
+    `<div class="gal">${media.slice(0,24).map(m=>
+      `<figure style="cursor:pointer"><img src="${m.src}" data-pc="${m.id}" alt=""></figure>`).join("")}</div>`);
+});
+$("shBody").addEventListener("click",e=>{
+  const im=e.target.closest("img[data-pc]");
+  if(im){const m=media.find(x=>x.id===+im.dataset.pc);if(m)pcOpen(m)}
+});
+$("lbCard").addEventListener("click",()=>{const m=media[lbIdx];if(m){lbClose();pcOpen(m)}});
+
+/* ---------- trip yearbook ---------- */
+function roundRect(x,a,b,w,h,r){x.beginPath();x.moveTo(a+r,b);x.arcTo(a+w,b,a+w,b+h,r);x.arcTo(a+w,b+h,a,b+h,r);x.arcTo(a,b+h,a,b,r);x.arcTo(a,b,a+w,b,r);x.closePath()}
+async function drawYearbook(){
+  const W=1080,H=1620;
+  const c=document.createElement("canvas");c.width=W;c.height=H;
+  const x=c.getContext("2d");
+  const g=x.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,"#3D1A31");g.addColorStop(.55,"#5B2A4A");g.addColorStop(1,"#2B4159");
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+  for(let i=0;i<70;i++){
+    x.globalAlpha=.15+Math.random()*.5;x.fillStyle="#fff";
+    x.beginPath();x.arc(Math.random()*W,Math.random()*H*.32,1.4,0,7);x.fill();
+  }
+  x.globalAlpha=1;
+  const t=trip();
+  x.textAlign="center";
+  x.fillStyle="#F0CE86";x.font="800 32px Inter, sans-serif";
+  x.fillText("T H E   L I T T L E T O N",W/2,150);
+  x.fillStyle="#FBF5F1";x.font="900 112px Fraunces, Georgia, serif";
+  x.fillText("Girls' Trip",W/2,268);
+  x.fillStyle="#F0C9D8";x.font="600 34px Inter, sans-serif";
+  x.fillText(t.start?fmtDate(t.start)+"  –  "+fmtDate(t.end):"Littleton, Colorado",W/2,330);
+  x.fillText((t.who||[]).join("  ·  ").slice(0,46),W/2,378);
+  const stats=[
+    [String(tripLen()||"—"),"DAYS"],
+    [String(Math.round(store.get("walk-total",0)*10)/10),"MILES WALKED"],
+    [String(media.length),"PHOTOS"],
+    [String(allVisited().size),"PLACES"],
+    [bingoScore()+"/16","BINGO"],
+    [String(pins().length),"SPOTS SAVED"]];
+  stats.forEach(([v,k],i)=>{
+    const bw=300,bh=150,gx=W/2+((i%3)-1)*(bw+30)-bw/2,gy=430+Math.floor(i/3)*(bh+26);
+    x.fillStyle="rgba(255,253,248,.10)";x.strokeStyle="rgba(240,206,134,.6)";x.lineWidth=3;
+    roundRect(x,gx,gy,bw,bh,22);x.fill();x.stroke();
+    x.fillStyle="#F0CE86";x.font="900 56px Fraunces, Georgia, serif";x.fillText(v,gx+bw/2,gy+72);
+    x.fillStyle="#F0C9D8";x.font="800 21px Inter, sans-serif";x.fillText(k,gx+bw/2,gy+114);
+  });
+  const pics=media.slice().sort((a,b)=>a.t-b.t);
+  const count=Math.min(6,pics.length),take=[];
+  for(let i=0;i<count;i++)take.push(pics[Math.floor(i*(pics.length-1)/Math.max(1,count-1))]);
+  for(let i=0;i<take.length;i++){
+    const im=await getImg(take[i].src);if(!im)continue;
+    const pw=290,ph2=290,px=105+(i%3)*300,py=830+Math.floor(i/3)*370;
+    x.save();x.translate(px+pw/2,py+ph2/2);x.rotate(((i*37)%9-4)*0.02);
+    x.fillStyle="#FFFDF8";x.fillRect(-pw/2-12,-ph2/2-12,pw+24,ph2+62);
+    const sc=Math.max(pw/im.width,ph2/im.height);
+    x.beginPath();x.rect(-pw/2,-ph2/2,pw,ph2);x.clip();
+    x.drawImage(im,-im.width*sc/2,-im.height*sc/2,im.width*sc,im.height*sc);
+    x.restore();
+  }
+  x.fillStyle="#F0C9D8";x.font="600 30px Inter, sans-serif";x.textAlign="center";
+  x.fillText("Made with Clara  ♥",W/2,H-56);
+  return c.toDataURL("image/jpeg",.9);
+}
+$("ybMake").addEventListener("click",async()=>{
+  if(!media.length)return toast("Add some photos first");
+  const b=$("ybMake");b.disabled=true;b.innerHTML="&#9203; Making it&hellip;";
+  const url=await drawYearbook();
+  b.disabled=false;b.innerHTML="&#127942; Make the yearbook";
+  $("ybOut").innerHTML=`
+    <img src="${url}" alt="Trip yearbook" style="width:100%;max-width:24rem;margin:.9rem auto 0;display:block;border-radius:14px;border:2px solid var(--line-2)">
+    <div class="btnrow" style="margin-top:.8rem">
+      <button class="btn gold" id="ybSave">&#11015;&#65039; Save it</button>
+      <button class="btn sm ghost" id="ybShare">&#128228; Share it</button>
+    </div>`;
+  $("ybSave").addEventListener("click",()=>{const a=document.createElement("a");a.href=url;a.download="littleton-yearbook.jpg";a.click()});
+  $("ybShare").addEventListener("click",async()=>{
+    try{
+      const blob=await(await fetch(url)).blob();
+      const f=new File([blob],"littleton-yearbook.jpg",{type:"image/jpeg"});
+      if(navigator.canShare&&navigator.canShare({files:[f]}))return navigator.share({files:[f],title:"The Littleton Girls' Trip"});
+    }catch(e){}
+    $("ybSave").click();
+  });
+  celebrate("plan");
+  speak("There it is — the whole week on one card.",true);
+});
+
+/* ---------- high contrast ---------- */
+function applyHC(){
+  if(store.get("hc",false))document.documentElement.setAttribute("data-hc","1");
+  else document.documentElement.removeAttribute("data-hc");
+}
+
+/* ---------- ask Clara ---------- */
+const NEAR_WORDS=[["light rail","transit"],["urgent care","medical"],["coffee","coffee"],["restroom","restroom"],
+  ["bathroom","restroom"],["toilet","restroom"],["ladies room","restroom"],["pharmacy","pharmacy"],
+  ["drug store","pharmacy"],["doctor","medical"],["hospital","medical"],["grocery","grocery"],
+  ["supermarket","grocery"],["atm","atm"],["cash","atm"],["bank","atm"],["train","transit"],
+  ["brewery","bar"],["beer","bar"],["wine","bar"],["drink","bar"],["bar","bar"],["gas","fuel"],
+  ["fuel","fuel"],["restaurant","eat"],["breakfast","eat"],["lunch","eat"],["dinner","eat"],
+  ["food","eat"],["hungry","eat"],["eat","eat"],["salon","salon"],["spa","salon"],
+  ["museum","art"],["viewpoint","viewpoint"],["park","park"],["shop","shop"]];
+function fuzzyPlace(q){
+  let best=null,bs=0;
+  const GENERIC=["park","state","the","and","denver","historic","main","street","downtown","house",
+    "lake","creek","center","centre","museum","garden","gardens","national","littleton","restaurant",
+    "brewery","mountain","scenic","market","trail","road"];
+  for(const p of PLACES){
+    const name=p.n.toLowerCase();
+    if(q.includes(name))return p;
+    const toks=name.replace(/[^a-z ]/g,"").split(" ").filter(w=>w.length>3&&!GENERIC.includes(w));
+    const hit=toks.filter(w=>q.includes(w)).length;
+    if(hit>bs){bs=hit;best=p}
+  }
+  return bs>=1?best:null;
+}
+async function askClara(raw){
+  const q=" "+String(raw).toLowerCase().trim()+" ";
+  const say=t=>speak(t,true);
+  if(/wheel|can.?t decide|pick (something|one|for)/.test(q)){say("Spinning the wheel.");spinWheel();return}
+  if(/\bbingo\b/.test(q)){location.hash="#/bingo";say("You've stamped "+bingoScore()+" of sixteen bingo squares."+(bingoScore()>=12?" Nearly there, ladies.":""));return}
+  if(/diary|journal|recap/.test(q)){const d=tripDay();say(d>0?diaryText(todayISO(),d):"The diary starts on day one of the trip.");return}
+  if(/sunset/.test(q)){
+    if(wx&&wx.daily&&wx.daily.sunset){
+      const ss=new Date(wx.daily.sunset[0]),mins=Math.round((ss-Date.now())/60000);
+      say(mins>0?("Sunset is at "+ss.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+
+        (mins<90?", about "+mins+" minutes from now. I'll give you a shout when it's close.":". I'll give you a shout when it's close."))
+        :"The sun is already down. Tomorrow is another chance.");
+    }else say("I need a weather signal for that one.");
+    return;
+  }
+  if(/weather|forecast|temperature|how (hot|cold)|rain(ing)?( today)?\b/.test(q)){
+    if(wx&&wx.current){
+      const w=WCODE[wx.current.weather_code]||["",""],pop=wx.daily.precipitation_probability_max[0];
+      say("It's "+Math.round(wx.current.temperature_2m)+" degrees and "+w[0].toLowerCase()+
+        ", with a high of "+Math.round(wx.daily.temperature_2m_max[0])+
+        (pop>=30?" and a "+pop+" percent chance of rain.":"."));
+    }else say("I can't reach the forecast right now.");
+    return;
+  }
+  if(/tomorrow/.test(q)){
+    const d=tripDay(),A=agenda();
+    if(d>0&&A[d])say(dayText(A[d]));
+    else if(A.length&&d===0)say("The trip hasn't started yet. Day one is "+A[0].title+".");
+    else say("There's no agenda for tomorrow yet — set your dates on the Agenda tab and I'll build the lot.");
+    return;
+  }
+  if(/(today|the plan|this morning|this afternoon|on the agenda)/.test(q)&&/plan|doing|agenda|schedule|what/.test(q)){
+    const d=tripDay(),A=agenda();
+    if(d>0&&A[d-1])say(dayText(A[d-1]));
+    else say("Nothing on the calendar today."+(agenda().length?"":" Set your dates and I'll plan the whole week."));
+    return;
+  }
+  if(/nearest|closest|find me|find a|where('s| is| are| can| do)/.test(q)){
+    for(const [w,cat] of NEAR_WORDS){
+      if(q.includes(w)&&FIND_TAGS[cat]){
+        say("Looking for the nearest "+FIND_TAGS[cat].n.toLowerCase()+".");
+        location.hash="#/nearby";
+        await findNow(cat,5,true);
+        return;
+      }
+    }
+  }
+  const p=fuzzyPlace(q);
+  if(p){
+    const o=here||HOME,d0=dist(o.lat,o.lng,p.lat,p.lng);
+    say((d0<0.15?"You're standing right at "+p.n+". "
+        :p.n+" is "+fmtMi(d0)+" away — about "+(d0<1.2?walkEta(d0):driveEta(d0))+". ")+p.d.split(". ")[0]+".");
+    placeSheet(p.n);
+    return;
+  }
+  if(/thank/.test(q)){say("Any time. That's what I'm here for.");return}
+  if(/hello|hi clara|hey clara|good (morning|afternoon|evening)/.test(q)){
+    say("Hello! Ask me what's nearby, what today's plan is, how far something is — or tell me you can't decide and I'll spin the wheel.");
+    return;
+  }
+  say("I didn't catch a question I know. Try: where's the nearest coffee. What's the plan today. How far is Red Rocks. Or: spin the wheel.");
+}
+(function(){
+  const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const b=$("btnMic");
+  if(!SRC){b.style.display="none";return}
+  let rec=null,listening=false;
+  b.addEventListener("click",()=>{
+    if(listening){try{rec.stop()}catch(e){}return}
+    stopSpeaking();
+    try{
+      rec=new SRC();
+      rec.lang="en-US";rec.interimResults=false;rec.maxAlternatives=1;
+      rec.onstart=()=>{listening=true;b.classList.add("hot");toast("&#127908; Listening&hellip; just ask")};
+      rec.onend=()=>{listening=false;b.classList.remove("hot")};
+      rec.onerror=e=>{
+        listening=false;b.classList.remove("hot");
+        toast(e.error==="not-allowed"?"The microphone needs permission — check the browser settings":"Didn't catch that — tap and try again");
+      };
+      rec.onresult=ev=>{
+        const t=ev.results[0][0].transcript;
+        toast("&ldquo;"+esc(t)+"&rdquo;");
+        askClara(t);
+      };
+      rec.start();
+    }catch(e){toast("Voice input isn't available on this browser")}
+  });
+})();
+
+/* ============================================================
    BOOT
    ============================================================ */
 async function boot(){
@@ -3436,6 +4050,7 @@ async function boot(){
   renderCamChips();renderCamGal();renderGal();
   renderChat();renderLoc();renderNotif();renderVoicePanel();renderPack();renderNumbers();renderSettings();
   renderBriefing();netCheck();
+  renderBingo();renderDiary();applyHC();
 
   if(store.get("loc-share",false)){locSharing=true;$("locToggle").checked=true}
   chatSubscribe();locSubscribe();
@@ -3455,7 +4070,13 @@ async function boot(){
       }
     },2500);
   }
-  setInterval(()=>{renderHero();renderBriefing()},120000);
+  setInterval(()=>{renderHero();renderBriefing();renderDiary()},120000);
+  setInterval(sunsetWatch,60000);
+  /* the diary, spoken once each evening if her voice is on */
+  if(store.get("diary-day","")!==t&&new Date().getHours()>=19&&tripDay()>0){
+    store.set("diary-day",t);
+    setTimeout(()=>speak(diaryText(todayISO(),tripDay())),4000);
+  }
   setInterval(()=>{if(locSharing)publishLoc()},120000);
   setInterval(renderLoc,60000);
   setInterval(checkUpdate,5*60*1000);
