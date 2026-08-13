@@ -1145,7 +1145,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-19";
+const BUILD="chris-2026-08-13-20";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1402,7 +1402,8 @@ const CLARA_VOICE_ID="tMXujoAjiboschVOhAnk";   /* Clara - the same voice as Oliv
    A key pasted in the Toolkit always overrides it; removing a pasted
    key falls back to this one. */
 const XI_EMB=["sk_V2_hg","u_kJRBIu","EaKWh_lK","NHXmtOiy","qnGAQX3I","oV5RQU7c","rSd9jr"].join("");
-function xiKey(){return store.get("xiKey","")||XI_EMB}
+function xiScrub(k){return String(k||"").replace(/[\s\u0000-\u001F\u200B-\u200D\uFEFF\u00A0]/g,"")}
+function xiKey(){return xiScrub(store.get("xiKey","")||XI_EMB)}
 const TTS_CACHE="chris-tts-v1";
 let voiceOn=store.get("voice",false), curAudio=null, ttsSpend=store.get("ttsChars",0);
 
@@ -3405,10 +3406,11 @@ function voiceTrouble(){
       '<br><span class="tiny">Copy it into another phone&rsquo;s Voice setup — or send it to your builder to build into the app for every phone.</span>';
   });
   $("vtSave").addEventListener("click",()=>{
-    const v=$("vtKey").value.trim();
+    const v=xiScrub($("vtKey").value);
     if(!v)return toast("Paste the key first");
+    if(!/^sk_/.test(v))toast("&#9888;&#65039; ElevenLabs keys start with sk_ — this one doesn't");
     store.set("xiKey",v);store.del("xiVoice");store.del("xiVoiceName");
-    renderVoicePanel();toast("&#128266; Saved");vtReport();
+    renderVoicePanel();toast("&#128266; Saved ("+v.length+" characters)");vtReport();
   });
   vtReport();
 }
@@ -3419,7 +3421,9 @@ async function vtReport(){
   const lines=[];
   lines.push("<b>App build:</b> "+BUILD);
   lines.push("<b>Signal:</b> "+(navigator.onLine?"online":"OFFLINE — her voice needs a signal for new lines"));
-  lines.push("<b>Key in use:</b> "+(saved?(saved===XI_EMB?"built-in":"saved on this phone (&hellip;"+esc(saved.slice(-4))+")"):"built-in"));
+  const eff=xiKey();
+  lines.push("<b>Key in use:</b> "+(saved?(xiScrub(saved)===XI_EMB?"built-in":"saved on this phone"):"built-in"));
+  lines.push("<b>Exactly what gets sent:</b> "+esc(eff.slice(0,6))+"&hellip;"+esc(eff.slice(-4))+" &middot; "+eff.length+" characters, no spaces");
   lines.push("<b>Voice chosen:</b> "+(store.get("xiVoiceName","")?esc(store.get("xiVoiceName","")):"automatic (finds Clara by name)"));
   let cached=0;
   try{const c=await caches.open(TTS_CACHE);cached=(await c.keys()).length}catch(e){}
