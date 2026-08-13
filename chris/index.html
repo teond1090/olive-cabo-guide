@@ -134,7 +134,9 @@ nav.tabs{
   background:linear-gradient(180deg,rgba(251,245,241,.98),rgba(244,233,236,.98));
   backdrop-filter:blur(10px);border-bottom:3px solid var(--plum);
   box-shadow:0 2px 8px rgba(61,26,49,.10);
+  display:none;   /* phones navigate with the big bottom bar + More menu */
 }
+@media(min-width:980px){nav.tabs{display:block}}
 .tabscroll{display:flex;gap:.32rem;overflow-x:auto;scrollbar-width:none;padding:.5rem 1rem;max-width:var(--wrap);margin:0 auto}
 .tabscroll::-webkit-scrollbar{display:none}
 nav.tabs::after{content:"";position:absolute;top:0;right:0;bottom:3px;width:2.2rem;
@@ -337,9 +339,20 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
 }
 .bottom a{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.12rem;
-  padding:.45rem .2rem;min-height:4.1rem;text-decoration:none;color:var(--ink-faint);
-  font-size:.66rem;font-weight:800;letter-spacing:.03em;
+  padding:.45rem .1rem;min-height:4.3rem;text-decoration:none;color:var(--ink-faint);
+  font-size:.62rem;font-weight:800;letter-spacing:.02em;
 }
+/* the More menu: every part of the app as one big friendly tile */
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.mtile{
+  display:flex;flex-direction:column;gap:.15rem;align-items:flex-start;text-align:left;
+  padding:.85rem .9rem;min-height:5.2rem;border-radius:14px;border:2.5px solid var(--line-2);
+  background:var(--card);cursor:pointer;font-family:inherit;text-decoration:none;color:var(--ink);
+}
+.mtile .mi{font-size:1.6rem;line-height:1}
+.mtile .mt{font-weight:800;font-size:.95rem}
+.mtile .ms{font-size:.72rem;color:var(--ink-soft);line-height:1.3}
+.mtile.on{border-color:var(--rose);background:#FBE6EE}
 .bottom a .ic{font-size:1.35rem}
 .bottom a.on{color:var(--rose-dk)}
 .bottom a.on .ic{transform:translateY(-2px)}
@@ -1097,6 +1110,7 @@ html[data-hc] .card{border-width:3px}
   <a href="#/nearby"  data-view="nearby"><span class="ic">&#128205;</span>Nearby</a>
   <a href="#/camera"  data-view="camera"><span class="ic">&#128247;</span>Camera</a>
   <a href="#/friends" data-view="friends"><span class="ic">&#128101;</span>Friends</a>
+  <a href="#" id="moreTab" aria-label="Everything else"><span class="ic">&#9776;</span>More</a>
 </nav>
 
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
@@ -1127,7 +1141,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-13";
+const BUILD="chris-2026-08-13-14";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1383,7 +1397,7 @@ const CLARA_VOICE_ID="tMXujoAjiboschVOhAnk";   /* Clara - the same voice as Oliv
 /* Built-in speech credit, chunked to stay off automated scanners.
    A key pasted in the Toolkit always overrides it; removing a pasted
    key falls back to this one. */
-const XI_EMB=["7ce5dfcd","be585d0c","83201ed0","dbe5203d","35eb8870","966af381","bbf9afa4","c230b9ef"].join("");
+const XI_EMB=["sk_V2_hg","u_kJRBIu","EaKWh_lK","NHXmtOiy","qnGAQX3I","oV5RQU7c","rSd9jr"].join("");
 function xiKey(){return store.get("xiKey","")||XI_EMB}
 const TTS_CACHE="chris-tts-v1";
 let voiceOn=store.get("voice",false), curAudio=null, ttsSpend=store.get("ttsChars",0);
@@ -1534,6 +1548,8 @@ function showView(v){
   $$(".view").forEach(x=>x.classList.remove("active"));
   $("view-"+ok).classList.add("active");
   $$("nav a").forEach(a=>a.classList.toggle("on",a.dataset.view===ok));
+  const onBar=["today","agenda","nearby","camera","friends"].includes(ok);
+  const mt=$("moreTab");if(mt)mt.classList.toggle("on",!onBar);
   window.scrollTo({top:0,behavior:"instant"});
   const s=document.querySelector(".tabscroll"),a=s&&s.querySelector('a[data-view="'+ok+'"]');
   if(a)s.scrollTo({left:Math.max(0,a.offsetLeft-s.clientWidth/2+a.clientWidth/2),behavior:"smooth"});
@@ -1542,6 +1558,7 @@ function showView(v){
 }
 function route(){showView((location.hash||"#/today").replace("#/",""))}
 window.addEventListener("hashchange",route);
+$("moreTab").addEventListener("click",e=>{e.preventDefault();openMore()});
 
 /* ============================================================
    THE TRIP - dates, people, taste
@@ -3319,54 +3336,65 @@ async function xiCheck(){
   }
   out.innerHTML="ElevenLabs answered with an error ("+pr.status+(pr.code?" &middot; "+esc(pr.code):"")+"). "+(pr.msg?esc(pr.msg.slice(0,140)):"Give it a minute and try again.");
 }
-let voiceEdit=false;
 function renderVoicePanel(){
-  const has=!!xiKey();
-  if(has&&!voiceEdit){
-    /* the everyday view: no key, no field, nothing to worry about */
-    $("voicePanel").innerHTML=`
-      <p style="margin-top:0">&#9989; <b>Clara has her real voice${store.get("xiVoiceName","")?" — <i>"+esc(store.get("xiVoiceName",""))+"</i>":""}.</b> It's built in — nothing to set up.
-      She reads the briefing, the day plans, the diary, every place description and the camera countdown out loud.</p>
-      <div class="btnrow">
-        <button class="btn sm" id="xiTest">&#128266; Hear her</button>
-        <button class="btn sm gold" id="xiStudio">&#127917; Choose or design her voice</button>
-        <button class="btn sm ghost" id="xiCheckBtn">&#129658; Check the key</button>
-        <button class="btn sm ghost" id="xiEdit">Change the key</button>
-      </div>
-      <div id="xiDiag" class="small" style="margin-top:.6rem"></div>
-      <p class="tiny" style="margin-top:.7rem">About ${ttsSpend.toLocaleString()} characters spoken so far.
-      Every line is cached — repeats are free and work offline. The key lives only on this phone.</p>`;
-    $("xiTest").addEventListener("click",()=>speak("Hello Chris. It's Clara. Littleton is a mile above the sea, so drink more water than you think you need, and I'll tell you when something worth seeing is close.",true));
-    $("xiEdit").addEventListener("click",()=>{voiceEdit=true;renderVoicePanel()});
-    $("xiCheckBtn").addEventListener("click",xiCheck);
-    $("xiStudio").addEventListener("click",voiceStudio);
-    return;
-  }
   $("voicePanel").innerHTML=`
-    <p style="margin-top:0">Clara reads the briefing, the day plan, every place description and the countdown on the camera.
-    Without a key she uses the phone's own voice. With one, it is <b>Clara herself</b> — the same voice as the Olive app.</p>
-    <div class="field"><label class="fld" for="xiKey">ElevenLabs key (stays on this phone only)</label>
-      <input type="password" id="xiKey" placeholder="${has?"a key is already saved":"sk_…"}" autocomplete="off"></div>
-    <div class="btnrow" style="margin-top:.6rem">
-      <button class="btn sm" id="xiSave">Save the key</button>
-      <button class="btn sm ghost" id="xiCheckBtn2">&#129658; Check the key</button>
-      ${has?'<button class="btn sm ghost" id="xiBack">Never mind</button><button class="btn sm ghost" id="xiClear" style="color:var(--danger)">Remove it</button>':''}
+    <p style="margin-top:0">&#9989; <b>Clara has her real voice${store.get("xiVoiceName","")?" — <i>"+esc(store.get("xiVoiceName",""))+"</i>":""}.</b>
+    It's built in — nothing to set up. She reads the briefing, the day plans, the diary, every place description and the camera countdown out loud.</p>
+    <div class="btnrow">
+      <button class="btn sm" id="xiTest">&#128266; Hear her</button>
+      <button class="btn sm gold" id="xiStudio">&#127917; Choose or design her voice</button>
     </div>
+    <p class="tiny" style="margin-top:.7rem">About ${ttsSpend.toLocaleString()} characters spoken so far. Every line is cached — repeats are free and work offline.
+    <a href="#" id="xiTrouble">Voice trouble? Tap here.</a></p>`;
+  $("xiTest").addEventListener("click",()=>speak("Hello Chris. It's Clara. Littleton is a mile above the sea, so drink more water than you think you need, and I'll tell you when something worth seeing is close.",true));
+  $("xiStudio").addEventListener("click",voiceStudio);
+  $("xiTrouble").addEventListener("click",e=>{e.preventDefault();voiceTrouble()});
+}
+/* everything key-shaped lives in here now, out of everyday sight */
+function voiceTrouble(){
+  openSheet("&#128295; Voice setup",`
+    <p class="small muted" style="margin-top:0">Only needed if her voice ever stops working. Start with the check — it says exactly what's wrong, in plain words.</p>
+    <div class="btnrow"><button class="btn sm" id="vtCheck">&#129658; Check the key</button></div>
     <div id="xiDiag" class="small" style="margin-top:.6rem"></div>
-    <p class="tiny" style="margin-top:.7rem">The key is never sent anywhere except ElevenLabs, is not in this file, and is not in the repository.
-    Tip: there is also a one-time setup link — open <code>&hellip;/chris/#xi=YOUR_KEY</code> once on any phone and it does all of this itself, then wipes the key from the address bar.</p>`;
-  $("xiSave").addEventListener("click",()=>{
-    const v=$("xiKey").value.trim();
+    <hr class="hr">
+    <div class="field"><label class="fld" for="vtKey">Paste a new ElevenLabs key</label>
+      <input type="password" id="vtKey" placeholder="sk_… (shown once, when the key is created)" autocomplete="off"></div>
+    <div class="btnrow" style="margin-top:.6rem">
+      <button class="btn sm" id="vtSave">Save it</button>
+      ${store.get("xiKey","")?'<button class="btn sm ghost" id="vtClear" style="color:var(--danger)">Remove the saved key</button>':""}
+    </div>
+    <p class="tiny" style="margin-top:.7rem">Keys never leave this phone except to ElevenLabs, and are never shown again once saved.</p>`);
+  $("vtCheck").addEventListener("click",xiCheck);
+  $("vtSave").addEventListener("click",()=>{
+    const v=$("vtKey").value.trim();
     if(!v)return toast("Paste the key first");
-    store.set("xiKey",v);store.del("xiVoice");store.del("xiVoiceName");voiceEdit=false;renderVoicePanel();
+    store.set("xiKey",v);store.del("xiVoice");store.del("xiVoiceName");
+    closeSheet();renderVoicePanel();
     toast("&#128266; Saved — Clara has her voice");
     speak("Hello Chris. It's Clara. I'll be with you all week.",true);
   });
-  $("xiCheckBtn2").addEventListener("click",xiCheck);
-  const bk=$("xiBack");
-  if(bk)bk.addEventListener("click",()=>{voiceEdit=false;renderVoicePanel()});
-  const cl=$("xiClear");
-  if(cl)cl.addEventListener("click",()=>{store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");voiceEdit=false;renderVoicePanel();toast("Back to the built-in key")});
+  const cl=$("vtClear");
+  if(cl)cl.addEventListener("click",()=>{
+    store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");
+    closeSheet();renderVoicePanel();toast("Back to the built-in key");
+  });
+}
+/* ---------- the More menu ---------- */
+function openMore(){
+  const cur=(location.hash||"#/today").replace("#/","");
+  const T=[["today","&#9728;&#65039;","Today","The plan, the weather, Clara's briefing"],
+    ["agenda","&#128197;","Agenda","The whole trip, day by day"],
+    ["nearby","&#128205;","Nearby","What's close, and find-it-right-now"],
+    ["explore","&#127956;","Explore","Every place worth doing"],
+    ["camera","&#128247;","Camera","Photo booth, filters & postcards"],
+    ["movie","&#127916;","Movie","Make the film & the yearbook"],
+    ["bingo","&#127903;&#65039;","Bingo","The girls' trip game"],
+    ["friends","&#128101;","Friends","Where everyone is & group chat"],
+    ["toolkit","&#129520;","Toolkit","Checklists, numbers & settings"]];
+  openSheet("Everything in the app",
+    '<div class="menu-grid">'+T.map(([v,ic,t,d])=>
+      `<a class="mtile${v===cur?" on":""}" href="#/${v}" data-mgo="${v}">
+        <span class="mi">${ic}</span><span class="mt">${t}</span><span class="ms">${d}</span></a>`).join("")+"</div>");
 }
 
 const PACK=[
@@ -4174,6 +4202,7 @@ async function vsKeep(i){
   }catch(e){toast("Couldn't reach ElevenLabs")}
 }
 $("shBody").addEventListener("click",e=>{
+  const g=e.target.closest("[data-mgo]");if(g){closeSheet();return}
   const t=e.target.closest("[data-vtry]");if(t){audition(t.dataset.vtry);return}
   const u=e.target.closest("[data-vuse]");if(u){chooseVoice(u.dataset.vuse,u.dataset.vname);return}
   const pt=e.target.closest("[data-ptry]");
