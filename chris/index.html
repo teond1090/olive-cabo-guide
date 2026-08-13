@@ -1141,7 +1141,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-14";
+const BUILD="chris-2026-08-13-15";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1486,6 +1486,18 @@ async function claraTTS(text,_retried){
           voice_settings:{stability:.6,similarity_boost:.8,style:.25,use_speaker_boost:true}})
       });
       if(!r.ok){
+        /* a stale pasted key (from old experiments) beats the good
+           built-in one - if the pasted key is dead, drop it and let
+           the built-in key take over on the spot */
+        if(!_retried&&r.status===401&&store.get("xiKey","")&&store.get("xiKey","")!==XI_EMB){
+          let code="";try{code=((await r.clone().json()).detail||{}).status||""}catch(e){}
+          if(code==="invalid_api_key"||code==="api_key_id_used_as_api_key"){
+            store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");
+            toast("&#128266; Switched to the built-in voice key");
+            try{renderVoicePanel()}catch(e){}
+            return claraTTS(text,true);
+          }
+        }
         /* the wired-in voice isn't in this account - find hers, once */
         if(!_retried&&r.status!==401&&await resolveVoice(key))
           return claraTTS(text,true);
