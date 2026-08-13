@@ -1127,7 +1127,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-7";
+const BUILD="chris-2026-08-13-9";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1437,8 +1437,8 @@ async function resolveVoice(key){
     if(!r.ok)return false;
     const vs=(await r.json()).voices||[];
     if(!vs.length)return false;
-    const pref=vs.find(v=>/dreaded grizzly bear/i.test(v.name||""))
-             ||vs.find(v=>/clara/i.test(v.name||""))
+    const pref=vs.find(v=>/clara/i.test(v.name||""))
+             ||vs.find(v=>/dreaded grizzly bear/i.test(v.name||""))
              ||vs.find(v=>v.category&&v.category!=="premade")
              ||vs[0];
     if(!pref||pref.voice_id===claraVoiceId())return false;
@@ -3265,7 +3265,7 @@ async function xiCheck(){
       const rv=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
       if(rv.ok){
         const vs=(await rv.json()).voices||[];
-        const dg=vs.find(v=>/dreaded grizzly bear/i.test(v.name||""))||vs.find(v=>/clara/i.test(v.name||""))||vs.find(v=>v.category&&v.category!=="premade");
+        const dg=vs.find(v=>/clara/i.test(v.name||""))||vs.find(v=>/dreaded grizzly bear/i.test(v.name||""))||vs.find(v=>v.category&&v.category!=="premade");
         if(dg){
           if(store.get("xiVoice","")!==dg.voice_id){store.set("xiVoice",dg.voice_id);store.set("xiVoiceName",dg.name||"")}
           vmsg=" Her voice &mdash; <b>"+esc(dg.name||"")+"</b> &mdash; is in the account and ready.";
@@ -3314,7 +3314,7 @@ function renderVoicePanel(){
   $("xiSave").addEventListener("click",()=>{
     const v=$("xiKey").value.trim();
     if(!v)return toast("Paste the key first");
-    store.set("xiKey",v);voiceEdit=false;renderVoicePanel();
+    store.set("xiKey",v);store.del("xiVoice");store.del("xiVoiceName");voiceEdit=false;renderVoicePanel();
     toast("&#128266; Saved — Clara has her voice");
     speak("Hello Chris. It's Clara. I'll be with you all week.",true);
   });
@@ -4202,12 +4202,17 @@ async function boot(){
    browser history, and never appears anywhere in the app again.
    The key is not in this file, not in the repository, and is only ever
    sent to ElevenLabs. */
-(function(){
+function processSetupLink(){
   const m=location.hash.match(/^#xi=([A-Za-z0-9_.\-]{12,80})(?:\|([A-Za-z0-9]{10,40}))?$/);
-  if(!m)return;
+  if(!m)return false;
   store.set("xiKey",m[1]);
-  if(m[2]){store.set("xiVoice",m[2]);store.del("xiVoiceName")}
+  if(m[2])store.set("xiVoice",m[2]);else store.del("xiVoice");
+  store.del("xiVoiceName");voiceEdit=false;
+  /* setting up her voice means you want to hear her - flip the master
+     switch on rather than leaving her silenced behind a hidden button */
+  voiceOn=true;store.set("voice",true);syncVoiceBtn();
   try{history.replaceState(null,"",location.pathname+location.search)}catch(e){location.hash=""}
+  try{renderVoicePanel()}catch(e){}
   setTimeout(()=>{
     toast("&#128266; Clara's voice is set up on this phone");
     /* iPhones block audio that no finger asked for, so the greeting is
@@ -4217,7 +4222,12 @@ async function boot(){
       s:"Tap Hear her to check it worked. Toolkit — Clara's Voice can check the key any time.",
       say:"Hello — it's Clara. It's lovely to be on this phone. I'll read the plans, the briefings and the diary, and I'll speak up when something good is close."});
   },1500);
-})();
+  return true;
+}
+processSetupLink();
+/* pasted into an app that is already open: the page does not reload,
+   only the hash changes - catch that case too */
+window.addEventListener("hashchange",()=>{if(processSetupLink())location.hash="#/today"});
 boot();
 </script>
 </body>
