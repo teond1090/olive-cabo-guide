@@ -1,0 +1,19 @@
+{
+  "name": "Chris in Littleton - Girls' Trip",
+  "short_name": "Chris in Littleton",
+  "description": "Chris's Littleton, Colorado girls' trip companion. Nearby alerts, a planned agenda, a photo booth camera, a movie maker and a live map of where everyone is.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF5F1",
+  "theme_color": "#5B2A4A",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%235B2A4A'/%3E%3Cpath d='M64 372 L184 196 L256 292 L328 164 L448 372 Z' fill='%235F8060' stroke='%23FBF5F1' stroke-width='12' stroke-linejoin='round'/%3E%3Ccircle cx='366' cy='140' r='52' fill='%23C98F2E' stroke='%23FBF5F1' stroke-width='12'/%3E%3Cpath d='M160 372 q48-56 96 0' fill='none' stroke='%23C4517A' stroke-width='24' stroke-linecap='round'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

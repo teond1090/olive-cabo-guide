@@ -1,0 +1,3170 @@
+<!doctype html>
+<html lang="en" data-fs="l">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#5B2A4A">
+<title>Littleton Girls' Trip &middot; Chris</title>
+<meta name="description" content="Chris's Littleton, Colorado girls' trip companion. Nearby alerts, a planned agenda, a photo booth camera, a movie maker and a live map of where everyone is.">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chris in Littleton">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%235B2A4A'/%3E%3Cpath d='M8 46 L22 26 L31 38 L40 20 L56 46 Z' fill='%23D9A441'/%3E%3Ccircle cx='46' cy='16' r='6' fill='%23C4517A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CHRIS IN LITTLETON - a girls' trip companion
+   Theme: Colorado foothills wildflower. Plum, dusty rose, aspen
+   gold, sage, high-country slate on warm paper.
+
+   Non-negotiables, because Chris is 70-something and this lives
+   on a phone in bright Colorado sun:
+     - 21px base text (data-fs="l" by default, not "m")
+     - every tap target 54px minimum
+     - nothing important in colour alone
+     - body copy stays Inter no matter how pretty the headings get
+   ============================================================ */
+:root{
+  --cream:#FBF5F1; --cream-2:#F4E9EC; --card:#FFFDFB; --card-2:#F8EFF3;
+  --plum:#5B2A4A; --plum-2:#743760; --plum-dk:#3D1A31;
+  --rose:#C4517A; --rose-dk:#9E3860; --rose-lt:#F0C9D8;
+  --gold:#C98F2E; --gold-lt:#F0CE86; --gold-dk:#9C6D1E;
+  --sage:#5F8060; --sage-dk:#436046; --slate:#3E5A76; --slate-dk:#2B4159;
+  --ink:#2E2028; --ink-soft:#63505D; --ink-faint:#8E7A87;
+  --danger:#A62D3E; --ok:#4B7A50;
+  --line:#E7D6DE; --line-2:#D5BAC8;
+  --shadow:0 2px 5px rgba(61,26,49,.09), 0 10px 26px rgba(61,26,49,.08);
+  --shadow-lg:0 8px 20px rgba(61,26,49,.16), 0 28px 60px rgba(61,26,49,.14);
+  --r:18px; --r-sm:12px; --r-lg:26px;
+  --tap:54px; --wrap:1080px;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.30'/%3E%3C/svg%3E");
+}
+html[data-fs="m"]{font-size:18px}
+html[data-fs="l"]{font-size:21px}
+html[data-fs="xl"]{font-size:24.5px}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  color:var(--ink);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:1rem;line-height:1.62;-webkit-font-smoothing:antialiased;
+  padding-bottom:calc(5rem + env(safe-area-inset-bottom));
+  overflow-x:hidden;
+  background-color:var(--cream);
+  background-image:
+    radial-gradient(ellipse 55% 38% at 10% 6%, rgba(196,81,122,.10), transparent 62%),
+    radial-gradient(ellipse 50% 34% at 92% 18%, rgba(201,143,46,.11), transparent 62%),
+    radial-gradient(ellipse 65% 42% at 34% 94%, rgba(95,128,96,.09), transparent 64%),
+    var(--grain);
+  background-attachment:fixed,fixed,fixed,fixed;
+  background-size:auto,auto,auto,140px 140px;
+}
+h1,h2,h3,h4{font-family:Fraunces,Georgia,serif;margin:0 0 .4em;line-height:1.16;letter-spacing:-.008em}
+h1{font-size:2rem;font-weight:900}
+h2{font-size:1.48rem;font-weight:900}
+h3{font-size:1.16rem;font-weight:700}
+h4{font-size:1rem;font-weight:700}
+p{margin:0 0 .9em}
+a{color:var(--rose-dk);text-underline-offset:3px}
+img{max-width:100%;display:block}
+b,strong{font-weight:700}
+:focus-visible{outline:3px solid var(--slate);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ============ LAYOUT ============ */
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 1rem}
+.view{display:none;animation:fade .28s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.stack>*+*{margin-top:1rem}
+.grid{display:grid;gap:1rem}
+@media(min-width:720px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}}
+
+/* ============ HEADER ============ */
+header.top{
+  position:relative;overflow:hidden;color:#FCEFF4;
+  padding:calc(.9rem + env(safe-area-inset-top)) 0 3.2rem;
+  background-color:var(--plum);
+  background-image:
+    radial-gradient(ellipse at 50% -25%, rgba(240,206,134,.34), transparent 60%),
+    linear-gradient(165deg,#743760 0%,#4E2340 58%,#331528 100%),
+    var(--grain);
+  background-size:auto,auto,120px 120px;
+  box-shadow:inset 0 -3px 0 var(--gold), 0 4px 16px rgba(61,26,49,.32);
+}
+header.top::before{
+  content:"";position:absolute;inset:.55rem .55rem 2.7rem;
+  border:2px dashed rgba(240,201,216,.34);border-radius:14px;pointer-events:none;
+}
+/* foothills ridgeline spilling into the page */
+header.top::after{
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:2.9rem;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,120 L0,84 L110,44 L190,80 L300,28 L415,86 L520,52 L640,92 L760,46 L880,80 L1000,38 L1110,76 L1200,52 L1200,120 Z' fill='%23FBF5F1'/%3E%3C/svg%3E") bottom/100% 100% no-repeat;
+}
+.brandbar{display:flex;align-items:center;gap:.7rem;position:relative;z-index:2}
+.logo{width:2.7rem;height:2.7rem;flex:0 0 auto;filter:drop-shadow(0 3px 6px rgba(0,0,0,.42))}
+/* the header has to survive a 360px phone at extra-large text, so the
+   brand block is allowed to shrink and clip rather than push the buttons off */
+.brandtxt{flex:1;min-width:0}
+.brandtxt .tag{
+  font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold-lt);
+  font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.brandtxt h1{font-size:1.24rem;margin:.08rem 0 0;color:#FFF6FA;text-shadow:0 2px 6px rgba(0,0,0,.3);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+@media(min-width:520px){.brandtxt h1{font-size:1.5rem}.logo{width:3.1rem;height:3.1rem}}
+.hdr-actions{display:flex;gap:.35rem;flex:0 0 auto}
+.icon-btn{
+  min-width:2.7rem;min-height:2.7rem;border-radius:12px;border:2px solid rgba(240,201,216,.4);
+  background:rgba(255,255,255,.12);color:#FCEFF4;font-size:1.15rem;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;gap:1px;font-family:inherit;
+}
+.icon-btn[aria-pressed="true"]{background:var(--gold);border-color:#fff;color:#3D1A31}
+
+/* ============ NAV ============ */
+nav.tabs{
+  position:sticky;top:0;z-index:60;
+  background:linear-gradient(180deg,rgba(251,245,241,.98),rgba(244,233,236,.98));
+  backdrop-filter:blur(10px);border-bottom:3px solid var(--plum);
+  box-shadow:0 2px 8px rgba(61,26,49,.10);
+}
+.tabscroll{display:flex;gap:.32rem;overflow-x:auto;scrollbar-width:none;padding:.5rem 1rem;max-width:var(--wrap);margin:0 auto}
+.tabscroll::-webkit-scrollbar{display:none}
+nav.tabs::after{content:"";position:absolute;top:0;right:0;bottom:3px;width:2.2rem;
+  pointer-events:none;background:linear-gradient(90deg,rgba(246,238,238,0),rgba(245,236,238,.97))}
+nav.tabs a{
+  flex:0 0 auto;display:flex;align-items:center;gap:.4rem;
+  padding:.5rem .85rem;min-height:var(--tap);border-radius:12px;
+  text-decoration:none;color:var(--ink-soft);font-weight:700;font-size:.88rem;
+  border:2px solid transparent;white-space:nowrap;transition:.15s;
+}
+nav.tabs a:hover{background:var(--card-2);color:var(--plum);border-color:var(--line-2)}
+nav.tabs a.on{
+  background:linear-gradient(170deg,var(--rose),var(--rose-dk));color:#FFF4F8;
+  border-color:var(--plum-dk);box-shadow:0 3px 0 var(--plum-dk),0 6px 12px rgba(61,26,49,.2);
+}
+nav.tabs a .ic{font-size:1.05rem}
+
+/* ============ CARDS ============ */
+.card{
+  background:var(--card);border:2px solid var(--line-2);border-radius:var(--r);
+  padding:1.15rem;box-shadow:var(--shadow);position:relative;
+}
+.card.tint{background-color:var(--card-2)}
+.card-h{display:flex;align-items:center;gap:.65rem;margin-bottom:.75rem;padding-bottom:.55rem;border-bottom:2px solid var(--line)}
+.card-h h2,.card-h h3{margin:0;flex:1}
+.card-h .ic{font-size:1.45rem;line-height:1}
+.eyebrow{font-size:.66rem;font-weight:800;letter-spacing:.19em;text-transform:uppercase;color:var(--rose-dk);
+  display:flex;align-items:center;gap:.45rem}
+.eyebrow::after{content:"";flex:1;height:2px;background:linear-gradient(90deg,var(--line-2),transparent)}
+.muted{color:var(--ink-soft)}
+.small{font-size:.84rem}
+.hr{height:2px;background:var(--line);border:0;margin:1rem 0}
+.card.a-rose{border-left:8px solid var(--rose)}
+.card.a-gold{border-left:8px solid var(--gold)}
+.card.a-sage{border-left:8px solid var(--sage)}
+.card.a-slate{border-left:8px solid var(--slate)}
+.card.a-plum{border-left:8px solid var(--plum)}
+
+/* ============ BUTTONS ============ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  min-height:var(--tap);padding:.65rem 1.15rem;border-radius:13px;
+  border:2px solid var(--plum-dk);background:linear-gradient(170deg,var(--rose),var(--rose-dk));color:#FFF4F8;
+  font-family:inherit;font-size:1rem;font-weight:700;cursor:pointer;text-decoration:none;
+  box-shadow:0 3px 0 var(--plum-dk),0 5px 12px rgba(61,26,49,.18);transition:.12s;
+}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--plum-dk)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.ghost{background:var(--card);color:var(--plum);border-color:var(--line-2);box-shadow:0 2px 0 var(--line-2)}
+.btn.gold{background:linear-gradient(170deg,var(--gold-lt),var(--gold));color:#3D1A31;border-color:var(--gold-dk);box-shadow:0 3px 0 var(--gold-dk)}
+.btn.sage{background:linear-gradient(170deg,var(--sage),var(--sage-dk));border-color:var(--sage-dk);box-shadow:0 3px 0 #2F4632}
+.btn.slate{background:linear-gradient(170deg,var(--slate),var(--slate-dk));border-color:var(--slate-dk);box-shadow:0 3px 0 #1F3145}
+.btn.plum{background:linear-gradient(170deg,var(--plum-2),var(--plum));border-color:var(--plum-dk);box-shadow:0 3px 0 var(--plum-dk)}
+.btn.sm{min-height:46px;padding:.45rem .85rem;font-size:.9rem;border-radius:11px}
+.btn.big{font-size:1.1rem;padding:.9rem 1.4rem;width:100%}
+.btnrow{display:flex;flex-wrap:wrap;gap:.55rem}
+
+/* ============ FORM ============ */
+input[type="text"],input[type="date"],input[type="number"],input[type="password"],select,textarea{
+  width:100%;min-height:var(--tap);padding:.6rem .8rem;border-radius:12px;
+  border:2px solid var(--line-2);background:var(--card);color:var(--ink);
+  font-family:inherit;font-size:1rem;
+}
+textarea{min-height:6rem;line-height:1.5}
+label.fld{display:block;font-weight:700;font-size:.86rem;margin-bottom:.3rem;color:var(--ink-soft)}
+.field+.field{margin-top:.75rem}
+.switch{display:flex;align-items:flex-start;gap:.8rem;cursor:pointer;padding:.5rem 0;min-height:var(--tap)}
+.switch input{position:absolute;opacity:0;width:0;height:0}
+.switch .track{
+  flex:0 0 auto;width:3.5rem;height:2rem;border-radius:1rem;background:var(--line-2);
+  border:2px solid var(--line-2);position:relative;transition:.18s;margin-top:.15rem;
+}
+.switch .track::after{content:"";position:absolute;top:.13rem;left:.13rem;width:1.5rem;height:1.5rem;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:.18s}
+.switch input:checked+.track{background:var(--sage);border-color:var(--sage-dk)}
+.switch input:checked+.track::after{left:1.7rem}
+.switch input:focus-visible+.track{outline:3px solid var(--slate);outline-offset:2px}
+
+/* ============ PILLS ============ */
+.pills{display:flex;flex-wrap:wrap;gap:.42rem}
+.pill{
+  display:inline-flex;align-items:center;gap:.32rem;padding:.3rem .7rem;border-radius:999px;
+  background:var(--card-2);border:2px solid var(--line-2);font-size:.8rem;font-weight:700;color:var(--ink-soft);
+}
+.pill.rose{background:#FBE6EE;border-color:var(--rose-lt);color:var(--rose-dk)}
+.pill.gold{background:#FBF0DA;border-color:#E9CE96;color:var(--gold-dk)}
+.pill.sage{background:#E7EFE6;border-color:#BCD0BB;color:var(--sage-dk)}
+.pill.slate{background:#E3EBF3;border-color:#B5C8DA;color:var(--slate-dk)}
+.pill.on{background:var(--plum);border-color:var(--plum-dk);color:#FFF4F8}
+button.pill{cursor:pointer;font-family:inherit;min-height:44px}
+
+/* ============ STAT TILES ============ */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(7.2rem,1fr));gap:.6rem}
+.stat{
+  background:var(--card-2);border:2px solid var(--line-2);border-radius:14px;padding:.75rem .6rem;text-align:center;
+}
+.stat .v{font-family:Fraunces,Georgia,serif;font-size:1.5rem;font-weight:900;color:var(--plum);line-height:1.1}
+.stat .k{font-size:.68rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint);margin-top:.18rem}
+
+/* ============ ROWS ============ */
+.row{
+  display:flex;align-items:center;gap:.75rem;padding:.75rem 0;border-bottom:2px solid var(--line);
+}
+.row:last-child{border-bottom:0}
+.row .ic{font-size:1.5rem;flex:0 0 2rem;text-align:center}
+.row .bd{flex:1;min-width:0}
+.row .t{font-weight:700;line-height:1.28}
+.row .s{font-size:.82rem;color:var(--ink-soft);line-height:1.4}
+.row .rt{flex:0 0 auto;text-align:right}
+.row.clickable{cursor:pointer;border-radius:12px;padding:.75rem .5rem;margin:0 -.5rem}
+.row.clickable:hover{background:var(--card-2)}
+.dist{font-weight:800;color:var(--rose-dk);font-size:.92rem}
+.eta{font-size:.72rem;color:var(--ink-faint)}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;overflow:hidden;border-radius:var(--r-lg);padding:1.5rem 1.25rem;color:#FFF6FA;
+  background-color:var(--slate);
+  background-image:
+    radial-gradient(ellipse at 78% 8%, rgba(240,206,134,.42), transparent 55%),
+    linear-gradient(160deg,#4E6E8C 0%,#38536E 48%,#2B4159 100%);
+  box-shadow:var(--shadow-lg);border:2px solid var(--slate-dk);
+}
+.hero::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:3.6rem;opacity:.5;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,120 L0,80 L120,42 L210,78 L330,26 L450,84 L560,50 L690,90 L800,44 L930,78 L1050,36 L1160,74 L1200,50 L1200,120 Z' fill='%232B4159'/%3E%3C/svg%3E") bottom/100% 100% no-repeat;
+}
+.hero .lbl{font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;font-weight:800;color:var(--gold-lt)}
+.hero h2{margin:.3rem 0 .3rem;font-size:1.85rem;color:#fff;position:relative;z-index:2}
+.hero p{margin:0;opacity:.94;position:relative;z-index:2}
+.hero .countdown{
+  margin-top:.9rem;display:inline-flex;align-items:center;gap:.5rem;position:relative;z-index:2;
+  background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.34);border-radius:999px;
+  padding:.35rem .9rem;font-weight:800;font-size:.9rem;
+}
+
+/* ============ ALERTS ============ */
+.alert{
+  border-radius:var(--r);padding:1rem 1.05rem;border:2px solid var(--line-2);background:var(--card);
+  box-shadow:var(--shadow);display:flex;gap:.85rem;align-items:flex-start;
+  animation:pop .34s cubic-bezier(.2,1.2,.4,1);
+}
+@keyframes pop{from{opacity:0;transform:scale(.95) translateY(-6px)}to{opacity:1;transform:none}}
+.alert .ic{font-size:1.9rem;line-height:1;flex:0 0 auto}
+.alert .bd{flex:1;min-width:0}
+.alert .t{font-family:Fraunces,Georgia,serif;font-weight:900;font-size:1.08rem;margin-bottom:.15rem}
+.alert .s{font-size:.9rem;color:var(--ink-soft)}
+.alert .x{background:none;border:0;font-size:1.3rem;color:var(--ink-faint);cursor:pointer;min-width:44px;min-height:44px}
+.alert.gem{border-left:8px solid var(--rose);background:#FDF3F7}
+.alert.warn{border-left:8px solid var(--gold);background:#FDF6E8}
+.alert.go{border-left:8px solid var(--sage);background:#EFF5EE}
+.alert.info{border-left:8px solid var(--slate);background:#EDF2F8}
+.note{border-radius:13px;padding:.8rem .9rem;font-size:.88rem;border:2px solid var(--line-2);background:var(--card-2)}
+.note.warn{background:#FDF6E8;border-color:#E9CE96}
+.note.good{background:#EFF5EE;border-color:#BCD0BB}
+
+/* ============ TIMELINE / AGENDA ============ */
+.tl{position:relative;padding-left:1.75rem}
+.tl::before{content:"";position:absolute;left:.52rem;top:.4rem;bottom:.4rem;width:3px;background:var(--line-2);border-radius:2px}
+.tl .item{position:relative;padding:.15rem 0 1.05rem}
+.tl .item::before{
+  content:"";position:absolute;left:-1.42rem;top:.42rem;width:.95rem;height:.95rem;border-radius:50%;
+  background:var(--rose);border:3px solid var(--card);box-shadow:0 0 0 2px var(--rose)
+}
+.tl .item.opt::before{background:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+.tl .item.meal::before{background:var(--sage);box-shadow:0 0 0 2px var(--sage)}
+.tl .when{font-size:.72rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-faint)}
+.tl .what{font-weight:700;line-height:1.3}
+.tl .why{font-size:.85rem;color:var(--ink-soft)}
+
+/* ============ DAY CARDS ============ */
+.day{
+  background:var(--card);border:2px solid var(--line-2);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;
+}
+.day+.day{margin-top:.9rem}
+.day .hd{
+  display:flex;gap:.8rem;align-items:center;padding:.9rem 1rem;cursor:pointer;
+  background:linear-gradient(170deg,var(--card-2),var(--card));border-bottom:2px solid var(--line);
+}
+.day .hd .n{
+  flex:0 0 auto;width:2.9rem;height:2.9rem;border-radius:12px;display:grid;place-items:center;
+  background:linear-gradient(165deg,var(--plum-2),var(--plum));color:#FFF4F8;font-weight:900;font-family:Fraunces,serif;
+  font-size:1.05rem;border:2px solid var(--plum-dk);
+}
+.day .hd .tt{flex:1;min-width:0}
+.day .hd .tt .d{font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--rose-dk)}
+.day .hd .tt h3{margin:.1rem 0 0;font-size:1.08rem}
+.day .hd .cv{font-size:1.35rem;color:var(--ink-faint);transition:.2s}
+.day.open .hd .cv{transform:rotate(180deg)}
+.day .bdy{display:none;padding:1rem}
+.day.open .bdy{display:block}
+.day.today{border-color:var(--rose);box-shadow:0 0 0 3px var(--rose-lt),var(--shadow)}
+
+/* ============ BOTTOM BAR ============ */
+.bottom{
+  position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;
+  background:linear-gradient(180deg,rgba(255,253,251,.97),rgba(248,239,243,.99));
+  border-top:3px solid var(--plum);backdrop-filter:blur(10px);
+  padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -3px 14px rgba(61,26,49,.13);
+}
+.bottom a{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.12rem;
+  padding:.45rem .2rem;min-height:4.1rem;text-decoration:none;color:var(--ink-faint);
+  font-size:.66rem;font-weight:800;letter-spacing:.03em;
+}
+.bottom a .ic{font-size:1.35rem}
+.bottom a.on{color:var(--rose-dk)}
+.bottom a.on .ic{transform:translateY(-2px)}
+
+/* ============ SHEET ============ */
+.sheet{
+  position:fixed;inset:0;z-index:90;display:none;align-items:flex-end;justify-content:center;
+  background:rgba(46,32,40,.55);backdrop-filter:blur(3px);
+}
+.sheet.on{display:flex}
+.sheet .pane{
+  width:100%;max-width:640px;max-height:88vh;overflow-y:auto;background:var(--cream);
+  border-radius:var(--r-lg) var(--r-lg) 0 0;border-top:4px solid var(--rose);
+  padding:1.1rem 1.1rem calc(1.4rem + env(safe-area-inset-bottom));box-shadow:var(--shadow-lg);
+  animation:up .26s cubic-bezier(.2,.9,.3,1);
+}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet .hd{display:flex;align-items:center;gap:.7rem;margin-bottom:.8rem}
+.sheet .hd h3{margin:0;flex:1}
+.grab{width:3rem;height:5px;border-radius:3px;background:var(--line-2);margin:0 auto .8rem}
+
+/* ============ TOAST ============ */
+#toast{
+  position:fixed;left:50%;bottom:calc(5.6rem + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(1.5rem);
+  z-index:100;background:var(--plum-dk);color:#FFF4F8;padding:.75rem 1.15rem;border-radius:999px;
+  font-weight:700;font-size:.9rem;box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.25s;
+  max-width:90vw;text-align:center;border:2px solid var(--gold);
+}
+#toast.on{opacity:1;transform:translateX(-50%)}
+
+/* ============ CHAT ============ */
+.chat{max-height:22rem;overflow-y:auto;padding:.3rem;display:flex;flex-direction:column;gap:.55rem}
+.msg{max-width:82%;padding:.6rem .8rem;border-radius:15px;border:2px solid var(--line-2);background:var(--card);font-size:.92rem}
+.msg .who{font-size:.7rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
+.msg.me{align-self:flex-end;background:#FBE6EE;border-color:var(--rose-lt)}
+.msg.clara{align-self:flex-start;background:#FBF0DA;border-color:#E9CE96}
+.msg .tm{font-size:.68rem;color:var(--ink-faint);margin-top:.15rem}
+
+/* ============ MEDIA / GALLERY ============ */
+.drop{
+  border:3px dashed var(--line-2);border-radius:var(--r);padding:1.6rem 1rem;text-align:center;cursor:pointer;
+  background:var(--card-2);transition:.15s;
+}
+.drop:hover,.drop.over{border-color:var(--rose);background:#FBE6EE}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(6.4rem,1fr));gap:.5rem;margin-top:.9rem}
+.gal figure{margin:0;position:relative;border-radius:12px;overflow:hidden;border:2px solid var(--line-2);aspect-ratio:1;background:#000}
+.gal img,.gal video{width:100%;height:100%;object-fit:cover}
+.gal .del{
+  position:absolute;top:.2rem;right:.2rem;width:2rem;height:2rem;border-radius:50%;border:0;
+  background:rgba(46,32,40,.72);color:#fff;font-size:.85rem;cursor:pointer;line-height:1;
+}
+.gal .star{position:absolute;bottom:.2rem;left:.25rem;font-size:.85rem;filter:drop-shadow(0 1px 2px #000)}
+#vidCanvas{width:100%;border-radius:14px;border:2px solid var(--line-2);background:#111;display:block}
+
+/* ============ CAMERA ============ */
+.camstage{
+  position:relative;border-radius:var(--r);overflow:hidden;background:#100C0F;
+  border:3px solid var(--plum);aspect-ratio:3/4;max-height:72vh;margin:0 auto;
+}
+#camVideo{width:100%;height:100%;object-fit:cover;display:block;background:#100C0F}
+#camVideo.mirror{transform:scaleX(-1)}
+.camoff{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:1.4rem;color:#F6E7EE}
+.camgrid{position:absolute;inset:0;pointer-events:none;display:none}
+.camgrid.on{display:block;
+  background-image:linear-gradient(rgba(255,255,255,.34) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.34) 1px,transparent 1px);
+  background-size:33.33% 33.33%}
+.camframe{position:absolute;inset:0;pointer-events:none}
+.camband{
+  position:absolute;left:0;right:0;bottom:0;padding:.7rem .9rem 1rem;color:#fff;
+  background:linear-gradient(0deg,rgba(0,0,0,.62),transparent);
+  font-weight:800;letter-spacing:.05em;font-size:.9rem;text-shadow:0 2px 6px rgba(0,0,0,.6);
+}
+.camcount{
+  position:absolute;inset:0;display:grid;place-items:center;font-family:Fraunces,serif;font-weight:900;
+  font-size:7rem;color:#fff;text-shadow:0 6px 26px rgba(0,0,0,.75);pointer-events:none;
+}
+.camflash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .18s}
+.camflash.on{opacity:.92;transition:none}
+.camctl{display:flex;align-items:center;justify-content:space-between;gap:.7rem;margin-top:.9rem}
+.shutter{
+  width:5.2rem;height:5.2rem;border-radius:50%;border:5px solid var(--plum);background:linear-gradient(170deg,var(--rose),var(--rose-dk));
+  cursor:pointer;box-shadow:0 4px 0 var(--plum-dk),0 8px 20px rgba(61,26,49,.3);color:#fff;font-size:1.7rem;
+  display:grid;place-items:center;flex:0 0 auto;
+}
+.shutter:active{transform:translateY(3px);box-shadow:0 1px 0 var(--plum-dk)}
+.shutter.rec{background:linear-gradient(170deg,#D9534F,#A62D3E);animation:pulse 1s infinite}
+@keyframes pulse{50%{box-shadow:0 4px 0 var(--plum-dk),0 0 0 12px rgba(166,45,62,.22)}}
+.fx{display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;padding:.15rem 0}
+.fx::-webkit-scrollbar{display:none}
+.fx button{
+  flex:0 0 auto;min-height:44px;padding:.35rem .75rem;border-radius:999px;border:2px solid var(--line-2);
+  background:var(--card);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;color:var(--ink-soft);
+}
+.fx button.on{background:var(--plum);border-color:var(--plum-dk);color:#FFF4F8}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;margin-top:.6rem}
+.strip img{border-radius:8px;border:2px solid var(--line-2)}
+
+/* ============ PROGRESS / CHECKLIST ============ */
+.bar{height:.85rem;background:var(--line);border-radius:999px;overflow:hidden;border:2px solid var(--line-2)}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--rose),var(--gold));transition:width .5s}
+.check{display:flex;align-items:center;gap:.7rem;padding:.55rem 0;border-bottom:2px solid var(--line);cursor:pointer;min-height:var(--tap)}
+.check:last-child{border-bottom:0}
+.check .bx{
+  width:1.75rem;height:1.75rem;flex:0 0 auto;border-radius:8px;border:3px solid var(--line-2);background:var(--card);
+  display:grid;place-items:center;font-size:1rem;color:transparent;
+}
+.check.done .bx{background:var(--sage);border-color:var(--sage-dk);color:#fff}
+.check.done .lb{text-decoration:line-through;color:var(--ink-faint)}
+.check .lb{flex:1;font-weight:600;line-height:1.35}
+
+/* ============ MAP ============ */
+.mapwrap{
+  position:relative;width:100%;height:23rem;border-radius:var(--r);overflow:hidden;
+  border:2px solid var(--line-2);background:#DCE6DA;touch-action:none;
+}
+#mapCanvas{width:100%;height:100%;display:block}
+.mapbtns{position:absolute;right:.5rem;top:.5rem;display:flex;flex-direction:column;gap:.35rem;z-index:5}
+.mapbtns button{
+  width:2.9rem;height:2.9rem;border-radius:11px;border:2px solid var(--plum-dk);background:rgba(255,253,251,.94);
+  font-size:1.15rem;cursor:pointer;font-family:inherit;color:var(--plum);font-weight:800;
+}
+.mapbtns button.on{background:var(--plum);color:#FFF4F8}
+.maplegend{
+  position:absolute;left:.5rem;bottom:.5rem;z-index:5;background:rgba(255,253,251,.93);
+  border:2px solid var(--line-2);border-radius:11px;padding:.35rem .6rem;font-size:.7rem;font-weight:700;color:var(--ink-soft);
+}
+.mapspot{
+  position:absolute;left:.5rem;right:.5rem;bottom:.5rem;z-index:6;background:var(--card);
+  border:2px solid var(--rose);border-radius:14px;padding:.7rem .85rem;box-shadow:var(--shadow-lg);display:none;
+}
+
+/* ============ MISC BARS ============ */
+#updateBar{
+  display:none;position:sticky;top:0;z-index:80;background:var(--gold);color:#3D1A31;
+  text-align:center;padding:.65rem;font-weight:800;cursor:pointer;font-size:.9rem;
+}
+#netPill{
+  display:none;position:fixed;top:calc(.5rem + env(safe-area-inset-top));left:50%;transform:translateX(-50%);
+  z-index:95;background:var(--danger);color:#fff;padding:.35rem .8rem;border-radius:999px;font-size:.78rem;font-weight:800;
+}
+#netPill.on{display:block}
+.tiny{font-size:.76rem;color:var(--ink-faint);line-height:1.45}
+.sk{color:var(--ink-faint);font-style:italic}
+</style>
+</head>
+<body>
+
+<div id="updateBar">&#8635; A newer version is ready &mdash; tap to refresh</div>
+<div id="netPill">&#9888; Offline &mdash; the guide still works</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<header class="top">
+  <div class="wrap brandbar">
+    <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+      <circle cx="32" cy="32" r="30" fill="#FBF5F1" stroke="#3D1A31" stroke-width="2.5"/>
+      <path d="M9 44 L23 24 L31 35 L41 19 L55 44 Z" fill="#5F8060" stroke="#3D1A31" stroke-width="1.5" stroke-linejoin="round"/>
+      <circle cx="45" cy="17" r="6.5" fill="#C98F2E" stroke="#3D1A31" stroke-width="1.5"/>
+      <path d="M20 44 q6-7 12 0" fill="none" stroke="#C4517A" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="brandtxt">
+      <div class="tag">Girls' Trip &middot; Colorado</div>
+      <h1>Chris in Littleton</h1>
+    </div>
+    <div class="hdr-actions">
+      <button class="icon-btn" id="btnHush" title="Stop talking now" aria-label="Stop talking now">&#128263;</button>
+      <button class="icon-btn" id="btnVoice" aria-pressed="false" title="Clara's voice on or off" aria-label="Voice on or off">&#128264;</button>
+      <button class="icon-btn" id="btnText" title="Text size" aria-label="Change text size"><b style="font-size:.85rem">A</b><b style="font-size:1.15rem">A</b></button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Main">
+  <div class="tabscroll">
+    <a href="#/today"   data-view="today"><span class="ic">&#9728;&#65039;</span> Today</a>
+    <a href="#/agenda"  data-view="agenda"><span class="ic">&#128197;</span> Agenda</a>
+    <a href="#/nearby"  data-view="nearby"><span class="ic">&#128205;</span> Nearby</a>
+    <a href="#/explore" data-view="explore"><span class="ic">&#127956;</span> Explore</a>
+    <a href="#/camera"  data-view="camera"><span class="ic">&#128247;</span> Camera</a>
+    <a href="#/movie"   data-view="movie"><span class="ic">&#127916;</span> Movie</a>
+    <a href="#/friends" data-view="friends"><span class="ic">&#128101;</span> Friends</a>
+    <a href="#/toolkit" data-view="toolkit"><span class="ic">&#129520;</span> Toolkit</a>
+  </div>
+</nav>
+
+<main class="wrap" style="padding-top:1.1rem">
+
+<!-- ============================ TODAY ============================ -->
+<div class="view active" id="view-today">
+  <div class="stack">
+
+    <div class="hero">
+      <div class="lbl" id="heroLbl">Littleton, Colorado</div>
+      <h2 id="heroTitle">Chris's Girls' Trip</h2>
+      <p id="heroSub">Foothills, gardens, Main Street and Red Rocks &mdash; at your own pace.</p>
+      <div class="countdown" id="countdown"></div>
+    </div>
+
+    <div class="card a-gold" id="setupCard">
+      <div class="card-h"><span class="ic">&#128075;</span><h3>First time here? Two minutes.</h3></div>
+      <p style="margin:0 0 .8rem">Tell Clara your dates and who is coming, and she will build the whole agenda for you. You can change any of it later.</p>
+      <div class="btnrow">
+        <button class="btn gold" id="setupStart">&#10024; Set up my trip</button>
+        <button class="btn sm ghost" id="setupHide">Not now</button>
+      </div>
+    </div>
+
+    <div id="liveAlerts" class="stack"></div>
+
+    <div class="card a-rose">
+      <div class="card-h"><span class="ic">&#9749;</span><h3>Clara's Morning Briefing</h3></div>
+      <div id="briefing" class="muted">Getting the day ready&hellip;</div>
+      <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn sm" id="brRead">&#128266; Read it to me</button>
+        <button class="btn sm ghost" id="brRefresh">&#8635; Refresh</button>
+        <button class="btn sm ghost" id="brShare">&#128228; Send to the girls</button>
+      </div>
+    </div>
+
+    <div class="card a-slate">
+      <div class="card-h"><span class="ic">&#128506;&#65039;</span><h3>Today's Plan</h3></div>
+      <div id="todayPlan"></div>
+      <div class="btnrow" style="margin-top:.9rem">
+        <a class="btn sm ghost" href="#/agenda">&#128197; Whole trip</a>
+        <button class="btn sm ghost" id="planShuffle">&#127922; Give me something else</button>
+      </div>
+    </div>
+
+    <div class="card a-sage">
+      <div class="card-h"><span class="ic">&#128225;</span><h3>Show Me What's Around Me</h3></div>
+      <label class="switch">
+        <input type="checkbox" id="gpsToggle" checked><span class="track"></span>
+        <span><b>Watch for good things nearby</b><br><span class="small muted">On by default. Clara keeps an eye out and speaks up when something worth a stop is close.</span></span>
+      </label>
+      <div id="whereBox" style="margin-top:.8rem"></div>
+      <div id="gpsStatus" class="small muted" style="margin-top:.6rem">Finding you&hellip;</div>
+      <div id="gpsHelp" style="display:none;margin-top:.8rem" class="note warn"></div>
+      <div class="btnrow" style="margin-top:.8rem">
+        <a class="btn sm gold" href="#/nearby">&#128205; What's near me now</a>
+        <button class="btn sm ghost" id="pinHere">&#128204; Remember this spot</button>
+      </div>
+      <p class="tiny" style="margin:.7rem 0 0">Your location stays on this phone unless you switch on the Friends map yourself.</p>
+    </div>
+
+    <div class="card a-slate">
+      <div class="card-h"><span class="ic">&#9925;</span><h3>Weather &amp; Air</h3></div>
+      <div id="wxNow"></div>
+      <div id="wxDays" class="pills" style="margin-top:.8rem"></div>
+      <div id="airQ" class="small muted" style="margin-top:.7rem"></div>
+      <div id="wxAdvice" class="note" style="margin-top:.8rem;display:none"></div>
+    </div>
+
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#127956;</span><h3>A Mile Up &mdash; Feeling Good</h3></div>
+      <p class="small muted" style="margin-top:0">Littleton sits at about 5,350 feet, and the trails above town go higher. Nothing to worry about &mdash; just three habits that make the whole week easier.</p>
+      <div id="healthPanel"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="ic">&#128202;</span><h3>The Trip So Far</h3></div>
+      <div class="stats" id="dashStats"></div>
+      <div style="margin-top:.9rem">
+        <div class="small muted" style="display:flex;justify-content:space-between"><span>Trip progress</span><span id="progTxt"></span></div>
+        <div class="bar" style="margin-top:.35rem"><i id="progBar" style="width:0"></i></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ AGENDA ============================ -->
+<div class="view" id="view-agenda">
+  <div class="stack">
+
+    <div class="card a-plum">
+      <div class="card-h"><span class="ic">&#10024;</span><h3>Let Clara Plan It</h3></div>
+      <p style="margin-top:0">Set it once. Clara builds a day-by-day agenda that fits your dates, your energy and the things you actually like &mdash; with an easy option every day you can drop without spoiling anything.</p>
+      <div class="grid g2">
+        <div class="field"><label class="fld" for="tpStart">Arrive in Littleton</label><input type="date" id="tpStart"></div>
+        <div class="field"><label class="fld" for="tpEnd">Fly home</label><input type="date" id="tpEnd"></div>
+      </div>
+      <div class="field"><label class="fld" for="tpBase">Where you're staying</label>
+        <input type="text" id="tpBase" placeholder="e.g. Sandy's house, west Littleton" maxlength="60"></div>
+      <div class="field"><label class="fld" for="tpWho">Who's coming (one name per line)</label>
+        <textarea id="tpWho" placeholder="Chris&#10;Sandy&#10;Marge" style="min-height:5.4rem"></textarea></div>
+
+      <div class="field"><label class="fld">Pace &mdash; how full should the days be?</label>
+        <div class="pills" id="tpPace"></div></div>
+
+      <div class="field"><label class="fld">What sounds good? (tap all that apply)</label>
+        <div class="pills" id="tpLikes"></div></div>
+
+      <div class="field"><label class="fld">Anything to work around?</label>
+        <div class="pills" id="tpAvoid"></div></div>
+
+      <div class="btnrow" style="margin-top:1rem">
+        <button class="btn big plum" id="tpBuild">&#10024; Build my agenda</button>
+      </div>
+      <p class="tiny" style="margin:.7rem 0 0">Nothing is locked in. Every day can be swapped, and hours and prices change &mdash; ring ahead when it matters.</p>
+    </div>
+
+    <div id="agendaOut" class="stack"></div>
+
+    <div class="card" id="agendaTools" style="display:none">
+      <div class="card-h"><span class="ic">&#128228;</span><h3>Take It With You</h3></div>
+      <div class="btnrow">
+        <button class="btn sm gold" id="agIcs">&#128197; Add to my calendar</button>
+        <button class="btn sm ghost" id="agShare">&#128172; Send to the girls</button>
+        <button class="btn sm ghost" id="agText">&#128203; Copy as text</button>
+        <button class="btn sm ghost" id="agRead">&#128266; Read me the day</button>
+      </div>
+      <p class="tiny" style="margin:.8rem 0 0">The calendar file works with Apple Calendar, Google Calendar and Outlook. Open it once and the whole trip appears.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ NEARBY ============================ -->
+<div class="view" id="view-nearby">
+  <div class="stack">
+
+    <div class="card a-rose">
+      <div class="card-h"><span class="ic">&#128205;</span><h3>Right Around You</h3></div>
+      <div id="nearHead" class="small muted">Turn on location and Clara will sort everything by how far it is from wherever you're standing.</div>
+      <div class="pills" style="margin-top:.8rem" id="nearFilters"></div>
+      <div id="nearList" style="margin-top:.4rem"></div>
+    </div>
+
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#128276;</span><h3>Tell Me When Something's Close</h3></div>
+      <label class="switch">
+        <input type="checkbox" id="alertToggle" checked><span class="track"></span>
+        <span><b>Nudge me about good things nearby</b><br><span class="small muted">Clara speaks up once per place &mdash; never twice for the same one.</span></span>
+      </label>
+      <div class="field" style="margin-top:.5rem"><label class="fld" for="alertRadius">How close before she says something?</label>
+        <select id="alertRadius">
+          <option value="0.5">Half a mile &mdash; walking distance only</option>
+          <option value="1.5" selected>A mile and a half &mdash; a short hop</option>
+          <option value="4">Four miles &mdash; anything in town</option>
+          <option value="10">Ten miles &mdash; give me everything</option>
+        </select></div>
+      <div class="field"><label class="fld">Only nudge me about&hellip;</label>
+        <div class="pills" id="alertCats"></div></div>
+      <div class="btnrow" style="margin-top:.7rem">
+        <button class="btn sm ghost" id="alertTest">&#128266; Try a nudge</button>
+        <button class="btn sm ghost" id="alertReset">&#8635; Forget what she's told me</button>
+      </div>
+    </div>
+
+    <div class="card a-slate">
+      <div class="card-h"><span class="ic">&#128269;</span><h3>Find It Right Now</h3></div>
+      <p class="small muted" style="margin-top:0">Live search of everything around you &mdash; not just Clara's list. Free, no account, works anywhere in Colorado.</p>
+      <div class="field"><label class="fld" for="findRadius">Search within</label>
+        <select id="findRadius">
+          <option value="2">2 miles</option><option value="5" selected>5 miles</option>
+          <option value="10">10 miles</option><option value="20">20 miles</option>
+        </select></div>
+      <div class="grid g3" id="findNow" style="gap:.5rem;margin-top:.6rem"></div>
+      <div id="findStatus" class="small" style="margin-top:.8rem"></div>
+      <div id="findList" style="margin-top:.5rem"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="ic">&#128204;</span><h3>Spots You Saved</h3></div>
+      <div id="pinList"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ EXPLORE ============================ -->
+<div class="view" id="view-explore">
+  <div class="stack">
+
+    <div class="card a-plum">
+      <div class="card-h"><span class="ic">&#127956;</span><h3>Everything Worth Doing</h3></div>
+      <p style="margin-top:0">Clara's own list &mdash; walks, gardens, Main Street, breweries, museums, Red Rocks and the day trips. Tap any one to hear about it, get directions, or drop it straight into a day.</p>
+      <div class="field"><label class="fld" for="exSearch">Search the list</label>
+        <input type="text" id="exSearch" placeholder="e.g. bighorn sheep, botanic, pickleball" autocomplete="off"></div>
+      <div class="pills" style="margin-top:.7rem" id="exFilters"></div>
+    </div>
+
+    <div id="exList" class="stack"></div>
+
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#11088;</span><h3>Your Shortlist</h3></div>
+      <p class="small muted" style="margin-top:0">Anything you star lands here, and Clara builds your agenda around it.</p>
+      <div id="favList"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ CAMERA ============================ -->
+<div class="view" id="view-camera">
+  <div class="stack">
+
+    <div class="card a-rose" style="padding:.9rem">
+      <div class="camstage" id="camStage">
+        <video id="camVideo" playsinline autoplay muted></video>
+        <div class="camgrid" id="camGrid"></div>
+        <div class="camframe" id="camFrame"></div>
+        <div class="camband" id="camBand"></div>
+        <div class="camcount" id="camCount" style="display:none"></div>
+        <div class="camflash" id="camFlash"></div>
+        <div class="camoff" id="camOff">
+          <div>
+            <div style="font-size:3rem">&#128247;</div>
+            <h3 style="color:#FFF4F8;margin:.5rem 0">The Girls' Trip Camera</h3>
+            <p class="small" style="color:#EBD5DF;max-width:22rem;margin:0 auto 1rem">
+              A big shutter, a countdown loud enough to hear across the table, filters, and a Littleton stamp on every shot.
+              Everything you take lands in the Movie maker.</p>
+            <button class="btn gold" id="camStart">&#128247; Turn the camera on</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="camctl">
+        <div style="display:flex;flex-direction:column;gap:.4rem;flex:1">
+          <button class="btn sm ghost" id="camFlip">&#128260; Flip</button>
+          <button class="btn sm ghost" id="camGridBtn">&#9638; Grid</button>
+        </div>
+        <button class="shutter" id="camShoot" aria-label="Take a photo">&#128248;</button>
+        <div style="display:flex;flex-direction:column;gap:.4rem;flex:1">
+          <button class="btn sm ghost" id="camTimer">&#9203; Timer: off</button>
+          <button class="btn sm ghost" id="camBooth">&#127918; Photo booth</button>
+        </div>
+      </div>
+      <div id="camStatus" class="small muted" style="margin-top:.6rem;text-align:center">Camera off.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="ic">&#127912;</span><h3>Look</h3></div>
+      <div class="fx" id="camFx"></div>
+      <div class="card-h" style="margin-top:1rem"><span class="ic">&#128444;&#65039;</span><h3>Frame</h3></div>
+      <div class="fx" id="camFrames"></div>
+      <div class="field" style="margin-top:.9rem"><label class="fld" for="camCaption">Caption stamped on the photo</label>
+        <input type="text" id="camCaption" placeholder="Girls' Trip · Littleton, CO" maxlength="42"></div>
+      <label class="switch"><input type="checkbox" id="camStampWhere" checked><span class="track"></span>
+        <span><b>Stamp where we were</b><br><span class="small muted">Adds the nearest place and the date, so you know months later</span></span></label>
+      <label class="switch"><input type="checkbox" id="camVoiceCue" checked><span class="track"></span>
+        <span><b>Clara counts down out loud</b><br><span class="small muted">So everyone knows when to smile</span></span></label>
+    </div>
+
+    <div class="card a-gold" id="stripCard" style="display:none">
+      <div class="card-h"><span class="ic">&#127918;</span><h3>Your Photo Strip</h3></div>
+      <div id="stripOut"></div>
+      <div class="btnrow" style="margin-top:.8rem">
+        <button class="btn sm gold" id="stripSave">&#11015;&#65039; Save the strip</button>
+        <button class="btn sm ghost" id="stripShare">&#128228; Share it</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="ic">&#128248;</span><h3>Today's Shots</h3></div>
+      <div id="camGal" class="gal"></div>
+      <p id="camGalEmpty" class="small muted" style="margin:0">Nothing yet. Everything you take shows up here and in the Movie maker.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ MOVIE ============================ -->
+<div class="view" id="view-movie">
+  <div class="stack">
+
+    <div class="card a-rose">
+      <div class="card-h"><span class="ic">&#127916;</span><h3>Turn the Photos Into a Little Film</h3></div>
+      <p style="margin-top:0">Add photos &mdash; from the camera here, or straight off your phone &mdash; and Clara makes a real video with titles, slow drifting zooms and music. It saves to your phone so you can text it to everybody.</p>
+      <div class="drop" id="mediaDrop" tabindex="0" role="button">
+        <div style="font-size:2.4rem">&#128193;</div>
+        <b>Tap to add photos</b>
+        <div class="small muted">or drag them here &mdash; up to 30 at a time</div>
+      </div>
+      <input type="file" id="mediaInput" accept="image/*" multiple hidden>
+      <div id="mediaGal" class="gal"></div>
+    </div>
+
+    <div class="card" id="vidControls" style="display:none">
+      <div class="card-h"><span class="ic">&#127925;</span><h3>How Should It Feel?</h3></div>
+      <div class="field"><label class="fld" for="vidStyle">Pace</label>
+        <select id="vidStyle">
+          <option value="keepsake" selected>Keepsake &mdash; slow and lovely</option>
+          <option value="daily">Today only &mdash; just today's photos</option>
+          <option value="highlight">Highlight reel &mdash; quick and punchy</option>
+        </select></div>
+      <div class="field"><label class="fld" for="vidMusic">Music</label>
+        <select id="vidMusic">
+          <option value="warm" selected>Warm &amp; sentimental</option>
+          <option value="big">Big sky &amp; open road</option>
+          <option value="custom">Use a song from my phone&hellip;</option>
+          <option value="none">No music</option>
+        </select></div>
+      <input type="file" id="musicInput" accept="audio/*" hidden>
+      <div class="field"><label class="fld" for="vidTitle">Title card</label>
+        <input type="text" id="vidTitle" maxlength="40" placeholder="The Littleton Girls' Trip"></div>
+      <canvas id="vidCanvas" width="1280" height="720" style="margin-top:.9rem"></canvas>
+      <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn sm ghost" id="vidPreview">&#9654;&#65039; Preview</button>
+        <button class="btn gold" id="vidMake">&#127916; Create the video</button>
+        <button class="btn sm ghost" id="vidShare" style="display:none">&#128228; Share it</button>
+      </div>
+      <div id="vidStatus" class="small muted" style="margin-top:.7rem"></div>
+      <p class="tiny" style="margin:.7rem 0 0">Recording plays the whole film through once &mdash; leave the screen on and don't switch apps until it says it's ready.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ FRIENDS ============================ -->
+<div class="view" id="view-friends">
+  <div class="stack">
+
+    <div class="card a-slate">
+      <div class="card-h"><span class="ic">&#128205;</span><h3>Where Everybody Is</h3></div>
+      <p style="margin-top:0">Switch this on and the others see your dot &mdash; and you see theirs. Nobody is tracked unless they turn it on themselves, and it stops the moment you switch it off.</p>
+      <div class="field"><label class="fld" for="locName">Your name</label>
+        <input type="text" id="locName" placeholder="Chris" maxlength="24"></div>
+      <div class="field"><label class="fld" for="locRoom">Trip code &mdash; everybody types the same one</label>
+        <input type="text" id="locRoom" placeholder="littleton-girls" maxlength="30" autocomplete="off"></div>
+      <label class="switch"><input type="checkbox" id="locToggle"><span class="track"></span>
+        <span><b>Share where I am</b><br><span class="small muted">Updates every couple of minutes while the app is open</span></span></label>
+      <div id="locList" style="margin-top:.6rem"></div>
+      <div class="mapwrap" id="locMapWrap" style="margin-top:.9rem;height:20rem">
+        <canvas id="locCanvas"></canvas>
+        <div class="mapbtns">
+          <button id="locZin" aria-label="Zoom in">+</button>
+          <button id="locZout" aria-label="Zoom out">&minus;</button>
+          <button id="locFit" aria-label="Fit everybody" title="Fit everybody">&#9974;</button>
+        </div>
+        <div class="maplegend">&#128994; you &nbsp; &#128309; the girls</div>
+      </div>
+      <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn sm gold" id="locMeet">&#128204; Meet me here</button>
+        <button class="btn sm ghost" id="locPing">&#128276; Where is everyone?</button>
+        <button class="btn sm ghost" id="locCopy">&#128203; Copy the trip code</button>
+      </div>
+      <p class="tiny" style="margin:.8rem 0 0">Locations pass through the free ntfy.sh service and are only kept for a few hours. Use a trip code nobody would guess.</p>
+    </div>
+
+    <div class="card a-rose">
+      <div class="card-h"><span class="ic">&#128172;</span><h3>Group Chat</h3></div>
+      <div class="chat" id="chatBox"></div>
+      <div style="display:flex;gap:.5rem;margin-top:.7rem">
+        <input type="text" id="chatIn" placeholder="Say something&hellip;" maxlength="240">
+        <button class="btn" id="chatSend" style="flex:0 0 auto">&#10148;</button>
+      </div>
+      <div class="pills" style="margin-top:.7rem" id="chatQuick"></div>
+      <p class="tiny" style="margin:.7rem 0 0">Works on any phone, no app needed &mdash; anyone can also follow along in the free ntfy app with the same trip code.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="ic">&#128276;</span><h3>Alerts On This Phone</h3></div>
+      <div id="notifPanel"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ TOOLKIT ============================ -->
+<div class="view" id="view-toolkit">
+  <div class="stack">
+
+    <div class="card a-sage">
+      <div class="card-h"><span class="ic">&#128190;</span><h3>Works With No Signal</h3></div>
+      <p id="offlineTxt" style="margin-top:0">Save the whole guide to this phone. Every place, every day plan and every checklist then works in a canyon with no bars at all.</p>
+      <div class="btnrow"><button class="btn sage" id="cacheNow">&#128190; Save the guide to this phone</button></div>
+    </div>
+
+    <div class="card a-plum">
+      <div class="card-h"><span class="ic">&#128266;</span><h3>Clara's Voice</h3></div>
+      <div id="voicePanel"></div>
+    </div>
+
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#9989;</span><h3>Before You Fly</h3></div>
+      <div id="packList"></div>
+      <div class="bar" style="margin-top:.8rem"><i id="packBar" style="width:0"></i></div>
+      <div class="small muted" id="packTxt" style="margin-top:.3rem"></div>
+    </div>
+
+    <div class="card a-rose">
+      <div class="card-h"><span class="ic">&#128222;</span><h3>Numbers Worth Having</h3></div>
+      <div id="numbers"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="ic">&#9881;&#65039;</span><h3>Settings</h3></div>
+      <div id="settings"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="ic">&#8505;&#65039;</span><h3>About</h3></div>
+      <p class="small muted" style="margin:0">Built for Chris's Littleton girls' trip. Everything you enter stays on this phone.
+      Weather comes from Open-Meteo, live place search from OpenStreetMap, chat and the friends map from ntfy.sh &mdash;
+      all free, none of them need an account. Hours, prices and opening days change; ring ahead when it matters.</p>
+      <p class="tiny" id="buildTxt" style="margin:.8rem 0 0"></p>
+    </div>
+
+  </div>
+</div>
+
+</main>
+
+<nav class="bottom" aria-label="Quick">
+  <a href="#/today"   data-view="today"><span class="ic">&#9728;&#65039;</span>Today</a>
+  <a href="#/agenda"  data-view="agenda"><span class="ic">&#128197;</span>Agenda</a>
+  <a href="#/nearby"  data-view="nearby"><span class="ic">&#128205;</span>Nearby</a>
+  <a href="#/camera"  data-view="camera"><span class="ic">&#128247;</span>Camera</a>
+  <a href="#/friends" data-view="friends"><span class="ic">&#128101;</span>Friends</a>
+</nav>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true">
+  <div class="pane">
+    <div class="grab"></div>
+    <div class="hd"><h3 id="shTitle"></h3><button class="icon-btn" id="shClose" aria-label="Close" style="border-color:var(--line-2);background:var(--card);color:var(--plum)">&#10005;</button></div>
+    <div id="shBody"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CHRIS IN LITTLETON - engine
+   One file, no build step, no server. Everything Chris types
+   stays in this phone's localStorage.
+   ============================================================ */
+const BUILD="chris-2026-08-12-1";
+
+const $=id=>document.getElementById(id);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const store={
+  get(k,d){try{const v=localStorage.getItem("ch-"+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem("ch-"+k,JSON.stringify(v))}catch(e){}},
+  del(k){try{localStorage.removeItem("ch-"+k)}catch(e){}}
+};
+
+/* Downtown Littleton, the middle of everything here */
+const HOME={lat:39.6133,lng:-105.0166,name:"Historic Downtown Littleton"};
+
+/* ============================================================
+   THE PLACES
+   c  = category   mins = rough drive from downtown Littleton
+   e  = effort: 1 sit-down / 2 gentle stroll / 3 real walk / 4 a proper hike
+   ============================================================ */
+const CATS={
+  walk:   {n:"Walks & parks",   ic:"&#127794;"},
+  garden: {n:"Gardens",         ic:"&#127804;"},
+  history:{n:"History",         ic:"&#127963;&#65039;"},
+  eat:    {n:"Eat",             ic:"&#127869;&#65039;"},
+  sip:    {n:"Sip",             ic:"&#127867;"},
+  shop:   {n:"Shops",           ic:"&#128717;&#65039;"},
+  art:    {n:"Art & museums",   ic:"&#127912;"},
+  music:  {n:"Music",           ic:"&#127925;"},
+  active: {n:"Active",          ic:"&#127939;&#65039;"},
+  relax:  {n:"Relax",           ic:"&#128140;"},
+  market: {n:"Markets",         ic:"&#129387;"},
+  day:    {n:"Day trips",       ic:"&#128663;"}
+};
+
+const PLACES=[
+/* ---------- Littleton, walkable or a few minutes away ---------- */
+{n:"Historic Downtown Littleton",c:"shop",lat:39.6133,lng:-105.0166,mins:0,e:2,tag:"Free",
+ d:"Two blocks of 1890s brick storefronts along Main Street, with the old town hall clock at one end and flower baskets on every lamppost. Independent shops, a proper bookshop, antiques, and more places to eat than you can get through in a week.",
+ tip:"Park once behind Main Street and walk the whole thing. It is flat, shaded, and there are benches every block."},
+{n:"Littleton Museum",c:"history",lat:39.6072,lng:-105.0207,mins:3,e:2,tag:"Free",
+ d:"One of the best small museums in Colorado, and it costs nothing. Two working living-history farms sit on the grounds - an 1860s homestead and an 1890s farm - with costumed staff, sheep, chickens and draft horses.",
+ tip:"Go on a weekday morning. The farm animals are out, the staff have time to talk, and you will have the place nearly to yourselves."},
+{n:"Hudson Gardens",c:"garden",lat:39.5997,lng:-105.0243,mins:4,e:2,tag:"Free entry",
+ d:"Thirty acres of gardens along the South Platte, laid out in loops that never take more than an hour, with a rose garden, a water garden and an oak grove. In summer there is an outdoor concert series on the lawn.",
+ tip:"The paths are wide, paved and level - the easiest lovely walk in town. Bring a folding chair if there is a concert on."},
+{n:"South Platte Park & Carson Nature Center",c:"walk",lat:39.5836,lng:-105.0203,mins:5,e:2,tag:"Free",
+ d:"Eight hundred acres of river, ponds and cottonwoods right in the middle of town, kept deliberately wild. Great blue herons, pelicans in spring, beaver sign everywhere, and a small nature centre with a viewing deck.",
+ tip:"Ask at the nature centre what has been seen that week. They keep a board, and it is usually worth chasing."},
+{n:"Mary Carter Greenway",c:"walk",lat:39.5950,lng:-105.0230,mins:4,e:2,tag:"Paved",
+ d:"A paved riverside trail that runs the length of Littleton and keeps going, all the way to Denver in one direction and Chatfield in the other. Flat, shaded and busy with cyclists in a good-natured way.",
+ tip:"Walk any piece of it out and back. From Hudson Gardens south is the prettiest stretch."},
+{n:"Ketring Park & Lake",c:"walk",lat:39.6068,lng:-105.0213,mins:2,e:2,tag:"Free",
+ d:"A small lake with a flat path around it, geese, willows and the museum next door. Ten quiet minutes rather than a hike.",
+ tip:"Perfect first evening after the flight - low effort, and it settles you into the altitude."},
+{n:"Chatfield State Park",c:"walk",lat:39.5417,lng:-105.0656,mins:12,e:2,tag:"Park fee",
+ d:"A big reservoir at the foot of the hogback, with sailing boats, a heron rookery and miles of flat gravel and paved trail. The mountain views across the water at the end of the day are the ones people put on postcards.",
+ tip:"Entry is per vehicle, and it is worth it. The heron rookery is best in late spring."},
+{n:"Denver Botanic Gardens at Chatfield Farms",c:"garden",lat:39.5477,lng:-105.1004,mins:15,e:2,tag:"Ticketed",
+ d:"Seven hundred acres of working farm and native landscape with a restored 1918 homestead, an heirloom vegetable garden and long lavender rows. Far quieter than the Denver gardens and twice as pretty in late summer.",
+ tip:"Check what festival is on - the lavender harvest and the pumpkin festival are both worth planning a day around."},
+{n:"Waterton Canyon",c:"walk",lat:39.4839,lng:-105.0913,mins:16,e:3,tag:"Free",
+ d:"A wide, almost flat gravel road following the South Platte into a canyon, with bighorn sheep on the walls most mornings and a dam at the far end. This is where the Colorado Trail begins.",
+ tip:"You choose your own distance - turn back whenever you like. Go early for the sheep, and take more water than you think."},
+{n:"Roxborough State Park",c:"walk",lat:39.4291,lng:-105.0678,mins:20,e:3,tag:"Park fee",
+ d:"Enormous red sandstone fins tilted up out of green meadow, quieter and stranger than Red Rocks. The Fountain Valley Trail is a gentle two-and-a-bit mile loop that gets you right in among them.",
+ tip:"No dogs and no bikes, which is exactly why it stays peaceful. Morning light on the rocks is the good light."},
+{n:"Deer Creek Canyon Park",c:"walk",lat:39.5449,lng:-105.1553,mins:18,e:4,tag:"Free",
+ d:"Foothills park with real climbing to it and views back over the whole plain. The Meadowlark Trail is the kinder option and still gets you the view.",
+ tip:"This is the most demanding walk on the list. Save it for a day when everyone has had a few days at altitude."},
+{n:"Cornerstone Park",c:"walk",lat:39.6011,lng:-105.0290,mins:4,e:2,tag:"Free",
+ d:"A quiet neighbourhood park on the river with ponds, a paved loop and a pedestrian bridge over the Platte. Locals walk it and visitors mostly never find it.",
+ tip:"Good sunset spot, and easy to fit in before dinner on Main Street."},
+
+/* ---------- Eat & drink ---------- */
+{n:"Merle's Downtown Littleton",c:"eat",lat:39.6136,lng:-105.0170,mins:0,e:1,
+ d:"Big, comfortable Main Street restaurant with a patio, a long menu and staff who are used to a table of friends staying three hours.",
+ tip:"Ask for the patio if the evening is warm. Reservations are wise at weekends."},
+{n:"Angelo's Taverna",c:"eat",lat:39.6136,lng:-105.0157,mins:0,e:1,
+ d:"Italian and oysters in the same room, which sounds odd and works. A Littleton fixture, loud in the good way.",
+ tip:"Happy hour oysters are the reason to go early."},
+{n:"Romano's Italian Restaurant",c:"eat",lat:39.6136,lng:-105.0181,mins:0,e:1,
+ d:"Old-school family Italian just off Main Street. Red sauce, big portions, checked tablecloths, no pretence at all.",
+ tip:"The kind of place worth booking for the whole group on your first night."},
+{n:"The Melting Pot",c:"eat",lat:39.6137,lng:-105.0165,mins:0,e:1,
+ d:"Fondue, course after course, for two full hours. It is an event rather than a meal, which makes it a very good girls' night.",
+ tip:"Book ahead and go hungry. Plan nothing afterwards."},
+{n:"Breckenridge Brewery Farm House",c:"sip",lat:39.5865,lng:-105.0248,mins:5,e:1,
+ d:"The brewery's restaurant on twelve acres beside the river, with a huge lawn, cornhole, and long tables under the trees. Sunny afternoons here are the whole point.",
+ tip:"Sit outside. Even if nobody wants beer, the lawn and the river are worth the trip."},
+{n:"Locavore Beer Works",c:"sip",lat:39.6132,lng:-105.0184,mins:0,e:1,
+ d:"Small, friendly Main Street taproom where the beer is made in the back and somebody will happily pour you three tasters before you decide.",
+ tip:"Right in the middle of the walk down Main Street - a good halfway sit-down."},
+{n:"Denver Milk Market",c:"eat",lat:39.7495,lng:-104.9987,mins:25,e:1,
+ d:"Sixteen little places to eat under one roof in a restored dairy building downtown, so nobody has to agree on anything. Order separately, sit together.",
+ tip:"Take the light rail in from Littleton and skip the parking entirely."},
+{n:"The Fort Restaurant",c:"eat",lat:39.6449,lng:-105.1878,mins:22,e:1,
+ d:"An adobe replica of Bent's Fort in the hills above Morrison, serving game and old Colorado recipes since 1963. Dinner with a view back over the whole city lit up.",
+ tip:"The most special-occasion dinner within half an hour of Littleton. Book well ahead and ask for a sunset table."},
+
+/* ---------- Shops & markets ---------- */
+{n:"Reinke Brothers",c:"shop",lat:39.6135,lng:-105.0164,mins:0,e:2,tag:"Free",
+ d:"A Main Street institution: a costume and Halloween shop that has spilled into a genuine oddity museum. Even if you buy nothing, you will be in there half an hour.",
+ tip:"Go in. Everyone does, and everyone comes out laughing."},
+{n:"Aspen Grove",c:"shop",lat:39.6008,lng:-105.0138,mins:4,e:2,
+ d:"Open-air shopping centre with the mountains in view down every walkway - the practical stop for anything forgotten, plus decent coffee.",
+ tip:"This is where the Littleton farmers' market sets up in summer."},
+{n:"Littleton Farmers' Market",c:"market",lat:39.6008,lng:-105.0138,mins:4,e:2,tag:"Seasonal",
+ d:"Colorado peaches in August, Palisade melons, green chile roasting in a drum, cut flowers and far too much bread. Summer mornings only.",
+ tip:"Check the day before you go - market days move around by season."},
+{n:"Larimer Square",c:"shop",lat:39.7476,lng:-104.9994,mins:25,e:2,
+ d:"Denver's oldest block, strung with lights over the street, Victorian storefronts, boutiques and restaurants. Pretty at dusk.",
+ tip:"Two blocks from Union Station, so it pairs neatly with the train in."},
+{n:"Cherry Creek Shopping Center",c:"shop",lat:39.7195,lng:-104.9553,mins:22,e:2,
+ d:"The big indoor centre, everything under one roof, and blissfully air-conditioned on a hot afternoon.",
+ tip:"The rainy-day fallback. The neighbourhood across the street has the better independent shops."},
+
+/* ---------- Red Rocks & Morrison ---------- */
+{n:"Red Rocks Park & Amphitheatre",c:"music",lat:39.6654,lng:-105.2057,mins:20,e:3,tag:"Free by day",
+ d:"Three-hundred-foot red sandstone slabs with the world's most beautiful concert venue set between them. On days with no show, you can walk straight in, sit in the seats and have the place almost to yourself.",
+ tip:"Mornings are cool, quiet and free. The stairs are steep - the upper car park puts you at the top so you walk down, not up."},
+{n:"Trading Post Trail, Red Rocks",c:"walk",lat:39.6626,lng:-105.2044,mins:20,e:3,tag:"Free",
+ d:"A mile and a bit looping down among the rock formations below the amphitheatre, with several short steep bits and one very good view after another.",
+ tip:"The kinder way to see the rocks up close. Proper shoes - the sandstone is slippery in dust."},
+{n:"Morrison Main Street",c:"eat",lat:39.6534,lng:-105.1911,mins:19,e:2,
+ d:"A three-block stone-built village at the mouth of the canyon, wedged between the creek and the hogback. Patios, ice cream, rock shops and a great deal of passing motorcycle traffic.",
+ tip:"Combine with Red Rocks - the park's back gate drops you right into town."},
+{n:"Dinosaur Ridge",c:"history",lat:39.6839,lng:-105.1907,mins:20,e:3,
+ d:"Real dinosaur footprints and bone beds exposed in the roadside rock, on a closed road you walk up. Guides are stationed along it to explain what you are looking at.",
+ tip:"There is a shuttle bus if the walk up is more than you fancy. Ask at the visitor centre."},
+{n:"Bear Creek Lake Park",c:"walk",lat:39.6522,lng:-105.1633,mins:17,e:2,tag:"Park fee",
+ d:"Quiet lake park at the foot of the hogback with flat gravel trails, a swim beach and enormous cottonwoods.",
+ tip:"Easier and emptier than Chatfield, and closer to Red Rocks."},
+
+/* ---------- Denver ---------- */
+{n:"Denver Union Station",c:"art",lat:39.7527,lng:-105.0000,mins:25,e:2,tag:"Free",
+ d:"The restored 1914 station is now the best living room in Colorado - a great barrel-vaulted hall with armchairs, a bar in the middle, shops and restaurants around the edges. Nobody minds if you just sit.",
+ tip:"The light rail from Littleton comes straight in here. Ride in, spend the day, ride back - no parking, no driving."},
+{n:"Denver Art Museum",c:"art",lat:39.7372,lng:-104.9893,mins:24,e:2,
+ d:"Two dramatic buildings holding one of the great collections of American Indian and Western art, plus everything else. Benches in nearly every room.",
+ tip:"Pick two floors, not five. There are lifts throughout and the cafe is genuinely good."},
+{n:"Molly Brown House Museum",c:"history",lat:39.7373,lng:-104.9797,mins:24,e:2,
+ d:"The 1889 home of the Titanic survivor and campaigner, restored room by room. Guided, about an hour, and the guides are very good.",
+ tip:"Book the tour slot online - they cap numbers and it sells out."},
+{n:"Denver Botanic Gardens",c:"garden",lat:39.7321,lng:-104.9611,mins:24,e:2,
+ d:"Twenty-four acres of themed gardens in the middle of the city, including a superb alpine collection and a conservatory. Summer evening concerts on the lawn.",
+ tip:"Timed tickets, bought in advance. Mornings are cooler and much quieter."},
+{n:"Denver Museum of Nature & Science",c:"art",lat:39.7475,lng:-104.9428,mins:26,e:2,
+ d:"Big, generous museum on the edge of City Park, with a mountain view from the top floor windows that stops people mid-sentence.",
+ tip:"Rainy-day insurance. The Gems and Minerals hall is Colorado at its showiest."},
+{n:"RiNo Art District",c:"art",lat:39.7654,lng:-104.9814,mins:27,e:2,tag:"Free",
+ d:"Warehouse blocks north of downtown where nearly every wall is a mural, repainted each summer. Best seen slowly on foot with coffee in hand.",
+ tip:"Larimer Street between 25th and 30th is the densest stretch. Go in the morning before it gets hot."},
+{n:"Washington Park",c:"walk",lat:39.7003,lng:-104.9702,mins:18,e:2,tag:"Free",
+ d:"Denver's loveliest city park - two lakes, a formal flower garden modelled on Mount Vernon's, and a flat two-and-a-half mile loop that the whole city walks.",
+ tip:"The flower gardens peak in July and August. Park on the quieter east side."},
+{n:"Four Mile Historic Park",c:"history",lat:39.7013,lng:-104.9330,mins:22,e:2,
+ d:"Denver's oldest standing house, on twelve acres of farm that the city grew around. Draft horses, a stagecoach, and total quiet a mile from Cherry Creek.",
+ tip:"Small, shady and rarely busy - a good gentle afternoon."},
+
+/* ---------- Golden & the foothills ---------- */
+{n:"Downtown Golden & Clear Creek",c:"day",lat:39.7555,lng:-105.2211,mins:26,e:2,
+ d:"A proper little western town with an arch over the main street, Clear Creek running through the middle of it and a paved path along the water. People float the creek in summer while you watch from a bench.",
+ tip:"The creek path is flat and shaded - the nicest easy walk in the foothills."},
+{n:"Coors Brewery Tour",c:"day",lat:39.7543,lng:-105.2214,mins:26,e:2,
+ d:"The enormous brewery in the middle of Golden, running self-guided and guided tours that end, inevitably, in a tasting room.",
+ tip:"Bring photo ID for everyone, even if nobody is drinking. Book the slot online."},
+{n:"Colorado Railroad Museum",c:"history",lat:39.7616,lng:-105.1904,mins:25,e:2,
+ d:"Fifteen acres of narrow-gauge locomotives and cars you can climb into, with a roundhouse and, on some weekends, steam under its own power.",
+ tip:"Check the calendar for a steam day - it is a completely different visit."},
+{n:"Buffalo Bill Museum & Grave",c:"history",lat:39.7326,lng:-105.2394,mins:28,e:2,
+ d:"On top of Lookout Mountain, where Buffalo Bill chose to be buried, with a small museum and one of the great views over Denver and the plains.",
+ tip:"The drive up Lookout Mountain Road is half the reason to go. Take it slowly - it is narrow and twisty."},
+{n:"Evergreen Lake",c:"day",lat:39.6335,lng:-105.3226,mins:35,e:2,
+ d:"A mountain lake at 7,000 feet with a boardwalk trail all the way round, a beautiful timber lake house, and elk that wander through town like they own it.",
+ tip:"The loop is flat and about a mile and a quarter. Bring a layer - it is noticeably cooler than Littleton."},
+
+/* ---------- Bigger days out ---------- */
+{n:"Idaho Springs & the hot springs",c:"relax",lat:39.7398,lng:-105.5175,mins:45,e:1,
+ d:"An old mining town in a narrow canyon forty-five minutes up the interstate, with geothermal pools and mineral baths that have been in use since the 1860s.",
+ tip:"Book a slot rather than turning up. Afterwards, everyone goes to Beau Jo's for the mountain pies."},
+{n:"Georgetown Loop Railroad",c:"day",lat:39.7062,lng:-105.6970,mins:55,e:1,
+ d:"A restored narrow-gauge steam train that spirals over a high trestle bridge between two Victorian mining towns. About an hour and a quarter on board, sitting down the whole way.",
+ tip:"The most scenery for the least effort on this whole list. Book seats in advance and bring a jacket for the open car."},
+{n:"Mount Blue Sky Scenic Byway",c:"day",lat:39.6581,lng:-105.5975,mins:60,e:2,
+ d:"The highest paved road in North America, climbing past Echo Lake to above 14,000 feet, with mountain goats and bighorn on the roadside. You drive nearly all of it.",
+ tip:"Timed entry reservations are required in season, and the air up there is thin - go on a later day of the trip, not the first."},
+{n:"Garden of the Gods",c:"day",lat:38.8783,lng:-104.8719,mins:80,e:2,tag:"Free",
+ d:"Towering red rock fins against Pikes Peak, with a mile-and-a-half paved central trail that is flat and beautiful. Free, and one of the most photographed places in the state.",
+ tip:"A full day with the drive down and back. Go early - the car parks fill by mid-morning."},
+{n:"Estes Park & Rocky Mountain National Park",c:"day",lat:40.3772,lng:-105.5217,mins:105,e:2,
+ d:"The classic Colorado day: a mountain town on a lake, elk in the streets, and Trail Ridge Road climbing above the treeline behind it.",
+ tip:"The longest day on the list. Leave by seven, book park entry ahead, and accept that you will not do all of it."},
+{n:"Butterfly Pavilion",c:"day",lat:39.9166,lng:-105.1043,mins:35,e:2,
+ d:"A warm indoor rainforest with a thousand free-flying butterflies that land on people. Small, easy, and unexpectedly moving.",
+ tip:"Wear something bright - they genuinely do land on you more."},
+
+/* ---------- Active ---------- */
+{n:"Buck Recreation Center",c:"active",lat:39.5866,lng:-105.0170,mins:5,e:3,
+ d:"South Suburban's Littleton centre with a warm-water pool, drop-in water aerobics, a gym and classes you can join for a single-visit fee.",
+ tip:"Ring for the day's class schedule. Visitors are welcome without a membership."},
+{n:"Goodson Recreation Center",c:"active",lat:39.6047,lng:-104.9605,mins:12,e:3,
+ d:"The bigger sister centre, with lap and leisure pools, a walking track and a full class timetable including gentle yoga and aqua fitness.",
+ tip:"The indoor track is a good backup on a smoky or storming day."},
+{n:"Light rail to Denver",c:"day",lat:39.6108,lng:-105.0139,mins:1,e:2,tag:"Transit",
+ d:"The train leaves Downtown Littleton station and is at Denver Union Station in about half an hour, with no parking, no traffic and a river view most of the way.",
+ tip:"Buy the day pass - it covers the trip back and any bus in between. Machines take cards."}
+];
+
+/* categories that the proximity nudges default to */
+const ALERT_DEFAULT=["walk","garden","history","music","market","art"];
+
+/* ============================================================
+   SMALL HELPERS
+   ============================================================ */
+function esc(s){const d=document.createElement("div");d.textContent=s==null?"":String(s);return d.innerHTML}
+let toastT=null;
+function toast(msg,ms){const t=$("toast");t.innerHTML=msg;t.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("on"),ms||3000)}
+function todayISO(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function fmtDate(iso){if(!iso)return"";const[y,m,d]=iso.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})}
+function fmtDateLong(iso){if(!iso)return"";const[y,m,d]=iso.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString([],{weekday:"long",month:"long",day:"numeric"})}
+function addDays(iso,n){const[y,m,d]=iso.split("-").map(Number);const dt=new Date(y,m-1,d+n);
+  return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0")}
+function daysBetween(a,b){if(!a||!b)return 0;const[y1,m1,d1]=a.split("-").map(Number),[y2,m2,d2]=b.split("-").map(Number);
+  return Math.round((new Date(y2,m2-1,d2)-new Date(y1,m1-1,d1))/86400000)}
+function dist(a,b,c,d){
+  const R=3958.8,t=Math.PI/180;
+  const dLa=(c-a)*t,dLo=(d-b)*t;
+  const h=Math.sin(dLa/2)**2+Math.cos(a*t)*Math.cos(c*t)*Math.sin(dLo/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+function fmtMi(m){return m<0.15?"right here":(m<1?(Math.round(m*10)/10)+" mi":Math.round(m)+" mi")}
+function driveEta(mi){const m=Math.round(mi/32*60);return m<1?"a minute":(m<60?m+" min drive":Math.round(m/6)/10+" hr drive")}
+function walkEta(mi){const m=Math.round(mi/2.6*60);return m+" min walk"}
+function bearing(a,b,c,d){
+  const t=Math.PI/180,y=Math.sin((d-b)*t)*Math.cos(c*t);
+  const x=Math.cos(a*t)*Math.sin(c*t)-Math.sin(a*t)*Math.cos(c*t)*Math.cos((d-b)*t);
+  const deg=(Math.atan2(y,x)/t+360)%360;
+  return ["north","north-east","east","south-east","south","south-west","west","north-west"][Math.round(deg/45)%8];
+}
+function mapUrl(p){return "https://www.google.com/maps/dir/?api=1&destination="+p.lat+","+p.lng}
+function slug(s){return String(s).toLowerCase().replace(/&/g," and ").replace(/['’]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}
+function byName(n){return PLACES.find(p=>p.n===n)}
+
+/* ============================================================
+   CLARA'S VOICE
+   Two engines, exactly as Olive does it:
+     - Clara herself, through ElevenLabs, when a key is set on this
+       phone. The key never leaves the device and is not in this file.
+     - the phone's own voice, tuned low and unhurried, for everything
+       else and for when there is no signal.
+   Every line Clara generates is cached, so repeats are instant, free
+   and work offline afterwards.
+   ============================================================ */
+const CLARA_VOICE_ID="tMXujoAjiboschVOhAnk";   /* Clara - the same voice as Olive */
+const TTS_CACHE="chris-tts-v1";
+let voiceOn=store.get("voice",false), curAudio=null, ttsSpend=store.get("ttsChars",0);
+
+function stopSpeaking(){
+  try{speechSynthesis.cancel()}catch(e){}
+  if(curAudio){try{curAudio.pause();curAudio.currentTime=0}catch(e){}curAudio=null}
+}
+let _picked=null;
+function pickVoice(){
+  if(_picked)return _picked;
+  if(!("speechSynthesis" in window))return null;
+  const vs=speechSynthesis.getVoices()||[];
+  if(!vs.length)return null;
+  const en=vs.filter(v=>/^en(-|_)?/i.test(v.lang||""));
+  const pool=en.length?en:vs;
+  const prefer=[/zira/i,/aria/i,/jenny/i,/michelle/i,/samantha/i,/karen/i,/moira/i,/tessa/i,/female/i];
+  for(const re of prefer){const hit=pool.find(v=>re.test(v.name||""));if(hit){_picked=hit;return hit}}
+  _picked=pool[0];return _picked;
+}
+if("speechSynthesis" in window)speechSynthesis.onvoiceschanged=()=>{_picked=null;pickVoice()};
+
+function browserSpeak(text){
+  if(!("speechSynthesis" in window))return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(String(text).replace(/[#*_>]/g,"").replace(/&[a-z]+;/g,""));
+    u.rate=.88; u.pitch=.78; u.volume=1; u.lang="en-US";
+    const v=pickVoice();if(v)u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+async function sha(s){
+  const b=await crypto.subtle.digest("SHA-1",new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
+}
+function playBlob(blob,onFail){
+  stopSpeaking();
+  try{
+    const a=new Audio(URL.createObjectURL(blob));
+    a.onerror=()=>{curAudio=null;onFail&&onFail()};
+    curAudio=a;
+    const p=a.play();
+    if(p&&p.catch)p.catch(()=>{curAudio=null;onFail&&onFail()});
+  }catch(e){onFail&&onFail()}
+}
+async function claraTTS(text){
+  const key=store.get("xiKey","");
+  if(!key)return false;
+  const clean=String(text).replace(/<[^>]*>/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim().slice(0,1500);
+  if(!clean)return false;
+  try{
+    const id="/chris-tts/"+await sha(CLARA_VOICE_ID+"|"+clean);
+    let cache=null,res=null;
+    try{cache=await caches.open(TTS_CACHE);res=await cache.match(id)}catch(e){}
+    if(!res){
+      if(!navigator.onLine)return false;
+      const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+CLARA_VOICE_ID+"?output_format=mp3_44100_64",{
+        method:"POST",
+        headers:{"xi-api-key":key,"Content-Type":"application/json"},
+        body:JSON.stringify({text:clean,model_id:"eleven_turbo_v2_5",
+          voice_settings:{stability:.6,similarity_boost:.8,style:.25,use_speaker_boost:true}})
+      });
+      if(!r.ok)return false;
+      if(cache){try{await cache.put(id,r.clone())}catch(e){}}
+      ttsSpend+=clean.length;store.set("ttsChars",ttsSpend);
+      res=r;
+    }
+    const blob=await res.blob();
+    if(!blob||blob.size<200)return false;
+    playBlob(blob,()=>browserSpeak(clean));
+    return true;
+  }catch(e){return false}
+}
+/* speak(text, force) - force ignores the on/off switch, for things
+   the user asked for out loud by tapping a Read-it-to-me button */
+function speak(text,force){
+  if(!voiceOn&&!force)return;
+  const clean=String(text).replace(/<[^>]*>/g," ").replace(/&nbsp;/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim();
+  if(!clean)return;
+  claraTTS(clean).then(ok=>{if(!ok)browserSpeak(clean)});
+}
+function syncVoiceBtn(){
+  const b=$("btnVoice");
+  b.setAttribute("aria-pressed",voiceOn?"true":"false");
+  b.innerHTML=voiceOn?"&#128266;":"&#128264;";
+  b.title=voiceOn?"Clara's voice is ON":"Clara's voice is OFF";
+}
+$("btnHush").addEventListener("click",()=>{stopSpeaking();toast("&#128263; Quiet")});
+$("btnVoice").addEventListener("click",()=>{
+  voiceOn=!voiceOn;store.set("voice",voiceOn);syncVoiceBtn();
+  if(voiceOn)speak("Voice is on. I'll speak up when there's something worth knowing about nearby.",true);
+  else{stopSpeaking();toast("Voice off")}
+});
+
+/* ---------- text size ---------- */
+const FS=["m","l","xl"],FSL={m:"Normal",l:"Large",xl:"Extra large"};
+function applyFS(){document.documentElement.setAttribute("data-fs",store.get("fs","l"))}
+$("btnText").addEventListener("click",()=>{
+  const cur=store.get("fs","l"),next=FS[(FS.indexOf(cur)+1)%FS.length];
+  store.set("fs",next);applyFS();toast("Text size: <b>"+FSL[next]+"</b>");
+});
+applyFS();
+
+/* ============================================================
+   SHEET
+   ============================================================ */
+function openSheet(title,html){$("shTitle").innerHTML=title;$("shBody").innerHTML=html;$("sheet").classList.add("on");document.body.style.overflow="hidden"}
+function closeSheet(){$("sheet").classList.remove("on");document.body.style.overflow=""}
+$("shClose").addEventListener("click",closeSheet);
+$("sheet").addEventListener("click",e=>{if(e.target===$("sheet"))closeSheet()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeSheet()});
+
+/* ============================================================
+   ROUTING
+   ============================================================ */
+function showView(v){
+  const ok=$("view-"+v)?v:"today";
+  $$(".view").forEach(x=>x.classList.remove("active"));
+  $("view-"+ok).classList.add("active");
+  $$("nav a").forEach(a=>a.classList.toggle("on",a.dataset.view===ok));
+  window.scrollTo({top:0,behavior:"instant"});
+  const s=document.querySelector(".tabscroll"),a=s&&s.querySelector('a[data-view="'+ok+'"]');
+  if(a)s.scrollTo({left:Math.max(0,a.offsetLeft-s.clientWidth/2+a.clientWidth/2),behavior:"smooth"});
+  if(ok!=="camera")camStop();
+  if(ok==="friends")drawFriendMap();
+}
+function route(){showView((location.hash||"#/today").replace("#/",""))}
+window.addEventListener("hashchange",route);
+
+/* ============================================================
+   THE TRIP - dates, people, taste
+   ============================================================ */
+const TRIP_DEF={start:"",end:"",base:"",who:["Chris"],pace:"steady",
+  likes:["walk","garden","history","eat","sip","music","day"],avoid:[]};
+function trip(){return Object.assign({},TRIP_DEF,store.get("trip",{}))}
+function saveTrip(t){store.set("trip",t)}
+function tripDay(){                       /* 1-based day of trip, or 0 */
+  const t=trip();if(!t.start||!t.end)return 0;
+  const n=daysBetween(t.start,todayISO());
+  return (n>=0&&n<=daysBetween(t.start,t.end))?n+1:0;
+}
+function tripLen(){const t=trip();return (t.start&&t.end)?daysBetween(t.start,t.end)+1:0}
+
+const PACES=[["gentle","Gentle","One main thing a day, long lunches"],
+             ["steady","Steady","Two things a day with a proper sit-down between"],
+             ["full","Full","Three things a day - you did not come here to rest"]];
+const AVOIDS=[["stairs","Lots of stairs"],["longdrive","Drives over an hour"],
+              ["altitude","Very high altitude"],["late","Late nights"],["crowds","Big crowds"]];
+
+function renderTripForm(){
+  const t=trip();
+  $("tpStart").value=t.start;$("tpEnd").value=t.end;$("tpBase").value=t.base;
+  $("tpWho").value=(t.who||[]).join("\n");
+  $("tpPace").innerHTML=PACES.map(([k,l,s])=>
+    `<button class="pill ${t.pace===k?"on":""}" data-pace="${k}" title="${esc(s)}">${l}</button>`).join("");
+  $("tpLikes").innerHTML=Object.keys(CATS).map(k=>
+    `<button class="pill ${t.likes.includes(k)?"on":""}" data-like="${k}">${CATS[k].ic} ${CATS[k].n}</button>`).join("");
+  $("tpAvoid").innerHTML=AVOIDS.map(([k,l])=>
+    `<button class="pill ${t.avoid.includes(k)?"on":""}" data-avoid="${k}">${l}</button>`).join("");
+  $("tpBuild").innerHTML=agenda().length?"&#8635; Rebuild my agenda":"&#10024; Build my agenda";
+}
+$("tpPace").addEventListener("click",e=>{const b=e.target.closest("[data-pace]");if(!b)return;
+  const t=trip();t.pace=b.dataset.pace;saveTrip(t);renderTripForm()});
+$("tpLikes").addEventListener("click",e=>{const b=e.target.closest("[data-like]");if(!b)return;
+  const t=trip(),k=b.dataset.like;
+  t.likes=t.likes.includes(k)?t.likes.filter(x=>x!==k):t.likes.concat(k);saveTrip(t);renderTripForm()});
+$("tpAvoid").addEventListener("click",e=>{const b=e.target.closest("[data-avoid]");if(!b)return;
+  const t=trip(),k=b.dataset.avoid;
+  t.avoid=t.avoid.includes(k)?t.avoid.filter(x=>x!==k):t.avoid.concat(k);saveTrip(t);renderTripForm()});
+["tpStart","tpEnd","tpBase"].forEach(id=>$(id).addEventListener("change",()=>{
+  const t=trip();t.start=$("tpStart").value;t.end=$("tpEnd").value;t.base=$("tpBase").value.trim();saveTrip(t);renderHero()}));
+$("tpWho").addEventListener("change",()=>{
+  const t=trip();t.who=$("tpWho").value.split("\n").map(s=>s.trim()).filter(Boolean).slice(0,10);
+  if(!t.who.length)t.who=["Chris"];saveTrip(t);renderHero()});
+
+$("setupStart").addEventListener("click",()=>{location.hash="#/agenda";setTimeout(()=>$("tpStart").focus(),350)});
+$("setupHide").addEventListener("click",()=>{store.set("setup-hide",true);$("setupCard").style.display="none"});
+
+/* ============================================================
+   HERO + COUNTDOWN
+   ============================================================ */
+function renderHero(){
+  const t=trip(),d=tripDay();
+  $("setupCard").style.display=(t.start||store.get("setup-hide",false))?"none":"block";
+  if(!t.start||!t.end){
+    $("heroLbl").textContent="Littleton, Colorado";
+    $("heroTitle").textContent="Chris's Girls' Trip";
+    $("heroSub").textContent="Foothills, gardens, Main Street and Red Rocks - at your own pace.";
+    $("countdown").innerHTML="&#10024; Tell Clara your dates and she'll plan the lot";
+    return;
+  }
+  if(d>0){
+    const A=agenda(),day=A[d-1];
+    $("heroLbl").textContent="Day "+d+" of "+tripLen()+" · "+fmtDateLong(todayISO());
+    $("heroTitle").textContent=day?day.title:"Littleton";
+    $("heroSub").textContent=day?day.sub:"Your day, your pace.";
+    const left=daysBetween(todayISO(),t.end);
+    $("countdown").innerHTML=left>0?("&#9200; "+left+" more day"+(left>1?"s":"")+" here"):"&#128075; Last day - make it count";
+  }else{
+    const to=daysBetween(todayISO(),t.start);
+    $("heroLbl").textContent=to>0?"Littleton, Colorado":"That was the trip";
+    $("heroTitle").textContent=to>0?"Nearly time":"Home again";
+    $("heroSub").textContent=to>0?("Staying "+(t.base||"in Littleton")+" with "+(t.who.length>1?t.who.slice(1).join(" and "):"the girls")):
+      "Everything you saved is still here - the photos, the pins and the plan.";
+    $("countdown").innerHTML=to>0?("&#9992;&#65039; "+to+" day"+(to>1?"s":"")+" to go"):"&#128248; Make the film in the Movie tab";
+  }
+}
+
+/* ============================================================
+   WEATHER  (Open-Meteo, free, no key)
+   ============================================================ */
+const WCODE={0:["Clear","&#9728;&#65039;"],1:["Mostly clear","&#127780;&#65039;"],2:["Partly cloudy","&#9925;"],3:["Overcast","&#9729;&#65039;"],
+  45:["Fog","&#127787;&#65039;"],48:["Freezing fog","&#127787;&#65039;"],51:["Light drizzle","&#127782;&#65039;"],53:["Drizzle","&#127782;&#65039;"],
+  55:["Heavy drizzle","&#127782;&#65039;"],61:["Light rain","&#127783;&#65039;"],63:["Rain","&#127783;&#65039;"],65:["Heavy rain","&#127783;&#65039;"],
+  71:["Light snow","&#127784;&#65039;"],73:["Snow","&#127784;&#65039;"],75:["Heavy snow","&#127784;&#65039;"],
+  80:["Showers","&#127783;&#65039;"],81:["Showers","&#127783;&#65039;"],82:["Heavy showers","&#9928;&#65039;"],
+  95:["Thunderstorm","&#9928;&#65039;"],96:["Thunderstorm","&#9928;&#65039;"],99:["Severe storm","&#9928;&#65039;"]};
+let wx=null;
+function wxCoords(){return here?{lat:here.lat,lng:here.lng}:{lat:HOME.lat,lng:HOME.lng}}
+async function loadWeather(){
+  const c=wxCoords();
+  try{
+    const r=await fetch("https://api.open-meteo.com/v1/forecast?latitude="+c.lat.toFixed(3)+"&longitude="+c.lng.toFixed(3)+
+      "&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,relative_humidity_2m"+
+      "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,uv_index_max,sunrise,sunset"+
+      "&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FDenver&forecast_days=5");
+    if(!r.ok)throw 0;
+    wx=await r.json();
+    const cu=wx.current,w=WCODE[cu.weather_code]||["",""];
+    $("wxNow").innerHTML=`<div style="display:flex;align-items:center;gap:.9rem">
+      <div style="font-size:3rem;line-height:1">${w[1]}</div>
+      <div><div style="font-size:2rem;font-weight:800;font-family:Fraunces,serif;line-height:1.05">${Math.round(cu.temperature_2m)}&deg;F</div>
+      <div class="small muted">${w[0]} · feels like ${Math.round(cu.apparent_temperature)}&deg; · wind ${Math.round(cu.wind_speed_10m)} mph · humidity ${cu.relative_humidity_2m}%</div></div></div>`;
+    $("wxDays").innerHTML=wx.daily.time.slice(0,5).map((d,i)=>{
+      const dw=WCODE[wx.daily.weather_code[i]]||["",""];
+      return `<span class="pill">${dw[1]} <b>${i===0?"Today":fmtDate(d).split(",")[0]}</b> ${Math.round(wx.daily.temperature_2m_max[i])}&deg;/${Math.round(wx.daily.temperature_2m_min[i])}&deg;</span>`;
+    }).join("");
+    const uv=wx.daily.uv_index_max[0],pop=wx.daily.precipitation_probability_max[0];
+    const sun=new Date(wx.daily.sunset[0]).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"});
+    let advice=[];
+    if(uv>=7)advice.push("<b>UV is "+Math.round(uv)+" today.</b> At this altitude that burns faster than it looks - hats and sunscreen even when it feels cool.");
+    if(pop>=40)advice.push("<b>"+pop+"% chance of storms.</b> Colorado afternoons build fast in summer - do the outdoor thing in the morning and keep the afternoon flexible.");
+    if(wx.current.temperature_2m>=88)advice.push("<b>Hot one.</b> Start early, take the shady walks, and carry more water than feels sensible.");
+    advice.push("Sunset tonight at <b>"+sun+"</b>.");
+    $("wxAdvice").innerHTML=advice.join("<br><br>");
+    $("wxAdvice").style.display="block";
+    loadAir(c);
+    renderBriefing();
+  }catch(e){$("wxNow").innerHTML='<p class="muted small" style="margin:0">Weather needs a signal. Everything else here works without one.</p>'}
+}
+async function loadAir(c){
+  try{
+    const r=await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude="+c.lat.toFixed(3)+
+      "&longitude="+c.lng.toFixed(3)+"&current=us_aqi&timezone=America%2FDenver");
+    const j=await r.json();const a=j.current&&j.current.us_aqi;
+    if(a==null)return;
+    const lvl=a<=50?["Good","&#128994;"]:a<=100?["Moderate","&#128993;"]:a<=150?["Poor for sensitive groups","&#128992;"]:["Unhealthy","&#128308;"];
+    $("airQ").innerHTML=lvl[1]+" Air quality <b>"+a+"</b> — "+lvl[0]+
+      (a>100?". Colorado gets wildfire smoke in late summer; if it is hazy, swap the long walk for a museum.":"");
+  }catch(e){}
+}
+
+/* ============================================================
+   WHERE SHE IS - GPS, and the nudges that come with it
+   ============================================================ */
+let here=null,watchId=null,alerted=new Set(store.get("alerted",[]));
+function saveAlerted(){store.set("alerted",Array.from(alerted).slice(-200))}
+function gpsStatus(msg,cls){$("gpsStatus").innerHTML=msg;$("gpsStatus").className="small "+(cls||"muted")}
+function stopGPS(){if(watchId!=null){try{navigator.geolocation.clearWatch(watchId)}catch(e){}watchId=null}
+  gpsStatus("Location is off. Turn it on and everything sorts itself by how far away it is.")}
+function startGPS(){
+  if(!("geolocation" in navigator))return gpsStatus("This phone can't do location.","muted");
+  if(watchId!=null)return;
+  gpsStatus("Finding you&hellip;");
+  watchId=navigator.geolocation.watchPosition(onFix,onFixErr,{enableHighAccuracy:true,maximumAge:15000,timeout:20000});
+}
+function onFixErr(err){
+  const m=err&&err.code===1
+    ? "Location permission was declined. Everything still works — Clara just can't sort things by distance or nudge you when something's close."
+    : "Can't get a fix right now. Under a roof or in a canyon this happens; it usually sorts itself outside.";
+  gpsStatus(m,"muted");
+  if(err&&err.code===1){
+    $("gpsHelp").style.display="block";
+    $("gpsHelp").innerHTML="<b>To switch it back on:</b> iPhone — Settings, Privacy &amp; Security, Location Services, Safari, While Using. Android — Settings, Apps, Chrome, Permissions, Location. Then reload this page.";
+  }
+}
+function onFix(pos){
+  const first=!here;
+  here={lat:pos.coords.latitude,lng:pos.coords.longitude,acc:pos.coords.accuracy,t:Date.now()};
+  const nearestName=(nearest(1)[0]||{}).n;
+  gpsStatus("&#128994; Found you"+(nearestName?" — near <b>"+esc(nearestName)+"</b>":"")+
+    " · accurate to about "+Math.round(pos.coords.accuracy)+" m","muted");
+  $("whereBox").innerHTML=whereHtml();
+  renderNearby();renderPins();renderExplore();
+  if(first){loadWeather()}
+  checkProximity();
+  if(locSharing&&Date.now()-lastPub>90000)publishLoc();
+  if($("view-friends").classList.contains("active"))drawFriendMap();
+}
+function whereHtml(){
+  if(!here)return"";
+  const n=nearest(3);
+  return `<div class="pills">
+    <span class="pill sage">&#128205; ${here.lat.toFixed(4)}, ${here.lng.toFixed(4)}</span>
+    ${n[0]?`<span class="pill rose">${CATS[n[0].c].ic} ${esc(n[0].n)} · ${fmtMi(n[0]._d)}</span>`:""}
+  </div>`;
+}
+function reviveGPS(){if(store.get("gps",true)!==false&&watchId==null)startGPS()}
+function autoStartGPS(){if(store.get("gps",true)!==false)startGPS();else stopGPS()}
+$("gpsToggle").addEventListener("change",e=>{
+  store.set("gps",e.target.checked);
+  if(e.target.checked){startGPS();toast("&#128205; Watching where you are")}else{stopGPS();here=null;toast("Location off")}
+});
+function nearest(limit,cats,maxMi){
+  const o=here||HOME;
+  let list=PLACES.map(p=>Object.assign({},p,{_d:dist(o.lat,o.lng,p.lat,p.lng)}));
+  if(cats&&cats.length)list=list.filter(p=>cats.includes(p.c));
+  if(maxMi)list=list.filter(p=>p._d<=maxMi);
+  list.sort((a,b)=>a._d-b._d);
+  return limit?list.slice(0,limit):list;
+}
+
+/* ---------- proximity nudges ---------- */
+function alertCats(){return store.get("alertCats",ALERT_DEFAULT)}
+function checkProximity(){
+  if(!here||!store.get("alertsOn",true))return;
+  const R=+store.get("alertRadius",1.5);
+  const cats=alertCats();
+  nearest(0,cats,R).forEach(p=>{
+    if(alerted.has(p.n))return;
+    alerted.add(p.n);saveAlerted();
+    pushAlert({ic:CATS[p.c].ic,cls:"gem",t:p.n+" — "+fmtMi(p._d)+" away",
+      s:p.d.split(". ")[0]+".",place:p.n});
+    speak(p.n+" is "+fmtMi(p._d)+" "+bearing(here.lat,here.lng,p.lat,p.lng)+" of you. "+p.d.split(". ")[0]+".");
+    notify(p.n+" is close",fmtMi(p._d)+" away — "+p.d.split(". ")[0]);
+  });
+}
+function pushAlert(a){
+  const box=$("liveAlerts");
+  const el=document.createElement("div");
+  el.className="alert "+(a.cls||"info");
+  el.innerHTML=`<div class="ic">${a.ic}</div><div class="bd"><div class="t">${esc(a.t)}</div><div class="s">${esc(a.s)}</div>
+    ${a.place?`<div class="btnrow" style="margin-top:.6rem">
+      <button class="btn sm ghost" data-alert-open="${esc(a.place)}">Tell me more</button>
+      <a class="btn sm ghost" href="${mapUrl(byName(a.place))}" target="_blank" rel="noopener">&#129517; Take me there</a></div>`:""}
+    </div><button class="x" aria-label="Dismiss">&#10005;</button>`;
+  el.querySelector(".x").addEventListener("click",()=>el.remove());
+  box.prepend(el);
+  while(box.children.length>4)box.lastChild.remove();
+}
+$("liveAlerts").addEventListener("click",e=>{
+  const b=e.target.closest("[data-alert-open]");if(b)placeSheet(b.dataset.alertOpen);
+});
+function notify(title,body){
+  if(!store.get("notif",false)||!("Notification" in window)||Notification.permission!=="granted")return;
+  try{new Notification(title,{body:body,tag:title})}catch(e){}
+}
+
+/* ============================================================
+   NEARBY
+   ============================================================ */
+let nearFilter="all";
+function renderNearbyFilters(){
+  const keys=["all"].concat(Object.keys(CATS));
+  $("nearFilters").innerHTML=keys.map(k=>
+    `<button class="pill ${nearFilter===k?"on":""}" data-nf="${k}">${k==="all"?"&#10024; Everything":CATS[k].ic+" "+CATS[k].n}</button>`).join("");
+  $("alertCats").innerHTML=Object.keys(CATS).map(k=>
+    `<button class="pill ${alertCats().includes(k)?"on":""}" data-ac="${k}">${CATS[k].ic} ${CATS[k].n}</button>`).join("");
+}
+$("nearFilters").addEventListener("click",e=>{const b=e.target.closest("[data-nf]");if(!b)return;
+  nearFilter=b.dataset.nf;renderNearbyFilters();renderNearby()});
+$("alertCats").addEventListener("click",e=>{const b=e.target.closest("[data-ac]");if(!b)return;
+  const k=b.dataset.ac,cur=alertCats();
+  store.set("alertCats",cur.includes(k)?cur.filter(x=>x!==k):cur.concat(k));renderNearbyFilters()});
+$("alertToggle").addEventListener("change",e=>{store.set("alertsOn",e.target.checked);
+  toast(e.target.checked?"&#128276; Clara will nudge you":"Nudges off")});
+$("alertRadius").addEventListener("change",e=>{store.set("alertRadius",e.target.value);
+  toast("She'll speak up within "+e.target.value+" miles")});
+$("alertTest").addEventListener("click",()=>{
+  const p=nearest(1)[0]||PLACES[0];
+  pushAlert({ic:CATS[p.c].ic,cls:"gem",t:p.n+" — "+fmtMi(p._d||0)+" away",s:p.d.split(". ")[0]+".",place:p.n});
+  speak(p.n+" is "+fmtMi(p._d||0)+" away. "+p.d.split(". ")[0]+".",true);
+  location.hash="#/today";
+});
+$("alertReset").addEventListener("click",()=>{alerted.clear();saveAlerted();toast("&#8635; She'll mention them all again")});
+
+function renderNearby(){
+  const list=nearest(0,nearFilter==="all"?null:[nearFilter]).slice(0,24);
+  $("nearHead").innerHTML=here
+    ? "Sorted from where you're standing right now."
+    : "Sorted from downtown Littleton until location is on — turn it on for real distances.";
+  $("nearList").innerHTML=list.map(p=>rowFor(p)).join("")||emptyMsg();
+}
+function rowFor(p){
+  const fav=favs().includes(p.n);
+  return `<div class="row clickable" data-place="${esc(p.n)}">
+    <div class="ic">${CATS[p.c].ic}</div>
+    <div class="bd"><div class="t">${esc(p.n)} ${fav?"&#11088;":""}</div>
+      <div class="s">${p.tag?"<b>"+esc(p.tag)+"</b> · ":""}${esc(p.d.split(". ")[0])}.</div></div>
+    <div class="rt"><div class="dist">${fmtMi(p._d)}</div><div class="eta">${p._d<0.15?"":(p._d<1.2?walkEta(p._d):driveEta(p._d))}</div></div>
+  </div>`;
+}
+function emptyMsg(){return '<p class="small muted" style="margin:.6rem 0 0">Nothing in that category. Try Everything.</p>'}
+document.addEventListener("click",e=>{
+  const r=e.target.closest("[data-place]");if(r)placeSheet(r.dataset.place);
+});
+
+function placeSheet(name){
+  const p=byName(name);if(!p)return;
+  const o=here||HOME;
+  const d=dist(o.lat,o.lng,p.lat,p.lng);
+  const fav=favs().includes(p.n);
+  const eff=["","sit-down","gentle stroll","a real walk","a proper hike"][p.e]||"";
+  openSheet(CATS[p.c].ic+" "+esc(p.n),`
+    <div class="pills" style="margin-bottom:.8rem">
+      <span class="pill rose">${fmtMi(d)} away</span>
+      <span class="pill">${d<1.2?walkEta(d):driveEta(d)}</span>
+      <span class="pill sage">${esc(eff)}</span>
+      ${p.tag?`<span class="pill gold">${esc(p.tag)}</span>`:""}
+    </div>
+    <p>${esc(p.d)}</p>
+    <div class="note good"><b>Clara says:</b> ${esc(p.tip)}</div>
+    <div class="btnrow" style="margin-top:1rem">
+      <a class="btn" href="${mapUrl(p)}" target="_blank" rel="noopener">&#129517; Take me there</a>
+      <button class="btn sm ghost" data-say="${esc(p.n)}">&#128266; Read it to me</button>
+      <button class="btn sm ${fav?"gold":"ghost"}" data-fav="${esc(p.n)}">${fav?"&#11088; On the shortlist":"&#9734; Add to shortlist"}</button>
+      <button class="btn sm ghost" data-toplan="${esc(p.n)}">&#128197; Put it in a day</button>
+    </div>
+    <p class="tiny" style="margin-top:.9rem">Hours and prices change. Ring ahead when it matters — especially anything ticketed.</p>`);
+}
+$("shBody").addEventListener("click",e=>{
+  const s=e.target.closest("[data-say]");
+  if(s){const p=byName(s.dataset.say);speak(p.n+". "+p.d+" "+p.tip,true);return}
+  const f=e.target.closest("[data-fav]");
+  if(f){toggleFav(f.dataset.fav);placeSheet(f.dataset.fav);renderExplore();return}
+  const t=e.target.closest("[data-toplan]");
+  if(t){addToDay(t.dataset.toplan);return}
+});
+
+/* ---------- shortlist ---------- */
+function favs(){return store.get("favs",[])}
+function toggleFav(n){
+  const f=favs();
+  store.set("favs",f.includes(n)?f.filter(x=>x!==n):f.concat(n));
+  toast(f.includes(n)?"Removed from the shortlist":"&#11088; On the shortlist");
+  renderFavs();
+}
+function renderFavs(){
+  const f=favs();
+  $("favList").innerHTML=f.length?f.map(n=>{
+    const p=byName(n);if(!p)return"";
+    const o=here||HOME;p._d=dist(o.lat,o.lng,p.lat,p.lng);
+    return rowFor(p);
+  }).join(""):'<p class="small muted" style="margin:0">Nothing starred yet. Tap the star on anything you fancy and Clara will build the days around it.</p>';
+}
+
+/* ============================================================
+   EXPLORE
+   ============================================================ */
+let exFilter="all",exQ="";
+function renderExploreFilters(){
+  const keys=["all"].concat(Object.keys(CATS));
+  $("exFilters").innerHTML=keys.map(k=>
+    `<button class="pill ${exFilter===k?"on":""}" data-ef="${k}">${k==="all"?"&#10024; Everything":CATS[k].ic+" "+CATS[k].n}</button>`).join("");
+}
+$("exFilters").addEventListener("click",e=>{const b=e.target.closest("[data-ef]");if(!b)return;
+  exFilter=b.dataset.ef;renderExploreFilters();renderExplore()});
+$("exSearch").addEventListener("input",e=>{exQ=e.target.value.toLowerCase().trim();renderExplore()});
+
+function renderExplore(){
+  const o=here||HOME;
+  let list=PLACES.map(p=>Object.assign({},p,{_d:dist(o.lat,o.lng,p.lat,p.lng)}));
+  if(exFilter!=="all")list=list.filter(p=>p.c===exFilter);
+  if(exQ)list=list.filter(p=>(p.n+" "+p.d+" "+p.tip+" "+CATS[p.c].n).toLowerCase().includes(exQ));
+  list.sort((a,b)=>a._d-b._d);
+  const groups={};
+  list.forEach(p=>{(groups[p.c]=groups[p.c]||[]).push(p)});
+  $("exList").innerHTML=Object.keys(groups).map(c=>`
+    <div class="card">
+      <div class="card-h"><span class="ic">${CATS[c].ic}</span><h3>${CATS[c].n}</h3>
+        <span class="pill">${groups[c].length}</span></div>
+      ${groups[c].map(p=>rowFor(p)).join("")}
+    </div>`).join("")||'<div class="card"><p class="muted" style="margin:0">Nothing matches that. Try a shorter word.</p></div>';
+  renderFavs();
+}
+
+/* ============================================================
+   SAVED SPOTS
+   ============================================================ */
+function pins(){return store.get("pins",[])}
+$("pinHere").addEventListener("click",()=>{
+  if(!here)return toast("Turn location on first");
+  openSheet("&#128204; Remember this spot",`
+    <div class="field"><label class="fld" for="pnName">What is it?</label>
+      <input type="text" id="pnName" placeholder="e.g. where we parked, the bench with the view" maxlength="60"></div>
+    <div class="btnrow" style="margin-top:.9rem"><button class="btn" id="pnSave">Save it</button></div>`);
+  setTimeout(()=>{
+    $("pnName").focus();
+    $("pnSave").addEventListener("click",()=>{
+      const n=$("pnName").value.trim()||"Saved spot";
+      const p=pins();p.unshift({n,lat:here.lat,lng:here.lng,t:Date.now()});
+      store.set("pins",p.slice(0,60));closeSheet();renderPins();toast("&#128204; Saved");
+    });
+  },60);
+});
+function renderPins(){
+  const p=pins(),o=here||HOME;
+  $("pinList").innerHTML=p.length?p.map((x,i)=>`
+    <div class="row"><div class="ic">&#128204;</div>
+      <div class="bd"><div class="t">${esc(x.n)}</div>
+        <div class="s">${new Date(x.t).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}${here?" · "+fmtMi(dist(o.lat,o.lng,x.lat,x.lng))+" away":""}</div></div>
+      <div class="rt" style="display:flex;gap:.35rem">
+        <a class="btn sm ghost" href="https://www.google.com/maps/dir/?api=1&destination=${x.lat},${x.lng}" target="_blank" rel="noopener">&#129517;</a>
+        <button class="btn sm ghost" data-unpin="${i}">&#10005;</button></div>
+    </div>`).join(""):'<p class="small muted" style="margin:0">Nothing saved. Tap <b>Remember this spot</b> on the Today tab when you park, or when you find a bench worth coming back to.</p>';
+}
+$("pinList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-unpin]");if(!b)return;
+  const p=pins();p.splice(+b.dataset.unpin,1);store.set("pins",p);renderPins();
+});
+
+/* ============================================================
+   THE AGENDA BUILDER
+   The whole point of this app: Chris should not have to research
+   anything. She gives dates, a pace and a few likes; this turns
+   that into a day-by-day plan that respects altitude on day one,
+   never stacks two hard walks together, keeps one long day trip
+   in the middle of the week, and marks one droppable thing a day.
+   ============================================================ */
+function agenda(){return store.get("agenda",[])}
+function saveAgenda(a){store.set("agenda",a)}
+
+const PACE_ANCHORS={gentle:1,steady:2,full:3};
+/* miles: how far a second or optional stop may sit from the day's main one */
+const NEARBY_SAME_DAY=16;
+/* deterministic shuffle so the same trip always builds the same way,
+   until Chris asks for something else */
+function rnd(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+
+function eligible(t){
+  let pool=PLACES.slice();
+  if(t.likes&&t.likes.length)pool=pool.filter(p=>t.likes.includes(p.c)||favs().includes(p.n));
+  if(t.avoid.includes("stairs"))pool=pool.filter(p=>p.e<=2||favs().includes(p.n));
+  if(t.avoid.includes("longdrive"))pool=pool.filter(p=>p.mins<=35||favs().includes(p.n));
+  if(t.avoid.includes("altitude"))pool=pool.filter(p=>!/Blue Sky|Georgetown|Rocky Mountain|Evergreen/.test(p.n));
+  if(t.avoid.includes("crowds"))pool=pool.filter(p=>!/Cherry Creek Shopping|Union Station/.test(p.n));
+  return pool;
+}
+function nearestOfCat(anchor,cat,used){
+  return PLACES.filter(p=>p.c===cat&&!used.has(p.n))
+    .map(p=>Object.assign({},p,{_d:dist(anchor.lat,anchor.lng,p.lat,p.lng)}))
+    .sort((a,b)=>a._d-b._d)[0]||null;
+}
+function buildAgenda(reshuffle){
+  const t=trip();
+  if(!t.start||!t.end)return toast("Set your arrival and departure dates first");
+  const n=tripLen();
+  if(n<1||n>30)return toast("Those dates don't look right");
+  const seed=(reshuffle?Date.now():0)+t.start.split("-").join("")*1+n;
+  const R=rnd(seed);
+  const shortlist=favs();
+  let pool=eligible(t);
+
+  /* score: starred first, then a curated pull toward the famous ones,
+     then closeness to base. A little jitter so re-rolls differ. */
+  const star=p=>shortlist.includes(p.n)?100:0;
+  const marquee=p=>/Red Rocks|Roxborough|Waterton|Chatfield Farms|Georgetown|Garden of the Gods|Littleton Museum|Hudson Gardens|Union Station|Downtown Golden|Evergreen|Blue Sky|Estes/.test(p.n)?18:0;
+  pool.forEach(p=>{p._s=star(p)+marquee(p)+(30-Math.min(30,p.mins))/3+R()*9});
+  pool.sort((a,b)=>b._s-a._s);
+
+  const used=new Set(), days=[];
+  /* Places to eat and drink are never "the thing you do today" - they get
+     placed into the lunch and dinner slots instead. */
+  const anchorPool=pool.filter(p=>p.c!=="eat"&&p.c!=="sip");
+  /* last-resort meal rotation, so a long trip never repeats a dinner twice
+     in a row once every restaurant on the list has had a turn */
+  const allEats=PLACES.filter(p=>p.c==="eat");
+  const rotEat=k=>allEats[k%allEats.length];
+  const bigTrips=anchorPool.filter(p=>p.mins>=40);
+  const anchorsWanted=PACE_ANCHORS[t.pace]||2;
+  /* one long day out per four days, never back to back, and never the day
+     before a flight home */
+  const bigAllowed=Math.max(1,Math.floor(n/4));
+  let bigUsed=0;
+
+  for(let i=0;i<n;i++){
+    const date=addDays(t.start,i);
+    const first=i===0, last=i===n-1, second=i===1;
+    const items=[]; let title="", sub="";
+
+    if(first){
+      /* arrival: nothing strenuous, nothing far, and water */
+      title="Landing gently";
+      sub="Settle in, stretch the legs, early night.";
+      items.push(mk("Afternoon","Get to "+(t.base||"the house")+" and unpack slowly","Denver's air is thin and dry. The first afternoon is for water and a sit-down, not a hike.","",false,"rest"));
+      items.push(mk("Late afternoon","A loop around Ketring Lake","Flat, ten minutes, and it settles you into the altitude better than sitting still does.","Ketring Park & Lake",false,"walk"));
+      const din=nearestOfCat(HOME,"eat",used);
+      if(din){used.add(din.n);items.push(mk("Dinner",din.n,din.tip,din.n,false,"eat"))}
+      items.push(mk("Before bed","Two big glasses of water","Altitude dehydrates you while you sleep. This one habit prevents most first-morning headaches.","",true,"health"));
+    }else if(last){
+      title="One last morning";
+      sub="Coffee, a wander, and home.";
+      items.push(mk("Morning","Breakfast and a slow walk down Main Street","Buy the thing you have been thinking about all week. Reinke Brothers is open early enough.","Historic Downtown Littleton",false,"walk"));
+      items.push(mk("Late morning","Pack, and check the pinned spots in this app","Anything you saved is under Nearby, so nothing gets left behind.","",false,"rest"));
+      items.push(mk("Afternoon","Airport — leave two and a half hours before the flight","DIA is 45 minutes from Littleton with no traffic, and there is often traffic.","",false,"rest"));
+      items.push(mk("On the way","Make the film in the Movie tab","It takes three minutes and everyone will want it before they land.","",true,"photo"));
+    }else{
+      /* a normal day */
+      const prevBig=days.length&&days[days.length-1].big;
+      const dayBeforeFlight=i===n-2;
+      const bigOK=!second&&i>=2&&!prevBig&&!dayBeforeFlight&&bigUsed<bigAllowed;
+      let anchors=[];
+      if(bigOK&&i>=Math.floor(n/2)-1){
+        const big=bigTrips.find(p=>!used.has(p.n));
+        if(big){anchors=[big];bigUsed++}
+      }
+      if(!anchors.length){
+        /* a long day out only leads a day it is allowed to lead */
+        const cands=anchorPool.filter(p=>!used.has(p.n)&&(p.mins<40||bigOK)&&
+          (second?p.e<=2&&p.mins<=25:true));
+        if(cands[0]&&cands[0].mins>=40)bigUsed++;
+        const lead0=cands[0];
+        if(lead0){
+          /* Everything after the lead has to be somewhere you could
+             plausibly get to the same afternoon - otherwise the plan
+             cheerfully pairs a Littleton morning with Colorado Springs.
+             Nothing far-flung tags along as a second stop, and never
+             two proper hikes in one day. */
+          const near=cands.filter(p=>p!==lead0&&p.mins<40&&
+                     dist(lead0.lat,lead0.lng,p.lat,p.lng)<=NEARBY_SAME_DAY&&
+                     !(lead0.e>=3&&p.e>=3));
+          anchors=[lead0].concat(near.slice(0,anchorsWanted-1));
+        }
+      }
+      anchors.forEach(p=>used.add(p.n));
+      const lead=anchors[0];
+      title=lead?lead.n:"A day in Littleton";
+      sub=anchors.length>1?("Then "+anchors.slice(1).map(p=>p.n).join(" and ")):(lead?CATS[lead.c].n:"");
+      if(second)sub="Still taking it easy on the altitude"+(anchors.length>1?" · "+sub:"");
+
+      if(lead){
+        items.push(mk(lead.mins>=40?"Leave by 8:30":"Morning",lead.n,lead.tip,lead.n,false,lead.c));
+        const lunch=nearestOfCat(lead,"eat",used)||nearestOfCat(lead,"sip",used)||rotEat(i);
+        if(lunch){used.add(lunch.n);items.push(mk("Lunch",lunch.n,lunch.tip,lunch.n,false,"eat"))}
+      }
+      anchors.slice(1).forEach((p,k)=>{
+        items.push(mk(k===0?"Afternoon":"Late afternoon",p.n,p.tip,p.n,false,p.c));
+      });
+      /* the droppable one - also has to be near where the day already is */
+      const opt=pool.find(p=>!used.has(p.n)&&p.e<=2&&
+        (lead?dist(lead.lat,lead.lng,p.lat,p.lng)<=NEARBY_SAME_DAY:p.mins<=20));
+      if(opt){used.add(opt.n);items.push(mk("If you still have legs",opt.n,opt.tip,opt.n,true,opt.c))}
+      /* evening */
+      /* dinner near wherever the day finished, falling back to Littleton.
+         Never a brewery tour - that is a daytime outing, not an evening. */
+      const endAt=anchors[anchors.length-1]||HOME;
+      const eve=(endAt.mins>=40?null:nearestOfCat(endAt,"eat",used))
+              ||nearestOfCat(HOME,"eat",used)
+              ||(endAt.mins>=40?null:nearestOfCat(endAt,"sip",used))
+              ||rotEat(i+3);
+      if(eve){used.add(eve.n);items.push(mk("Evening",eve.n,eve.tip,eve.n,false,"eat"))}
+      days.push({date,title,sub,items,big:!!(lead&&lead.mins>=40)});
+      continue;
+    }
+    days.push({date,title,sub,items,big:false});
+  }
+  saveAgenda(days);
+  renderAgenda();renderHero();renderTodayPlan();renderTripForm();
+  toast("&#10024; "+days.length+" days planned");
+  speak("Your agenda is ready. "+days.length+" days, starting with "+days[0].title+".",true);
+  location.hash="#/agenda";
+}
+function mk(when,what,why,place,opt,kind){return{when,what,why,place:place||"",opt:!!opt,kind:kind||""}}
+
+function renderAgenda(){
+  const A=agenda();
+  if(!A.length){$("agendaOut").innerHTML="";$("agendaTools").style.display="none";return}
+  const today=todayISO();
+  $("agendaTools").style.display="block";
+  $("agendaOut").innerHTML=A.map((d,i)=>`
+    <div class="day ${d.date===today?"today open":""}" data-day="${i}">
+      <div class="hd">
+        <div class="n">${i+1}</div>
+        <div class="tt"><div class="d">${fmtDate(d.date)}${d.date===today?" · today":""}</div><h3>${esc(d.title)}</h3>
+          ${d.sub?`<div class="small muted">${esc(d.sub)}</div>`:""}</div>
+        <div class="cv">&#9662;</div>
+      </div>
+      <div class="bdy">
+        <div class="tl">
+          ${d.items.map(it=>`<div class="item ${it.opt?"opt":(it.kind==="eat"?"meal":"")}">
+            <div class="when">${esc(it.when)}${it.opt?" · optional":""}</div>
+            <div class="what">${it.place?`<a href="#" data-place="${esc(it.place)}" style="text-decoration:none;color:inherit;border-bottom:2px dotted var(--rose)">${esc(it.what)}</a>`:esc(it.what)}</div>
+            <div class="why">${esc(it.why)}</div>
+          </div>`).join("")}
+        </div>
+        <div class="btnrow" style="margin-top:.4rem">
+          <button class="btn sm ghost" data-dayread="${i}">&#128266; Read me this day</button>
+          <button class="btn sm ghost" data-dayswap="${i}">&#127922; Swap this day</button>
+          <button class="btn sm ghost" data-daysend="${i}">&#128228; Send it round</button>
+        </div>
+      </div>
+    </div>`).join("");
+}
+$("agendaOut").addEventListener("click",e=>{
+  const hd=e.target.closest(".hd");
+  if(hd){hd.parentElement.classList.toggle("open");return}
+  const r=e.target.closest("[data-dayread]");
+  if(r){speak(dayText(agenda()[+r.dataset.dayread]),true);return}
+  const s=e.target.closest("[data-dayswap]");
+  if(s){swapDay(+s.dataset.dayswap);return}
+  const sd=e.target.closest("[data-daysend]");
+  if(sd){sendChat(dayText(agenda()[+sd.dataset.daysend]));toast("&#128228; Sent to the group chat");return}
+});
+function dayText(d){
+  if(!d)return"";
+  return fmtDateLong(d.date)+". "+d.title+". "+
+    d.items.map(it=>it.when+": "+it.what+". "+it.why).join(" ");
+}
+function swapDay(i){
+  const A=agenda(),t=trip();
+  const usedNames=new Set(A.flatMap(d=>d.items.map(x=>x.place)).filter(Boolean));
+  const pool=eligible(t).filter(p=>!usedNames.has(p.n));
+  if(!pool.length)return toast("Clara has run out of new ideas — try adding more interests");
+  const R=rnd(Date.now());
+  const lead=pool[Math.floor(R()*Math.min(6,pool.length))];
+  const used=new Set([lead.n]);
+  const items=[mk("Morning",lead.n,lead.tip,lead.n,false,lead.c)];
+  const lunch=nearestOfCat(lead,"eat",used);
+  if(lunch){used.add(lunch.n);items.push(mk("Lunch",lunch.n,lunch.tip,lunch.n,false,"eat"))}
+  const opt=pool.find(p=>!used.has(p.n)&&p.e<=2);
+  if(opt)items.push(mk("If you still have legs",opt.n,opt.tip,opt.n,true,opt.c));
+  A[i]={date:A[i].date,title:lead.n,sub:CATS[lead.c].n,items,big:lead.mins>=40};
+  saveAgenda(A);renderAgenda();renderTodayPlan();renderHero();
+  toast("&#127922; Day "+(i+1)+" swapped");
+}
+function addToDay(name){
+  const A=agenda();
+  if(!A.length){closeSheet();toast("Build the agenda first — Agenda tab");location.hash="#/agenda";return}
+  const p=byName(name);
+  openSheet("Which day?",`<p class="small muted">Adding <b>${esc(name)}</b>.</p>`+
+    A.map((d,i)=>`<div class="row clickable" data-putday="${i}"><div class="ic">${i+1}</div>
+      <div class="bd"><div class="t">${fmtDate(d.date)}</div><div class="s">${esc(d.title)}</div></div>
+      <div class="rt">&#10133;</div></div>`).join(""));
+  setTimeout(()=>{
+    $("shBody").addEventListener("click",ev=>{
+      const b=ev.target.closest("[data-putday]");if(!b)return;
+      const A2=agenda(),i=+b.dataset.putday;
+      A2[i].items.push(mk("Added by you",p.n,p.tip,p.n,false,p.c));
+      saveAgenda(A2);renderAgenda();renderTodayPlan();closeSheet();
+      toast("&#128197; Added to day "+(i+1));
+    },{once:true});
+  },50);
+}
+$("tpBuild").addEventListener("click",()=>{
+  const t=trip();t.start=$("tpStart").value;t.end=$("tpEnd").value;t.base=$("tpBase").value.trim();
+  t.who=$("tpWho").value.split("\n").map(s=>s.trim()).filter(Boolean).slice(0,10);
+  if(!t.who.length)t.who=["Chris"];
+  saveTrip(t);
+  buildAgenda(agenda().length>0);
+});
+
+/* ---------- today's plan on the Today tab ---------- */
+function renderTodayPlan(){
+  const A=agenda(),d=tripDay();
+  const day=d>0?A[d-1]:null;
+  if(!day){
+    $("todayPlan").innerHTML=A.length
+      ? '<p class="muted" style="margin:0">Nothing scheduled for today — the trip runs '+fmtDate(trip().start)+" to "+fmtDate(trip().end)+'.</p>'
+      : '<p class="muted" style="margin:0">No agenda yet. Give Clara your dates on the Agenda tab and she\'ll do the rest.</p>';
+    return;
+  }
+  $("todayPlan").innerHTML=`<h3 style="margin:0 0 .2rem">${esc(day.title)}</h3>
+    <div class="small muted" style="margin-bottom:.7rem">${esc(day.sub||"")}</div>
+    <div class="tl">${day.items.map(it=>`<div class="item ${it.opt?"opt":(it.kind==="eat"?"meal":"")}">
+      <div class="when">${esc(it.when)}${it.opt?" · optional":""}</div>
+      <div class="what">${it.place?`<a href="#" data-place="${esc(it.place)}" style="text-decoration:none;color:inherit;border-bottom:2px dotted var(--rose)">${esc(it.what)}</a>`:esc(it.what)}</div>
+      <div class="why">${esc(it.why)}</div></div>`).join("")}</div>`;
+}
+$("planShuffle").addEventListener("click",()=>{const d=tripDay();if(d>0)swapDay(d-1);else toast("Not on the trip yet")});
+
+/* ---------- calendar, sharing ---------- */
+function icsStamp(iso,h,m){return iso.replace(/-/g,"")+"T"+String(h).padStart(2,"0")+String(m).padStart(2,"0")+"00"}
+$("agIcs").addEventListener("click",()=>{
+  const A=agenda();if(!A.length)return;
+  const t=trip();
+  let ics="BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Chris in Littleton//EN\r\nCALSCALE:GREGORIAN\r\n";
+  A.forEach((d,i)=>{
+    let h=9;
+    d.items.forEach((it,k)=>{
+      const start=icsStamp(d.date,h,0), end=icsStamp(d.date,h+2>23?23:h+2,0);
+      ics+="BEGIN:VEVENT\r\nUID:"+slug(d.date+"-"+k)+"@chris-littleton\r\n"+
+        "DTSTART;TZID=America/Denver:"+start+"\r\nDTEND;TZID=America/Denver:"+end+"\r\n"+
+        "SUMMARY:"+(it.opt?"(optional) ":"")+it.what.replace(/[,;]/g," ")+"\r\n"+
+        "DESCRIPTION:"+(it.when+" — "+it.why).replace(/[,;]/g," ").replace(/\r?\n/g," ")+"\r\n"+
+        (it.place&&byName(it.place)?"GEO:"+byName(it.place).lat+";"+byName(it.place).lng+"\r\nLOCATION:"+it.place.replace(/[,;]/g," ")+"\r\n":"")+
+        "END:VEVENT\r\n";
+      h=Math.min(20,h+2);
+    });
+  });
+  ics+="END:VCALENDAR\r\n";
+  const blob=new Blob([ics],{type:"text/calendar"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="littleton-girls-trip.ics";a.click();
+  toast("&#128197; Calendar file saved — open it to add the trip");
+});
+function agendaText(){
+  const A=agenda(),t=trip();
+  return "THE LITTLETON GIRLS' TRIP\n"+fmtDate(t.start)+" – "+fmtDate(t.end)+
+    (t.base?"\nStaying: "+t.base:"")+"\n\n"+
+    A.map((d,i)=>"DAY "+(i+1)+" · "+fmtDate(d.date)+" — "+d.title+"\n"+
+      d.items.map(it=>"  • "+it.when+": "+it.what+(it.opt?" (optional)":"")).join("\n")).join("\n\n");
+}
+$("agText").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(agendaText());toast("&#128203; Copied — paste it anywhere")}
+  catch(e){openSheet("The agenda","<pre style='white-space:pre-wrap;font-size:.85rem'>"+esc(agendaText())+"</pre>")}
+});
+$("agShare").addEventListener("click",async()=>{
+  const text=agendaText();
+  if(navigator.share){try{await navigator.share({title:"Littleton Girls' Trip",text});return}catch(e){}}
+  sendChat(text);toast("&#128228; Sent to the group chat");
+});
+$("agRead").addEventListener("click",()=>{
+  const d=tripDay(),A=agenda();
+  speak(d>0?dayText(A[d-1]):(A.length?dayText(A[0]):"There is no agenda yet."),true);
+});
+
+/* ============================================================
+   THE MORNING BRIEFING
+   ============================================================ */
+const TIPS=[
+ "Drink before you are thirsty. A mile up, the air pulls water out of you without ever making you feel hot.",
+ "Sunscreen even on the cool days. There is a third less atmosphere over you here than at sea level.",
+ "Afternoon storms build fast in summer. Do the outdoor thing in the morning and keep the afternoon loose.",
+ "Take a layer everywhere. Thirty degrees between a Littleton afternoon and an Evergreen evening is normal.",
+ "If a walk feels harder than it should, it is the altitude, not you. Slow down and it passes.",
+ "Keep the day's medications in your bag, not the hot car.",
+ "The best light on the red rocks is before nine and after six. The middle of the day is the worst of it.",
+ "Ring ahead for anything ticketed. Botanic Gardens, Molly Brown, the railroad and Blue Sky all cap numbers.",
+ "The light rail from Downtown Littleton beats driving into Denver every single time.",
+ "One thing a day done properly beats three done in a rush. That is what the optional item is for."
+];
+function buildBriefing(){
+  const t=trip(),d=tripDay(),A=agenda();
+  const day=d>0?A[d-1]:null;
+  const tip=TIPS[new Date().getDate()%TIPS.length];
+  let out="";
+  const hour=new Date().getHours();
+  const greet=hour<11?"Good morning":hour<17?"Good afternoon":"Good evening";
+  const name=(t.who&&t.who[0])||"Chris";
+  out+="<p><b>"+greet+", "+esc(name)+".</b> ";
+  if(wx&&wx.current){
+    const w=WCODE[wx.current.weather_code]||["",""];
+    out+="It is "+Math.round(wx.current.temperature_2m)+"&deg; and "+w[0].toLowerCase()+" out there, going up to "+
+      Math.round(wx.daily.temperature_2m_max[0])+"&deg; today";
+    const pop=wx.daily.precipitation_probability_max[0];
+    out+=pop>=40?", with a "+pop+"% chance of a storm building this afternoon. ":". ";
+  }else out+="";
+  if(day){
+    out+="Today is day "+d+" of "+tripLen()+" — <b>"+esc(day.title)+"</b>. ";
+    const firstReal=day.items.find(x=>!x.opt);
+    if(firstReal)out+=esc(firstReal.when.toLowerCase())+" is "+esc(firstReal.what)+". ";
+    const opt=day.items.find(x=>x.opt);
+    if(opt)out+="If the day runs long, "+esc(opt.what)+" is the one to drop. ";
+  }else if(t.start&&daysBetween(todayISO(),t.start)>0){
+    const to=daysBetween(todayISO(),t.start);
+    out+=to+" day"+(to>1?"s":"")+" until you fly. ";
+  }
+  out+="</p>";
+  out+='<div class="note"><b>Worth remembering:</b> '+tip+"</div>";
+  if(here){
+    const n=nearest(1)[0];
+    if(n&&n._d<3)out+='<p class="small muted" style="margin-top:.7rem">You are '+fmtMi(n._d)+" from <b>"+esc(n.n)+"</b> right now.</p>";
+  }
+  return out;
+}
+function renderBriefing(){$("briefing").innerHTML=buildBriefing()}
+$("brRead").addEventListener("click",()=>speak($("briefing").textContent,true));
+$("brRefresh").addEventListener("click",()=>{loadWeather();renderBriefing();toast("&#8635; Refreshed")});
+$("brShare").addEventListener("click",()=>{sendChat($("briefing").textContent);toast("&#128228; Sent to the group chat")});
+
+/* ---------- feeling good at altitude ---------- */
+const HEALTH_DEF={water:0,rest:0};
+function health(){return Object.assign({},HEALTH_DEF,store.get("health",{}))}
+function renderHealth(){
+  const h=health();
+  $("healthPanel").innerHTML=`
+    <div class="row"><div class="ic">&#128167;</div>
+      <div class="bd"><div class="t">Water today</div><div class="s">Aim for eight. It is the single best thing you can do here.</div></div>
+      <div class="rt" style="display:flex;align-items:center;gap:.4rem">
+        <button class="btn sm ghost" data-h="water-">&minus;</button>
+        <b style="min-width:1.6rem;text-align:center;font-size:1.2rem">${h.water}</b>
+        <button class="btn sm gold" data-h="water+">+</button></div></div>
+    <div class="row"><div class="ic">&#129704;</div>
+      <div class="bd"><div class="t">Sit-downs today</div><div class="s">A proper twenty minutes off your feet, not a pause.</div></div>
+      <div class="rt" style="display:flex;align-items:center;gap:.4rem">
+        <button class="btn sm ghost" data-h="rest-">&minus;</button>
+        <b style="min-width:1.6rem;text-align:center;font-size:1.2rem">${h.rest}</b>
+        <button class="btn sm gold" data-h="rest+">+</button></div></div>
+    <p class="tiny" style="margin:.8rem 0 0"><b>Worth knowing:</b> headache, breathlessness or a poor night's sleep in the first two days is normal at this altitude and passes.
+    Chest pain, confusion or a cough that will not settle is not — that is a call to a doctor, not a wait-and-see.</p>`;
+}
+$("healthPanel").addEventListener("click",e=>{
+  const b=e.target.closest("[data-h]");if(!b)return;
+  const h=health(),[k,op]=[b.dataset.h.slice(0,-1),b.dataset.h.slice(-1)];
+  h[k]=Math.max(0,Math.min(20,h[k]+(op==="+"?1:-1)));
+  store.set("health",h);renderHealth();
+  if(k==="water"&&op==="+"&&h.water===8)toast("&#128167; Eight glasses — well done");
+});
+function renderDash(){
+  const A=agenda(),d=tripDay();
+  const done=d>0?d-1:0;
+  const seen=store.get("seen",[]).length;
+  $("dashStats").innerHTML=`
+    <div class="stat"><div class="v">${tripLen()||"—"}</div><div class="k">Days</div></div>
+    <div class="stat"><div class="v">${favs().length}</div><div class="k">Shortlisted</div></div>
+    <div class="stat"><div class="v">${media.length}</div><div class="k">Photos</div></div>
+    <div class="stat"><div class="v">${pins().length}</div><div class="k">Spots saved</div></div>`;
+  const pct=tripLen()?Math.round(Math.max(0,Math.min(1,done/tripLen()))*100):0;
+  $("progBar").style.width=pct+"%";
+  $("progTxt").textContent=tripLen()?(d>0?"Day "+d+" of "+tripLen():(pct>=100?"Home again":"Not started")):"";
+}
+
+/* ============================================================
+   PHOTOS - kept in IndexedDB, because localStorage cannot hold
+   a week of holiday snaps and quietly loses them when it fills.
+   ============================================================ */
+let media=[],db=null;
+function openDB(){
+  return new Promise(res=>{
+    if(db)return res(db);
+    try{
+      const rq=indexedDB.open("chris-photos",1);
+      rq.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains("p"))d.createObjectStore("p",{keyPath:"id",autoIncrement:true})};
+      rq.onsuccess=e=>{db=e.target.result;res(db)};
+      rq.onerror=()=>res(null);
+    }catch(e){res(null)}
+  });
+}
+async function photoLoad(){
+  const d=await openDB();if(!d)return[];
+  return new Promise(res=>{
+    try{
+      const tx=d.transaction("p","readonly").objectStore("p").getAll();
+      tx.onsuccess=()=>res((tx.result||[]).sort((a,b)=>b.t-a.t));
+      tx.onerror=()=>res([]);
+    }catch(e){res([])}
+  });
+}
+async function photoAdd(o){
+  const d=await openDB();if(!d)return;
+  return new Promise(res=>{try{
+    const tx=d.transaction("p","readwrite").objectStore("p").add(o);
+    tx.onsuccess=()=>{o.id=tx.result;media.unshift(o);res(o)};tx.onerror=()=>res(null);
+  }catch(e){res(null)}});
+}
+async function photoDel(id){
+  const d=await openDB();if(!d)return;
+  try{d.transaction("p","readwrite").objectStore("p").delete(id)}catch(e){}
+  media=media.filter(m=>m.id!==id);
+}
+function shrink(dataURL,max,q){
+  return new Promise(res=>{
+    const im=new Image();
+    im.onload=()=>{
+      const sc=Math.min(1,max/Math.max(im.width,im.height));
+      const c=document.createElement("canvas");
+      c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
+      c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+      res(c.toDataURL("image/jpeg",q||.84));
+    };
+    im.onerror=()=>res(dataURL);
+    im.src=dataURL;
+  });
+}
+
+/* ============================================================
+   THE CAMERA
+   A big shutter, a countdown you can hear across a table, filters,
+   frames, a Littleton stamp, and a four-shot photo booth.
+   ============================================================ */
+const FILTERS=[
+  {k:"none", n:"As it is",   f:"none"},
+  {k:"warm", n:"Golden hour",f:"saturate(1.22) contrast(1.06) sepia(.18) brightness(1.04)"},
+  {k:"soft", n:"Soft glow",  f:"saturate(1.06) contrast(.95) brightness(1.08) blur(.3px)"},
+  {k:"vivid",n:"Rocky Mountain",f:"saturate(1.5) contrast(1.14)"},
+  {k:"bw",   n:"Black & white",f:"grayscale(1) contrast(1.14)"},
+  {k:"film", n:"Old film",   f:"sepia(.42) contrast(1.1) saturate(.9) brightness(1.02)"},
+  {k:"cool", n:"Mountain air",f:"saturate(1.1) hue-rotate(-8deg) brightness(1.03)"}
+];
+const FRAMES=[
+  {k:"none",  n:"No frame"},
+  {k:"band",  n:"Caption band"},
+  {k:"polar", n:"Polaroid"},
+  {k:"gold",  n:"Gold border"},
+  {k:"corner",n:"Corner date"}
+];
+let camStream=null,camFacing=store.get("camFacing","environment"),camFilter=store.get("camFilter","warm"),
+    camFrameK=store.get("camFrame","band"),camTimerS=0,camBusy=false,strip=[];
+
+function renderCamChips(){
+  $("camFx").innerHTML=FILTERS.map(f=>`<button data-fx="${f.k}" class="${camFilter===f.k?"on":""}">${f.n}</button>`).join("");
+  $("camFrames").innerHTML=FRAMES.map(f=>`<button data-fr="${f.k}" class="${camFrameK===f.k?"on":""}">${f.n}</button>`).join("");
+  applyCamLook();
+}
+function applyCamLook(){
+  const f=FILTERS.find(x=>x.k===camFilter)||FILTERS[0];
+  $("camVideo").style.filter=f.f;
+  $("camVideo").classList.toggle("mirror",camFacing==="user");
+  const fr=$("camFrame");
+  fr.style.cssText="position:absolute;inset:0;pointer-events:none";
+  if(camFrameK==="polar")fr.style.cssText+=";border:14px solid #FFFDFB;border-bottom-width:52px;border-radius:4px";
+  if(camFrameK==="gold")fr.style.cssText+=";border:9px solid #C98F2E;border-radius:10px;box-shadow:inset 0 0 0 3px #FBF5F1";
+  $("camBand").style.display=(camFrameK==="band"||camFrameK==="polar")?"block":"none";
+  $("camBand").innerHTML=esc(bandText());
+}
+function bandText(){
+  const cap=$("camCaption").value.trim()||"Girls' Trip · Littleton, CO";
+  if(!$("camStampWhere").checked)return cap;
+  const n=nearest(1)[0];
+  const where=(n&&n._d<2.2)?n.n:(here?"Littleton, CO":"Littleton, CO");
+  return cap+"  ·  "+where+"  ·  "+new Date().toLocaleDateString([],{month:"short",day:"numeric"});
+}
+$("camFx").addEventListener("click",e=>{const b=e.target.closest("[data-fx]");if(!b)return;
+  camFilter=b.dataset.fx;store.set("camFilter",camFilter);renderCamChips()});
+$("camFrames").addEventListener("click",e=>{const b=e.target.closest("[data-fr]");if(!b)return;
+  camFrameK=b.dataset.fr;store.set("camFrame",camFrameK);renderCamChips()});
+$("camCaption").addEventListener("input",applyCamLook);
+$("camStampWhere").addEventListener("change",applyCamLook);
+
+async function camStart(){
+  if(camStream)return;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)
+    return toast("This browser can't open the camera");
+  $("camStatus").textContent="Opening the camera…";
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:camFacing,width:{ideal:1920},height:{ideal:1440}},audio:false});
+    const v=$("camVideo");v.srcObject=camStream;await v.play().catch(()=>{});
+    $("camOff").style.display="none";
+    $("camStatus").innerHTML="&#128994; Ready. Tap the big button — or set a timer and get in the picture yourself.";
+    applyCamLook();
+    if(voiceOn)speak("Camera's on. Tap the big pink button when you're ready.");
+  }catch(e){
+    $("camStatus").innerHTML="Couldn't open the camera. On iPhone that usually means Safari needs permission: Settings, Safari, Camera, Allow.";
+    toast("Camera permission needed");
+  }
+}
+function camStop(){
+  if(!camStream)return;
+  try{camStream.getTracks().forEach(t=>t.stop())}catch(e){}
+  camStream=null;$("camVideo").srcObject=null;$("camOff").style.display="grid";
+  $("camStatus").textContent="Camera off.";
+}
+$("camStart").addEventListener("click",camStart);
+$("camStage").addEventListener("click",e=>{if(!camStream||e.target.closest("button"))return;shoot()});
+$("camFlip").addEventListener("click",async()=>{
+  camFacing=camFacing==="user"?"environment":"user";store.set("camFacing",camFacing);
+  camStop();await camStart();
+  toast(camFacing==="user"?"Front camera — that's the selfie one":"Back camera");
+});
+$("camGridBtn").addEventListener("click",()=>{
+  const on=$("camGrid").classList.toggle("on");
+  $("camGridBtn").innerHTML=on?"&#9638; Grid on":"&#9638; Grid";
+});
+$("camTimer").addEventListener("click",()=>{
+  camTimerS=camTimerS===0?3:camTimerS===3?10:0;
+  $("camTimer").innerHTML="&#9203; Timer: "+(camTimerS?camTimerS+"s":"off");
+  if(camTimerS)toast("&#9203; "+camTimerS+" seconds — plenty of time to get in");
+});
+$("camShoot").addEventListener("click",()=>shoot());
+$("camBooth").addEventListener("click",()=>booth());
+
+function countdownTo(secs){
+  return new Promise(res=>{
+    const el=$("camCount");
+    if(!secs){res();return}
+    el.style.display="grid";
+    let n=secs;
+    const say=v=>{if($("camVoiceCue").checked)speak(v===0?"Smile!":String(v),true)};
+    el.textContent=n;say(n);
+    const iv=setInterval(()=>{
+      n--;
+      if(n<=0){clearInterval(iv);el.textContent="&#128512;";el.innerHTML="&#128512;";say(0);
+        setTimeout(()=>{el.style.display="none";res()},420);return}
+      el.textContent=n;if(n<=3)say(n);
+    },1000);
+  });
+}
+function flash(){const f=$("camFlash");f.classList.add("on");setTimeout(()=>f.classList.remove("on"),40)}
+
+/* draw one frame of the live video into a canvas, with the look and
+   the frame baked in so the saved photo matches what she saw */
+function grab(){
+  const v=$("camVideo");
+  const W=v.videoWidth||1280,H=v.videoHeight||960;
+  const c=document.createElement("canvas");c.width=W;c.height=H;
+  const x=c.getContext("2d");
+  const f=FILTERS.find(k=>k.k===camFilter)||FILTERS[0];
+  x.filter=f.f==="none"?"none":f.f;
+  if(camFacing==="user"){x.translate(W,0);x.scale(-1,1)}
+  x.drawImage(v,0,0,W,H);
+  x.setTransform(1,0,0,1,0,0);x.filter="none";
+  /* frame */
+  if(camFrameK==="gold"){
+    x.strokeStyle="#C98F2E";x.lineWidth=Math.round(W*.018);x.strokeRect(x.lineWidth/2,x.lineWidth/2,W-x.lineWidth,H-x.lineWidth);
+    x.strokeStyle="#FBF5F1";x.lineWidth=Math.round(W*.005);
+    const o=Math.round(W*.026);x.strokeRect(o,o,W-o*2,H-o*2);
+  }
+  if(camFrameK==="polar"){
+    const b=Math.round(W*.035);
+    x.fillStyle="#FFFDFB";
+    x.fillRect(0,0,W,b);x.fillRect(0,0,b,H);x.fillRect(W-b,0,b,H);x.fillRect(0,H-b*3.6,W,b*3.6);
+  }
+  if(camFrameK==="band"||camFrameK==="polar"){
+    const txt=bandText();
+    const fs=Math.round(W*.035);
+    const y=camFrameK==="polar"?H-Math.round(W*.035*1.5):H-Math.round(fs*1.1);
+    if(camFrameK==="band"){
+      const g=x.createLinearGradient(0,H-fs*3.2,0,H);
+      g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.62)");
+      x.fillStyle=g;x.fillRect(0,H-fs*3.2,W,fs*3.2);
+      x.fillStyle="#fff";
+    }else x.fillStyle="#5B2A4A";
+    x.font="700 "+fs+"px Inter, sans-serif";x.textAlign="center";
+    x.fillText(txt,W/2,y);
+  }
+  if(camFrameK==="corner"){
+    const fs=Math.round(W*.032);
+    x.font="700 "+fs+"px Inter, sans-serif";x.textAlign="right";
+    x.fillStyle="rgba(255,214,120,.92)";x.shadowColor="rgba(0,0,0,.6)";x.shadowBlur=fs*.4;
+    x.fillText(new Date().toLocaleDateString([],{month:"short",day:"numeric",year:"numeric"}),W-fs,H-fs);
+    x.shadowBlur=0;
+  }
+  return c.toDataURL("image/jpeg",.9);
+}
+async function shoot(silentCount){
+  if(!camStream)return camStart();
+  if(camBusy)return;
+  camBusy=true;
+  try{
+    if(!silentCount)await countdownTo(camTimerS);
+    flash();
+    const url=grab();
+    const small=await shrink(url,1600,.86);
+    const n=nearest(1)[0];
+    await photoAdd({src:small,t:Date.now(),place:(n&&n._d<2.2)?n.n:"",cap:$("camCaption").value.trim()});
+    renderCamGal();renderGal();renderDash();
+    $("camStatus").innerHTML="&#128248; Got it — "+media.length+" photo"+(media.length>1?"s":"")+" so far.";
+    return small;
+  }finally{camBusy=false}
+}
+async function booth(){
+  if(!camStream)return camStart();
+  strip=[];
+  $("camStatus").innerHTML="&#127918; Photo booth — four shots. Change the pose between each one!";
+  if($("camVoiceCue").checked)speak("Photo booth. Four pictures. Change your pose each time!",true);
+  for(let i=0;i<4;i++){
+    await countdownTo(i===0?3:2);
+    flash();
+    const url=grab();
+    strip.push(await shrink(url,900,.85));
+    const n=nearest(1)[0];
+    await photoAdd({src:strip[i],t:Date.now(),place:(n&&n._d<2.2)?n.n:"",cap:"Photo booth"});
+    $("camStatus").innerHTML="&#127918; "+(i+1)+" of 4&hellip;";
+    await new Promise(r=>setTimeout(r,500));
+  }
+  renderCamGal();renderGal();renderDash();
+  buildStrip();
+  $("camStatus").innerHTML="&#127918; <b>Strip's ready</b> — scroll down to save it.";
+  if($("camVoiceCue").checked)speak("That's the four. Your photo strip is ready.",true);
+}
+let stripURL=null;
+function buildStrip(){
+  if(strip.length<2)return;
+  const W=900,pad=26,cellH=Math.round(W*0.62);
+  const c=document.createElement("canvas");
+  c.width=W+pad*2;c.height=pad*2+cellH*4+pad*3+92;
+  const x=c.getContext("2d");
+  x.fillStyle="#FFFDFB";x.fillRect(0,0,c.width,c.height);
+  x.strokeStyle="#C4517A";x.lineWidth=10;x.strokeRect(5,5,c.width-10,c.height-10);
+  let loaded=0;
+  strip.slice(0,4).forEach((s,i)=>{
+    const im=new Image();
+    im.onload=()=>{
+      const y=pad+i*(cellH+pad);
+      const sc=Math.max(W/im.width,cellH/im.height);
+      const w=im.width*sc,h=im.height*sc;
+      x.save();x.beginPath();x.rect(pad,y,W,cellH);x.clip();
+      x.drawImage(im,pad+(W-w)/2,y+(cellH-h)/2,w,h);x.restore();
+      x.strokeStyle="#E7D6DE";x.lineWidth=4;x.strokeRect(pad,y,W,cellH);
+      if(++loaded===Math.min(4,strip.length)){
+        x.fillStyle="#5B2A4A";x.textAlign="center";
+        x.font="900 46px Fraunces, Georgia, serif";
+        x.fillText($("camCaption").value.trim()||"Girls' Trip · Littleton",c.width/2,c.height-52);
+        x.font="600 26px Inter, sans-serif";x.fillStyle="#9E3860";
+        x.fillText(new Date().toLocaleDateString([],{weekday:"long",month:"long",day:"numeric"}),c.width/2,c.height-20);
+        stripURL=c.toDataURL("image/jpeg",.9);
+        $("stripCard").style.display="block";
+        $("stripOut").innerHTML='<img src="'+stripURL+'" alt="Photo strip" style="border-radius:12px;border:2px solid var(--line-2);max-width:min(100%,22rem);margin:0 auto">';
+      }
+    };
+    im.src=s;
+  });
+}
+$("stripSave").addEventListener("click",()=>{
+  if(!stripURL)return;
+  const a=document.createElement("a");a.href=stripURL;a.download="littleton-photo-strip.jpg";a.click();
+  toast("&#11015;&#65039; Saved to your downloads");
+});
+$("stripShare").addEventListener("click",async()=>{
+  if(!stripURL)return;
+  try{
+    const blob=await(await fetch(stripURL)).blob();
+    const file=new File([blob],"littleton-photo-strip.jpg",{type:"image/jpeg"});
+    if(navigator.canShare&&navigator.canShare({files:[file]}))return navigator.share({files:[file],title:"Photo strip"});
+  }catch(e){}
+  $("stripSave").click();
+});
+function renderCamGal(){
+  const today=media.filter(m=>Date.now()-m.t<24*3600*1000);
+  $("camGalEmpty").style.display=today.length?"none":"block";
+  $("camGal").innerHTML=today.slice(0,24).map(m=>
+    `<figure><img src="${m.src}" alt=""><button class="del" data-del="${m.id}" aria-label="Delete">&#10005;</button>
+     ${m.place?'<span class="star">&#128205;</span>':""}</figure>`).join("");
+}
+$("camGal").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-del]");if(!b)return;
+  await photoDel(+b.dataset.del);renderCamGal();renderGal();renderDash();
+});
+
+/* ============================================================
+   THE MOVIE MAKER
+   Canvas + MediaRecorder. Title card, slow drifting zooms,
+   crossfades, a caption per photo and real generated music.
+   ============================================================ */
+$("mediaDrop").addEventListener("click",()=>$("mediaInput").click());
+$("mediaDrop").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ")$("mediaInput").click()});
+["dragover","dragenter"].forEach(ev=>$("mediaDrop").addEventListener(ev,e=>{e.preventDefault();$("mediaDrop").classList.add("over")}));
+["dragleave","drop"].forEach(ev=>$("mediaDrop").addEventListener(ev,e=>{e.preventDefault();$("mediaDrop").classList.remove("over")}));
+$("mediaDrop").addEventListener("drop",e=>{if(e.dataTransfer.files)handleFiles(e.dataTransfer.files)});
+$("mediaInput").addEventListener("change",e=>handleFiles(e.target.files));
+
+function handleFiles(files){
+  const arr=Array.from(files).filter(f=>f.type.startsWith("image")).slice(0,30);
+  if(!arr.length)return toast("Photos only for the film");
+  toast("Adding "+arr.length+" photo"+(arr.length>1?"s":"")+"…");
+  let done=0;
+  arr.forEach(f=>{
+    const rd=new FileReader();
+    rd.onload=async()=>{
+      const small=await shrink(rd.result,1600,.84);
+      await photoAdd({src:small,t:f.lastModified||Date.now(),place:"",cap:""});
+      if(++done===arr.length){renderGal();renderCamGal();renderDash();toast("&#128247; Added")}
+    };
+    rd.onerror=()=>{if(++done===arr.length)renderGal()};
+    rd.readAsDataURL(f);
+  });
+}
+function renderGal(){
+  $("mediaGal").innerHTML=media.slice(0,60).map(m=>
+    `<figure><img src="${m.src}" alt=""><button class="del" data-mdel="${m.id}" aria-label="Remove">&#10005;</button></figure>`).join("");
+  $("vidControls").style.display=media.length?"block":"none";
+  if(media.length)drawFrame(0,0);
+}
+$("mediaGal").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-mdel]");if(!b)return;
+  await photoDel(+b.dataset.mdel);renderGal();renderCamGal();renderDash();
+});
+
+const vc=$("vidCanvas"),vx=vc.getContext("2d");
+const imgCache={};
+function getImg(src){
+  return new Promise(res=>{
+    if(imgCache[src])return res(imgCache[src]);
+    const im=new Image();im.onload=()=>{imgCache[src]=im;res(im)};im.onerror=()=>res(null);im.src=src;
+  });
+}
+function coverDraw(im,t,z0,z1,panX){
+  if(!im)return;
+  const z=z0+(z1-z0)*t;
+  const s=Math.max(vc.width/im.width,vc.height/im.height)*z;
+  const w=im.width*s,h=im.height*s;
+  vx.drawImage(im,(vc.width-w)/2+panX*t*vc.width*.05,(vc.height-h)/2,w,h);
+}
+function vignette(){
+  const g=vx.createRadialGradient(vc.width/2,vc.height/2,vc.height*.36,vc.width/2,vc.height/2,vc.height*.8);
+  g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.32)");
+  vx.fillStyle=g;vx.fillRect(0,0,vc.width,vc.height);
+}
+function movieTitle(){return ($("vidTitle").value||"").trim()||"The Littleton Girls' Trip"}
+function titleCard(a){
+  const g=vx.createLinearGradient(0,0,vc.width,vc.height);
+  g.addColorStop(0,"#743760");g.addColorStop(1,"#3D1A31");
+  vx.fillStyle=g;vx.fillRect(0,0,vc.width,vc.height);
+  vx.fillStyle="rgba(251,245,241,"+a+")";vx.textAlign="center";
+  vx.font="900 76px Fraunces, Georgia, serif";
+  vx.fillText(movieTitle(),vc.width/2,300);
+  const t=trip();
+  vx.font="500 34px Inter, sans-serif";
+  vx.fillStyle="rgba(240,206,134,"+a+")";
+  vx.fillText(t.start?fmtDate(t.start)+"  –  "+fmtDate(t.end):"Littleton, Colorado",vc.width/2,362);
+  vx.fillStyle="rgba(251,245,241,"+(a*.9)+")";
+  vx.font="700 30px Inter, sans-serif";
+  vx.fillText((t.who||[]).join("   ·   "),vc.width/2,448);
+}
+function endCard(a){
+  vx.fillStyle="#2E2028";vx.fillRect(0,0,vc.width,vc.height);
+  vx.fillStyle="rgba(251,245,241,"+a+")";vx.textAlign="center";
+  vx.font="900 62px Fraunces, Georgia, serif";
+  vx.fillText("What a week",vc.width/2,vc.height/2-8);
+  vx.font="500 30px Inter, sans-serif";vx.fillStyle="rgba(240,201,216,"+a+")";
+  vx.fillText("Littleton, Colorado",vc.width/2,vc.height/2+50);
+}
+function stampCaption(txt){
+  if(!txt)return;
+  vx.textAlign="left";vx.font="700 30px Inter, sans-serif";
+  vx.shadowColor="rgba(0,0,0,.7)";vx.shadowBlur=14;vx.fillStyle="#FBF5F1";
+  vx.fillText(txt,54,vc.height-50);vx.shadowBlur=0;
+}
+async function drawFrame(idx,t){
+  const pics=activePics();
+  vx.fillStyle="#111";vx.fillRect(0,0,vc.width,vc.height);
+  if(!pics.length)return;
+  coverDraw(await getImg(pics[idx%pics.length].src),t,1,1.12,(idx%2?1:-1));
+  vignette();
+}
+function styleCfg(){
+  const s=$("vidStyle").value;
+  if(s==="highlight")return{per:1500,fade:340};
+  if(s==="daily")return{per:2700,fade:620};
+  return{per:3200,fade:700};
+}
+function activePics(){
+  let pics=media.slice().sort((a,b)=>a.t-b.t);
+  if($("vidStyle").value==="daily"){
+    const cut=Date.now()-24*3600*1000;
+    const t=pics.filter(p=>p.t>cut);
+    if(t.length)pics=t;
+  }
+  return pics;
+}
+let playing=false;
+function runShow(onDone,onTick){
+  const pics=activePics();
+  if(!pics.length){toast("Add some photos first");return null}
+  const cfg=styleCfg(),TITLE=2600,END=2200;
+  const total=TITLE+pics.length*cfg.per+END,t0=performance.now();
+  playing=true;
+  (async function loop(){
+    if(!playing)return;
+    const el=performance.now()-t0;
+    if(el>=total){playing=false;onDone&&onDone();return}
+    if(el<TITLE){titleCard(Math.min(1,Math.min(el,TITLE-el)/420))}
+    else if(el<TITLE+pics.length*cfg.per){
+      const rel=el-TITLE,idx=Math.floor(rel/cfg.per),t=(rel%cfg.per)/cfg.per;
+      vx.fillStyle="#111";vx.fillRect(0,0,vc.width,vc.height);vx.globalAlpha=1;
+      coverDraw(await getImg(pics[idx].src),t,1,1.13,(idx%2?1:-1));
+      const into=cfg.per-(rel%cfg.per);
+      if(into<cfg.fade&&pics[idx+1]){
+        vx.globalAlpha=1-(into/cfg.fade);
+        coverDraw(await getImg(pics[idx+1].src),0,1,1.13,((idx+1)%2?1:-1));
+        vx.globalAlpha=1;
+      }
+      vignette();
+      const p=pics[idx];
+      stampCaption(p.place||new Date(p.t).toLocaleDateString([],{month:"long",day:"numeric"}));
+    }else{
+      const e2=el-(TITLE+pics.length*cfg.per);
+      endCard(Math.min(1,Math.min(e2,END-e2)/420));
+    }
+    onTick&&onTick(el/total);
+    requestAnimationFrame(loop);
+  })();
+  return total;
+}
+$("vidPreview").addEventListener("click",()=>{
+  if(playing){playing=false;$("vidPreview").innerHTML="&#9654;&#65039; Preview";return}
+  $("vidPreview").innerHTML="&#9209;&#65039; Stop";
+  runShow(()=>{$("vidPreview").innerHTML="&#9654;&#65039; Preview";$("vidStatus").textContent=""},
+          p=>$("vidStatus").textContent="Previewing… "+Math.round(p*100)+"%");
+});
+let customMusic=null;
+$("vidMusic").addEventListener("change",e=>{if(e.target.value==="custom")$("musicInput").click()});
+$("musicInput").addEventListener("change",e=>{
+  const f=e.target.files[0];if(!f)return;customMusic=URL.createObjectURL(f);toast("&#127925; Music added");
+});
+function buildAudio(ctx,dest,style){
+  const master=ctx.createGain();master.gain.value=0;master.connect(dest);
+  const CH=style==="big"?[110,164.81,220,329.63]:[146.83,220,293.66,440];
+  CH.forEach((f,i)=>{
+    const o=ctx.createOscillator(),g=ctx.createGain(),lp=ctx.createBiquadFilter();
+    o.type=i%2?"sine":"triangle";o.frequency.value=f;
+    lp.type="lowpass";lp.frequency.value=style==="big"?900:1500;
+    g.gain.value=.14/(i+1);
+    o.connect(lp);lp.connect(g);g.connect(master);o.start();
+    const lfo=ctx.createOscillator(),lg=ctx.createGain();
+    lfo.frequency.value=.06+i*.019;lg.gain.value=.05;
+    lfo.connect(lg);lg.connect(g.gain);lfo.start();
+  });
+  master.gain.setValueAtTime(0,ctx.currentTime);
+  master.gain.linearRampToValueAtTime(.55,ctx.currentTime+2.2);
+  return master;
+}
+$("vidMake").addEventListener("click",async()=>{
+  if(!activePics().length)return toast("Add some photos first");
+  if(!window.MediaRecorder||!vc.captureStream)return toast("This browser can't record video — try Chrome");
+  const btn=$("vidMake");btn.disabled=true;btn.innerHTML="&#9210; Recording…";
+  $("vidShare").style.display="none";
+  const stream=vc.captureStream(30);
+  let ctx=null,fadeNode=null;
+  const mus=$("vidMusic").value;
+  try{
+    if(mus!=="none"){
+      ctx=new(window.AudioContext||window.webkitAudioContext)();
+      const dest=ctx.createMediaStreamDestination();
+      if(mus==="custom"&&customMusic){
+        const au=new Audio(customMusic);au.loop=true;
+        const src=ctx.createMediaElementSource(au),g=ctx.createGain();
+        g.gain.value=.75;src.connect(g);g.connect(dest);au.play().catch(()=>{});
+      }else fadeNode=buildAudio(ctx,dest,mus);
+      dest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+    }
+  }catch(e){}
+  const types=["video/mp4;codecs=avc1","video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
+  const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||"";
+  const rec=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:5e6}:undefined);
+  const chunks=[];
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  rec.onstop=()=>{
+    try{if(fadeNode)fadeNode.gain.linearRampToValueAtTime(0,ctx.currentTime+.4);if(ctx)setTimeout(()=>ctx.close(),600)}catch(e){}
+    const blob=new Blob(chunks,{type:mime||"video/webm"});
+    const url=URL.createObjectURL(blob);
+    const ext=mime.indexOf("mp4")>=0?"mp4":"webm";
+    const a=document.createElement("a");a.href=url;a.download="littleton-girls-trip."+ext;a.click();
+    btn.disabled=false;btn.innerHTML="&#127916; Create the video";
+    $("vidStatus").innerHTML="&#9989; <b>Your film is ready.</b> "+activePics().length+" photos, saved to your downloads.";
+    $("vidShare").style.display="inline-flex";
+    $("vidShare").onclick=async()=>{
+      const file=new File([blob],"littleton-girls-trip."+ext,{type:blob.type});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        try{await navigator.share({files:[file],title:movieTitle()});return}catch(e){}
+      }
+      const a2=document.createElement("a");a2.href=url;a2.download="littleton-girls-trip."+ext;a2.click();
+      toast("Downloaded — share it from your photos app");
+    };
+    speak("Your film is ready. It's in your downloads, and the share button will text it to everybody.",true);
+  };
+  rec.start();
+  runShow(()=>setTimeout(()=>{try{rec.stop()}catch(e){}},350),
+          p=>$("vidStatus").textContent="Recording… "+Math.round(p*100)+"% — leave this screen on");
+});
+
+/* ============================================================
+   FIND IT RIGHT NOW  (OpenStreetMap Overpass - free, keyless)
+   ============================================================ */
+const OVERPASS=["https://overpass-api.de/api/interpreter","https://overpass.kumi.systems/api/interpreter"];
+const FIND_TAGS={
+  coffee:   {t:['node["amenity"="cafe"]'],ic:"&#9749;",n:"Coffee"},
+  eat:      {t:['node["amenity"="restaurant"]','way["amenity"="restaurant"]'],ic:"&#127869;&#65039;",n:"Restaurants"},
+  restroom: {t:['node["amenity"="toilets"]'],ic:"&#128701;",n:"Restrooms"},
+  pharmacy: {t:['node["amenity"="pharmacy"]','way["amenity"="pharmacy"]'],ic:"&#128138;",n:"Pharmacy"},
+  medical:  {t:['node["amenity"="clinic"]','node["amenity"="doctors"]','node["amenity"="hospital"]','way["amenity"="hospital"]'],ic:"&#127973;",n:"Urgent care"},
+  atm:      {t:['node["amenity"="atm"]','node["amenity"="bank"]'],ic:"&#127974;",n:"ATM"},
+  grocery:  {t:['node["shop"="supermarket"]','way["shop"="supermarket"]'],ic:"&#128722;",n:"Grocery"},
+  shop:     {t:['node["shop"="gift"]','node["shop"="clothes"]','node["shop"="books"]','node["shop"="antiques"]'],ic:"&#128717;&#65039;",n:"Shops"},
+  park:     {t:['node["leisure"="park"]','way["leisure"="park"]'],ic:"&#127795;",n:"Parks"},
+  viewpoint:{t:['node["tourism"="viewpoint"]'],ic:"&#128247;",n:"Viewpoints"},
+  art:      {t:['node["tourism"="artwork"]','node["tourism"="museum"]','way["tourism"="museum"]'],ic:"&#127912;",n:"Art & museums"},
+  bar:      {t:['node["amenity"="bar"]','node["amenity"="pub"]','node["craft"="brewery"]','node["microbrewery"="yes"]'],ic:"&#127867;",n:"Bars & breweries"},
+  fuel:     {t:['node["amenity"="fuel"]','way["amenity"="fuel"]'],ic:"&#9981;",n:"Fuel"},
+  salon:    {t:['node["shop"="hairdresser"]','node["shop"="beauty"]','node["leisure"="spa"]'],ic:"&#128132;",n:"Salon & spa"},
+  transit:  {t:['node["railway"="station"]','node["public_transport"="station"]'],ic:"&#128649;",n:"Train"}
+};
+let found=[],findBusy=false;
+function searchOrigin(){return here?{lat:here.lat,lng:here.lng,live:true}:{lat:HOME.lat,lng:HOME.lng,live:false}}
+function renderFindNow(){
+  $("findNow").innerHTML=Object.keys(FIND_TAGS).map(k=>
+    `<button class="btn sm ghost" data-find="${k}" style="justify-content:flex-start">${FIND_TAGS[k].ic} ${FIND_TAGS[k].n}</button>`).join("");
+}
+async function findNow(cat,radiusMi){
+  const O=searchOrigin(),spec=FIND_TAGS[cat];
+  if(!spec||findBusy)return;
+  findBusy=true;
+  const r=Math.round((radiusMi||5)*1609);
+  $("findStatus").innerHTML="&#128269; Looking for "+spec.n.toLowerCase()+" within "+(radiusMi||5)+" miles&hellip; <span class='muted'>(a few seconds)</span>";
+  const q="[out:json][timeout:25];("+spec.t.map(t=>t+"(around:"+r+","+O.lat.toFixed(5)+","+O.lng.toFixed(5)+");").join("")+");out center 60;";
+  let els=null;
+  try{
+    for(const host of OVERPASS){
+      const ctl=new AbortController(),kill=setTimeout(()=>ctl.abort(),9000);
+      try{
+        const res=await fetch(host,{method:"POST",body:"data="+encodeURIComponent(q),
+          headers:{"Content-Type":"application/x-www-form-urlencoded"},signal:ctl.signal});
+        clearTimeout(kill);
+        if(!res.ok)continue;
+        els=(await res.json()).elements||[];break;
+      }catch(e){clearTimeout(kill)}
+    }
+  }finally{findBusy=false}
+  if(!els){
+    found=[];
+    $("findStatus").innerHTML="Couldn't reach the search &mdash; weak signal, or the free map service is busy."+
+      '<div class="btnrow" style="margin-top:.6rem"><button class="btn sm ghost" data-find="'+cat+'">&#8635; Try again</button>'+
+      '<a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(spec.n)+'&query_place_id=" target="_blank" rel="noopener">&#128506;&#65039; Try Google Maps</a></div>';
+    renderFound();return;
+  }
+  found=els.map(e=>{
+    const la=e.lat!=null?e.lat:(e.center&&e.center.lat),lo=e.lon!=null?e.lon:(e.center&&e.center.lon);
+    if(la==null)return null;
+    const tg=e.tags||{};
+    return{n:tg.name||tg.brand||tg.operator||("Unnamed "+spec.n.toLowerCase()),lat:la,lng:lo,ic:spec.ic,
+      info:[tg["addr:street"]&&((tg["addr:housenumber"]||"")+" "+tg["addr:street"]).trim(),tg.opening_hours,tg.cuisine].filter(Boolean).join(" · "),
+      phone:tg.phone||tg["contact:phone"]||"",
+      _d:dist(O.lat,O.lng,la,lo)};
+  }).filter(Boolean).sort((a,b)=>a._d-b._d).slice(0,30);
+  $("findStatus").innerHTML="&#128205; <b>"+found.length+" "+spec.n.toLowerCase()+"</b> within "+(radiusMi||5)+" miles, nearest first."+
+    (O.live?"":" <span class='muted'>Measured from downtown Littleton — location isn't on yet.</span>");
+  renderFound();
+  if(found.length)speak(spec.n+" found. The closest is "+found[0].n+", "+fmtMi(found[0]._d)+" away.");
+}
+function renderFound(){
+  if(!found.length){$("findList").innerHTML="";return}
+  $("findList").innerHTML=found.slice(0,18).map(f=>`
+    <div class="row"><div class="ic">${f.ic}</div>
+      <div class="bd"><div class="t">${esc(f.n)}</div>${f.info?`<div class="s">${esc(f.info.slice(0,80))}</div>`:""}</div>
+      <div class="rt" style="display:flex;flex-direction:column;align-items:flex-end;gap:.2rem">
+        <div class="dist">${fmtMi(f._d)}</div>
+        <a class="btn sm ghost" href="https://www.google.com/maps/dir/?api=1&destination=${f.lat},${f.lng}" target="_blank" rel="noopener">&#129517;</a>
+      </div></div>`).join("")+
+    '<button class="btn sm ghost" id="findClear" style="margin-top:.7rem">&#10005; Clear</button>';
+  $("findClear").addEventListener("click",()=>{found=[];$("findStatus").innerHTML="";renderFound()});
+}
+function findClick(e){
+  const b=e.target.closest("[data-find]");if(!b)return;
+  $$("#findNow .btn").forEach(x=>x.classList.toggle("gold",x.dataset.find===b.dataset.find));
+  findNow(b.dataset.find,+$("findRadius").value||5);
+}
+$("findNow").addEventListener("click",findClick);
+$("findStatus").addEventListener("click",findClick);
+
+/* ============================================================
+   THE FRIENDS MAP + GROUP CHAT
+   Both ride on ntfy.sh: free, no account, no app required. The
+   trip code is the only shared secret, which is why it should be
+   something nobody would guess.
+   ============================================================ */
+function room(){return slug(store.get("room","littleton-girls")||"littleton-girls")}
+function chatURL(){return "https://ntfy.sh/chris-chat-"+room()}
+function locURL(){return "https://ntfy.sh/chris-loc-"+room()}
+const myId=(()=>{let v=store.get("dev-id","");if(!v){v=Math.random().toString(36).slice(2,10);store.set("dev-id",v)}return v})();
+let locSharing=false,locMap=new Map(),lastPub=0,chatEs=null,locEs=null,chatMsgs=[];
+
+function myName(){return ($("locName").value||store.get("me","")).trim()}
+$("locName").addEventListener("change",()=>{const v=myName();if(v){store.set("me",v);renderChat()}});
+$("locRoom").addEventListener("change",()=>{
+  const v=slug($("locRoom").value.trim());
+  if(!v)return;
+  store.set("room",v);$("locRoom").value=v;
+  locMap.clear();chatMsgs=[];renderLoc();renderChat();
+  resubscribe();
+  toast("Trip code set to <b>"+esc(v)+"</b>");
+});
+$("locToggle").addEventListener("change",e=>{
+  if(e.target.checked){
+    if(!myName()){e.target.checked=false;toast("Put your name in first");$("locName").focus();return}
+    store.set("me",myName());locSharing=true;store.set("loc-share",true);
+    if(!here)startGPS();
+    toast("&#128205; The girls can see you now");publishLoc();
+  }else{locSharing=false;store.set("loc-share",false);toast("Location sharing off")}
+});
+function publishLoc(){
+  const n=myName();
+  if(!n||!here||!locSharing)return;
+  lastPub=Date.now();
+  fetch(locURL(),{method:"POST",body:JSON.stringify({k:"loc",id:myId,by:n,
+    lat:+here.lat.toFixed(5),lng:+here.lng.toFixed(5),ts:Date.now()})}).catch(()=>{});
+}
+function ingestLoc(e){
+  if(!e||e.k!=="loc"||!e.id||!e.by)return;
+  const p=locMap.get(e.id);
+  if(!p||e.ts>p.ts)locMap.set(e.id,e);
+}
+function locHistory(){
+  fetch(locURL()+"/json?poll=1&since=6h").then(r=>r.text()).then(t=>{
+    t.split("\n").filter(Boolean).forEach(l=>{try{ingestLoc(JSON.parse(JSON.parse(l).message))}catch(e){}});
+    renderLoc();
+  }).catch(()=>{});
+}
+function locSubscribe(){
+  try{
+    locEs=new EventSource(locURL()+"/sse");
+    locEs.onopen=locHistory;
+    locEs.onmessage=ev=>{try{ingestLoc(JSON.parse(JSON.parse(ev.data).message));renderLoc()}catch(e){}};
+    locEs.onerror=()=>{try{locEs.close()}catch(e){}setTimeout(locSubscribe,9000)};
+  }catch(e){}
+}
+function friendList(){
+  const cut=Date.now()-45*60*1000;
+  return Array.from(locMap.values()).filter(e=>e.ts>cut&&e.id!==myId).sort((a,b)=>b.ts-a.ts);
+}
+function renderLoc(){
+  const list=friendList();
+  $("locList").innerHTML=list.length?list.map(e=>{
+    const mins=Math.round((Date.now()-e.ts)/60000);
+    const d=here?" · "+fmtMi(dist(here.lat,here.lng,e.lat,e.lng))+" away":"";
+    return `<div class="row"><div class="ic">&#128100;</div><div class="bd">
+      <div class="t">${esc(e.by)}</div><div class="s">${mins<1?"just now":mins+" min ago"}${d}</div></div>
+      <div class="rt"><a class="btn sm ghost" href="https://www.google.com/maps/dir/?api=1&destination=${e.lat},${e.lng}" target="_blank" rel="noopener">&#129517; Go</a></div></div>`;
+  }).join(""):'<p class="small muted" style="margin:.5rem 0 0">Nobody else is sharing yet. Everyone needs the same trip code and their own switch turned on.</p>';
+  drawFriendMap();
+}
+
+/* ---- a real little map, drawn from OpenStreetMap tiles ---- */
+const TILE="https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const tileCache={};
+let fmZoom=store.get("fmZoom",13),fmCenter=null;
+function lon2x(lo,z){return (lo+180)/360*Math.pow(2,z)}
+function lat2y(la,z){const r=la*Math.PI/180;return (1-Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z)}
+function getTile(z,x,y){
+  const k=z+"/"+x+"/"+y;
+  if(tileCache[k])return tileCache[k];
+  const im=new Image();im.crossOrigin="anonymous";
+  im.onload=()=>{im._ok=true;drawFriendMap()};
+  im.onerror=()=>{im._bad=true};
+  im.src=TILE.replace("{z}",z).replace("{x}",x).replace("{y}",y);
+  tileCache[k]=im;return im;
+}
+function mapPoints(){
+  const pts=friendList().map(e=>({lat:e.lat,lng:e.lng,by:e.by,me:false}));
+  if(here)pts.push({lat:here.lat,lng:here.lng,by:myName()||"You",me:true});
+  return pts;
+}
+function fitFriends(){
+  const pts=mapPoints();
+  if(!pts.length){fmCenter={lat:HOME.lat,lng:HOME.lng};fmZoom=13;return}
+  const las=pts.map(p=>p.lat),los=pts.map(p=>p.lng);
+  fmCenter={lat:(Math.min(...las)+Math.max(...las))/2,lng:(Math.min(...los)+Math.max(...los))/2};
+  const c=$("locCanvas"),w=c.clientWidth||340,h=c.clientHeight||300;
+  let z=16;
+  while(z>4){
+    const dx=Math.abs(lon2x(Math.max(...los),z)-lon2x(Math.min(...los),z))*256;
+    const dy=Math.abs(lat2y(Math.min(...las),z)-lat2y(Math.max(...las),z))*256;
+    if(dx<w*.7&&dy<h*.7)break;
+    z--;
+  }
+  fmZoom=Math.max(5,Math.min(17,z));store.set("fmZoom",fmZoom);
+}
+function drawFriendMap(){
+  const c=$("locCanvas");if(!c)return;
+  const wrap=$("locMapWrap"),W=wrap.clientWidth||340,H=wrap.clientHeight||320;
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+"px";c.style.height=H+"px";
+  const x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);
+  x.fillStyle="#E9EFE7";x.fillRect(0,0,W,H);
+  if(!fmCenter)fitFriends();
+  const z=fmZoom;
+  const cx=lon2x(fmCenter.lng,z)*256,cy=lat2y(fmCenter.lat,z)*256;
+  const x0=cx-W/2,y0=cy-H/2;
+  const tx0=Math.floor(x0/256),ty0=Math.floor(y0/256);
+  const tx1=Math.floor((x0+W)/256),ty1=Math.floor((y0+H)/256);
+  const max=Math.pow(2,z);
+  for(let tx=tx0;tx<=tx1;tx++)for(let ty=ty0;ty<=ty1;ty++){
+    if(ty<0||ty>=max)continue;
+    const im=getTile(z,((tx%max)+max)%max,ty);
+    if(im._ok){try{x.drawImage(im,tx*256-x0,ty*256-y0,256,256)}catch(e){}}
+  }
+  /* markers */
+  mapPoints().forEach(p=>{
+    const px=lon2x(p.lng,z)*256-x0,py=lat2y(p.lat,z)*256-y0;
+    x.beginPath();x.arc(px,py,11,0,7);
+    x.fillStyle=p.me?"#4B7A50":"#3E5A76";x.fill();
+    x.lineWidth=3.5;x.strokeStyle="#FFFDFB";x.stroke();
+    x.font="700 13px Inter, sans-serif";x.textAlign="center";
+    x.lineWidth=4;x.strokeStyle="rgba(255,253,251,.95)";
+    x.strokeText(p.by||"",px,py-17);
+    x.fillStyle="#2E2028";x.fillText(p.by||"",px,py-17);
+  });
+  x.fillStyle="rgba(46,32,40,.55)";x.font="600 10px Inter, sans-serif";x.textAlign="right";
+  x.fillText("© OpenStreetMap contributors",W-8,H-6);
+}
+$("locZin").addEventListener("click",()=>{fmZoom=Math.min(17,fmZoom+1);store.set("fmZoom",fmZoom);drawFriendMap()});
+$("locZout").addEventListener("click",()=>{fmZoom=Math.max(5,fmZoom-1);store.set("fmZoom",fmZoom);drawFriendMap()});
+$("locFit").addEventListener("click",()=>{fitFriends();drawFriendMap();toast("&#9974; Everybody on screen")});
+$("locMeet").addEventListener("click",()=>{
+  if(!here)return toast("Turn location on first");
+  const n=nearest(1)[0];
+  const where=(n&&n._d<0.6)?(" — I'm at "+n.n):"";
+  sendChat("&#128204; Meet me here"+where+": https://www.google.com/maps/search/?api=1&query="+here.lat.toFixed(5)+","+here.lng.toFixed(5));
+  toast("&#128204; Sent your spot to the chat");
+});
+$("locPing").addEventListener("click",()=>{
+  sendChat("&#128276; "+(myName()||"Someone")+" is asking: where is everybody?");
+  toast("Asked the group");
+});
+$("locCopy").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(room());toast("&#128203; Trip code copied — send it to the girls")}catch(e){}
+});
+
+/* ---- group chat ---- */
+function renderChat(){
+  const me=myName();
+  $("chatBox").innerHTML=chatMsgs.slice(-60).map(m=>{
+    const mine=m.who===me;
+    return `<div class="msg ${mine?"me":(m.who==="Clara"?"clara":"")}">
+      <div class="who">${esc(m.who)}</div><div>${esc(m.text)}</div>
+      <div class="tm">${new Date(m.t).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})}</div></div>`;
+  }).join("")||'<p class="small muted" style="margin:0">No messages yet. Say hello.</p>';
+  $("chatBox").scrollTop=$("chatBox").scrollHeight;
+}
+function addMsg(m,live){
+  if(chatMsgs.some(x=>x.t===m.t&&x.text===m.text))return;
+  chatMsgs.push(m);chatMsgs.sort((a,b)=>a.t-b.t);
+  renderChat();
+  if(live&&m.who!==myName()){
+    notify(m.who,m.text);
+    if(voiceOn)speak(m.who+" says: "+m.text);
+  }
+}
+function parseNtfy(j){
+  if(!j||j.event!=="message")return null;
+  return{who:j.title||"Someone",text:String(j.message||""),t:(j.time||Math.floor(Date.now()/1000))*1000};
+}
+function chatHistory(){
+  fetch(chatURL()+"/json?poll=1&since=24h").then(r=>r.text()).then(t=>{
+    t.split("\n").filter(Boolean).forEach(l=>{try{const m=parseNtfy(JSON.parse(l));if(m)addMsg(m,false)}catch(e){}});
+  }).catch(()=>{});
+}
+function chatSubscribe(){
+  try{
+    chatEs=new EventSource(chatURL()+"/sse");
+    chatEs.onopen=chatHistory;
+    chatEs.onmessage=ev=>{try{const m=parseNtfy(JSON.parse(ev.data));if(m)addMsg(m,true)}catch(e){}};
+    chatEs.onerror=()=>{try{chatEs.close()}catch(e){}setTimeout(chatSubscribe,9000)};
+  }catch(e){}
+}
+function resubscribe(){
+  try{chatEs&&chatEs.close()}catch(e){}
+  try{locEs&&locEs.close()}catch(e){}
+  chatSubscribe();locSubscribe();
+}
+function sendChat(text){
+  const t=String(text).replace(/<[^>]*>/g,"").trim();
+  if(!t)return;
+  fetch(chatURL()+"?title="+encodeURIComponent(myName()||"Someone"),{method:"POST",body:t}).catch(()=>{});
+  addMsg({who:myName()||"Someone",text:t,t:Date.now()},false);
+}
+$("chatSend").addEventListener("click",()=>{
+  const v=$("chatIn").value.trim();if(!v)return;
+  if(!myName()){toast("Put your name in above first");$("locName").focus();return}
+  sendChat(v);$("chatIn").value="";
+});
+$("chatIn").addEventListener("keydown",e=>{if(e.key==="Enter")$("chatSend").click()});
+const QUICK=["On my way","Running 10 minutes late","Where are you?","I'm at the car","Look at this!","Ready when you are"];
+$("chatQuick").innerHTML=QUICK.map(q=>`<button class="pill" data-q="${esc(q)}">${esc(q)}</button>`).join("");
+$("chatQuick").addEventListener("click",e=>{
+  const b=e.target.closest("[data-q]");if(!b)return;
+  if(!myName()){toast("Put your name in above first");return}
+  sendChat(b.dataset.q);toast("Sent");
+});
+
+/* ---------- notifications ---------- */
+function renderNotif(){
+  const on=store.get("notif",false);
+  const perm=("Notification" in window)?Notification.permission:"not supported on this phone";
+  $("notifPanel").innerHTML=`
+    <label class="switch"><input type="checkbox" id="ntfOn" ${on?"checked":""}><span class="track"></span>
+      <span><b>Buzz me</b><br><span class="small muted">Nearby nudges and group messages, even when this app is in the background</span></span></label>
+    <p class="small muted" style="margin-top:.6rem">Permission: <b>${perm}</b>. Anyone can also follow the chat in the free <b>ntfy</b> app — topic <code>chris-chat-${esc(room())}</code>.</p>
+    <div class="btnrow"><button class="btn sm ghost" id="ntfCopy">&#128203; Copy the chat topic</button>
+      <a class="btn sm ghost" href="https://ntfy.sh/chris-chat-${esc(room())}" target="_blank" rel="noopener">Open in ntfy</a></div>`;
+  $("ntfOn").addEventListener("change",async e=>{
+    if(e.target.checked&&"Notification" in window&&Notification.permission!=="granted"){
+      const p=await Notification.requestPermission();
+      if(p!=="granted"){e.target.checked=false;toast("Permission declined");renderNotif();return}
+    }
+    store.set("notif",e.target.checked);renderNotif();
+  });
+  $("ntfCopy").addEventListener("click",async()=>{try{await navigator.clipboard.writeText("chris-chat-"+room());toast("Copied")}catch(e){}});
+}
+
+/* ============================================================
+   TOOLKIT
+   ============================================================ */
+function renderVoicePanel(){
+  const has=!!store.get("xiKey","");
+  $("voicePanel").innerHTML=`
+    <p style="margin-top:0">Clara reads the briefing, the day plan, every place description and the countdown on the camera.
+    Without a key she uses the phone's own voice. With one, it is <b>Clara herself</b> — the same voice as the Olive app.</p>
+    <div class="field"><label class="fld" for="xiKey">ElevenLabs key (stays on this phone only)</label>
+      <input type="password" id="xiKey" placeholder="${has?"••••••••••  saved":"sk_…"}" autocomplete="off"></div>
+    <div class="btnrow" style="margin-top:.6rem">
+      <button class="btn sm" id="xiSave">Save the key</button>
+      <button class="btn sm ghost" id="xiTest">&#128266; Test her voice</button>
+      ${has?'<button class="btn sm ghost" id="xiClear">Remove it</button>':""}
+    </div>
+    <p class="tiny" style="margin-top:.7rem">${has?"Key saved. About "+ttsSpend.toLocaleString()+" characters spoken so far. ":""}
+    The key is never sent anywhere except ElevenLabs, is not in this file, and is not in the repository. Every line she says is cached, so hearing it twice costs nothing and works offline.</p>`;
+  $("xiSave").addEventListener("click",()=>{
+    const v=$("xiKey").value.trim();
+    if(!v)return toast("Paste the key first");
+    store.set("xiKey",v);$("xiKey").value="";renderVoicePanel();
+    toast("&#128266; Saved — Clara has her voice back");
+    speak("Hello Chris. It's Clara. I'll be with you all week.",true);
+  });
+  $("xiTest").addEventListener("click",()=>speak("Hello Chris. It's Clara. Littleton is a mile above the sea, so drink more water than you think you need, and I'll tell you when something worth seeing is close.",true));
+  const cl=$("xiClear");
+  if(cl)cl.addEventListener("click",()=>{store.del("xiKey");renderVoicePanel();toast("Key removed")});
+}
+const PACK=[
+ "Layers — a fleece and a light jacket, even in August",
+ "Broad-brim hat and high-factor sunscreen",
+ "Sunglasses (the light here is fierce)",
+ "Walking shoes with grip — the red rock is slippery in dust",
+ "A refillable water bottle each",
+ "Lip balm and hand cream — it is very dry",
+ "All medications in the carry-on, in their own bottles",
+ "A power bank — GPS and the camera eat a phone",
+ "Something smart-ish for one nice dinner",
+ "A small daypack for the walks",
+ "Insurance card and a written list of medications",
+ "Download this guide to the phone before you fly (below)"
+];
+function renderPack(){
+  const done=store.get("pack",[]);
+  $("packList").innerHTML=PACK.map((p,i)=>
+    `<div class="check ${done.includes(i)?"done":""}" data-pk="${i}"><div class="bx">&#10003;</div><div class="lb">${esc(p)}</div></div>`).join("");
+  const pct=Math.round(done.length/PACK.length*100);
+  $("packBar").style.width=pct+"%";
+  $("packTxt").textContent=done.length+" of "+PACK.length+" done";
+}
+$("packList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-pk]");if(!b)return;
+  const i=+b.dataset.pk,done=store.get("pack",[]);
+  store.set("pack",done.includes(i)?done.filter(x=>x!==i):done.concat(i));
+  renderPack();
+});
+const NUMBERS=[
+ ["Emergency","911","&#128680;"],
+ ["Non-emergency police, Littleton","303-794-1551","&#128110;"],
+ ["Poison control (national)","1-800-222-1222","&#9760;&#65039;"],
+ ["Littleton Adventist Hospital","303-730-8900","&#127973;"],
+ ["Colorado road conditions","511","&#128679;"],
+ ["RTD transit information","303-299-6000","&#128649;"],
+ ["Denver International Airport","303-342-2000","&#9992;&#65039;"]
+];
+function renderNumbers(){
+  $("numbers").innerHTML=NUMBERS.map(([n,p,ic])=>`
+    <div class="row"><div class="ic">${ic}</div><div class="bd"><div class="t">${esc(n)}</div><div class="s">${esc(p)}</div></div>
+      <div class="rt"><a class="btn sm ghost" href="tel:${p.replace(/[^+\d]/g,"")}">&#128222; Call</a></div></div>`).join("")+
+    '<p class="tiny" style="margin:.8rem 0 0">Numbers were correct when this was built — 911 always works regardless.</p>';
+}
+function renderSettings(){
+  $("settings").innerHTML=`
+    <label class="switch"><input type="checkbox" id="setGps" ${store.get("gps",true)!==false?"checked":""}><span class="track"></span>
+      <span><b>Location on</b><br><span class="small muted">Powers distances, nudges and the friends map</span></span></label>
+    <label class="switch"><input type="checkbox" id="setAlerts" ${store.get("alertsOn",true)?"checked":""}><span class="track"></span>
+      <span><b>Nearby nudges</b><br><span class="small muted">Clara speaks up when something good is close</span></span></label>
+    <div class="btnrow" style="margin-top:.9rem">
+      <button class="btn sm ghost" id="setExport">&#128228; Export everything</button>
+      <button class="btn sm ghost" id="setRebuild">&#8635; Rebuild the agenda</button>
+      <button class="btn sm ghost" id="setWipe" style="color:var(--danger)">&#128465;&#65039; Start over</button>
+    </div>`;
+  $("setGps").addEventListener("change",e=>{$("gpsToggle").checked=e.target.checked;$("gpsToggle").dispatchEvent(new Event("change"))});
+  $("setAlerts").addEventListener("change",e=>{$("alertToggle").checked=e.target.checked;store.set("alertsOn",e.target.checked)});
+  $("setExport").addEventListener("click",()=>{
+    const data={trip:trip(),agenda:agenda(),favs:favs(),pins:pins(),pack:store.get("pack",[])};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="littleton-trip.json";a.click();
+    toast("&#128228; Exported");
+  });
+  $("setRebuild").addEventListener("click",()=>buildAgenda(true));
+  $("setWipe").addEventListener("click",()=>{
+    if(!confirm("This clears the trip, the agenda, the shortlist and the saved spots on this phone. Photos are kept. Carry on?"))return;
+    ["trip","agenda","favs","pins","pack","alerted","health","setup-hide"].forEach(k=>store.del(k));
+    location.reload();
+  });
+}
+$("cacheNow").addEventListener("click",async()=>{
+  try{
+    if(!("caches" in window))return toast("This browser can't store offline");
+    const c=await caches.open("chris-v1");
+    await c.addAll(["./","./index.html","./manifest.json"]);
+    toast("&#128190; Saved to this phone");
+    $("offlineTxt").innerHTML="<b>&#9989; Saved.</b> Every place, the whole agenda, the checklists and the phone numbers now work with no signal at all. Only live weather, the group chat and the friends map need bars.";
+  }catch(e){toast("Could not save offline")}
+});
+
+/* ============================================================
+   OFFLINE / UPDATES
+   ============================================================ */
+function netCheck(){$("netPill").classList.toggle("on",!navigator.onLine)}
+window.addEventListener("online",()=>{netCheck();toast("&#128246; Back online")});
+window.addEventListener("offline",netCheck);
+if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+function checkUpdate(){
+  fetch("index.html",{cache:"no-store"}).then(r=>r.text()).then(t=>{
+    const m=t.match(/BUILD="([^"]+)"/);
+    if(m&&m[1]!==BUILD)$("updateBar").style.display="block";
+  }).catch(()=>{});
+}
+$("updateBar").addEventListener("click",()=>location.reload(true));
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+async function boot(){
+  syncVoiceBtn();
+  $("locName").value=store.get("me","");
+  $("locRoom").value=room();
+  $("alertRadius").value=store.get("alertRadius",1.5);
+  $("alertToggle").checked=store.get("alertsOn",true);
+  $("gpsToggle").checked=store.get("gps",true)!==false;
+  $("buildTxt").textContent="Build "+BUILD;
+
+  media=await photoLoad();
+
+  renderTripForm();renderHero();renderAgenda();renderTodayPlan();
+  renderNearbyFilters();renderNearby();renderExploreFilters();renderExplore();
+  renderPins();renderFindNow();renderHealth();renderDash();
+  renderCamChips();renderCamGal();renderGal();
+  renderChat();renderLoc();renderNotif();renderVoicePanel();renderPack();renderNumbers();renderSettings();
+  renderBriefing();netCheck();
+
+  if(store.get("loc-share",false)){locSharing=true;$("locToggle").checked=true}
+  chatSubscribe();locSubscribe();
+  loadWeather();
+  autoStartGPS();
+  route();
+
+  /* one gentle good-morning a day, and only in the morning */
+  const t=todayISO();
+  if(store.get("brief-day","")!==t&&new Date().getHours()>=5&&new Date().getHours()<12){
+    store.set("brief-day",t);
+    setTimeout(()=>{
+      const d=tripDay(),A=agenda();
+      if(d>0&&A[d-1]){
+        pushAlert({ic:"&#9749;",cls:"go",t:"Day "+d+" — "+A[d-1].title,s:"Tap Read it to me on the briefing for the whole day."});
+        speak(buildBriefing());
+      }
+    },2500);
+  }
+  setInterval(()=>{renderHero();renderBriefing()},120000);
+  setInterval(()=>{if(locSharing)publishLoc()},120000);
+  setInterval(renderLoc,60000);
+  setInterval(checkUpdate,5*60*1000);
+  setInterval(reviveGPS,90000);
+  window.addEventListener("resize",()=>{if($("view-friends").classList.contains("active"))drawFriendMap()});
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden){netCheck();reviveGPS();checkUpdate()}});
+  checkUpdate();
+}
+boot();
+</script>
+</body>
+</html>
