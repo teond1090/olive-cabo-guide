@@ -1127,7 +1127,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-12";
+const BUILD="chris-2026-08-13-13";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -3274,11 +3274,16 @@ async function xiCheck(){
     const rv=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
     if(rv.ok){
       const vs=(await rv.json()).voices||[];
-      const dg=vs.find(v=>/clara/i.test(v.name||""))||vs.find(v=>/dreaded grizzly bear/i.test(v.name||""))||vs.find(v=>v.category&&v.category!=="premade");
-      if(dg){
-        if(store.get("xiVoice","")!==dg.voice_id){store.set("xiVoice",dg.voice_id);store.set("xiVoiceName",dg.name||"")}
-        vmsg=" Her voice here is <b>"+esc(dg.name||"")+"</b>.";
-      }else if(vs.length)vmsg=" "+vs.length+" voices in the account, none custom.";
+      const chosen=store.get("xiVoice","");
+      if(chosen){
+        vmsg=" Her voice here is <b>"+esc(store.get("xiVoiceName","")||"the one you chose")+"</b>.";
+      }else{
+        const dg=vs.find(v=>/clara/i.test(v.name||""))||vs.find(v=>/dreaded grizzly bear/i.test(v.name||""))||vs.find(v=>v.category&&v.category!=="premade");
+        if(dg){
+          store.set("xiVoice",dg.voice_id);store.set("xiVoiceName",dg.name||"");
+          vmsg=" Her voice here is <b>"+esc(dg.name||"")+"</b>.";
+        }else if(vs.length)vmsg=" "+vs.length+" voices in the account, none custom.";
+      }
     }
   }catch(e){}
   /* then the real test: speak */
@@ -3324,6 +3329,7 @@ function renderVoicePanel(){
       She reads the briefing, the day plans, the diary, every place description and the camera countdown out loud.</p>
       <div class="btnrow">
         <button class="btn sm" id="xiTest">&#128266; Hear her</button>
+        <button class="btn sm gold" id="xiStudio">&#127917; Choose or design her voice</button>
         <button class="btn sm ghost" id="xiCheckBtn">&#129658; Check the key</button>
         <button class="btn sm ghost" id="xiEdit">Change the key</button>
       </div>
@@ -3333,6 +3339,7 @@ function renderVoicePanel(){
     $("xiTest").addEventListener("click",()=>speak("Hello Chris. It's Clara. Littleton is a mile above the sea, so drink more water than you think you need, and I'll tell you when something worth seeing is close.",true));
     $("xiEdit").addEventListener("click",()=>{voiceEdit=true;renderVoicePanel()});
     $("xiCheckBtn").addEventListener("click",xiCheck);
+    $("xiStudio").addEventListener("click",voiceStudio);
     return;
   }
   $("voicePanel").innerHTML=`
@@ -4049,6 +4056,132 @@ function applyHC(){
   if(store.get("hc",false))document.documentElement.setAttribute("data-hc","1");
   else document.documentElement.removeAttribute("data-hc");
 }
+
+/* ---------- the voice studio ----------
+   Audition every voice on the ElevenLabs account with a Littleton
+   line, tap to keep one - or write a description and have three
+   brand-new voices generated to choose from. Each audition costs a
+   sentence of quota and is cached so replays are free. */
+const AUD_LINE="Well hello! It's a beautiful morning in Littleton, and I know just the spot for us.";
+const DESIGN_LINE="Good morning, ladies! It's Clara. The sun is coming up over the foothills, the coffee on Main Street is already on, and I have found us a walk with a view this morning. Water bottles first, then hats - the Colorado sun does not play fair. Shall we go and see what Littleton has for us today?";
+let vsPrevs=[],vsDesc="";
+async function audition(vid){
+  stopSpeaking();
+  try{
+    const id="/chris-tts/aud2-"+vid;
+    let cache=null,res=null;
+    try{cache=await caches.open(TTS_CACHE);res=await cache.match(id)}catch(e){}
+    if(!res){
+      const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+vid+"?output_format=mp3_44100_64",{
+        method:"POST",headers:{"xi-api-key":xiKey(),"Content-Type":"application/json"},
+        body:JSON.stringify({text:AUD_LINE,model_id:"eleven_turbo_v2_5",
+          voice_settings:{stability:.6,similarity_boost:.8,style:.25,use_speaker_boost:true}})});
+      if(!r.ok){toast("That one wouldn't play — try another");return}
+      if(cache){try{await cache.put(id,r.clone())}catch(e){}}
+      res=r;
+    }
+    playBlob(await res.blob());
+  }catch(e){toast("Couldn't reach ElevenLabs")}
+}
+function chooseVoice(vid,name){
+  store.set("xiVoice",vid);store.set("xiVoiceName",name||"");
+  renderVoicePanel();
+  toast("&#127917; Her voice is now <b>"+esc(name||"set")+"</b>");
+  celebrate("plan");
+  speak("From now on, this is my voice. I rather like it.",true);
+  $$("#shBody [data-vuse]").forEach(b=>{
+    b.classList.toggle("gold",b.dataset.vuse===vid);
+    b.textContent=b.dataset.vuse===vid?"Hers now":"Use";
+  });
+}
+async function voiceStudio(){
+  openSheet("&#127917; Clara's Voice Studio",'<p class="small muted">Fetching the voices&hellip;</p>');
+  let vs=[];
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":xiKey()}});
+    if(r.ok)vs=(await r.json()).voices||[];
+  }catch(e){}
+  const cur=store.get("xiVoice","")||CLARA_VOICE_ID;
+  const own=vs.filter(v=>v.category&&v.category!=="premade");
+  const premade=vs.filter(v=>!v.category||v.category==="premade");
+  const row=v=>{
+    const lb=v.labels||{};
+    const tags=[lb.gender,lb.age,lb.accent,lb.description||lb.use_case].filter(Boolean).join(" · ");
+    return `<div class="row">
+      <div class="bd"><div class="t">${esc(v.name||"Unnamed")}</div>${tags?`<div class="s">${esc(tags)}</div>`:""}</div>
+      <div class="rt" style="display:flex;gap:.35rem">
+        <button class="btn sm ghost" data-vtry="${v.voice_id}" aria-label="Hear ${esc(v.name||"this voice")}">&#9654;&#65039;</button>
+        <button class="btn sm ${v.voice_id===cur?"gold":"ghost"}" data-vuse="${v.voice_id}" data-vname="${esc(v.name||"")}">${v.voice_id===cur?"Hers now":"Use"}</button>
+      </div></div>`;
+  };
+  $("shBody").innerHTML=`
+    ${vs.length?`
+      <p class="small muted" style="margin-top:0">Tap &#9654;&#65039; to hear a voice say a Littleton line, then <b>Use</b> to make it Clara's. Every phone picks it up on its own.</p>
+      ${own.length?`<div class="eyebrow" style="margin:.4rem 0">Your voices</div>`+own.map(row).join(""):""}
+      ${premade.length?`<div class="eyebrow" style="margin:1rem 0 .4rem">ElevenLabs voices</div>`+premade.map(row).join(""):""}`
+    :`<p class="small muted" style="margin-top:0">Couldn't fetch the voice list — weak signal, or the key can't read voices. The designer below may still work.</p>`}
+    <hr class="hr">
+    <div class="eyebrow" style="margin:.4rem 0">&#10024; Or invent a brand-new voice</div>
+    <p class="small muted">Describe her — age, warmth, accent, pace — and three candidates get created. Keep the one you love.</p>
+    <div class="field"><label class="fld" for="vsDesc">Describe the voice</label>
+      <textarea id="vsDesc" maxlength="600" placeholder="A warm, cheerful American woman in her 60s. Gentle, unhurried, a smile in her voice — like a lifelong friend planning a lovely day."></textarea></div>
+    <div class="btnrow"><button class="btn plum" id="vsGen">&#10024; Create three voices to try</button></div>
+    <div id="vsPrev" style="margin-top:.8rem"></div>
+    <p class="tiny" style="margin-top:.8rem">Voice design uses a chunk of the account's monthly characters per attempt, and needs a plan that includes it — if ElevenLabs says no, the message will say why.</p>`;
+  $("vsGen").addEventListener("click",vsGenerate);
+}
+async function vsGenerate(){
+  const d=($("vsDesc").value||"").trim();
+  if(d.length<20)return toast("Give her a little more description");
+  vsDesc=d;
+  const btn=$("vsGen");btn.disabled=true;btn.innerHTML="&#9203; Creating three voices&hellip;";
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/text-to-voice/create-previews",{
+      method:"POST",headers:{"xi-api-key":xiKey(),"Content-Type":"application/json"},
+      body:JSON.stringify({voice_description:d.slice(0,600),text:DESIGN_LINE})});
+    if(!r.ok){
+      let msg="";try{const j=await r.json();msg=(j.detail&&(j.detail.message||j.detail.status))||""}catch(e){}
+      $("vsPrev").innerHTML='<div class="note warn">ElevenLabs said no ('+r.status+(msg?" — "+esc(String(msg).slice(0,140)):"")+
+        "). Voice design usually needs the Starter plan or above. The voices above still work.</div>";
+      return;
+    }
+    vsPrevs=((await r.json()).previews||[]).slice(0,3);
+    if(!vsPrevs.length){$("vsPrev").innerHTML='<div class="note warn">No previews came back — try a different description.</div>';return}
+    $("vsPrev").innerHTML=`
+      <div class="field"><label class="fld" for="vsName">Name her</label>
+        <input type="text" id="vsName" maxlength="30" value="Clara"></div>`+
+      vsPrevs.map((pv,i)=>`<div class="row">
+        <div class="bd"><div class="t">Candidate ${i+1}</div></div>
+        <div class="rt" style="display:flex;gap:.35rem">
+          <button class="btn sm ghost" data-ptry="${i}">&#9654;&#65039;</button>
+          <button class="btn sm gold" data-pkeep="${i}">&#128150; Keep her</button>
+        </div></div>`).join("");
+  }catch(e){$("vsPrev").innerHTML='<div class="note warn">Couldn\'t reach ElevenLabs — try again on wifi.</div>'}
+  finally{btn.disabled=false;btn.innerHTML="&#10024; Create three voices to try"}
+}
+async function vsKeep(i){
+  const pv=vsPrevs[i];if(!pv)return;
+  const name=($("vsName")&&$("vsName").value.trim())||"Clara";
+  toast("&#128150; Saving her to the account&hellip;");
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/text-to-voice/create-voice-from-preview",{
+      method:"POST",headers:{"xi-api-key":xiKey(),"Content-Type":"application/json"},
+      body:JSON.stringify({voice_name:name,voice_description:vsDesc.slice(0,600),generated_voice_id:pv.generated_voice_id})});
+    if(!r.ok){toast("ElevenLabs wouldn't save her ("+r.status+")");return}
+    const j=await r.json();
+    if(!j.voice_id)return toast("No voice came back — try once more");
+    chooseVoice(j.voice_id,name);
+  }catch(e){toast("Couldn't reach ElevenLabs")}
+}
+$("shBody").addEventListener("click",e=>{
+  const t=e.target.closest("[data-vtry]");if(t){audition(t.dataset.vtry);return}
+  const u=e.target.closest("[data-vuse]");if(u){chooseVoice(u.dataset.vuse,u.dataset.vname);return}
+  const pt=e.target.closest("[data-ptry]");
+  if(pt){const pv=vsPrevs[+pt.dataset.ptry];
+    if(pv&&pv.audio_base_64){stopSpeaking();try{const a=new Audio("data:audio/mpeg;base64,"+pv.audio_base_64);curAudio=a;a.play().catch(()=>{})}catch(e){}}
+    return}
+  const pk=e.target.closest("[data-pkeep]");if(pk){vsKeep(+pk.dataset.pkeep);return}
+});
 
 /* ---------- ask Clara ---------- */
 const NEAR_WORDS=[["light rail","transit"],["urgent care","medical"],["coffee","coffee"],["restroom","restroom"],
