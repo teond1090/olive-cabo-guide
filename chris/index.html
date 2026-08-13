@@ -636,7 +636,7 @@ html[data-hc] .card{border-width:3px}
       <div class="sky" id="skyLayer" aria-hidden="true"></div>
       <div class="lbl" id="heroLbl">Littleton, Colorado</div>
       <h2 id="heroTitle">Chris's Girls' Trip</h2>
-      <p id="heroSub">Foothills, gardens, Main Street and Red Rocks &mdash; at your own pace.</p>
+      <p id="heroSub">Highlands Ranch, the Littleton gardens and the mountains &mdash; at your own pace.</p>
       <div class="countdown" id="countdown"></div>
     </div>
 
@@ -767,6 +767,8 @@ html[data-hc] .card{border-width:3px}
       <p class="tiny" style="margin:.7rem 0 0">Nothing is locked in. Every day can be swapped, and hours and prices change &mdash; ring ahead when it matters.</p>
     </div>
 
+    <div class="card a-rose" id="wedSwitch" style="display:none"></div>
+
     <div id="agendaOut" class="stack"></div>
 
     <div class="card" id="agendaTools" style="display:none">
@@ -776,6 +778,7 @@ html[data-hc] .card{border-width:3px}
         <button class="btn sm ghost" id="agShare">&#128172; Send to the girls</button>
         <button class="btn sm ghost" id="agText">&#128203; Copy as text</button>
         <button class="btn sm ghost" id="agRead">&#128266; Read me the day</button>
+        <button class="btn sm ghost" id="agRestore">&#8635; Back to the planned trip</button>
       </div>
       <p class="tiny" style="margin:.8rem 0 0">The calendar file works with Apple Calendar, Google Calendar and Outlook. Open it once and the whole trip appears.</p>
     </div>
@@ -1145,7 +1148,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-20";
+const BUILD="chris-2026-08-13-21";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1156,7 +1159,9 @@ const store={
 };
 
 /* Downtown Littleton, the middle of everything here */
-const HOME={lat:39.6133,lng:-105.0166,name:"Historic Downtown Littleton"};
+/* Chris stays with her friend in Highlands Ranch; nearly everything on
+   the list is 10-25 minutes from here. */
+const HOME={lat:39.5539,lng:-104.9689,name:"Highlands Ranch"};
 
 /* ============================================================
    THE PLACES
@@ -1216,6 +1221,49 @@ const PLACES=[
 {n:"Cornerstone Park",c:"walk",lat:39.6011,lng:-105.0290,mins:4,e:2,tag:"Free",
  d:"A quiet neighbourhood park on the river with ponds, a paved loop and a pedestrian bridge over the Platte. Locals walk it and visitors mostly never find it.",
  tip:"Good sunset spot, and easy to fit in before dinner on Main Street."},
+
+/* ---------- Highlands Ranch - where they're staying ---------- */
+{n:"Highlands Ranch Town Center",c:"shop",lat:39.5410,lng:-105.0080,mins:8,e:2,q:"Highlands Ranch Town Center, Highlands Ranch, CO",
+ d:"The walkable heart of Highlands Ranch - shops, cafes and a green in the middle where the town puts on summer events. Five minutes from the house and an easy first afternoon.",
+ tip:"Good for a gentle browse on arrival day when nobody wants a schedule yet."},
+{n:"Postino Highlands Ranch",c:"eat",lat:39.5395,lng:-105.0075,mins:8,e:1,q:"Postino Highlands Ranch, 1265 Sgt Jon Stiles Dr, Highlands Ranch, CO 80129",
+ d:"Wine bar and cafe built for long lunches - bruschetta boards, big salads, and a patio made for talking for two hours.",
+ tip:"The bruschetta board and a glass of wine is the whole point. Book if it's a weekend."},
+{n:"Arts On Fire",c:"art",lat:39.5555,lng:-104.9270,mins:12,e:1,q:"Arts On Fire, 6660 Timberline Rd, Highlands Ranch, CO 80130",
+ d:"Paint-your-own pottery, fused glass and canvas studio. You sit, you chat, you make something, and a week later you have a thing on the shelf that says Colorado.",
+ tip:"Ring ahead - fused glass and canvas sessions have set times, and pottery needs a few days to fire and be collected."},
+{n:"The Streets at SouthGlenn",c:"shop",lat:39.5895,lng:-104.9530,mins:14,e:2,q:"The Streets at SouthGlenn, Centennial, CO",
+ d:"Open-air shopping streets with boutiques, home decor, a good bookshop and plenty of places to sit with a coffee.",
+ tip:"Artworks SouthGlenn is here too - do them in one stop."},
+{n:"Artworks SouthGlenn",c:"art",lat:39.5895,lng:-104.9525,mins:14,e:2,q:"Artworks SouthGlenn, Centennial, CO",
+ d:"A small gallery of original work by local artists - pottery, jewellery, fibre art, paintings and decorative pieces. Exactly the sort of place you find something you didn't know you needed.",
+ tip:"Everything is by Colorado makers, so it's a proper souvenir rather than a gift-shop one."},
+{n:"Cherokee Ranch & Castle",c:"history",lat:39.4400,lng:-104.9100,mins:20,e:2,q:"Cherokee Ranch & Castle, Sedalia, CO",
+ d:"A Scottish-style castle on a ranch above the Front Range, with tours of the house, the art collection and enormous views. Tours are by reservation only.",
+ tip:"The one that got cut for time - if a day opens up, put it straight back in. Book ahead; they don't take walk-ins."},
+
+/* ---------- The mountain towns, 40 minutes up US-285 ---------- */
+{n:"Evergreen Lake & downtown",c:"day",lat:39.6335,lng:-105.3226,mins:38,e:2,q:"Evergreen Lake House, Evergreen, CO",
+ d:"A mountain lake at 7,000 feet with a flat boardwalk trail all the way round and a beautiful timber lake house, and a downtown of galleries, antique shops and cafes a couple of minutes away. Elk wander through town like they own it.",
+ tip:"The lake loop is about a mile and a quarter and completely flat. Bring a layer - it runs 10-15 degrees cooler than Highlands Ranch."},
+{n:"Hiwan Museum, Evergreen",c:"history",lat:39.6390,lng:-105.3190,mins:38,e:2,q:"Hiwan Museum, 28473 Meadow Dr, Evergreen, CO 80439",
+ d:"A 17-room log lodge from the 1890s, kept as it was, with the mountain-craft furnishings and quilts still in place. Free, small, and genuinely lovely.",
+ tip:"Twenty minutes well spent while you're in Evergreen, and it costs nothing."},
+{n:"Alderfer/Three Sisters Park",c:"walk",lat:39.6205,lng:-105.3510,mins:42,e:3,q:"Alderfer/Three Sisters Park, Evergreen, CO",
+ d:"Pine forest and rock outcrops above Evergreen with a web of trails, including gentle meadow loops that don't climb much at all.",
+ tip:"The Evergreen Mountain Trail climbs; the Silver Fox and Ponderosa loops stay kind. Ask at the trailhead board."},
+{n:"Conifer & Aspen Park",c:"day",lat:39.5225,lng:-105.3061,mins:32,e:2,q:"Conifer, CO",
+ d:"The first proper mountain town on US-285, strung along the pines at 8,200 feet. Coffee, a brewery, mountain shops and the sense that you've left the city behind after half an hour of driving.",
+ tip:"The natural coffee-and-a-look-round stop on the way up to Bailey."},
+{n:"Meyer Ranch Park",c:"walk",lat:39.5590,lng:-105.2830,mins:28,e:2,q:"Meyer Ranch Park, Conifer, CO",
+ d:"Aspen and pine meadows just off the highway, with a wide, gently climbing lower loop and picnic tables under the trees. A circus wintered here in the 1880s, which is why the hill is called Old Ski Run.",
+ tip:"The easiest mountain walk on this list - the lower loop is barely a climb and you're back at the car in half an hour."},
+{n:"Staunton State Park",c:"walk",lat:39.5000,lng:-105.3833,mins:45,e:3,q:"Staunton State Park, Pine, CO",
+ d:"Colorado's newest big state park - granite cliffs, aspen groves, meadows and a waterfall, and far quieter than the parks nearer Denver.",
+ tip:"There's a free track-chair programme for anyone who can't manage the trails on foot. Entry is per vehicle."},
+{n:"Bailey & the Platte Canyon",c:"day",lat:39.4083,lng:-105.4736,mins:50,e:2,q:"Bailey, CO",
+ d:"A little mountain town where the road meets the North Fork of the South Platte - riverside cafes, antique and mountain-craft shops, and canyon walls the whole way there. The drive is half the pleasure.",
+ tip:"The furthest point of the mountain loop. Come back north on CO-73 through Conifer to Evergreen and you get a different valley each way."},
 
 /* ---------- Eat & drink ---------- */
 {n:"Merle's Downtown Littleton",c:"eat",lat:39.6136,lng:-105.0170,mins:0,e:1,
@@ -1383,7 +1431,11 @@ function bearing(a,b,c,d){
   const deg=(Math.atan2(y,x)/t+360)%360;
   return ["north","north-east","east","south-east","south","south-west","west","north-west"][Math.round(deg/45)%8];
 }
-function mapUrl(p){return "https://www.google.com/maps/dir/?api=1&destination="+p.lat+","+p.lng}
+function mapUrl(p){
+  /* q = the real address. Google's own pin beats a coordinate I typed. */
+  return "https://www.google.com/maps/dir/?api=1&destination="+
+    (p.q?encodeURIComponent(p.q):p.lat+","+p.lng);
+}
 function slug(s){return String(s).toLowerCase().replace(/&/g," and ").replace(/['’]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")}
 function byName(n){return PLACES.find(p=>p.n===n)}
 
@@ -1639,7 +1691,7 @@ function renderHero(){
   if(!t.start||!t.end){
     $("heroLbl").textContent="Littleton, Colorado";
     $("heroTitle").textContent="Chris's Girls' Trip";
-    $("heroSub").textContent="Foothills, gardens, Main Street and Red Rocks - at your own pace.";
+    $("heroSub").textContent="Highlands Ranch, the Littleton gardens and the mountains - at your own pace.";
     $("countdown").innerHTML="&#10024; Tell Clara your dates and she'll plan the lot";
     return;
   }
@@ -2143,6 +2195,7 @@ function buildAgenda(reshuffle){
 function mk(when,what,why,place,opt,kind){return{when,what,why,place:place||"",opt:!!opt,kind:kind||""}}
 
 function renderAgenda(){
+  try{renderWedSwitch()}catch(e){}
   const A=agenda();
   if(!A.length){$("agendaOut").innerHTML="";$("agendaTools").style.display="none";return}
   const today=todayISO();
@@ -2227,6 +2280,119 @@ $("tpBuild").addEventListener("click",()=>{
   if(!t.who.length)t.who=["Chris"];
   saveTrip(t);
   buildAgenda(agenda().length>0);
+});
+
+/* ============================================================
+   CHRIS'S ACTUAL TRIP
+   The real plan, 18-22 August 2026, staying with her friend in
+   Highlands Ranch. Loaded automatically the first time the app
+   opens so there is nothing to set up, and restorable any time.
+   Wednesday exists in two versions - the mountains her friend asked
+   for, and the gardens-and-Littleton day - and the app holds both.
+   ============================================================ */
+const REAL_TRIP={
+  start:"2026-08-18",end:"2026-08-22",base:"your friend's house in Highlands Ranch",
+  who:["Chris","Sandy"],pace:"steady",
+  likes:["garden","shop","art","eat","walk","history","day","market"],avoid:[]
+};
+const WED_MOUNTAINS={
+  date:"2026-08-19",title:"Into the mountains",sub:"Conifer · Bailey · Evergreen — the loop your friend asked for",big:true,
+  items:[
+    mk("Leave by 9:00","US-285 west to Conifer","Half an hour and you're at 8,200 feet in the pines. Coffee and a look round Aspen Park before carrying on.","Conifer & Aspen Park",false,"day"),
+    mk("Late morning","On to Bailey through the Platte Canyon","Canyon walls the whole way and the river beside the road. Antique and mountain-craft shops when you get there.","Bailey & the Platte Canyon",false,"day"),
+    mk("Lunch","A riverside table in Bailey","Small town, few places, all friendly. Ask whoever's behind the counter what's good today.","Bailey & the Platte Canyon",false,"eat"),
+    mk("Afternoon","North on CO-73 to Evergreen","A different valley on the way back. The lake boardwalk is flat and about a mile and a quarter, then the downtown galleries and antique shops.","Evergreen Lake & downtown",false,"day"),
+    mk("If you still have legs","Hiwan Museum","A 17-room 1890s log lodge kept exactly as it was, and free. Twenty minutes, and lovely.","Hiwan Museum, Evergreen",true,"history"),
+    mk("Evening","Home to Highlands Ranch, about 40 minutes","Take a layer for the mountains - it runs 10 to 15 degrees cooler up there, and the evening comes on fast.","",false,"rest")
+  ]
+};
+const WED_GARDENS={
+  date:"2026-08-19",title:"Gardens & historic Littleton",sub:"The pretty Colorado day",big:false,
+  items:[
+    mk("9:30","Hudson Gardens","Thirty acres along the South Platte - rose garden, water garden, oak grove. Wide, level, paved paths, and free to walk in.","Hudson Gardens",false,"garden"),
+    mk("12:30","Lunch in historic downtown Littleton","Two blocks of 1890s storefronts. Park once behind Main Street and walk the lot.","Historic Downtown Littleton",false,"eat"),
+    mk("1:30–3:30","Littleton shopping","Home decor, art, garden shops, boutiques, jewellery and antiques - the reason to come to Main Street.","Historic Downtown Littleton",false,"shop"),
+    mk("3:30","Coffee and something sweet","Then back to Highlands Ranch, about twenty minutes.","",false,"eat"),
+    mk("If you still have legs","Reinke Brothers","A costume shop that has spilled into an oddity museum. Everyone goes in; everyone comes out laughing.","Reinke Brothers",true,"shop"),
+    mk("Evening","Dinner at home, or make tonight the nice one","Whichever suits - Wednesday is the flexible evening.","",false,"eat")
+  ]
+};
+function realTrip(wed){
+  const W=(wed==="gardens")?WED_GARDENS:WED_MOUNTAINS;
+  return [
+   {date:"2026-08-18",title:"Welcome to Colorado",sub:"Easy, pretty and fun — no schedule on day one",big:false,items:[
+     mk("Late morning","Arrive and settle in at "+REAL_TRIP.base,"Denver's air is thin and dry. The first afternoon is for water and a sit-down, not a hike.","",false,"rest"),
+     mk("Lunch","Postino Highlands Ranch","A bruschetta board, a glass of wine and a patio. Nobody is in a hurry.","Postino Highlands Ranch",false,"eat"),
+     mk("Early afternoon","Highlands Ranch Town Center","A gentle browse five minutes from the house, to get your bearings.","Highlands Ranch Town Center",false,"shop"),
+     mk("Afternoon","Arts On Fire","Paint pottery, make fused glass, or do a canvas together. Sitting, chatting and creating, with no schedule to follow.","Arts On Fire",false,"art"),
+     mk("Evening","Dinner easy at home","Day one is not the day to exhaust yourselves.","",false,"eat"),
+     mk("Before bed","Two big glasses of water","Altitude dries you out while you sleep. This one habit prevents most first-morning headaches.","",true,"health")
+   ]},
+   W,
+   {date:"2026-08-20",title:"Chatfield Farms & art",sub:"The centrepiece of the trip",big:false,items:[
+     mk("10:00 — reserve this","Chatfield Farms: Seasonal Discoveries tour","A guided hour through the gardens at Denver Botanic Gardens' farm site. Far more interesting than walking round looking at flowers — you find out what's actually growing and why. Book it ahead.","Denver Botanic Gardens at Chatfield Farms",false,"garden"),
+     mk("11:00–12:30","Stay and wander Chatfield","Seven hundred acres of working farm, the 1918 homestead and long lavender rows. Take the camera.","Denver Botanic Gardens at Chatfield Farms",false,"garden"),
+     mk("1:00","Lunch in historic downtown Littleton","Ten minutes from Chatfield, and the shops are right there when you finish.","Historic Downtown Littleton",false,"eat"),
+     mk("1:45","Main Street shopping","Antiques, home decor, art and garden shops. This is where you find the thing you absolutely don't need.","Historic Downtown Littleton",false,"shop"),
+     mk("3:00","Artworks SouthGlenn","A small gallery of original work by Colorado makers — pottery, jewellery, fibre art, paintings.","Artworks SouthGlenn",false,"art"),
+     mk("If you still have legs","Hudson Gardens","Free, flat and ten minutes away — worth it if the afternoon is being kind.","Hudson Gardens",true,"garden"),
+     mk("4:00","Coffee and dessert, then home","A proper sit-down before the evening.","",false,"eat")
+   ]},
+   {date:"2026-08-21",title:"Friends & dinner at home",sub:"Slow morning, then the evening everyone remembers",big:false,items:[
+     mk("Morning","Sleep in. Breakfast together, then a walk round the neighbourhood","No excursion today — this is the day the trip is actually for.","",false,"rest"),
+     mk("Late morning","Something very light if you feel like getting out","A garden centre, a few decor shops, or a coffee and a leisurely lunch. Or the garden chair and a conversation.","",false,"shop"),
+     mk("Or, one more garden","Denver Botanic Gardens","The York Street gardens — twenty-four acres, superb alpine collection, timed tickets bought in advance. Half a day if you want it.","Denver Botanic Gardens",true,"garden"),
+     mk("Late afternoon","Home in good time to get ready","Friends arriving beats anything on a list.","",false,"rest"),
+     mk("Evening","Friends arrive · dinner at home · wine · music · a great deal of laughing","This will probably be the highlight of the whole trip.","",false,"eat")
+   ]},
+   {date:"2026-08-22",title:"Head home",sub:"Slowly",big:false,items:[
+     mk("Morning","Breakfast, pack, and a last coffee with your friend","Anything you pinned in this app is under Nearby, so nothing gets left behind.","",false,"rest"),
+     mk("On the way","Make the film in the Movie tab","Three minutes, and everyone will want it before you're home.","",true,"photo")
+   ]}
+  ];
+}
+function loadRealTrip(wed){
+  saveTrip(Object.assign({},trip(),REAL_TRIP));
+  saveAgenda(realTrip(wed||store.get("wed","mountains")));
+  store.set("wed",wed||store.get("wed","mountains"));
+  renderTripForm();renderAgenda();renderTodayPlan();renderHero();renderDash();
+}
+/* Wednesday is genuinely undecided between two good days, so the app
+   holds both and lets them switch on the spot. */
+function renderWedSwitch(){
+  const el=$("wedSwitch");if(!el)return;
+  const A=agenda(),isReal=A.length===5&&A[0]&&A[0].date==="2026-08-18";
+  if(!isReal){el.style.display="none";return}
+  el.style.display="block";
+  const cur=store.get("wed","mountains");
+  el.innerHTML=`
+    <div class="card-h"><span class="ic">&#128721;</span><h3>Wednesday — you have two good days</h3></div>
+    <p style="margin-top:0">Your friend fancies the mountains; the gardens day is the other lovely option. Tap either one and Wednesday changes. Nothing else moves.</p>
+    <div class="menu-grid">
+      <button class="mtile${cur==="mountains"?" on":""}" data-wed="mountains">
+        <span class="mi">&#127956;</span><span class="mt">Into the mountains</span>
+        <span class="ms">Conifer, Bailey and Evergreen — a loop up US-285 and back down CO-73. Cooler air, galleries, a lake boardwalk.</span></button>
+      <button class="mtile${cur==="gardens"?" on":""}" data-wed="gardens">
+        <span class="mt">&#127804;</span><span class="mt">Gardens &amp; Littleton</span>
+        <span class="ms">Hudson Gardens in the morning, then lunch and the Main Street shops — decor, art, antiques, jewellery.</span></button>
+    </div>`;
+}
+$("wedSwitch").addEventListener("click",e=>{
+  const b=e.target.closest("[data-wed]");if(!b)return;
+  const A=agenda();
+  A[1]=(b.dataset.wed==="gardens")?WED_GARDENS:WED_MOUNTAINS;
+  saveAgenda(A);store.set("wed",b.dataset.wed);
+  renderWedSwitch();renderAgenda();renderTodayPlan();renderHero();
+  celebrate("plan");
+  toast(b.dataset.wed==="gardens"?"&#127804; Wednesday is gardens &amp; Littleton":"&#127956; Wednesday is the mountains");
+  speak(b.dataset.wed==="gardens"
+    ?"Wednesday is Hudson Gardens and the Littleton shops now."
+    :"Wednesday is the mountain loop now — Conifer, Bailey and Evergreen.");
+});
+$("agRestore").addEventListener("click",()=>{
+  loadRealTrip();renderWedSwitch();celebrate("plan");
+  toast("&#10024; Your planned trip is back");
+  speak("Right — your real trip is loaded. Tuesday the eighteenth through Saturday the twenty-second.",true);
 });
 
 /* ---------- today's plan on the Today tab ---------- */
@@ -4405,7 +4571,8 @@ async function boot(){
 
   media=await photoLoad();
 
-  renderTripForm();renderHero();renderAgenda();renderTodayPlan();
+  if(!agenda().length&&!store.get("trip-loaded",false)){store.set("trip-loaded",true);loadRealTrip()}
+  renderTripForm();renderHero();renderAgenda();renderTodayPlan();renderWedSwitch();
   renderNearbyFilters();renderNearby();renderExploreFilters();renderExplore();
   renderPins();renderFindNow();renderHealth();renderDash();
   renderCamChips();renderCamGal();renderGal();
