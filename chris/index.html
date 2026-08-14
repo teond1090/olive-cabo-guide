@@ -850,6 +850,13 @@ h2{letter-spacing:-.02em}
       <div id="memList" style="margin-top:.8rem"></div>
     </div>
 
+    <div class="card a-gold" id="updateCard">
+      <div class="card-h"><span class="ic">&#128231;</span><h3>Today's Update Home</h3></div>
+      <p style="margin-top:0">One tap builds a little picture-card of today &mdash; where you went, how far, your best photograph and a line from Clara &mdash; ready to text to the family.</p>
+      <div class="btnrow"><button class="btn gold" id="updMake">&#128231; Make today's update</button></div>
+      <div id="updOut" style="margin-top:.9rem"></div>
+    </div>
+
     <div class="card a-plum" id="diaryCard" style="display:none">
       <div class="card-h"><span class="ic">&#128213;</span><h3>Clara's Diary &mdash; <span id="diaryDayLbl"></span></h3></div>
       <div id="diaryOut"></div>
@@ -1406,7 +1413,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-15-35";
+const BUILD="chris-2026-08-15-36";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -5629,6 +5636,8 @@ const TOUR=[
   say:"Switch on sharing and everyone with the same trip code appears on a map, so nobody gets lost in a car park again. There's a group chat too, and a Meet me here button that sends your exact spot."},
  {ic:"&#127908;",t:"Just ask me",go:"",
   say:"Here's my favourite part. See the little microphone at the top of the screen? Tap it and simply talk to me. Where's the nearest coffee. What's the plan today. How far is Red Rocks. Spin the wheel. I'll answer out loud. You never have to hunt through menus."},
+ {ic:"&#128231;",t:"A card home, every evening",go:"today",
+  say:"The family will want to know you're having a lovely time, and you won't want to sit writing messages. On the Today page there's a button that makes a little picture card of the day — where you went, how far you walked, the route drawn out, your best photograph and a line from me — and your phone texts it like any other message. One tap, and everyone at home has had a postcard."},
  {ic:"&#128220;",t:"The story of your week",go:"toolkit",
   say:"When it's all over, the Toolkit has two lovely things. I'll write the story of your week — everywhere you went, every mile, the notes you kept — in my own words, and read it to you. And I'll build a page for the family: one file with the map, the photographs and the story in it, that you can email to anyone. It opens on any phone with no app and no internet."},
  {ic:"&#128246;",t:"When there's no signal",go:"toolkit",
@@ -5857,6 +5866,153 @@ async function familyPage(){
   speak("Your family page is ready. Everything in one file — send it to whoever you like.",true);
 }
 $("famPage").addEventListener("click",familyPage);
+
+/* ============================================================
+   TODAY'S UPDATE HOME
+   The family want to know she is having a lovely time; she does not
+   want to sit composing messages. One tap turns the day the phone
+   actually recorded - the places, the miles, the route, the best
+   photograph - into a card worth receiving.
+   ============================================================ */
+function dayPlaces(dateISO){return store.get("visit-"+dateISO,[])}
+function dayTrack(dateISO){
+  const [y,m,d]=dateISO.split("-").map(Number);
+  const t0=new Date(y,m-1,d).getTime(),t1=t0+86400000;
+  return (jBuf||journey()).filter(p=>p[2]>=t0&&p[2]<t1);
+}
+function dayStory(dateISO){
+  const v=dayPlaces(dateISO),mi=store.get("walk-"+dateISO,0);
+  const ph=dayMedia(dateISO).length,notes=memAll().filter(m=>{
+    const [y,mo,d]=dateISO.split("-").map(Number);const t0=new Date(y,mo-1,d).getTime();
+    return m.t>=t0&&m.t<t0+86400000;
+  });
+  const L=a=>a.length<2?(a[0]||""):a.slice(0,-1).join(", ")+" and "+a[a.length-1];
+  let out=Clara.pick(["A good day.","Well, that was lovely.","What a day.","A proper day out."],"upd");
+  if(v.length)out+=" We got to "+L(v.slice(0,3))+(v.length>3?", and a few more besides":"")+".";
+  if(mi>=0.4)out+=" "+(Math.round(mi*10)/10)+" miles on foot.";
+  if(ph)out+=" "+ph+" photograph"+(ph>1?"s":"")+" taken.";
+  if(notes.length&&notes[0].cap)out+=" Somebody said: \u201C"+notes[0].cap.slice(0,90)+"\u201D";
+  if(wx&&wx.daily&&dateISO===todayISO())out+=" It got to "+Math.round(wx.daily.temperature_2m_max[0])+" degrees.";
+  return out;
+}
+/* the card itself: photograph on top, the day's route beneath it */
+async function dailyCard(dateISO){
+  const W=1080,H=1350;
+  const c=document.createElement("canvas");c.width=W;c.height=H;
+  const x=c.getContext("2d");
+  const g=x.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,"#3D1A31");g.addColorStop(.5,"#5B2A4A");g.addColorStop(1,"#2B4159");
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+
+  /* the best photograph of the day, by Clara's own eye */
+  const pics=dayMedia(dateISO);
+  const best=pics.length?(await bestPhotos(pics,1))[0]:null;
+  const PH=740;
+  if(best){
+    const im=await getImg(best.src);
+    if(im){
+      const sc=Math.max(W/im.width,PH/im.height);
+      x.save();x.beginPath();x.rect(0,0,W,PH);x.clip();
+      x.drawImage(im,(W-im.width*sc)/2,(PH-im.height*sc)/2,im.width*sc,im.height*sc);
+      const sh=x.createLinearGradient(0,PH-260,0,PH);
+      sh.addColorStop(0,"rgba(43,20,36,0)");sh.addColorStop(1,"rgba(43,20,36,.82)");
+      x.fillStyle=sh;x.fillRect(0,PH-260,W,260);
+      x.restore();
+    }
+  }else{
+    x.fillStyle="rgba(255,255,255,.06)";x.fillRect(0,0,W,PH);
+    x.fillStyle="rgba(246,231,200,.5)";x.font="600 34px Inter, sans-serif";x.textAlign="center";
+    x.fillText("No photographs today — but we were out there.",W/2,PH/2);
+  }
+  /* the day's route, drawn small under the photograph */
+  const trk=dayTrack(dateISO);
+  if(trk.length>3){
+    const las=trk.map(p=>p[0]),los=trk.map(p=>p[1]);
+    const minLa=Math.min(...las),maxLa=Math.max(...las),minLo=Math.min(...los),maxLo=Math.max(...los);
+    const pad=70,bw=W-pad*2,bh=150,by=PH+34;
+    const sx=(maxLo-minLo)||1e-4,sy=(maxLa-minLa)||1e-4;
+    const k=Math.min(bw/sx,bh/sy);
+    const ox=pad+(bw-sx*k)/2, oy=by+(bh-sy*k)/2;
+    x.lineJoin=x.lineCap="round";
+    x.strokeStyle="rgba(255,255,255,.22)";x.lineWidth=13;
+    x.beginPath();trk.forEach((p,i)=>{const px=ox+(p[1]-minLo)*k,py=oy+(maxLa-p[0])*k;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();
+    x.strokeStyle="#F0CE86";x.lineWidth=5;
+    x.beginPath();trk.forEach((p,i)=>{const px=ox+(p[1]-minLo)*k,py=oy+(maxLa-p[0])*k;i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();
+    const last=trk[trk.length-1];
+    x.beginPath();x.arc(ox+(last[1]-minLo)*k,oy+(maxLa-last[0])*k,11,0,7);
+    x.fillStyle="#C4517A";x.fill();x.lineWidth=4;x.strokeStyle="#FFFDFB";x.stroke();
+  }
+  /* the words */
+  const t=trip(),d=(t.start?daysBetween(t.start,dateISO)+1:0);
+  x.textAlign="center";
+  x.fillStyle="#F0CE86";x.font="800 30px Inter, sans-serif";
+  x.fillText((d>0?"DAY "+d+"  ·  ":"")+fmtDateLong(dateISO).toUpperCase(),W/2,PH+(trk.length>3?250:70));
+  x.fillStyle="#FFF6FA";x.font="900 62px Fraunces, Georgia, serif";
+  x.fillText("Littleton, Colorado",W/2,PH+(trk.length>3?322:142));
+  /* Clara's line, wrapped by hand */
+  /* wrap first, then shrink until it fits above the sign-off - a chatty
+     day should not push the words off the bottom of the card */
+  const story=dayStory(dateISO);
+  const top=PH+(trk.length>3?370:190), floor=H-110;
+  let size=34,lines=[];
+  for(;size>=22;size-=2){
+    x.font="400 "+size+"px Inter, sans-serif";
+    lines=[];let line="";
+    story.split(" ").forEach(w=>{
+      const test=line?line+" "+w:w;
+      if(x.measureText(test).width>W-150){lines.push(line);line=w}else line=test;
+    });
+    if(line)lines.push(line);
+    if(top+lines.length*(size*1.36)<=floor)break;
+  }
+  x.fillStyle="rgba(255,246,250,.93)";
+  lines.forEach((l,i)=>x.fillText(l,W/2,top+(i+1)*(size*1.36)));
+  x.fillStyle="rgba(240,201,216,.55)";x.font="600 26px Inter, sans-serif";
+  x.fillText("sent with love, from the girls' trip",W/2,H-46);
+  return c.toDataURL("image/jpeg",.88);
+}
+async function makeUpdate(){
+  const b=$("updMake");b.disabled=true;b.innerHTML="&#9203; Making it&hellip;";
+  const iso=todayISO();
+  const url=await dailyCard(iso);
+  const text=dayStory(iso);
+  b.disabled=false;b.innerHTML="&#128231; Make today's update";
+  $("updOut").innerHTML=`
+    <img src="${url}" alt="Today's update" style="width:100%;max-width:20rem;margin:0 auto;display:block;border-radius:14px;border:1px solid var(--line-2)">
+    <div class="btnrow" style="margin-top:.8rem">
+      <button class="btn gold" id="updShare">&#128228; Text it to the family</button>
+      <button class="btn sm ghost" id="updSave">&#11015;&#65039; Save it</button>
+      <button class="btn sm ghost" id="updChat">&#128172; Send to the girls</button>
+    </div>
+    <p class="tiny" style="margin:.7rem 0 0">Sharing opens your phone's own share sheet, so it goes out as a normal message or email &mdash; nothing to sign up for.</p>`;
+  $("updShare").addEventListener("click",async()=>{
+    try{
+      const blob=await(await fetch(url)).blob();
+      const f=new File([blob],"littleton-day.jpg",{type:"image/jpeg"});
+      if(navigator.canShare&&navigator.canShare({files:[f]}))
+        return navigator.share({files:[f],text:text,title:"From Colorado"});
+      if(navigator.share)return navigator.share({text:text,title:"From Colorado"});
+    }catch(e){}
+    $("updSave").click();
+  });
+  $("updSave").addEventListener("click",()=>{
+    const a=document.createElement("a");a.href=url;a.download="littleton-"+iso+".jpg";a.click();
+    toast("&#11015;&#65039; Saved — send it from your photos");
+  });
+  $("updChat").addEventListener("click",()=>{sendChat(text);toast("&#128172; Sent to the girls")});
+  celebrate("photo");
+  speak(Clara.pick(["Here's today, ready to send.","That's today in a picture.","One for the family."],"upd-done")+" "+text,true);
+}
+$("updMake").addEventListener("click",makeUpdate);
+/* a gentle evening reminder, once, and only if there is a day worth sending */
+function updateNudge(){
+  const t=todayISO(),h=new Date().getHours();
+  if(tripDay()<1||h<18||h>21||store.get("upd-"+t,false))return;
+  if(!dayPlaces(t).length&&!dayMedia(t).length)return;
+  store.set("upd-"+t,true);
+  Clara.remark("update","Shall we send the family a little card of today? It's one tap on the Today page.",
+    {alert:"Today's update home",extra:{ic:"&#128231;"}});
+}
 
 /* ============================================================
    THE TRIP, REMEMBERED
@@ -6345,6 +6501,7 @@ async function boot(){
   }
   setInterval(()=>{renderHero();renderBriefing();renderDiary()},120000);
   setInterval(sunsetWatch,60000);
+  setInterval(updateNudge,15*60000);
   setInterval(claraAside,11*60000);        /* she checks, the budget decides */
   /* the diary, spoken once each evening if her voice is on */
   if(store.get("diary-day","")!==t&&new Date().getHours()>=19&&tripDay()>0){
