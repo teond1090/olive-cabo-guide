@@ -1148,7 +1148,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-13-21";
+const BUILD="chris-2026-08-14-22";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -3558,8 +3558,10 @@ function voiceTrouble(){
     <div class="field"><label class="fld" for="vtKey">Paste a new ElevenLabs key (rarely needed)</label>
       <input type="password" id="vtKey" placeholder="sk_… (shown once, when the key is created)" autocomplete="off"></div>
     <div class="btnrow" style="margin-top:.6rem">
-      <button class="btn sm ghost" id="vtSave">Save it</button>
+      <button class="btn" id="vtSave">&#129658; Test it, then save</button>
+      <button class="btn sm ghost" id="vtSaveAnyway">Save without testing</button>
     </div>
+    <div id="vtSaveOut" class="small" style="margin-top:.6rem"></div>
     <p class="tiny" style="margin-top:.7rem">If the check-up says all is well but you hear nothing at all,
     it's the phone: flip the ring/silent switch on the side and turn the volume up.</p>`);
   $("vtCheck").addEventListener("click",vtReport);
@@ -3571,15 +3573,61 @@ function voiceTrouble(){
       '<br><code style="word-break:break-all;user-select:all;font-size:.85em">'+esc(k)+"</code>"+
       '<br><span class="tiny">Copy it into another phone&rsquo;s Voice setup — or send it to your builder to build into the app for every phone.</span>';
   });
-  $("vtSave").addEventListener("click",()=>{
-    const v=xiScrub($("vtKey").value);
-    if(!v)return toast("Paste the key first");
-    if(!/^sk_/.test(v))toast("&#9888;&#65039; ElevenLabs keys start with sk_ — this one doesn't");
-    store.set("xiKey",v);store.del("xiVoice");store.del("xiVoiceName");
-    renderVoicePanel();toast("&#128266; Saved ("+v.length+" characters)");vtReport();
-  });
+  $("vtSave").addEventListener("click",()=>vtTrySave(false));
+  const sa=$("vtSaveAnyway");
+  if(sa)sa.addEventListener("click",()=>vtTrySave(true));
   vtReport();
 }
+/* A key must prove it can speak before it is allowed to take over.
+   Half this saga was a dead key silently shadowing a working one. */
+async function vtTrySave(force){
+  const out=$("vtSaveOut");
+  const v=xiScrub($("vtKey").value);
+  if(!v){toast("Paste the key first");return}
+  if(force){
+    store.set("xiKey",v);store.del("xiVoice");store.del("xiVoiceName");
+    renderVoicePanel();out.innerHTML="Saved without testing.";vtReport();return;
+  }
+  out.innerHTML="Asking ElevenLabs whether this key can speak&hellip;";
+  const warn=/^sk_/.test(v)?"":"<br><b>Note:</b> ElevenLabs keys begin with <code>sk_</code>. This one doesn't, so it may be a key <i>ID</i> or a key from another service.";
+  /* try it as-is, and if the built-in voice isn't in this account, try a voice it owns */
+  let pr=await xiProbeWith(v,claraVoiceId());
+  let vid=claraVoiceId(),vname=store.get("xiVoiceName","");
+  if(!pr.ok&&pr.code!=="invalid_api_key"&&pr.code!=="quota_exceeded"){
+    try{
+      const rv=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":v}});
+      if(rv.ok){
+        const vs=(await rv.json()).voices||[];
+        const pick=vs.find(x=>/clara/i.test(x.name||""))||vs.find(x=>x.category&&x.category!=="premade")||vs[0];
+        if(pick){const p2=await xiProbeWith(v,pick.voice_id);if(p2.ok){pr=p2;vid=pick.voice_id;vname=pick.name||""}}
+      }
+    }catch(e){}
+  }
+  if(pr.ok){
+    store.set("xiKey",v);store.set("xiVoice",vid);if(vname)store.set("xiVoiceName",vname);
+    renderVoicePanel();
+    out.innerHTML="&#9989; <b>This key works — saved.</b>"+(vname?" Clara's voice here is <b>"+esc(vname)+"</b>.":"");
+    toast("&#128266; Key tested and saved");
+    celebrate("done");
+    speak("That's the one. Hello Chris — it's Clara, and this is my real voice.",true);
+    vtReport();
+    return;
+  }
+  out.innerHTML="&#10060; <b>Not saved — ElevenLabs rejected this key.</b> ("+(pr.status||"no network")+
+    (pr.code?" &middot; "+esc(pr.code):"")+")"+(pr.msg?"<br>They said: "+esc(String(pr.msg).slice(0,140)):"")+warn+
+    "<br><br>The key already on this device was left alone. Make a fresh key at elevenlabs.io &mdash; profile picture, API Keys, Create &mdash; and copy it <b>from the popup</b> the moment it appears.";
+}
+async function xiProbeWith(key,vid){
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+vid+"?output_format=mp3_44100_64",{
+      method:"POST",headers:{"xi-api-key":key,"Content-Type":"application/json"},
+      body:JSON.stringify({text:"Hi.",model_id:"eleven_turbo_v2_5"})});
+    if(r.ok)return{ok:true};
+    let d=null;try{d=(await r.json()).detail}catch(e){}
+    return{ok:false,status:r.status,code:(d&&d.status)||"",msg:(d&&d.message)||""};
+  }catch(e){return{ok:false,status:0,code:"network"}}
+}
+
 /* the whole voice story on one screen - screenshot-friendly */
 async function vtReport(){
   const el=$("vtReport");if(!el)return;
