@@ -3,7 +3,7 @@
    Cache-first for the app shell and the map tiles Chris has already seen;
    network-first for anything live (weather, chat, the friends map), which
    is worse than useless when it is stale. */
-const CACHE="chris-v16";   /* bumped: folding cards, merged Today */
+const CACHE="chris-v17";   /* bumped: folding cards, merged Today, text+email home */
 const TILES="chris-tiles-v1";
 const TILE_MAX=900;                /* roughly the Denver metro at street zoom */
 const SHELL=["./","./index.html","./manifest.json"];

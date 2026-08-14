@@ -946,6 +946,8 @@ h2{letter-spacing:-.02em}
         <div id="diaryOut"></div>
         <div class="btnrow" style="margin-top:.8rem">
           <button class="btn sm" id="diaryRead">&#128266; Read it to me</button>
+          <a class="btn sm" id="diarySms" href="sms:">&#128241; Text it home</a>
+          <a class="btn sm" id="diaryMail" href="mailto:">&#9993;&#65039; Email it home</a>
           <button class="btn sm ghost" id="diaryShare">&#128228; Send to the girls</button>
         </div>
         <p class="tiny" style="margin:.7rem 0 0">She writes one every evening. The whole diary collects in the Toolkit.</p>
@@ -1068,7 +1070,7 @@ h2{letter-spacing:-.02em}
         <button class="btn sm ghost" id="agRead">&#128266; Read me the day</button>
         <button class="btn sm ghost" id="agRestore">&#8635; Back to the planned trip</button>
       </div>
-      <p class="tiny" style="margin:.8rem 0 0">The calendar file works with Apple Calendar, Google Calendar and Outlook. Open it once and the whole trip appears.</p>
+      <p class="tiny" style="margin:.8rem 0 0">The calendar file works with the calendar already on your phone. Open it once and the whole trip appears.</p>
     </div>
 
   </div>
@@ -1465,7 +1467,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-15-38";
+const BUILD="chris-2026-08-15-39";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -4722,6 +4724,7 @@ function renderDiary(){
   const d=tripDay(),h=new Date().getHours();
   const show=d>0&&h>=17;
   $("diaryCard").style.display=show?"block":"none";
+  if(show)setTimeout(diaryLinks,0);
   if(show){
     const txt=diaryText(todayISO(),d);
     $("diaryDayLbl").textContent="Day "+d;
@@ -4738,6 +4741,13 @@ function renderDiary(){
     :'<p class="small muted" style="margin:0">Clara writes an entry every evening of the trip — where you went, how far you walked, what the day was like. They collect here.</p>';
 }
 $("diaryRead").addEventListener("click",()=>speak($("diaryOut").textContent,true));
+/* the diary's own text, handed to her Messages and her Mail */
+function diaryLinks(){
+  const t=($("diaryOut").textContent||"").trim();
+  if(!t)return;
+  $("diarySms").href=smsHref(t);
+  $("diaryMail").href=mailHref("From Colorado \u2014 "+($("diaryDayLbl").textContent||"today"),t+"\n\nsent with love, from the girls' trip");
+}
 $("diaryShare").addEventListener("click",()=>{sendChat("📖 "+$("diaryOut").textContent);toast("&#128228; Sent to the girls")});
 $("diaryArchive").addEventListener("click",e=>{
   const b=e.target.closest("[data-dread]");if(!b)return;
@@ -6124,6 +6134,54 @@ async function dailyCard(dateISO){
   x.fillText("sent with love, from the girls' trip",W/2,H-46);
   return c.toDataURL("image/jpeg",.88);
 }
+/* ============================================================
+   WHO IT GOES TO
+   No setup, no accounts, no sign-up. If she never adds anybody,
+   Text and Email still work - they open her own Messages and her
+   own Mail with the words already written and the To line blank,
+   which is exactly how she'd do it by hand. Adding a name is two
+   boxes and takes ten seconds, and it is entirely optional.
+   ============================================================ */
+function famList(){const a=store.get("family",[]);return Array.isArray(a)?a:[]}
+function famSave(a){store.set("family",a);renderFam()}
+function famPhones(){return famList().map(f=>f.p).filter(Boolean).join(",")}
+function famEmails(){return famList().map(f=>f.e).filter(Boolean).join(",")}
+/* iOS and Android both accept ?&body= - the odd-looking pair is the
+   one form that works on each without a separate branch */
+function smsHref(text){return "sms:"+famPhones()+"?&body="+encodeURIComponent(text)}
+function mailHref(subject,text){
+  return "mailto:"+famEmails()+"?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(text);
+}
+function renderFam(){
+  const box=$("famChips");if(!box)return;
+  const l=famList();
+  box.innerHTML=l.map((f,i)=>
+    `<button class="pill gold" data-fam="${i}" title="Tap to remove">${esc(f.n||f.p||f.e)} &times;</button>`).join("")
+    +`<button class="pill" id="famAdd">&#43; Add someone</button>`;
+}
+document.addEventListener("click",e=>{
+  const add=e.target.closest("#famAdd");
+  if(add){famSheet();return}
+  const rm=e.target.closest("[data-fam]");
+  if(rm){const l=famList();const g=l.splice(+rm.dataset.fam,1)[0];famSave(l);
+    toast("Removed &mdash; "+esc(((g&&g.n)||"").slice(0,20)));return}
+});
+function famSheet(){
+  openSheet("&#128101; Who gets the updates",`
+    <p class="small muted" style="margin-top:0">One name, and a mobile number or an email &mdash; whichever you'd actually use. You can skip this entirely; Text and Email work without it.</p>
+    <div class="field"><label class="fld" for="famN">Name</label><input id="famN" placeholder="Katie"></div>
+    <div class="field"><label class="fld" for="famP">Mobile number</label><input id="famP" type="tel" placeholder="+1 303 555 0147"></div>
+    <div class="field"><label class="fld" for="famE">Email</label><input id="famE" type="email" placeholder="katie@example.com"></div>
+    <div class="btnrow"><button class="btn gold" id="famOk">Save</button>
+      <button class="btn sm ghost" id="famCancel">Not now</button></div>`);
+  $("famCancel").addEventListener("click",closeSheet);
+  $("famOk").addEventListener("click",()=>{
+    const n=$("famN").value.trim(),ph=$("famP").value.trim(),em=$("famE").value.trim();
+    if(!ph&&!em){toast("A number or an email, either one");return}
+    const l=famList();l.push({n:n||ph||em,p:ph,e:em});famSave(l);
+    closeSheet();toast("&#128101; Saved &mdash; "+esc(n||ph||em));
+  });
+}
 async function makeUpdate(){
   const b=$("updMake");b.disabled=true;b.innerHTML="&#9203; Making it&hellip;";
   const iso=todayISO();
@@ -6133,11 +6191,18 @@ async function makeUpdate(){
   $("updOut").innerHTML=`
     <img src="${url}" alt="Today's update" style="width:100%;max-width:20rem;margin:0 auto;display:block;border-radius:14px;border:1px solid var(--line-2)">
     <div class="btnrow" style="margin-top:.8rem">
-      <button class="btn gold" id="updShare">&#128228; Text it to the family</button>
+      <a class="btn gold" id="updSms" href="${smsHref(text)}">&#128241; Text it</a>
+      <a class="btn" id="updMail" href="${mailHref("From Colorado","")}">&#9993;&#65039; Email it</a>
+    </div>
+    <div class="btnrow" style="margin-top:.5rem">
+      <button class="btn sm ghost" id="updShare">&#128228; Send the picture too</button>
       <button class="btn sm ghost" id="updSave">&#11015;&#65039; Save it</button>
       <button class="btn sm ghost" id="updChat">&#128172; Send to the girls</button>
     </div>
-    <p class="tiny" style="margin:.7rem 0 0">Sharing opens your phone's own share sheet, so it goes out as a normal message or email &mdash; nothing to sign up for.</p>`;
+    <div class="pills" id="famChips" style="margin-top:.8rem"></div>
+    <p class="tiny" style="margin:.7rem 0 0">Text and Email open your own Messages and your own Mail with the words already written &mdash; your account, nothing to sign into. A message can't carry the picture on its own, so <b>Send the picture too</b> hands both to your phone's share sheet.</p>`;
+  $("updMail").href=mailHref("From Colorado \u2014 "+fmtDateLong(iso),text+"\n\nsent with love, from the girls' trip");
+  renderFam();
   $("updShare").addEventListener("click",async()=>{
     try{
       const blob=await(await fetch(url)).blob();
@@ -6233,10 +6298,12 @@ $("recapMake").addEventListener("click",()=>{
     `<div class="btnrow" style="margin-top:.9rem">
       <button class="btn sm" id="recapRead">&#128266; Read it to me</button>
       <button class="btn sm ghost" id="recapShare">&#128228; Send it round</button>
+      <a class="btn sm ghost" id="recapMail" href="mailto:">&#9993;&#65039; Email it</a>
       <button class="btn sm ghost" id="recapSave">&#11015;&#65039; Save it</button>
       <a class="btn sm gold" href="#/movie">&#127942; Make the yearbook card</a>
     </div>`;
   $("recapRead").addEventListener("click",()=>speak(recapPlain(),true));
+  $("recapMail").href=mailHref("The Littleton Girls' Trip",recapPlain());
   $("recapShare").addEventListener("click",async()=>{
     const txt=recapPlain();
     if(navigator.share){try{await navigator.share({title:"The Littleton Girls' Trip",text:txt});return}catch(e){}}
