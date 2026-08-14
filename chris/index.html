@@ -744,7 +744,6 @@ h2{letter-spacing:-.02em}
     <div class="hdr-actions">
       <button class="icon-btn" id="btnFull" title="Full screen" aria-label="Full screen on or off"><svg class="i" viewBox="0 0 24 24"><use href="#s-full"/></svg></button>
       <button class="icon-btn" id="btnSearch" title="Search everything" aria-label="Search everything"><svg class="i" viewBox="0 0 24 24"><use href="#s-search"/></svg></button>
-      <button class="icon-btn" id="btnMic" title="Ask Clara" aria-label="Ask Clara out loud"><svg class="i" viewBox="0 0 24 24"><use href="#s-mic"/></svg></button>
       <button class="icon-btn" id="btnHush" title="Stop talking now" aria-label="Stop talking now"><svg class="i" viewBox="0 0 24 24"><use href="#s-hush"/></svg></button>
       <button class="icon-btn" id="btnVoice" aria-pressed="false" title="Clara's voice on or off" aria-label="Voice on or off"><svg class="i" viewBox="0 0 24 24"><use href="#s-sound-off"/></svg></button>
       <button class="icon-btn" id="btnText" title="Text size" aria-label="Change text size"><b style="font-size:.85rem">A</b><b style="font-size:1.15rem">A</b></button>
@@ -868,6 +867,14 @@ h2{letter-spacing:-.02em}
         <a class="btn sm ghost" href="#/agenda">&#128197; Whole trip</a>
         <button class="btn sm ghost" id="planShuffle">&#127922; Give me something else</button>
       </div>
+    </div>
+
+    <div class="card a-rose" id="askCard">
+      <div class="card-h"><span class="ic">&#127908;</span><h3>Just Ask Clara</h3></div>
+      <p style="margin-top:0">Tap the big button and <b>talk to her normally</b> &mdash; no typing, no menus. She answers out loud.</p>
+      <button class="btn big" id="btnMic">&#127908; Tap, then ask me anything</button>
+      <div id="micHeard" class="small" style="margin-top:.6rem;text-align:center"></div>
+      <div class="pills" id="askEg" style="margin-top:.7rem;justify-content:center"></div>
     </div>
 
     <div class="card a-plum" id="whatNowCard">
@@ -1142,7 +1149,9 @@ h2{letter-spacing:-.02em}
       <div id="mediaGal" class="gal"></div>
       <div id="vidControls" style="display:none">
         <hr class="hr">
-<div class="field"><label class="fld" for="vidStyle">Pace</label>
+<label class="switch"><input type="checkbox" id="vidBest"><span class="track"></span>
+        <span><b>Let Clara choose the good ones</b><br><span class="small muted">She drops the blurred and badly lit, and keeps the sharpest of any run of near-identical shots</span></span></label>
+      <div class="field"><label class="fld" for="vidStyle">Pace</label>
         <select id="vidStyle">
           <option value="keepsake" selected>Keepsake &mdash; slow and lovely</option>
           <option value="daily">Today only &mdash; just today's photos</option>
@@ -1397,7 +1406,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-15-34";
+const BUILD="chris-2026-08-15-35";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -2572,7 +2581,7 @@ function renderAgenda(){
   const today=todayISO();
   $("agendaTools").style.display="block";
   $("agendaOut").innerHTML=A.map((d,i)=>`
-    <div class="day ${d.date===today?"today open":""}" data-day="${i}">
+    <div class="day ${d.date===today||dayEdit===i?"today open":""}" data-day="${i}">
       <div class="hd">
         <div class="n">${i+1}</div>
         <div class="tt"><div class="d">${fmtDate(d.date)}${d.date===today?" · today":""}</div><h3>${esc(d.title)}</h3>
@@ -2581,19 +2590,88 @@ function renderAgenda(){
       </div>
       <div class="bdy">
         <div class="tl">
-          ${d.items.map(it=>`<div class="item ${it.opt?"opt":(it.kind==="eat"?"meal":"")}">
+          ${d.items.map((it,k)=>`<div class="item ${it.opt?"opt":(it.kind==="eat"?"meal":"")}">
             <div class="when">${esc(it.when)}${it.opt?" · optional":""}</div>
-            <div class="what">${it.place?`<a href="#" data-place="${esc(it.place)}" style="text-decoration:none;color:inherit;border-bottom:2px dotted var(--rose)">${esc(it.what)}</a>`:esc(it.what)}</div>
+            <div class="what" style="display:flex;align-items:flex-start;gap:.5rem">
+              <span style="flex:1">${it.place?`<a href="#" data-place="${esc(it.place)}" style="text-decoration:none;color:inherit;border-bottom:2px dotted var(--rose)">${esc(it.what)}</a>`:esc(it.what)}</span>
+              ${dayEdit===i?`<span style="display:flex;gap:.2rem;flex:0 0 auto">
+                <button class="btn sm ghost" data-mvup="${i}.${k}" aria-label="Move earlier" ${k===0?"disabled":""}>&#9650;</button>
+                <button class="btn sm ghost" data-mvdn="${i}.${k}" aria-label="Move later" ${k===d.items.length-1?"disabled":""}>&#9660;</button>
+                <button class="btn sm ghost" data-rmit="${i}.${k}" aria-label="Remove" style="color:var(--danger)">&#10005;</button></span>`:""}
+            </div>
             <div class="why">${esc(it.why)}</div>
           </div>`).join("")}
         </div>
         <div class="btnrow" style="margin-top:.4rem">
-          <button class="btn sm ghost" data-dayread="${i}">&#128266; Read me this day</button>
-          <button class="btn sm ghost" data-dayswap="${i}">&#127922; Swap this day</button>
+          <button class="btn sm gold" data-dayadd="${i}">&#10133; Add something</button>
+          <button class="btn sm ghost" data-dayedit="${i}">&#9998;&#65039; ${dayEdit===i?"Done editing":"Edit"}</button>
+          <button class="btn sm ghost" data-dayread="${i}">&#128266; Read it to me</button>
+          <button class="btn sm ghost" data-dayswap="${i}">&#127922; Swap the day</button>
           <button class="btn sm ghost" data-daysend="${i}">&#128228; Send it round</button>
         </div>
       </div>
     </div>`).join("");
+}
+/* ============================================================
+   THE AGENDA IS HERS TO CHANGE
+   A plan she can't edit is a plan she'll abandon the first time it
+   is wrong. Add anything - from Clara's list, from the live world,
+   or in her own words - move it, drop it.
+   ============================================================ */
+let dayEdit=-1;
+function addToDaySheet(i){
+  const A=agenda(),d=A[i];if(!d)return;
+  openSheet("&#10133; Add to "+fmtDate(d.date),`
+    <div class="field"><label class="fld" for="adQ">Search for something to add</label>
+      <input type="text" id="adQ" placeholder="gardens · lunch · antiques · a walk" autocomplete="off"></div>
+    <div class="pills" id="adChips" style="margin:.2rem 0 .8rem"></div>
+    <div id="adOut"></div>
+    <hr class="hr">
+    <div class="field"><label class="fld" for="adOwn">Or put it in your own words</label>
+      <input type="text" id="adOwn" placeholder="e.g. Marge arrives · nap · ring the girls" maxlength="70"></div>
+    <div class="field"><label class="fld" for="adWhen">When, roughly</label>
+      <select id="adWhen">
+        <option>Morning</option><option>Late morning</option><option selected>Lunch</option>
+        <option>Afternoon</option><option>Late afternoon</option><option>Evening</option>
+        <option>If you still have legs</option></select></div>
+    <div class="btnrow"><button class="btn" id="adOwnGo">Add it to the day</button></div>`);
+  const chips=["eat","garden","walk","shop","art","relax"];
+  $("adChips").innerHTML=chips.map(c=>`<button class="pill" data-adc="${c}">${CATS[c].ic} ${CATS[c].n}</button>`).join("");
+  const show=list=>{
+    $("adOut").innerHTML=list.length?list.slice(0,10).map(p=>`
+      <div class="row clickable" data-adpick="${esc(p.n)}"><div class="ic">${CATS[p.c].ic}</div>
+        <div class="bd"><div class="t">${esc(p.n)}</div><div class="s">${esc(p.tag||CATS[p.c].n)} · ${fmtMi(p._d)}</div></div>
+        <div class="rt">&#10133;</div></div>`).join("")
+      :'<p class="small muted" style="margin:.4rem 0">Nothing of Clara\'s matches. Use your own words below — that works just as well.</p>';
+  };
+  const search=q=>{
+    const o=here||HOME;
+    let L=PLACES.map(p=>Object.assign({},p,{_d:dist(o.lat,o.lng,p.lat,p.lng)}));
+    if(q)L=L.filter(p=>matchPlace(p,q));
+    show(L.sort((a,b)=>a._d-b._d));
+  };
+  search("");
+  let t=null;
+  $("adQ").addEventListener("input",e=>{clearTimeout(t);const v=e.target.value.trim();t=setTimeout(()=>search(v),200)});
+  $("adChips").addEventListener("click",e=>{const b=e.target.closest("[data-adc]");if(!b)return;
+    $("adQ").value=CATS[b.dataset.adc].n;search(CATS[b.dataset.adc].n)});
+  $("adOut").addEventListener("click",e=>{
+    const b=e.target.closest("[data-adpick]");if(!b)return;
+    const p=byName(b.dataset.adpick);
+    const A2=agenda();
+    A2[i].items.push(mk($("adWhen").value,p.n,p.tip,p.n,false,p.c));
+    saveAgenda(A2);closeSheet();renderAgenda();renderTodayPlan();
+    toast("&#10133; "+esc(p.n)+" added");
+    speak(p.n+" is on "+fmtDate(A2[i].date)+" now.");
+  });
+  $("adOwnGo").addEventListener("click",()=>{
+    const v=$("adOwn").value.trim();
+    if(!v)return toast("Type what you'd like to add");
+    const A2=agenda();
+    A2[i].items.push(mk($("adWhen").value,v,"Added by you.","",false,"rest"));
+    saveAgenda(A2);closeSheet();renderAgenda();renderTodayPlan();
+    toast("&#10133; Added");
+  });
 }
 $("agendaOut").addEventListener("click",e=>{
   const hd=e.target.closest(".hd");
@@ -2604,6 +2682,24 @@ $("agendaOut").addEventListener("click",e=>{
   if(s){swapDay(+s.dataset.dayswap);return}
   const sd=e.target.closest("[data-daysend]");
   if(sd){sendChat(dayText(agenda()[+sd.dataset.daysend]));toast("&#128228; Sent to the group chat");return}
+  const ad=e.target.closest("[data-dayadd]");
+  if(ad){addToDaySheet(+ad.dataset.dayadd);return}
+  const ed=e.target.closest("[data-dayedit]");
+  if(ed){const i=+ed.dataset.dayedit;dayEdit=(dayEdit===i)?-1:i;renderAgenda();
+    const c=$$("#agendaOut .day")[i];if(c){c.classList.add("open");c.scrollIntoView({behavior:"smooth",block:"nearest"})}
+    if(dayEdit===i)toast("&#9998;&#65039; Tap the arrows to move things, the cross to drop them");
+    return}
+  const rm=e.target.closest("[data-rmit]");
+  if(rm){const[i,k]=rm.dataset.rmit.split(".").map(Number);
+    const A=agenda();const gone=A[i].items.splice(k,1)[0];
+    saveAgenda(A);renderAgenda();renderTodayPlan();
+    toast("Removed &mdash; "+esc(((gone&&gone.what)||"").slice(0,28)));return}
+  const up=e.target.closest("[data-mvup]"),dn=e.target.closest("[data-mvdn]");
+  if(up||dn){const[i,k]=(up||dn).dataset[up?"mvup":"mvdn"].split(".").map(Number);
+    const A=agenda(),j=up?k-1:k+1;
+    if(j<0||j>=A[i].items.length)return;
+    const t=A[i].items[k];A[i].items[k]=A[i].items[j];A[i].items[j]=t;
+    saveAgenda(A);renderAgenda();renderTodayPlan();return}
 });
 function dayText(d){
   if(!d)return"";
@@ -3370,7 +3466,9 @@ function styleCfg(){
   if(s==="daily")return{per:2700,fade:620};
   return{per:3200,fade:700};
 }
+let curatedPics=null;
 function activePics(){
+  if(curatedPics)return curatedPics;
   let pics=media.filter(m=>m.kind!=="memo").sort((a,b)=>a.t-b.t);
   if($("vidStyle").value==="daily"){
     const cut=Date.now()-24*3600*1000;
@@ -3379,6 +3477,21 @@ function activePics(){
   }
   return pics;
 }
+/* score before rolling, so preview and film agree */
+async function preparePics(){
+  curatedPics=null;
+  if(!$("vidBest").checked)return;
+  const all=activePics();
+  if(all.length<3)return;
+  $("vidStatus").textContent="Clara's looking through them…";
+  curatedPics=await bestPhotos(all,Math.max(6,Math.ceil(all.length*0.7)));
+  $("vidStatus").innerHTML="&#128064; Clara kept <b>"+curatedPics.length+"</b> of "+all.length+" — the sharpest and best lit.";
+}
+$("vidBest").addEventListener("change",async()=>{
+  await preparePics();
+  if(!$("vidBest").checked)$("vidStatus").textContent="";
+  drawFrame(0,0);
+});
 let playing=false;
 function runShow(onDone,onTick){
   const pics=activePics();
@@ -3413,8 +3526,9 @@ function runShow(onDone,onTick){
   })();
   return total;
 }
-$("vidPreview").addEventListener("click",()=>{
+$("vidPreview").addEventListener("click",async()=>{
   if(playing){playing=false;$("vidPreview").innerHTML="&#9654;&#65039; Preview";return}
+  await preparePics();
   $("vidPreview").innerHTML="&#9209;&#65039; Stop";
   runShow(()=>{$("vidPreview").innerHTML="&#9654;&#65039; Preview";$("vidStatus").textContent=""},
           p=>$("vidStatus").textContent="Previewing… "+Math.round(p*100)+"%");
@@ -3442,6 +3556,7 @@ function buildAudio(ctx,dest,style){
   return master;
 }
 $("vidMake").addEventListener("click",async()=>{
+  await preparePics();
   if(!activePics().length)return toast("Add some photos first");
   if(!window.MediaRecorder||!vc.captureStream)return toast("This browser can't record video — try Chrome");
   const btn=$("vidMake");btn.disabled=true;btn.innerHTML="&#9210; Recording…";
@@ -4791,9 +4906,8 @@ async function drawYearbook(){
     x.fillStyle="#F0CE86";x.font="900 56px Fraunces, Georgia, serif";x.fillText(v,gx+bw/2,gy+72);
     x.fillStyle="#F0C9D8";x.font="800 21px Inter, sans-serif";x.fillText(k,gx+bw/2,gy+114);
   });
-  const pics=media.filter(m=>m.kind!=="memo").sort((a,b)=>a.t-b.t);
-  const count=Math.min(6,pics.length),take=[];
-  for(let i=0;i<count;i++)take.push(pics[Math.floor(i*(pics.length-1)/Math.max(1,count-1))]);
+  const all=media.filter(m=>m.kind!=="memo");
+  const take=all.length?await bestPhotos(all,6):[];        /* her eye, not the first six */
   for(let i=0;i<take.length;i++){
     const im=await getImg(take[i].src);if(!im)continue;
     const pw=290,ph2=290,px=105+(i%3)*300,py=830+Math.floor(i/3)*370;
@@ -5337,6 +5451,64 @@ async function saveMaps(){
   b.disabled=false;b.innerHTML="&#128506;&#65039; Save the maps too";
 }
 $("cacheMaps").addEventListener("click",saveMaps);
+
+/* ============================================================
+   CLARA PICKS THE GOOD ONES
+   Everybody takes three of the same shot and keeps all three. She
+   scores each photo the way an eye does - is it sharp, is it
+   properly lit, is there contrast in it - and quietly drops the
+   blurred and the badly exposed. Nothing is deleted; the film and
+   the yearbook simply lead with her best.
+   ============================================================ */
+const photoScores={};
+function scorePhoto(m){
+  return new Promise(res=>{
+    if(photoScores[m.id]!=null)return res(photoScores[m.id]);
+    const im=new Image();
+    im.onload=()=>{
+      try{
+        const W=110,H=Math.max(1,Math.round(W*im.height/im.width));
+        const c=document.createElement("canvas");c.width=W;c.height=H;
+        const x=c.getContext("2d",{willReadFrequently:true});
+        x.drawImage(im,0,0,W,H);
+        const d=x.getImageData(0,0,W,H).data;
+        const g=new Float32Array(W*H);
+        let sum=0;
+        for(let i=0,j=0;i<d.length;i+=4,j++){g[j]=.299*d[i]+.587*d[i+1]+.114*d[i+2];sum+=g[j]}
+        const mean=sum/g.length;
+        let varSum=0;
+        for(let j=0;j<g.length;j++)varSum+=(g[j]-mean)*(g[j]-mean);
+        const contrast=Math.sqrt(varSum/g.length);           /* flat pictures are dull pictures */
+        let lap=0,n=0;
+        for(let y=1;y<H-1;y++)for(let xx=1;xx<W-1;xx++){
+          const i=y*W+xx;
+          const v=-4*g[i]+g[i-1]+g[i+1]+g[i-W]+g[i+W];
+          lap+=v*v;n++;
+        }
+        const sharp=n?Math.sqrt(lap/n):0;                    /* blur has quiet edges */
+        const expo=100-Math.abs(mean-128)*0.78;              /* too dark or blown out */
+        photoScores[m.id]=Math.max(0,sharp*3.4)+Math.min(60,contrast*1.1)+Math.max(0,expo)*0.55;
+        res(photoScores[m.id]);
+      }catch(e){photoScores[m.id]=50;res(50)}
+    };
+    im.onerror=()=>{photoScores[m.id]=0;res(0)};
+    im.src=m.src;
+  });
+}
+async function rankPhotos(list){
+  await Promise.all(list.map(scorePhoto));
+  return list.slice().sort((a,b)=>(photoScores[b.id]||0)-(photoScores[a.id]||0));
+}
+/* of any run of near-identical shots, keep only the sharpest */
+async function bestPhotos(list,limit){
+  const ranked=await rankPhotos(list),keep=[];
+  ranked.forEach(m=>{
+    if(keep.some(k=>Math.abs(k.t-m.t)<30000))return;
+    keep.push(m);
+  });
+  const out=(keep.length>=(limit||6)?keep:ranked).slice(0,limit||list.length);
+  return out.sort((a,b)=>a.t-b.t);                           /* back into the order it happened */
+}
 
 /* ============================================================
    WHAT NOW?
@@ -5956,6 +6128,14 @@ function openSearch(){
   searchAll("");
 }
 $("btnSearch").addEventListener("click",openSearch);
+const ASK_EG=["Where's the nearest coffee?","What's the plan today?","What should we do now?",
+  "How far is Red Rocks?","When's sunset?","Spin the wheel","How's my bingo card?"];
+$("askEg").innerHTML=ASK_EG.map(q=>`<button class="pill" data-ask="${esc(q)}">${esc(q)}</button>`).join("");
+$("askEg").addEventListener("click",e=>{
+  const b=e.target.closest("[data-ask]");if(!b)return;
+  $("micHeard").innerHTML="&ldquo;"+esc(b.dataset.ask)+"&rdquo;";
+  askClara(b.dataset.ask);
+});
 $("shBody").addEventListener("click",e=>{
   const q=e.target.closest("[data-gsq]");
   if(q){$("gsQ").value=q.dataset.gsq;searchAll(q.dataset.gsq);return}
@@ -6087,7 +6267,11 @@ async function askClara(raw){
 (function(){
   const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
   const b=$("btnMic");
-  if(!SRC){b.style.display="none";return}
+  if(!SRC){
+    b.style.display="none";
+    $("micHeard").innerHTML="This browser can't listen &mdash; tap one of the questions below instead.";
+    return;
+  }
   let rec=null,listening=false;
   b.addEventListener("click",()=>{
     if(listening){try{rec.stop()}catch(e){}return}
@@ -6095,15 +6279,21 @@ async function askClara(raw){
     try{
       rec=new SRC();
       rec.lang="en-US";rec.interimResults=false;rec.maxAlternatives=1;
-      rec.onstart=()=>{listening=true;b.classList.add("hot");toast("&#127908; Listening&hellip; just ask")};
-      rec.onend=()=>{listening=false;b.classList.remove("hot")};
+      rec.onstart=()=>{listening=true;b.classList.add("rec");
+        b.innerHTML="&#128308; Listening &mdash; go ahead";
+        $("micHeard").innerHTML="<span class='muted'>I'm listening&hellip;</span>"};
+      rec.onend=()=>{listening=false;b.classList.remove("rec");
+        b.innerHTML="&#127908; Tap, then ask me anything"};
       rec.onerror=e=>{
-        listening=false;b.classList.remove("hot");
-        toast(e.error==="not-allowed"?"The microphone needs permission — check the browser settings":"Didn't catch that — tap and try again");
+        listening=false;b.classList.remove("rec");
+        b.innerHTML="&#127908; Tap, then ask me anything";
+        $("micHeard").innerHTML=e.error==="not-allowed"
+          ?"The microphone needs permission &mdash; on iPhone: Settings, Safari, Microphone, Allow. Or tap a question below."
+          :"Didn't quite catch that &mdash; tap and try again, or use a question below.";
       };
       rec.onresult=ev=>{
         const t=ev.results[0][0].transcript;
-        toast("&ldquo;"+esc(t)+"&rdquo;");
+        $("micHeard").innerHTML="&ldquo;"+esc(t)+"&rdquo;";
         askClara(t);
       };
       rec.start();
