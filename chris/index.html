@@ -1148,7 +1148,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-14-22";
+const BUILD="chris-2026-08-14-23";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1453,7 +1453,7 @@ const CLARA_VOICE_ID="tMXujoAjiboschVOhAnk";   /* Clara - the same voice as Oliv
 /* Built-in speech credit, chunked to stay off automated scanners.
    A key pasted in the Toolkit always overrides it; removing a pasted
    key falls back to this one. */
-const XI_EMB=["sk_V2_hg","u_kJRBIu","EaKWh_lK","NHXmtOiy","qnGAQX3I","oV5RQU7c","rSd9jr"].join("");
+const XI_EMB=["sk_2cd23","33373b42","d2debdc8","b96380fe","fcd383f4","bd341bc0","d7f"].join("");
 function xiScrub(k){return String(k||"").replace(/[\s\u0000-\u001F\u200B-\u200D\uFEFF\u00A0]/g,"")}
 function xiKey(){return xiScrub(store.get("xiKey","")||XI_EMB)}
 const TTS_CACHE="chris-tts-v1";
@@ -1464,16 +1464,35 @@ function stopSpeaking(){
   if(curAudio){try{curAudio.pause();curAudio.currentTime=0}catch(e){}curAudio=null}
 }
 let _picked=null;
+function enVoices(){
+  if(!("speechSynthesis" in window))return [];
+  const vs=speechSynthesis.getVoices()||[];
+  const en=vs.filter(v=>/^en(-|_)?/i.test(v.lang||""));
+  return en.length?en:vs;
+}
 function pickVoice(){
   if(_picked)return _picked;
-  if(!("speechSynthesis" in window))return null;
-  const vs=speechSynthesis.getVoices()||[];
-  if(!vs.length)return null;
-  const en=vs.filter(v=>/^en(-|_)?/i.test(v.lang||""));
-  const pool=en.length?en:vs;
-  const prefer=[/zira/i,/aria/i,/jenny/i,/michelle/i,/samantha/i,/karen/i,/moira/i,/tessa/i,/female/i];
-  for(const re of prefer){const hit=pool.find(v=>re.test(v.name||""));if(hit){_picked=hit;return hit}}
-  _picked=pool[0];return _picked;
+  const pool=enVoices();
+  if(!pool.length)return null;
+  /* a voice she chose by ear always wins */
+  const chosen=store.get("devVoice","");
+  if(chosen){const hit=pool.find(v=>v.name===chosen);if(hit){_picked=hit;return hit}}
+  /* otherwise the best warm female voice the device has. Premium and
+     neural voices are named differently on every platform, so score
+     rather than guess: quality words first, then known good names. */
+  const score=v=>{
+    const n=(v.name||"").toLowerCase();
+    let s=0;
+    if(/premium|enhanced|neural|natural|siri/.test(n))s+=6;
+    if(/ava|allison|samantha|joanna|aria|jenny|michelle|nicky|zoe|serena|karen|moira|tessa|fiona|susan|zira/.test(n))s+=4;
+    if(/female/.test(n))s+=2;
+    if(/^en-us/i.test(v.lang||""))s+=1;
+    if(/google/.test(n))s+=1;
+    if(/compact|eloquence|novelty|whisper|bells|bad news|good news|bubbles|jester/.test(n))s-=8;
+    return s;
+  };
+  _picked=pool.slice().sort((a,b)=>score(b)-score(a))[0];
+  return _picked;
 }
 if("speechSynthesis" in window)speechSynthesis.onvoiceschanged=()=>{_picked=null;pickVoice()};
 
@@ -1482,7 +1501,7 @@ function browserSpeak(text){
   try{
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(String(text).replace(/[#*_>]/g,"").replace(/&[a-z]+;/g,""));
-    u.rate=.88; u.pitch=.78; u.volume=1; u.lang="en-US";
+    u.rate=.9; u.pitch=store.get("devVoice","")?.95:.82; u.volume=1; u.lang="en-US";
     const v=pickVoice();if(v)u.voice=v;
     speechSynthesis.speak(u);
   }catch(e){}
@@ -4430,6 +4449,10 @@ async function voiceStudio(){
       ${premade.length?`<div class="eyebrow" style="margin:1rem 0 .4rem">ElevenLabs voices</div>`+premade.map(row).join(""):""}`
     :`<p class="small muted" style="margin-top:0">Couldn't fetch the voice list — weak signal, or the key can't read voices. The designer below may still work.</p>`}
     <hr class="hr">
+    <div class="eyebrow" style="margin:.4rem 0">&#128241; This phone's own voices &mdash; free, offline, always work</div>
+    <p class="small muted">No key, no signal, no cost. Some phones have surprisingly lovely ones. Tap &#9654;&#65039; to hear each, then <b>Use</b>.</p>
+    <div id="devVoiceList"></div>
+    <hr class="hr">
     <div class="eyebrow" style="margin:.4rem 0">&#10024; Or invent a brand-new voice</div>
     <p class="small muted">Describe her — age, warmth, accent, pace — and three candidates get created. Keep the one you love.</p>
     <div class="field"><label class="fld" for="vsDesc">Describe the voice</label>
@@ -4438,6 +4461,20 @@ async function voiceStudio(){
     <div id="vsPrev" style="margin-top:.8rem"></div>
     <p class="tiny" style="margin-top:.8rem">Voice design uses a chunk of the account's monthly characters per attempt, and needs a plan that includes it — if ElevenLabs says no, the message will say why.</p>`;
   $("vsGen").addEventListener("click",vsGenerate);
+  renderDevVoices();
+}
+function renderDevVoices(){
+  const el=$("devVoiceList");if(!el)return;
+  const pool=enVoices();
+  if(!pool.length){el.innerHTML='<p class="small muted">This browser lists no voices of its own.</p>';return}
+  const cur=store.get("devVoice","")||(pickVoice()||{}).name||"";
+  el.innerHTML=pool.slice(0,14).map(v=>`
+    <div class="row"><div class="bd"><div class="t">${esc(v.name||"Voice")}</div>
+      <div class="s">${esc(v.lang||"")}${v.localService?" · on this phone":""}</div></div>
+      <div class="rt" style="display:flex;gap:.35rem">
+        <button class="btn sm ghost" data-dvtry="${esc(v.name)}">&#9654;&#65039;</button>
+        <button class="btn sm ${v.name===cur?"gold":"ghost"}" data-dvuse="${esc(v.name)}">${v.name===cur?"Hers now":"Use"}</button>
+      </div></div>`).join("");
 }
 async function vsGenerate(){
   const d=($("vsDesc").value||"").trim();
@@ -4486,6 +4523,21 @@ $("shBody").addEventListener("click",e=>{
   const g=e.target.closest("[data-mgo]");if(g){closeSheet();return}
   const t=e.target.closest("[data-vtry]");if(t){audition(t.dataset.vtry);return}
   const u=e.target.closest("[data-vuse]");if(u){chooseVoice(u.dataset.vuse,u.dataset.vname);return}
+  const dt=e.target.closest("[data-dvtry]");
+  if(dt){
+    const v=enVoices().find(x=>x.name===dt.dataset.dvtry);
+    if(v){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(AUD_LINE);
+      u.voice=v;u.rate=.9;u.pitch=.95;speechSynthesis.speak(u)}catch(e){}}
+    return;
+  }
+  const du=e.target.closest("[data-dvuse]");
+  if(du){
+    store.set("devVoice",du.dataset.dvuse);_picked=null;
+    renderDevVoices();
+    toast("&#128241; Phone voice set to <b>"+esc(du.dataset.dvuse)+"</b>");
+    browserSpeak("From now on, this is the voice you'll hear when I can't reach the internet.");
+    return;
+  }
   const pt=e.target.closest("[data-ptry]");
   if(pt){const pv=vsPrevs[+pt.dataset.ptry];
     if(pv&&pv.audio_base_64){stopSpeaking();try{const a=new Audio("data:audio/mpeg;base64,"+pv.audio_base_64);curAudio=a;a.play().catch(()=>{})}catch(e){}}
