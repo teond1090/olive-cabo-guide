@@ -1467,7 +1467,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-15-39";
+const BUILD="chris-2026-08-15-40";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1780,6 +1780,7 @@ let voiceOn=store.get("voice",false), curAudio=null, ttsSpend=store.get("ttsChar
 
 function stopSpeaking(){
   try{speechSynthesis.cancel()}catch(e){}
+  pendAudio=null;
   if(curAudio){try{curAudio.pause();curAudio.currentTime=0}catch(e){}curAudio=null}
 }
 let _picked=null;
@@ -1823,6 +1824,7 @@ function browserSpeak(text,onEnd){
     u.rate=.9; u.pitch=store.get("devVoice","")?.95:.82; u.volume=1; u.lang="en-US";
     const v=pickVoice();if(v)u.voice=v;
     if(onEnd)u.onend=onEnd;
+    lastVoice="this phone's own voice"+(v?" ("+(v.name||"")+")":"");
     speechSynthesis.speak(u);
   }catch(e){onEnd&&onEnd()}
 }
@@ -1830,15 +1832,102 @@ async function sha(s){
   const b=await crypto.subtle.digest("SHA-1",new TextEncoder().encode(s));
   return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
 }
+/* ============================================================
+   ONE SPEAKER, UNLOCKED BY HER FIRST TAP
+   A phone only lets a page make noise that a finger asked for, and
+   the permission expires while Clara's line is coming back over the
+   network. A brand-new Audio() therefore gets refused on a phone and
+   the app quietly dropped to the phone's own robot voice - which is
+   why she sounded like herself on the laptop, where the rules are
+   loose, and like a stranger on the mobile.
+
+   The cure: one <audio> element for everything she says, played once
+   (silently) inside a real tap. A phone blesses the element, not the
+   moment, so every later line plays no matter how long the network
+   took. If a line still gets refused we hold it and play it on the
+   next tap rather than swapping in a different voice.
+   ============================================================ */
+const SILENCE="data:audio/wav;base64,UklGRsQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YaAAAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA";
+let ttsEl=null,ttsBlessed=false,pendAudio=null,pendAt=0,lastVoice="";
+function ttsAudio(){
+  if(!ttsEl){
+    ttsEl=new Audio();
+    ttsEl.preload="auto";
+    ttsEl.setAttribute("playsinline","");   /* iOS: do not take over the screen */
+    ttsEl.playsInline=true;
+  }
+  return ttsEl;
+}
+let ttsTried=false;
+function unlockAudio(){
+  /* A line the phone refused a moment ago goes first. Playing it IS the
+     blessing, and it must happen before the silent unlock, which would
+     otherwise overwrite her words with the silence. */
+  if(pendAudio){
+    const f=pendAudio,fresh=Date.now()-pendAt<15000;
+    pendAudio=null;
+    if(fresh){ttsBlessed=true;try{f()}catch(e){}return}
+  }
+  /* never interrupt a line she is actually listening to */
+  const busy=curAudio&&!curAudio.paused;
+  if(!ttsBlessed&&!busy){
+    const a=ttsAudio();
+    try{
+      a.src=SILENCE;
+      const p=a.play();
+      if(p&&p.then)p.then(()=>{ttsBlessed=true;try{a.pause();a.currentTime=0}catch(e){}}).catch(()=>{});
+      else ttsBlessed=true;
+    }catch(e){}
+    /* the phone's own voice wants the same blessing on iOS - once */
+    if(!ttsTried){ttsTried=true;
+      try{if("speechSynthesis" in window){
+        const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u);
+      }}catch(e){}
+    }
+  }
+}
+["pointerdown","touchend","click","keydown"].forEach(ev=>
+  window.addEventListener(ev,unlockAudio,{passive:true,capture:true}));
+
+/* anything with a plain src - a voice preview, one of her memos */
+function playSrc(src){
+  stopSpeaking();
+  try{
+    const a=ttsAudio();
+    if(a._url){try{URL.revokeObjectURL(a._url)}catch(e){}a._url=null}
+    a.src=src;a.onerror=null;a.onended=()=>{curAudio=null};
+    curAudio=a;
+    const p=a.play();
+    if(p&&p.catch)p.catch(err=>{
+      if(err&&/NotAllowed/i.test(String(err.name||err))){pendAudio=()=>a.play().catch(()=>{});pendAt=Date.now()}
+    });
+  }catch(e){}
+}
 function playBlob(blob,onFail,onEnd){
   stopSpeaking();
   try{
-    const a=new Audio(URL.createObjectURL(blob));
+    const a=ttsAudio();
+    if(a._url){try{URL.revokeObjectURL(a._url)}catch(e){}}
+    a._url=URL.createObjectURL(blob);
+    a.src=a._url;
     a.onerror=()=>{curAudio=null;onFail&&onFail()};
     a.onended=()=>{curAudio=null;onEnd&&onEnd()};
     curAudio=a;
-    const p=a.play();
-    if(p&&p.catch)p.catch(()=>{curAudio=null;onFail&&onFail()});
+    const go=()=>{
+      const p=a.play();
+      if(p&&p.catch)p.catch(err=>{
+        if(err&&/NotAllowed/i.test(String(err.name||err))){
+          /* hold her real voice for the next tap instead of
+             substituting a different one */
+          pendAudio=()=>{lastVoice="Clara (ElevenLabs)";a.play().catch(()=>{curAudio=null;onFail&&onFail()})};
+          pendAt=Date.now();
+          return;
+        }
+        curAudio=null;onFail&&onFail();
+      });
+    };
+    lastVoice="Clara (ElevenLabs)";
+    go();
   }catch(e){onFail&&onFail()}
 }
 /* The voice ID above is the one the Olive app uses. Custom voices are
@@ -1846,6 +1935,14 @@ function playBlob(blob,onFail,onEnd){
    exist. When that happens Clara resolves her own voice from the
    account's library - preferring "Dreaded Grizzly Bear", then anything
    named Clara, then the first custom voice - and remembers the answer. */
+/* Older builds could wander onto a different ElevenLabs voice after a
+   quota error or a server wobble, and then keep it forever - which is
+   how a phone ended up sounding different from the laptop. Clear that
+   once, on every device, and go back to the one true Clara. */
+if(!store.get("voice-reset-1",false)){
+  store.set("voice-reset-1",true);
+  store.del("xiVoice");store.del("xiVoiceName");
+}
 function claraVoiceId(){return store.get("xiVoice","")||CLARA_VOICE_ID}
 async function resolveVoice(key){
   try{
@@ -1896,7 +1993,7 @@ async function claraTTS(text,_retried,onEnd){
           }
         }
         /* the wired-in voice isn't in this account - find hers, once */
-        if(!_retried&&r.status!==401&&await resolveVoice(key))
+        if(!_retried&&(r.status===404||r.status===422)&&await resolveVoice(key))
           return claraTTS(text,true);
         return false;
       }
@@ -4197,6 +4294,8 @@ async function vtReport(){
   let cached=0;
   try{const c=await caches.open(TTS_CACHE);cached=(await c.keys()).length}catch(e){}
   lines.push("<b>Saved spoken lines:</b> "+cached);
+  lines.push("<b>Sound unlocked on this phone:</b> "+(ttsBlessed?"yes":"not yet \u2014 tap anything once"));
+  lines.push("<b>Last voice you heard:</b> "+(lastVoice?esc(lastVoice):"nothing yet"));
   el.innerHTML=lines.join("<br>")+"<br><b>Speech test:</b> running&hellip;";
   const pr=await xiProbe(xiKey());
   el.innerHTML=lines.join("<br>")+"<br><b>Speech test:</b> "+
@@ -4300,8 +4399,10 @@ function renderSettings(){
       <button class="btn sm ghost" id="setRebuild">&#8635; Rebuild the agenda</button>
       <button class="btn sm ghost" id="setWipe" style="color:var(--danger)">&#128465;&#65039; Start over</button>
     </div>
-    <p class="tiny" style="margin:.9rem 0 0">Clara's voice is set up and working.
-      <a href="#" id="setVoice">Change her voice</a> &middot; <a href="#" id="setVoiceFix">voice trouble</a>.</p>`;
+    <p class="tiny" style="margin:.9rem 0 0">Clara's voice: <b>${store.get("xiVoiceName","")?esc(store.get("xiVoiceName","")):"Clara"}</b> &mdash; the same one on every device.
+      <a href="#" id="setHear">Hear her</a> &middot; <a href="#" id="setVoice">change her voice</a> &middot; <a href="#" id="setVoiceFix">voice trouble</a>.</p>`;
+  $("setHear").addEventListener("click",e=>{e.preventDefault();
+    speak("Hello Chris. It's Clara. This is my real voice \u2014 it should sound the same on your phone as it does on the computer.",true)});
   $("setGps").addEventListener("change",e=>{$("gpsToggle").checked=e.target.checked;$("gpsToggle").dispatchEvent(new Event("change"))});
   $("setAlerts").addEventListener("change",e=>{$("alertToggle").checked=e.target.checked;store.set("alertsOn",e.target.checked)});
   $("setChat").value=store.get("chat-mode","balanced");
@@ -5180,7 +5281,7 @@ $("shBody").addEventListener("click",e=>{
   }
   const pt=e.target.closest("[data-ptry]");
   if(pt){const pv=vsPrevs[+pt.dataset.ptry];
-    if(pv&&pv.audio_base_64){stopSpeaking();try{const a=new Audio("data:audio/mpeg;base64,"+pv.audio_base_64);curAudio=a;a.play().catch(()=>{})}catch(e){}}
+    if(pv&&pv.audio_base_64)playSrc("data:audio/mpeg;base64,"+pv.audio_base_64);
     return}
   const pk=e.target.closest("[data-pkeep]");if(pk){vsKeep(+pk.dataset.pkeep);return}
 });
@@ -5868,7 +5969,7 @@ function renderMemos(){
 $("memList").addEventListener("click",async e=>{
   const pl=e.target.closest("[data-memplay]");
   if(pl){const m=media.find(x=>x.id===+pl.dataset.memplay);
-    if(m){stopSpeaking();try{const a=new Audio(m.src);curAudio=a;a.play().catch(()=>{})}catch(e){}}
+    if(m)playSrc(m.src);
     return}
   const dl=e.target.closest("[data-memdel]");
   if(dl){await photoDel(+dl.dataset.memdel);renderMemos();renderDash()}
