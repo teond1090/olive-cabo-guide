@@ -1012,33 +1012,28 @@ h2{letter-spacing:-.02em}
   <div class="stack">
 
     <div class="card a-rose">
-      <div class="card-h"><span class="ic">&#128205;</span><h3>Find Somewhere</h3></div>
+      <div class="card-h"><span class="ic">&#128269;</span><h3>Find Anything</h3></div>
       <div class="field">
-        <label class="fld" for="nearSearch">What are you after?</label>
-        <input type="text" id="nearSearch" placeholder="food · gardens · a walk · antiques · coffee" autocomplete="off">
+        <input type="text" id="nearSearch" placeholder="food &middot; gardens &middot; a walk &middot; antiques &middot; restrooms" autocomplete="off" aria-label="Search for anywhere">
       </div>
-      <div class="pills" style="margin-top:.7rem" id="nearFilters"></div>
-      <div id="nearHead" class="small muted" style="margin-top:.8rem"></div>
+      <p class="tiny" style="margin:.5rem 0 .1rem">Clara searches her own list <b>and</b> everything really around you, together.</p>
+      <div class="pills" style="margin-top:.6rem" id="nearFilters"></div>
+      <div id="nearHead" class="small muted" style="margin-top:.9rem"></div>
       <div id="nearList" style="margin-top:.2rem"></div>
+      <div id="findStatus" class="small muted" style="margin-top:.5rem"></div>
+      <div id="findList" style="margin-top:.2rem"></div>
+      <div class="field" style="margin-top:.9rem"><label class="fld" for="findRadius">How far to look around you</label>
+        <select id="findRadius">
+          <option value="2">2 miles</option><option value="5" selected>5 miles</option>
+          <option value="10">10 miles</option><option value="20">20 miles</option>
+        </select></div>
+      <div id="findNow" style="display:none"></div>
     </div>
 
     <div class="card a-gold">
       <div class="card-h"><span class="ic">&#11088;</span><h3>Your Shortlist</h3></div>
       <p class="small muted" style="margin-top:0">Star anything you fancy and Clara builds the days around it.</p>
       <div id="favList"></div>
-    </div>
-
-    <div class="card a-slate">
-      <div class="card-h"><span class="ic">&#128269;</span><h3>Find It Right Now</h3></div>
-      <p class="small muted" style="margin-top:0">A live look at everything around you &mdash; not just Clara's list. Free, no account, anywhere in Colorado.</p>
-      <div class="field"><label class="fld" for="findRadius">Search within</label>
-        <select id="findRadius">
-          <option value="2">2 miles</option><option value="5" selected>5 miles</option>
-          <option value="10">10 miles</option><option value="20">20 miles</option>
-        </select></div>
-      <div class="grid g3" id="findNow" style="gap:.5rem;margin-top:.6rem"></div>
-      <div id="findStatus" class="small" style="margin-top:.8rem"></div>
-      <div id="findList" style="margin-top:.5rem"></div>
     </div>
 
     <div class="card">
@@ -1138,11 +1133,9 @@ h2{letter-spacing:-.02em}
       <input type="file" id="mediaInput" accept="image/*" multiple hidden>
       <div class="pills" id="galPlaces" style="margin-top:.9rem"></div>
       <div id="mediaGal" class="gal"></div>
-    </div>
-
-    <div class="card" id="vidControls" style="display:none">
-      <div class="card-h"><span class="ic">&#127925;</span><h3>How Should It Feel?</h3></div>
-      <div class="field"><label class="fld" for="vidStyle">Pace</label>
+      <div id="vidControls" style="display:none">
+        <hr class="hr">
+<div class="field"><label class="fld" for="vidStyle">Pace</label>
         <select id="vidStyle">
           <option value="keepsake" selected>Keepsake &mdash; slow and lovely</option>
           <option value="daily">Today only &mdash; just today's photos</option>
@@ -1166,7 +1159,11 @@ h2{letter-spacing:-.02em}
       </div>
       <div id="vidStatus" class="small muted" style="margin-top:.7rem"></div>
       <p class="tiny" style="margin:.7rem 0 0">Recording plays the whole film through once &mdash; leave the screen on and don't switch apps until it says it's ready.</p>
+    
+      </div>
     </div>
+
+
 
     <div class="card a-gold">
       <div class="card-h"><span class="ic">&#127942;</span><h3>Trip Yearbook</h3></div>
@@ -1239,10 +1236,7 @@ h2{letter-spacing:-.02em}
       <p class="tiny" style="margin:.7rem 0 0">Works on any phone, no app needed &mdash; anyone can also follow along in the free ntfy app with the same trip code.</p>
     </div>
 
-    <div class="card">
-      <div class="card-h"><span class="ic">&#128276;</span><h3>Alerts On This Phone</h3></div>
-      <div id="notifPanel"></div>
-    </div>
+
 
   </div>
 </div>
@@ -1257,21 +1251,9 @@ h2{letter-spacing:-.02em}
       <div class="btnrow"><button class="btn sage" id="cacheNow">&#128190; Save the guide to this phone</button></div>
     </div>
 
-    <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#9989;</span><h3>Before You Fly</h3></div>
-      <div id="packList"></div>
-      <div class="bar" style="margin-top:.8rem"><i id="packBar" style="width:0"></i></div>
-      <div class="small muted" id="packTxt" style="margin-top:.3rem"></div>
-    </div>
-
     <div class="card a-rose">
-      <div class="card-h"><span class="ic">&#128222;</span><h3>Numbers Worth Having</h3></div>
-      <div id="numbers"></div>
-    </div>
-
-    <div class="card a-sage">
-      <div class="card-h"><span class="ic">&#128506;&#65039;</span><h3>Your Journey</h3><span class="pill sage" id="jStat"></span></div>
-      <p class="small muted" style="margin-top:0">Every road and path you travel gets drawn here — a map of the whole week, made simply by carrying the phone.</p>
+      <div class="card-h"><span class="ic">&#128220;</span><h3>Your Trip So Far</h3><span class="pill rose" id="jStat"></span></div>
+<p class="small muted" style="margin-top:0">Every road and path you travel gets drawn here — a map of the whole week, made simply by carrying the phone.</p>
       <label class="switch"><input type="checkbox" id="jToggle" checked><span class="track"></span>
         <span><b>Record my journey</b><br><span class="small muted">Stays on this phone. Nothing is uploaded.</span></span></label>
       <div class="mapwrap" id="jMapWrap" style="height:19rem;margin-top:.8rem">
@@ -1288,26 +1270,44 @@ h2{letter-spacing:-.02em}
         <button class="btn sm ghost" id="jGpx">&#11015;&#65039; Save the track</button>
         <button class="btn sm ghost" id="jClear">&#8635; Clear the trail</button>
       </div>
-    </div>
-
-    <div class="card a-rose">
-      <div class="card-h"><span class="ic">&#127881;</span><h3>The Whole Trip, Remembered</h3></div>
-      <p style="margin-top:0">When it's over — or any time you fancy — Clara writes the story of the week: everywhere you went, every mile, every photo, in her own words.</p>
+    
+      <hr class="hr">
+<p style="margin-top:0">When it's over — or any time you fancy — Clara writes the story of the week: everywhere you went, every mile, every photo, in her own words.</p>
       <div class="btnrow">
         <button class="btn" id="recapMake">&#128220; Write my trip story</button>
         <button class="btn gold" id="famPage">&#128231; Make the page for the family</button>
       </div>
       <div id="recapOut" style="margin-top:.9rem"></div>
-    </div>
-
-    <div class="card a-plum">
-      <div class="card-h"><span class="ic">&#128213;</span><h3>Clara's Trip Diary</h3></div>
-      <div id="diaryArchive"></div>
+    
+      <hr class="hr">
+      <div class="eyebrow" style="margin:.2rem 0 .6rem">Clara's diary, evening by evening</div>
+<div id="diaryArchive"></div>
+    
     </div>
 
     <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#128276;</span><h3>Tell Me When Something's Close</h3></div>
-      <label class="switch">
+      <div class="card-h"><span class="ic">&#9989;</span><h3>Before You Fly</h3></div>
+      <div id="packList"></div>
+      <div class="bar" style="margin-top:.8rem"><i id="packBar" style="width:0"></i></div>
+      <div class="small muted" id="packTxt" style="margin-top:.3rem"></div>
+    </div>
+
+    <div class="card a-rose">
+      <div class="card-h"><span class="ic">&#128222;</span><h3>Numbers Worth Having</h3></div>
+      <div id="numbers"></div>
+    </div>
+
+
+
+
+
+
+
+
+
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#128276;</span><h3>What Clara Tells You</h3></div>
+<label class="switch">
         <input type="checkbox" id="alertToggle" checked><span class="track"></span>
         <span><b>Nudge me about good things nearby</b><br><span class="small muted">Clara speaks up once per place &mdash; never twice for the same one.</span></span>
       </label>
@@ -1324,6 +1324,10 @@ h2{letter-spacing:-.02em}
         <button class="btn sm ghost" id="alertTest">&#128266; Try a nudge</button>
         <button class="btn sm ghost" id="alertReset">&#8635; Forget what she's told me</button>
       </div>
+    
+      <hr class="hr">
+<div id="notifPanel"></div>
+    
     </div>
 
     <div class="card">
@@ -2166,15 +2170,42 @@ function notify(title,body){
    NEARBY
    ============================================================ */
 let nearFilter="all";
+/* ============================================================
+   ONE SEARCH, TWO SOURCES
+   Clara's own list answers instantly and offline and knows why a
+   place is worth going to; OpenStreetMap knows about the chemist two
+   streets away. Asking them in separate boxes made the user do the
+   routing. One box now asks both and shows the answers together.
+   ============================================================ */
+const CHIPS=[
+  ["all",     "&#10024;","Everything",     null,     null],
+  ["eat",     "&#127869;&#65039;","Food",  "eat",    "eat"],
+  ["sip",     "&#9749;","Coffee & drinks", "sip",    "coffee"],
+  ["walk",    "&#127794;","Walks",         "walk",   "park"],
+  ["garden",  "&#127804;","Gardens",       "garden", "park"],
+  ["shop",    "&#128717;&#65039;","Shops", "shop",   "shop"],
+  ["art",     "&#127912;","Art & museums", "art",    "art"],
+  ["history", "&#127963;&#65039;","History","history","art"],
+  ["day",     "&#128663;","Day trips",     "day",    null],
+  ["market",  "&#129387;","Markets",       "market", "grocery"],
+  ["active",  "&#127939;&#65039;","Active","active", null],
+  ["relax",   "&#128140;","Relax",         "relax",  "salon"],
+  ["restroom","&#128701;","Restrooms",     null,     "restroom"],
+  ["pharmacy","&#128138;","Pharmacy",      null,     "pharmacy"],
+  ["medical", "&#127973;","Urgent care",   null,     "medical"],
+  ["atm",     "&#127974;","Cash",          null,     "atm"],
+  ["fuel",    "&#9981;","Petrol",          null,     "fuel"],
+  ["transit", "&#128649;","Train",         null,     "transit"]
+];
+function chipFor(k){return CHIPS.find(c=>c[0]===k)||CHIPS[0]}
 function renderNearbyFilters(){
-  const keys=["all"].concat(Object.keys(CATS));
-  $("nearFilters").innerHTML=keys.map(k=>
-    `<button class="pill ${nearFilter===k?"on":""}" data-nf="${k}">${k==="all"?"&#10024; Everything":CATS[k].ic+" "+CATS[k].n}</button>`).join("");
+  $("nearFilters").innerHTML=CHIPS.map(([k,ic,label])=>
+    `<button class="pill ${nearFilter===k?"on":""}" data-nf="${k}">${ic} ${label}</button>`).join("");
   $("alertCats").innerHTML=Object.keys(CATS).map(k=>
     `<button class="pill ${alertCats().includes(k)?"on":""}" data-ac="${k}">${CATS[k].ic} ${CATS[k].n}</button>`).join("");
 }
 $("nearFilters").addEventListener("click",e=>{const b=e.target.closest("[data-nf]");if(!b)return;
-  nearFilter=b.dataset.nf;renderNearbyFilters();renderNearby()});
+  nearFilter=b.dataset.nf;renderNearbyFilters();runSearch()});
 $("alertCats").addEventListener("click",e=>{const b=e.target.closest("[data-ac]");if(!b)return;
   const k=b.dataset.ac,cur=alertCats();
   store.set("alertCats",cur.includes(k)?cur.filter(x=>x!==k):cur.concat(k));renderNearbyFilters()});
@@ -2190,21 +2221,38 @@ $("alertTest").addEventListener("click",()=>{
 });
 $("alertReset").addEventListener("click",()=>{alerted.clear();saveAlerted();toast("&#8635; She'll mention them all again")});
 
-let nearQ="";
+let nearQ="",searchSeq=0,searchT=null;
 function renderNearby(){
-  let list=nearest(0,nearFilter==="all"?null:[nearFilter]);
+  const chip=chipFor(nearFilter),cat=chip[3];
+  let list=nearest(0,cat?[cat]:null);
   if(nearQ)list=list.filter(p=>matchPlace(p,nearQ));
-  list=list.slice(0,24);
-  $("nearHead").innerHTML=nearQ
-    ? (list.length?"<b>"+list.length+"</b> match "+esc(nearQ)+", nearest first."
-      :"Nothing of Clara's matches &ldquo;"+esc(nearQ)+"&rdquo; &mdash; try the live search below, it looks at everything around you.")
-    : (here?"Sorted from where you're standing right now."
-           :"Sorted from Highlands Ranch until location is on — turn it on for real distances.");
-  $("nearList").innerHTML=(list.map(p=>rowFor(p)).join("")||"")+(nearQ?liveHintFor(nearQ):"");
+  list=list.slice(0,20);
+  const what=nearQ?("&ldquo;"+esc(nearQ)+"&rdquo;"):(nearFilter==="all"?"":chip[2].toLowerCase());
+  $("nearHead").innerHTML=list.length
+    ? "<div class='eyebrow' style='margin:.2rem 0 .3rem'>Clara's places"+(what?" &mdash; "+what:"")+"</div>"
+    : (what?"<p class='small muted' style='margin:.2rem 0 0'>Nothing of Clara's for "+what+" &mdash; looking around you instead&hellip;</p>":"");
+  $("nearList").innerHTML=list.map(p=>rowFor(p)).join("");
 }
+/* both halves, fired together */
+function runSearch(){
+  renderNearby();
+  const chip=chipFor(nearFilter);
+  let live=chip[4];
+  if(nearQ)live=guessCat(nearQ)||live;
+  if(!live){found=[];$("findStatus").innerHTML="";renderFound();return}
+  findNow(live,+$("findRadius").value||5,false,++searchSeq);
+}
+$("nearSearch").addEventListener("input",e=>{
+  nearQ=e.target.value.trim();
+  renderNearby();                       /* Clara answers as you type */
+  clearTimeout(searchT);
+  searchT=setTimeout(runSearch,600);    /* the world answers a moment later */
+});
+$("nearSearch").addEventListener("keydown",e=>{if(e.key==="Enter"){clearTimeout(searchT);runSearch()}});
+$("findRadius").addEventListener("change",runSearch);
 /* People type what they want, not what the text says. "Food" appears
    in none of Clara's descriptions, so a plain text search found
-   nothing - which is exactly the bug. Words now map onto categories. */
+   nothing. Words map onto categories instead. */
 const SYN={
   food:["eat"],foods:["eat"],eat:["eat"],eating:["eat"],restaurant:["eat"],restaurants:["eat"],
   dining:["eat"],dinner:["eat"],lunch:["eat"],breakfast:["eat"],brunch:["eat"],hungry:["eat"],meal:["eat"],
@@ -2244,18 +2292,6 @@ function matchPlace(p,q){
   });
 }
 $("nearSearch").addEventListener("input",e=>{nearQ=e.target.value.trim();renderNearby()});
-/* if what they typed is really a category, offer the live search for it
-   without making them hunt for the right button */
-function liveHintFor(q){
-  const cat=guessCat(q);
-  if(!cat)return "";
-  return `<div class="btnrow" style="margin-top:.7rem"><button class="btn sm gold" data-livego="${cat}">&#128269; Also search live for ${esc(FIND_TAGS[cat].n.toLowerCase())} around me</button></div>`;
-}
-$("nearList").addEventListener("click",e=>{
-  const b=e.target.closest("[data-livego]");if(!b)return;
-  findNow(b.dataset.livego,+$("findRadius").value||5,true);
-  $("findStatus").scrollIntoView({behavior:"smooth",block:"center"});
-});
 function rowFor(p){
   const fav=favs().includes(p.n);
   return `<div class="row clickable" data-place="${esc(p.n)}">
@@ -3470,12 +3506,12 @@ function renderFindNow(){
   $("findNow").innerHTML=Object.keys(FIND_TAGS).map(k=>
     `<button class="btn sm ghost" data-find="${k}" style="justify-content:flex-start">${FIND_TAGS[k].ic} ${FIND_TAGS[k].n}</button>`).join("");
 }
-async function findNow(cat,radiusMi,announce){
+async function findNow(cat,radiusMi,announce,seq){
   const O=searchOrigin(),spec=FIND_TAGS[cat];
   if(!spec||findBusy)return;
   findBusy=true;
   const r=Math.round((radiusMi||5)*1609);
-  $("findStatus").innerHTML="&#128269; Looking for "+spec.n.toLowerCase()+" within "+(radiusMi||5)+" miles&hellip; <span class='muted'>(a few seconds)</span>";
+  $("findStatus").innerHTML="&#128269; Also looking around you for "+spec.n.toLowerCase()+"&hellip;";
   const q="[out:json][timeout:25];("+spec.t.map(t=>t+"(around:"+r+","+O.lat.toFixed(5)+","+O.lng.toFixed(5)+");").join("")+");out center 60;";
   let els=null;
   try{
@@ -3490,6 +3526,7 @@ async function findNow(cat,radiusMi,announce){
       }catch(e){clearTimeout(kill)}
     }
   }finally{findBusy=false}
+  if(seq&&seq!==searchSeq)return;
   if(!els){
     found=[];
     $("findStatus").innerHTML="Couldn't reach the search &mdash; weak signal, or the free map service is busy."+
@@ -3506,8 +3543,11 @@ async function findNow(cat,radiusMi,announce){
       phone:tg.phone||tg["contact:phone"]||"",
       _d:dist(O.lat,O.lng,la,lo)};
   }).filter(Boolean).sort((a,b)=>a._d-b._d).slice(0,30);
-  $("findStatus").innerHTML="&#128205; <b>"+found.length+" "+spec.n.toLowerCase()+"</b> within "+(radiusMi||5)+" miles, nearest first."+
-    (O.live?"":" <span class='muted'>Measured from downtown Littleton — location isn't on yet.</span>");
+  if(seq&&seq!==searchSeq)return;                      /* a newer search has started */
+  $("findStatus").innerHTML=found.length
+    ? "<div class='eyebrow' style='margin:1rem 0 .3rem'>Also around you right now</div>"+
+      (O.live?"":"<p class='tiny' style='margin:0 0 .3rem'>Measured from Highlands Ranch &mdash; location isn't on yet.</p>")
+    : "<p class='small muted' style='margin:.6rem 0 0'>Nothing else found within "+(radiusMi||5)+" miles.</p>";
   renderFound();
   if(found.length)speak(spec.n+" found. The closest is "+found[0].n+", "+fmtMi(found[0]._d)+" away.",announce===true);
 }
@@ -3520,8 +3560,7 @@ function renderFound(){
         <div class="dist">${fmtMi(f._d)}</div>
         <a class="btn sm ghost" href="https://www.google.com/maps/dir/?api=1&destination=${f.lat},${f.lng}" target="_blank" rel="noopener">&#129517;</a>
       </div></div>`).join("")+
-    '<button class="btn sm ghost" id="findClear" style="margin-top:.7rem">&#10005; Clear</button>';
-  $("findClear").addEventListener("click",()=>{found=[];$("findStatus").innerHTML="";renderFound()});
+    '<p class="tiny" style="margin:.6rem 0 0">From OpenStreetMap, kept up to date by volunteers — ring ahead if the hours matter.</p>';
 }
 function findClick(e){
   const b=e.target.closest("[data-find]");if(!b)return;
@@ -5778,7 +5817,7 @@ $("shBody").addEventListener("click",e=>{
       $("nearSearch").value=term;nearQ=term;renderNearby();
       const cat=guessCat(term);
       if(cat)findNow(cat,+$("findRadius").value||5,true);
-      else{$("findStatus").innerHTML="Pick a category below to search live for <b>"+esc(term)+"</b> around you.";}
+      else{runSearch()}
     },350);
   }
 });
