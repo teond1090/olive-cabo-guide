@@ -790,8 +790,7 @@ h2{letter-spacing:-.02em}
     <a href="#/today" data-view="today"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-today"/></svg> Today</a>
     <a href="#/guide" data-view="guide"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-guide"/></svg> How It Works</a>
     <a href="#/agenda" data-view="agenda"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-agenda"/></svg> Agenda</a>
-    <a href="#/nearby" data-view="nearby"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-nearby"/></svg> Nearby</a>
-    <a href="#/explore" data-view="explore"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-explore"/></svg> Explore</a>
+    <a href="#/places" data-view="places"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-nearby"/></svg> Places</a>
     <a href="#/camera" data-view="camera"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-camera"/></svg> Camera</a>
     <a href="#/movie" data-view="movie"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-movie"/></svg> Movie</a>
     <a href="#/bingo" data-view="bingo"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-bingo"/></svg> Bingo</a>
@@ -1009,65 +1008,29 @@ h2{letter-spacing:-.02em}
 </div>
 
 <!-- ============================ NEARBY ============================ -->
-<div class="view" id="view-nearby">
+<div class="view" id="view-places">
   <div class="stack">
 
     <div class="card a-rose">
-      <div class="card-h"><span class="ic">&#128205;</span><h3>Right Around You</h3></div>
-      <div class="field" style="margin-bottom:.8rem">
-        <label class="fld" for="nearSearch">Search for anything</label>
-        <input type="text" id="nearSearch" placeholder="e.g. lavender, bighorn, antiques, coffee" autocomplete="off">
+      <div class="card-h"><span class="ic">&#128205;</span><h3>Find Somewhere</h3></div>
+      <div class="field">
+        <label class="fld" for="nearSearch">What are you after?</label>
+        <input type="text" id="nearSearch" placeholder="food · gardens · a walk · antiques · coffee" autocomplete="off">
       </div>
-      <div id="nearHead" class="small muted">Turn on location and Clara will sort everything by how far it is from wherever you're standing.</div>
-      <div class="pills" style="margin-top:.8rem" id="nearFilters"></div>
-      <div id="nearList" style="margin-top:.4rem"></div>
-    </div>
-
-    <div class="card a-sage">
-      <div class="card-h"><span class="ic">&#128506;&#65039;</span><h3>Your Journey</h3><span class="pill sage" id="jStat"></span></div>
-      <p class="small muted" style="margin-top:0">Every road and path you travel gets drawn here — a map of the whole week, made simply by carrying the phone.</p>
-      <label class="switch"><input type="checkbox" id="jToggle" checked><span class="track"></span>
-        <span><b>Record my journey</b><br><span class="small muted">Stays on this phone. Nothing is uploaded.</span></span></label>
-      <div class="mapwrap" id="jMapWrap" style="height:19rem;margin-top:.8rem">
-        <canvas id="jCanvas"></canvas>
-        <div class="mapbtns">
-          <button id="jZin" aria-label="Zoom in">+</button>
-          <button id="jZout" aria-label="Zoom out">&minus;</button>
-          <button id="jFit" aria-label="Fit the whole journey" title="Fit the whole journey">&#9974;</button>
-        </div>
-        <div class="maplegend">&#128994; you &nbsp; &#128205; places visited</div>
-      </div>
-      <div class="stats" id="jStats" style="margin-top:.9rem"></div>
-      <div class="btnrow" style="margin-top:.9rem">
-        <button class="btn sm ghost" id="jGpx">&#11015;&#65039; Save the track</button>
-        <button class="btn sm ghost" id="jClear">&#8635; Clear the trail</button>
-      </div>
+      <div class="pills" style="margin-top:.7rem" id="nearFilters"></div>
+      <div id="nearHead" class="small muted" style="margin-top:.8rem"></div>
+      <div id="nearList" style="margin-top:.2rem"></div>
     </div>
 
     <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#128276;</span><h3>Tell Me When Something's Close</h3></div>
-      <label class="switch">
-        <input type="checkbox" id="alertToggle" checked><span class="track"></span>
-        <span><b>Nudge me about good things nearby</b><br><span class="small muted">Clara speaks up once per place &mdash; never twice for the same one.</span></span>
-      </label>
-      <div class="field" style="margin-top:.5rem"><label class="fld" for="alertRadius">How close before she says something?</label>
-        <select id="alertRadius">
-          <option value="0.5">Half a mile &mdash; walking distance only</option>
-          <option value="1.5" selected>A mile and a half &mdash; a short hop</option>
-          <option value="4">Four miles &mdash; anything in town</option>
-          <option value="10">Ten miles &mdash; give me everything</option>
-        </select></div>
-      <div class="field"><label class="fld">Only nudge me about&hellip;</label>
-        <div class="pills" id="alertCats"></div></div>
-      <div class="btnrow" style="margin-top:.7rem">
-        <button class="btn sm ghost" id="alertTest">&#128266; Try a nudge</button>
-        <button class="btn sm ghost" id="alertReset">&#8635; Forget what she's told me</button>
-      </div>
+      <div class="card-h"><span class="ic">&#11088;</span><h3>Your Shortlist</h3></div>
+      <p class="small muted" style="margin-top:0">Star anything you fancy and Clara builds the days around it.</p>
+      <div id="favList"></div>
     </div>
 
     <div class="card a-slate">
       <div class="card-h"><span class="ic">&#128269;</span><h3>Find It Right Now</h3></div>
-      <p class="small muted" style="margin-top:0">Live search of everything around you &mdash; not just Clara's list. Free, no account, works anywhere in Colorado.</p>
+      <p class="small muted" style="margin-top:0">A live look at everything around you &mdash; not just Clara's list. Free, no account, anywhere in Colorado.</p>
       <div class="field"><label class="fld" for="findRadius">Search within</label>
         <select id="findRadius">
           <option value="2">2 miles</option><option value="5" selected>5 miles</option>
@@ -1086,30 +1049,6 @@ h2{letter-spacing:-.02em}
   </div>
 </div>
 
-<!-- ============================ EXPLORE ============================ -->
-<div class="view" id="view-explore">
-  <div class="stack">
-
-    <div class="card a-plum">
-      <div class="card-h"><span class="ic">&#127956;</span><h3>Everything Worth Doing</h3></div>
-      <p style="margin-top:0">Clara's own list &mdash; walks, gardens, Main Street, breweries, museums, Red Rocks and the day trips. Tap any one to hear about it, get directions, or drop it straight into a day.</p>
-      <div class="field"><label class="fld" for="exSearch">Search the list</label>
-        <input type="text" id="exSearch" placeholder="e.g. bighorn sheep, botanic, pickleball" autocomplete="off"></div>
-      <div class="pills" style="margin-top:.7rem" id="exFilters"></div>
-    </div>
-
-    <div id="exList" class="stack"></div>
-
-    <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#11088;</span><h3>Your Shortlist</h3></div>
-      <p class="small muted" style="margin-top:0">Anything you star lands here, and Clara builds your agenda around it.</p>
-      <div id="favList"></div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ============================ CAMERA ============================ -->
 <div class="view" id="view-camera">
   <div class="stack">
 
@@ -1330,6 +1269,27 @@ h2{letter-spacing:-.02em}
       <div id="numbers"></div>
     </div>
 
+    <div class="card a-sage">
+      <div class="card-h"><span class="ic">&#128506;&#65039;</span><h3>Your Journey</h3><span class="pill sage" id="jStat"></span></div>
+      <p class="small muted" style="margin-top:0">Every road and path you travel gets drawn here — a map of the whole week, made simply by carrying the phone.</p>
+      <label class="switch"><input type="checkbox" id="jToggle" checked><span class="track"></span>
+        <span><b>Record my journey</b><br><span class="small muted">Stays on this phone. Nothing is uploaded.</span></span></label>
+      <div class="mapwrap" id="jMapWrap" style="height:19rem;margin-top:.8rem">
+        <canvas id="jCanvas"></canvas>
+        <div class="mapbtns">
+          <button id="jZin" aria-label="Zoom in">+</button>
+          <button id="jZout" aria-label="Zoom out">&minus;</button>
+          <button id="jFit" aria-label="Fit the whole journey" title="Fit the whole journey">&#9974;</button>
+        </div>
+        <div class="maplegend">&#128994; you &nbsp; &#128205; places visited</div>
+      </div>
+      <div class="stats" id="jStats" style="margin-top:.9rem"></div>
+      <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn sm ghost" id="jGpx">&#11015;&#65039; Save the track</button>
+        <button class="btn sm ghost" id="jClear">&#8635; Clear the trail</button>
+      </div>
+    </div>
+
     <div class="card a-rose">
       <div class="card-h"><span class="ic">&#127881;</span><h3>The Whole Trip, Remembered</h3></div>
       <p style="margin-top:0">When it's over — or any time you fancy — Clara writes the story of the week: everywhere you went, every mile, every photo, in her own words.</p>
@@ -1343,6 +1303,27 @@ h2{letter-spacing:-.02em}
     <div class="card a-plum">
       <div class="card-h"><span class="ic">&#128213;</span><h3>Clara's Trip Diary</h3></div>
       <div id="diaryArchive"></div>
+    </div>
+
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#128276;</span><h3>Tell Me When Something's Close</h3></div>
+      <label class="switch">
+        <input type="checkbox" id="alertToggle" checked><span class="track"></span>
+        <span><b>Nudge me about good things nearby</b><br><span class="small muted">Clara speaks up once per place &mdash; never twice for the same one.</span></span>
+      </label>
+      <div class="field" style="margin-top:.5rem"><label class="fld" for="alertRadius">How close before she says something?</label>
+        <select id="alertRadius">
+          <option value="0.5">Half a mile &mdash; walking distance only</option>
+          <option value="1.5" selected>A mile and a half &mdash; a short hop</option>
+          <option value="4">Four miles &mdash; anything in town</option>
+          <option value="10">Ten miles &mdash; give me everything</option>
+        </select></div>
+      <div class="field"><label class="fld">Only nudge me about&hellip;</label>
+        <div class="pills" id="alertCats"></div></div>
+      <div class="btnrow" style="margin-top:.7rem">
+        <button class="btn sm ghost" id="alertTest">&#128266; Try a nudge</button>
+        <button class="btn sm ghost" id="alertReset">&#8635; Forget what she's told me</button>
+      </div>
     </div>
 
     <div class="card">
@@ -1366,7 +1347,7 @@ h2{letter-spacing:-.02em}
 <nav class="bottom" aria-label="Quick">
   <a href="#/today" data-view="today"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-today"/></svg>Today</a>
   <a href="#/agenda" data-view="agenda"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-agenda"/></svg>Agenda</a>
-  <a href="#/nearby" data-view="nearby"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-nearby"/></svg>Nearby</a>
+  <a href="#/places" data-view="places"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-nearby"/></svg>Places</a>
   <a href="#/camera" data-view="camera"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-camera"/></svg>Camera</a>
   <a href="#/friends" data-view="friends"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-friends"/></svg>Friends</a>
   <a href="#" id="moreTab" aria-label="Everything else"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-more"/></svg>More</a>
@@ -1400,7 +1381,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-14-31";
+const BUILD="chris-2026-08-14-32";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1890,7 +1871,7 @@ function showView(v){
   $$(".view").forEach(x=>x.classList.remove("active"));
   $("view-"+ok).classList.add("active");
   $$("nav a").forEach(a=>a.classList.toggle("on",a.dataset.view===ok));
-  const onBar=["today","agenda","nearby","camera","friends"].includes(ok);
+  const onBar=["today","agenda","places","camera","friends"].includes(ok);
   const mt=$("moreTab");if(mt)mt.classList.toggle("on",!onBar);
   window.scrollTo({top:0,behavior:"instant"});
   const s=document.querySelector(".tabscroll"),a=s&&s.querySelector('a[data-view="'+ok+'"]');
@@ -1901,9 +1882,13 @@ function showView(v){
   if(ok!=="camera")camStop();
   if(ok!=="guide"&&typeof tourStop==="function")tourStop();
   if(ok==="friends")drawFriendMap();
-  if(ok==="nearby")setTimeout(renderJourney,60);
+  if(ok==="toolkit")setTimeout(renderJourney,60);
 }
-function route(){showView((location.hash||"#/today").replace("#/",""))}
+function route(){
+  let v=(location.hash||"#/today").replace("#/","");
+  if(v==="nearby"||v==="explore"){location.replace("#/places");return}   /* the two became one */
+  showView(v);
+}
 window.addEventListener("hashchange",route);
 $("moreTab").addEventListener("click",e=>{e.preventDefault();openMore()});
 
@@ -2115,7 +2100,7 @@ function onFix(pos){
   checkProximity();visitLog();
   if(locSharing&&Date.now()-lastPub>90000)publishLoc();
   if($("view-friends").classList.contains("active"))drawFriendMap();
-  if($("view-nearby").classList.contains("active"))renderJourney();
+  if($("view-toolkit").classList.contains("active"))renderJourney();
 }
 function whereHtml(){
   if(!here)return"";
@@ -2337,32 +2322,11 @@ function renderFavs(){
 /* ============================================================
    EXPLORE
    ============================================================ */
-let exFilter="all",exQ="";
-function renderExploreFilters(){
-  const keys=["all"].concat(Object.keys(CATS));
-  $("exFilters").innerHTML=keys.map(k=>
-    `<button class="pill ${exFilter===k?"on":""}" data-ef="${k}">${k==="all"?"&#10024; Everything":CATS[k].ic+" "+CATS[k].n}</button>`).join("");
-}
-$("exFilters").addEventListener("click",e=>{const b=e.target.closest("[data-ef]");if(!b)return;
-  exFilter=b.dataset.ef;renderExploreFilters();renderExplore()});
-$("exSearch").addEventListener("input",e=>{exQ=e.target.value.toLowerCase().trim();renderExplore()});
-
-function renderExplore(){
-  const o=here||HOME;
-  let list=PLACES.map(p=>Object.assign({},p,{_d:dist(o.lat,o.lng,p.lat,p.lng)}));
-  if(exFilter!=="all")list=list.filter(p=>p.c===exFilter);
-  if(exQ)list=list.filter(p=>(p.n+" "+p.d+" "+p.tip+" "+CATS[p.c].n).toLowerCase().includes(exQ));
-  list.sort((a,b)=>a._d-b._d);
-  const groups={};
-  list.forEach(p=>{(groups[p.c]=groups[p.c]||[]).push(p)});
-  $("exList").innerHTML=Object.keys(groups).map(c=>`
-    <div class="card">
-      <div class="card-h"><span class="ic">${CATS[c].ic}</span><h3>${CATS[c].n}</h3>
-        <span class="pill">${groups[c].length}</span></div>
-      ${groups[c].map(p=>rowFor(p)).join("")}
-    </div>`).join("")||'<div class="card"><p class="muted" style="margin:0">Nothing matches that. Try a shorter word.</p></div>';
-  renderFavs();
-}
+/* Explore and Nearby were two ways of saying the same thing, which is
+   two things to learn. One list now: distance-sorted, filtered by the
+   pills, searched by the box above it. */
+function renderExplore(){renderFavs()}
+function renderExploreFilters(){}
 
 /* ============================================================
    SAVED SPOTS
@@ -4026,8 +3990,7 @@ function openMore(){
   const T=[["today","&#9728;&#65039;","Today","The plan, the weather, Clara's briefing"],
     ["guide","&#127909;","How It Works","Clara shows you round, out loud"],
     ["agenda","&#128197;","Agenda","The whole trip, day by day"],
-    ["nearby","&#128205;","Nearby","What's close, and find-it-right-now"],
-    ["explore","&#127956;","Explore","Every place worth doing"],
+    ["places","&#128205;","Places","Everywhere worth going, nearest first"],
     ["camera","&#128247;","Camera","Photo booth, filters & postcards"],
     ["movie","&#127916;","Movie","Make the film & the yearbook"],
     ["bingo","&#127903;&#65039;","Bingo","The girls' trip game"],
@@ -5091,8 +5054,7 @@ function heroTerrain(){
    changes with the light the way the hero does. */
 const PLATES={
   agenda:{cap:"Your week",sub:"18 – 22 August",art:"valley"},
-  nearby:{cap:"Around you",sub:"Sorted by how close",art:"meadow"},
-  explore:{cap:"Worth doing",sub:"Every place Clara knows",art:"aspen"},
+  places:{cap:"Worth going",sub:"Sorted by how close",art:"meadow"},
   camera:{cap:"The camera",sub:"Photo booth & postcards",art:"lens"},
   movie:{cap:"Your film",sub:"Photos into a keepsake",art:"reel"},
   bingo:{cap:"Girls' trip bingo",sub:"Sixteen little missions",art:"stars"},
@@ -5283,12 +5245,10 @@ const TOUR=[
   say:"This first page is the one you'll open most. At the top there's a living Colorado sky that changes with the real hour and the real weather. Under it, your morning briefing, today's plan, and anything I've spotted nearby. If you only ever look at one page, look at this one."},
  {ic:"&#128197;",t:"Your agenda",go:"agenda",
   say:"Your whole trip is already in here — Tuesday the eighteenth through Saturday the twenty-second. Tap any day to open it up. Wednesday has two versions, the mountain loop your friend wanted and the gardens day, and one tap swaps between them. Every day has one item marked optional. That's the one to drop when you've had enough, and dropping it is not defeat."},
- {ic:"&#128205;",t:"Nearby",go:"nearby",
-  say:"This is the clever one. At the top is your journey — every road and path you travel gets drawn on a map, just by carrying the phone, and by Saturday it'll be the whole week in one picture. Below that, search for anything at all. Type food, or flowers, or somewhere easy, and I'll know what you mean. And as you move about I'll speak up when something good comes close."},
+ {ic:"&#128205;",t:"Places",go:"places",
+  say:"Everywhere worth going, in one list, nearest to you first. Search for anything at all — type food, or gardens, or somewhere easy, and I'll know what you mean. Tap a place and I'll tell you about it and hand you directions, and the star puts it on your shortlist. Underneath, a live search finds real things around you that aren't on my list at all. And as you wander, I'll speak up when something good comes close."},
  {ic:"&#127908;",t:"Remember this",go:"today",
   say:"My favourite of the new ones. On the Today page there's a button that says hold to remember. Press it, say whatever you want to keep — what the woman in the antique shop told you, what somebody said that made you laugh — and let go. I keep the recording and the spot it happened, and it all goes into the story at the end. Nobody types those things down. Now you don't have to."},
- {ic:"&#127956;",t:"Explore",go:"explore",
-  say:"Every place I know about, sorted by how far it is from you. Tap any one and I'll tell you about it and hand you directions. If you see something you fancy, tap the star — I'll build it into your days."},
  {ic:"&#128247;",t:"The camera",go:"camera",
   say:"This is not the ordinary camera. There's a big shutter, a countdown I say out loud so everyone knows when to smile, filters, and a photo booth that takes four shots and makes you a strip. Everything you take gets stamped with where you were, and lands in the movie maker."},
  {ic:"&#128140;",t:"Postcards & the movie",go:"movie",
@@ -5747,8 +5707,7 @@ const SECTIONS=[
  ["today","Today","the plan, weather and Clara's briefing"],
  ["guide","How It Works","Clara's narrated tour"],
  ["agenda","Agenda","the whole trip, day by day"],
- ["nearby","Nearby","what's close, and the live search"],
- ["explore","Explore","every place worth doing"],
+ ["places","Places","everywhere worth going, and the live search"],
  ["camera","Camera","photo booth, filters, postcards"],
  ["movie","Movie","the film and the yearbook"],
  ["bingo","Bingo","the girls' trip game"],
@@ -5813,7 +5772,7 @@ $("shBody").addEventListener("click",e=>{
     return}
   const L=e.target.closest("[data-gslive]");
   if(L){
-    closeSheet();location.hash="#/nearby";
+    closeSheet();location.hash="#/places";
     const term=L.dataset.gslive;
     setTimeout(()=>{
       $("nearSearch").value=term;nearQ=term;renderNearby();
@@ -5906,7 +5865,7 @@ async function askClara(raw){
     for(const [w,cat] of NEAR_WORDS){
       if(q.includes(w)&&FIND_TAGS[cat]){
         say("Looking for the nearest "+FIND_TAGS[cat].n.toLowerCase()+".");
-        location.hash="#/nearby";
+        location.hash="#/places";
         await findNow(cat,5,true);
         return;
       }
