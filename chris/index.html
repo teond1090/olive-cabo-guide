@@ -1015,6 +1015,27 @@ h2{letter-spacing:-.02em}
       <div id="nearList" style="margin-top:.4rem"></div>
     </div>
 
+    <div class="card a-sage">
+      <div class="card-h"><span class="ic">&#128506;&#65039;</span><h3>Your Journey</h3><span class="pill sage" id="jStat"></span></div>
+      <p class="small muted" style="margin-top:0">Every road and path you travel gets drawn here — a map of the whole week, made simply by carrying the phone.</p>
+      <label class="switch"><input type="checkbox" id="jToggle" checked><span class="track"></span>
+        <span><b>Record my journey</b><br><span class="small muted">Stays on this phone. Nothing is uploaded.</span></span></label>
+      <div class="mapwrap" id="jMapWrap" style="height:19rem;margin-top:.8rem">
+        <canvas id="jCanvas"></canvas>
+        <div class="mapbtns">
+          <button id="jZin" aria-label="Zoom in">+</button>
+          <button id="jZout" aria-label="Zoom out">&minus;</button>
+          <button id="jFit" aria-label="Fit the whole journey" title="Fit the whole journey">&#9974;</button>
+        </div>
+        <div class="maplegend">&#128994; you &nbsp; &#128205; places visited</div>
+      </div>
+      <div class="stats" id="jStats" style="margin-top:.9rem"></div>
+      <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn sm ghost" id="jGpx">&#11015;&#65039; Save the track</button>
+        <button class="btn sm ghost" id="jClear">&#8635; Clear the trail</button>
+      </div>
+    </div>
+
     <div class="card a-gold">
       <div class="card-h"><span class="ic">&#128276;</span><h3>Tell Me When Something's Close</h3></div>
       <label class="switch">
@@ -1301,6 +1322,13 @@ h2{letter-spacing:-.02em}
       <div id="numbers"></div>
     </div>
 
+    <div class="card a-rose">
+      <div class="card-h"><span class="ic">&#127881;</span><h3>The Whole Trip, Remembered</h3></div>
+      <p style="margin-top:0">When it's over — or any time you fancy — Clara writes the story of the week: everywhere you went, every mile, every photo, in her own words.</p>
+      <div class="btnrow"><button class="btn" id="recapMake">&#128220; Write my trip story</button></div>
+      <div id="recapOut" style="margin-top:.9rem"></div>
+    </div>
+
     <div class="card a-plum">
       <div class="card-h"><span class="ic">&#128213;</span><h3>Clara's Trip Diary</h3></div>
       <div id="diaryArchive"></div>
@@ -1361,7 +1389,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-14-28";
+const BUILD="chris-2026-08-14-29";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1862,6 +1890,7 @@ function showView(v){
   if(ok!=="camera")camStop();
   if(ok!=="guide"&&typeof tourStop==="function")tourStop();
   if(ok==="friends")drawFriendMap();
+  if(ok==="nearby")setTimeout(renderJourney,60);
 }
 function route(){showView((location.hash||"#/today").replace("#/",""))}
 window.addEventListener("hashchange",route);
@@ -2028,9 +2057,35 @@ function onFixErr(err){
   }
 }
 let lastFix=null;
+/* A phone's first fixes are often hundreds of metres out, and a fix
+   that is worse than the one before it should not be allowed to drag
+   the position around. So: discard the wild ones, and weight each new
+   fix by how confident it is against how confident we already were. */
+const ACC_LIMIT=160;         /* metres - beyond this it is a guess, not a fix */
+function gpsQuality(m){
+  return m<=12?["Excellent","&#128994;"]:m<=35?["Good","&#128994;"]
+        :m<=80?["Fair","&#128993;"]:["Rough","&#128992;"];
+}
 function onFix(pos){
   const first=!here;
-  here={lat:pos.coords.latitude,lng:pos.coords.longitude,acc:pos.coords.accuracy,t:Date.now()};
+  const acc=pos.coords.accuracy||999;
+  const raw={lat:pos.coords.latitude,lng:pos.coords.longitude,acc,t:Date.now()};
+  if(acc>ACC_LIMIT&&here&&Date.now()-here.t<120000){
+    gpsStatus("&#128992; Weak signal ("+Math.round(acc)+" m) — holding the last good fix","muted");
+    return;                                     /* keep what we had */
+  }
+  if(here&&!first){
+    const moved=dist(here.lat,here.lng,raw.lat,raw.lng)*1609;
+    /* if the jump is smaller than the uncertainty, it is noise: blend */
+    if(moved<Math.max(acc,here.acc||acc)){
+      const w=(here.acc||acc)/((here.acc||acc)+acc);   /* trust the tighter one */
+      raw.lat=here.lat+(raw.lat-here.lat)*w;
+      raw.lng=here.lng+(raw.lng-here.lng)*w;
+      raw.acc=Math.min(acc,here.acc||acc);
+    }
+  }
+  here=raw;
+  journeyPush(here);
   /* the odometer: only steps that look like walking count - short hops
      at under 4.6 mph. A drive adds nothing, and GPS jitter is too small. */
   if(lastFix){
@@ -2040,14 +2095,16 @@ function onFix(pos){
   }
   lastFix={lat:here.lat,lng:here.lng,t:here.t};
   const nearestName=(nearest(1)[0]||{}).n;
-  gpsStatus("&#128994; Found you"+(nearestName?" — near <b>"+esc(nearestName)+"</b>":"")+
-    " · accurate to about "+Math.round(pos.coords.accuracy)+" m","muted");
+  const q=gpsQuality(here.acc);
+  gpsStatus(q[1]+" Found you"+(nearestName?" — near <b>"+esc(nearestName)+"</b>":"")+
+    " &middot; "+q[0].toLowerCase()+" signal, &plusmn;"+Math.round(here.acc)+" m","muted");
   $("whereBox").innerHTML=whereHtml();
   renderNearby();renderPins();renderExplore();
   if(first){loadWeather()}
   checkProximity();visitLog();
   if(locSharing&&Date.now()-lastPub>90000)publishLoc();
   if($("view-friends").classList.contains("active"))drawFriendMap();
+  if($("view-nearby").classList.contains("active"))renderJourney();
 }
 function whereHtml(){
   if(!here)return"";
@@ -2150,13 +2207,62 @@ function renderNearby(){
       :"Nothing of Clara's matches &ldquo;"+esc(nearQ)+"&rdquo; &mdash; try the live search below, it looks at everything around you.")
     : (here?"Sorted from where you're standing right now."
            :"Sorted from Highlands Ranch until location is on — turn it on for real distances.");
-  $("nearList").innerHTML=list.map(p=>rowFor(p)).join("")||"";
+  $("nearList").innerHTML=(list.map(p=>rowFor(p)).join("")||"")+(nearQ?liveHintFor(nearQ):"");
 }
+/* People type what they want, not what the text says. "Food" appears
+   in none of Clara's descriptions, so a plain text search found
+   nothing - which is exactly the bug. Words now map onto categories. */
+const SYN={
+  food:["eat"],foods:["eat"],eat:["eat"],eating:["eat"],restaurant:["eat"],restaurants:["eat"],
+  dining:["eat"],dinner:["eat"],lunch:["eat"],breakfast:["eat"],brunch:["eat"],hungry:["eat"],meal:["eat"],
+  cafe:["eat","sip"],coffee:["eat","sip"],tea:["eat","sip"],dessert:["eat"],
+  drink:["sip"],drinks:["sip"],beer:["sip"],brewery:["sip"],breweries:["sip"],wine:["sip"],
+  bar:["sip"],taproom:["sip"],cocktails:["sip"],
+  walk:["walk"],walks:["walk"],walking:["walk"],hike:["walk"],hikes:["walk"],hiking:["walk"],
+  trail:["walk"],trails:["walk"],park:["walk"],parks:["walk"],outdoors:["walk"],outside:["walk"],
+  nature:["walk","garden"],lake:["walk"],river:["walk"],
+  garden:["garden"],gardens:["garden"],flower:["garden"],flowers:["garden"],
+  botanic:["garden"],botanical:["garden"],plants:["garden"],
+  shop:["shop"],shops:["shop"],shopping:["shop"],boutique:["shop"],boutiques:["shop"],
+  antique:["shop"],antiques:["shop"],gift:["shop"],gifts:["shop"],store:["shop"],stores:["shop"],
+  art:["art"],arts:["art"],gallery:["art"],galleries:["art"],pottery:["art"],painting:["art"],craft:["art"],
+  museum:["art","history"],museums:["art","history"],
+  history:["history"],historic:["history"],historical:["history"],castle:["history"],
+  music:["music"],concert:["music"],concerts:["music"],
+  mountain:["day"],mountains:["day"],scenic:["day"],drive:["day"],driving:["day"],
+  daytrip:["day"],excursion:["day"],train:["day"],
+  active:["active"],gym:["active"],swim:["active"],swimming:["active"],pool:["active"],
+  exercise:["active"],fitness:["active"],yoga:["active"],pickleball:["active"],
+  relax:["relax"],spa:["relax"],springs:["relax"],massage:["relax"],quiet:["relax"],
+  market:["market"],markets:["market"],farmers:["market"],produce:["market"],
+  free:["*free"],cheap:["*free"],easy:["*easy"],flat:["*easy"],gentle:["*easy"]
+};
 function matchPlace(p,q){
   const t=(p.n+" "+p.d+" "+p.tip+" "+(p.tag||"")+" "+CATS[p.c].n).toLowerCase();
-  return q.toLowerCase().split(/\s+/).filter(Boolean).every(w=>t.includes(w));
+  return String(q).toLowerCase().split(/\s+/).filter(Boolean).every(w=>{
+    if(t.includes(w))return true;
+    const syn=SYN[w]||SYN[w.replace(/s$/,"")];
+    if(!syn)return false;
+    return syn.some(k=>{
+      if(k==="*free")return /free/i.test(p.tag||"");
+      if(k==="*easy")return p.e<=2;
+      return p.c===k;
+    });
+  });
 }
 $("nearSearch").addEventListener("input",e=>{nearQ=e.target.value.trim();renderNearby()});
+/* if what they typed is really a category, offer the live search for it
+   without making them hunt for the right button */
+function liveHintFor(q){
+  const cat=guessCat(q);
+  if(!cat)return "";
+  return `<div class="btnrow" style="margin-top:.7rem"><button class="btn sm gold" data-livego="${cat}">&#128269; Also search live for ${esc(FIND_TAGS[cat].n.toLowerCase())} around me</button></div>`;
+}
+$("nearList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-livego]");if(!b)return;
+  findNow(b.dataset.livego,+$("findRadius").value||5,true);
+  $("findStatus").scrollIntoView({behavior:"smooth",block:"center"});
+});
 function rowFor(p){
   const fav=favs().includes(p.n);
   return `<div class="row clickable" data-place="${esc(p.n)}">
@@ -5049,6 +5155,216 @@ $("tourList").addEventListener("click",e=>{
   speak(TOUR[tourI].say,true);
 });
 
+/* ============================================================
+   THE TRIP, REMEMBERED
+   Not a stats dump - a story, built from what actually happened:
+   where the GPS saw her, the miles, the photos, the diary, the
+   bingo card. Written the way a friend would tell it back.
+   ============================================================ */
+function recapStory(){
+  const t=trip(),A=agenda();
+  const v=Array.from(allVisited());
+  const miles=journeyMiles(),walked=store.get("walk-total",0);
+  const photos=media.length,b=bingoScore();
+  const D=store.get("diary",{}),days=Object.keys(D).sort();
+  const who=(t.who||["Chris"]);
+  const seenPlaces=PLACES.filter(p=>v.includes(p.n));
+  const byCat={};seenPlaces.forEach(p=>{(byCat[p.c]=byCat[p.c]||[]).push(p.n)});
+  const L=a=>a.length<2?(a[0]||""):a.slice(0,-1).join(", ")+" and "+a[a.length-1];
+  const P=[];
+  P.push("<h3 style='margin:.2rem 0 .6rem'>The Littleton Girls' Trip</h3>");
+  P.push("<p class='small muted' style='margin:0 0 1rem'>"+
+    (t.start?fmtDateLong(t.start)+" – "+fmtDateLong(t.end):"Colorado")+
+    (t.base?" &middot; "+esc(t.base):"")+"</p>");
+  let open="Well. "+L(who)+" went to Colorado";
+  if(t.start)open+=" for "+(tripLen())+" days";
+  open+=", and this is what happened.";
+  P.push("<p>"+esc(open)+"</p>");
+  if(seenPlaces.length){
+    let body="You made it to "+seenPlaces.length+" of the places on the list";
+    const g=[];
+    if(byCat.garden)g.push("the gardens — "+L(byCat.garden));
+    if(byCat.walk)g.push("walks at "+L(byCat.walk));
+    if(byCat.day)g.push(L(byCat.day)+" out in the mountains");
+    if(byCat.art)g.push("art at "+L(byCat.art));
+    if(byCat.shop)g.push("shops on "+L(byCat.shop));
+    if(byCat.history)g.push("history at "+L(byCat.history));
+    if(byCat.eat||byCat.sip)g.push("meals at "+L((byCat.eat||[]).concat(byCat.sip||[])));
+    body+=g.length?": "+L(g)+".":".";
+    P.push("<p>"+esc(body)+"</p>");
+  }else{
+    P.push("<p>"+esc("The map didn't catch many of your stops — but the plan was there, and so were you.")+"</p>");
+  }
+  const nums=[];
+  if(miles>=1)nums.push(Math.round(miles)+" miles travelled");
+  if(walked>=.3)nums.push((Math.round(walked*10)/10)+" of them on your own two feet");
+  if(photos)nums.push(photos+" photograph"+(photos>1?"s":""));
+  if(b)nums.push(b+" of the sixteen bingo squares"+(b===16?" — the full card, no less":""));
+  if(pins().length)nums.push(pins().length+" spot"+(pins().length>1?"s":"")+" worth remembering");
+  if(nums.length)P.push("<p>"+esc("In numbers: "+L(nums)+".")+"</p>");
+  if(days.length){
+    P.push("<div class='eyebrow' style='margin:1.2rem 0 .6rem'>Day by day</div>");
+    days.forEach(k=>P.push("<p style='margin:0 0 .7rem'><b>"+fmtDate(k)+".</b> "+esc(D[k])+"</p>"));
+  }
+  const close=b===16?"A full bingo card, "+seenPlaces.length+" places and "+Math.round(miles)+
+      " miles. I don't know what you'll do for an encore."
+    :seenPlaces.length>=8?"That is a properly well-spent week, and you did it at your own pace, which is the trick most people never learn."
+    :"Not every mile of it went to plan, which is usually the part people remember best.";
+  P.push("<p style='margin-top:1.1rem'>"+esc(close)+" Thank you for letting me come along. — Clara</p>");
+  return P.join("");
+}
+function recapPlain(){
+  return $("recapOut").textContent.replace(/\s*\n\s*/g,"\n").trim();
+}
+$("recapMake").addEventListener("click",()=>{
+  $("recapOut").innerHTML="<div class='note'>"+recapStory()+"</div>"+
+    `<div class="btnrow" style="margin-top:.9rem">
+      <button class="btn sm" id="recapRead">&#128266; Read it to me</button>
+      <button class="btn sm ghost" id="recapShare">&#128228; Send it round</button>
+      <button class="btn sm ghost" id="recapSave">&#11015;&#65039; Save it</button>
+      <a class="btn sm gold" href="#/movie">&#127942; Make the yearbook card</a>
+    </div>`;
+  $("recapRead").addEventListener("click",()=>speak(recapPlain(),true));
+  $("recapShare").addEventListener("click",async()=>{
+    const txt=recapPlain();
+    if(navigator.share){try{await navigator.share({title:"The Littleton Girls' Trip",text:txt});return}catch(e){}}
+    sendChat(txt.slice(0,900));toast("&#128228; Sent to the group chat");
+  });
+  $("recapSave").addEventListener("click",()=>{
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(new Blob([recapPlain()],{type:"text/plain"}));
+    a.download="littleton-trip-story.txt";a.click();toast("&#11015;&#65039; Saved");
+  });
+  celebrate("done");
+  speak("Here's your week, Chris.",true);
+});
+
+/* ============================================================
+   THE JOURNEY
+   Breadcrumbs, drawn on real map tiles. One point every ~40 metres,
+   only from fixes good enough to believe, so the line is the road
+   she actually drove rather than a cloud of GPS noise.
+   ============================================================ */
+function journey(){try{return JSON.parse(localStorage.getItem("ch-journey")||"[]")}catch(e){return[]}}
+function journeySave(t){try{localStorage.setItem("ch-journey",JSON.stringify(t.slice(-4000)))}catch(e){}}
+let jBuf=null,jLast=0;
+function journeyPush(fx){
+  if(!store.get("journeyOn",true)||!fx)return;
+  if(fx.acc>90)return;                       /* too vague to draw honestly */
+  const t=jBuf||(jBuf=journey());
+  const last=t[t.length-1];
+  if(last){
+    const d=dist(last[0],last[1],fx.lat,fx.lng);
+    if(d<0.025)return;                       /* ~40 m - keeps the file small, the shape true */
+    if(d>60)return;                          /* a teleport is a bad fix, not a journey */
+  }
+  t.push([+fx.lat.toFixed(5),+fx.lng.toFixed(5),fx.t]);
+  if(Date.now()-jLast>15000){jLast=Date.now();journeySave(t)}
+}
+function journeyMiles(){
+  const t=jBuf||journey();let m=0;
+  for(let i=1;i<t.length;i++)m+=dist(t[i-1][0],t[i-1][1],t[i][0],t[i][1]);
+  return m;
+}
+let jZoom=store.get("jZoom",12),jCenter=null;
+function renderJourney(){
+  const t=jBuf||(jBuf=journey());
+  const v=allVisited();
+  $("jStat").textContent=t.length?(t.length+" points"):"not started";
+  $("jStats").innerHTML=`
+    <div class="stat"><div class="v">${Math.round(journeyMiles())}</div><div class="k">Miles travelled</div></div>
+    <div class="stat"><div class="v">${v.size}</div><div class="k">Places reached</div></div>
+    <div class="stat"><div class="v">${(Math.round(store.get("walk-total",0)*10)/10)}</div><div class="k">Miles walked</div></div>
+    <div class="stat"><div class="v">${pins().length}</div><div class="k">Spots saved</div></div>`;
+  drawJourney();
+}
+function jPoints(){
+  const t=jBuf||journey();
+  const pts=t.map(p=>({lat:p[0],lng:p[1]}));
+  if(here)pts.push({lat:here.lat,lng:here.lng});
+  return pts;
+}
+function jFit(){
+  const pts=jPoints();
+  const c=$("jCanvas"),w=c.clientWidth||340,h=c.clientHeight||300;
+  if(!pts.length){jCenter={lat:HOME.lat,lng:HOME.lng};jZoom=12;return}
+  const las=pts.map(p=>p.lat),los=pts.map(p=>p.lng);
+  jCenter={lat:(Math.min(...las)+Math.max(...las))/2,lng:(Math.min(...los)+Math.max(...los))/2};
+  let z=16;
+  while(z>4){
+    const dx=Math.abs(lon2x(Math.max(...los),z)-lon2x(Math.min(...los),z))*256;
+    const dy=Math.abs(lat2y(Math.min(...las),z)-lat2y(Math.max(...las),z))*256;
+    if(dx<w*.78&&dy<h*.78)break;
+    z--;
+  }
+  jZoom=Math.max(5,Math.min(17,z));store.set("jZoom",jZoom);
+}
+function drawJourney(){
+  const c=$("jCanvas");if(!c||!$("jMapWrap"))return;
+  const W=$("jMapWrap").clientWidth||340,H=$("jMapWrap").clientHeight||300;
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  c.width=W*dpr;c.height=H*dpr;c.style.width=W+"px";c.style.height=H+"px";
+  const x=c.getContext("2d");x.setTransform(dpr,0,0,dpr,0,0);
+  x.fillStyle="#E9EFE7";x.fillRect(0,0,W,H);
+  if(!jCenter)jFit();
+  const z=jZoom,cx=lon2x(jCenter.lng,z)*256,cy=lat2y(jCenter.lat,z)*256;
+  const x0=cx-W/2,y0=cy-H/2,max=Math.pow(2,z);
+  for(let tx=Math.floor(x0/256);tx<=Math.floor((x0+W)/256);tx++)
+    for(let ty=Math.floor(y0/256);ty<=Math.floor((y0+H)/256);ty++){
+      if(ty<0||ty>=max)continue;
+      const im=getTile(z,((tx%max)+max)%max,ty);
+      if(im._ok){try{x.drawImage(im,tx*256-x0,ty*256-y0,256,256)}catch(e){}}
+    }
+  const t=jBuf||journey();
+  if(t.length>1){
+    const P=t.map(p=>[lon2x(p[1],z)*256-x0,lat2y(p[0],z)*256-y0]);
+    /* a soft halo under the line so it reads over any map colour */
+    x.lineJoin=x.lineCap="round";
+    x.strokeStyle="rgba(255,255,255,.85)";x.lineWidth=8;
+    x.beginPath();P.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.stroke();
+    x.strokeStyle="#C4517A";x.lineWidth=4;
+    x.beginPath();P.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));x.stroke();
+  }
+  /* the places she actually reached */
+  const v=allVisited();
+  PLACES.filter(p=>v.has(p.n)).forEach(p=>{
+    const px=lon2x(p.lng,z)*256-x0,py=lat2y(p.lat,z)*256-y0;
+    if(px<-20||px>W+20||py<-20||py>H+20)return;
+    x.beginPath();x.arc(px,py,6,0,7);x.fillStyle="#C98F2E";x.fill();
+    x.lineWidth=2.5;x.strokeStyle="#FFFDFB";x.stroke();
+  });
+  if(here){
+    const px=lon2x(here.lng,z)*256-x0,py=lat2y(here.lat,z)*256-y0;
+    x.beginPath();x.arc(px,py,10,0,7);x.fillStyle="#4B7A50";x.fill();
+    x.lineWidth=3.5;x.strokeStyle="#FFFDFB";x.stroke();
+  }
+  x.fillStyle="rgba(46,32,40,.55)";x.font="600 10px Inter, sans-serif";x.textAlign="right";
+  x.fillText("© OpenStreetMap contributors",W-8,H-6);
+}
+$("jToggle").addEventListener("change",e=>{
+  store.set("journeyOn",e.target.checked);
+  toast(e.target.checked?"&#128506;&#65039; Recording your journey":"Journey recording off");
+});
+$("jZin").addEventListener("click",()=>{jZoom=Math.min(17,jZoom+1);store.set("jZoom",jZoom);drawJourney()});
+$("jZout").addEventListener("click",()=>{jZoom=Math.max(5,jZoom-1);store.set("jZoom",jZoom);drawJourney()});
+$("jFit").addEventListener("click",()=>{jFit();drawJourney();toast("&#9974; The whole journey")});
+$("jClear").addEventListener("click",()=>{
+  if(!confirm("Clear the recorded trail? The places you've reached are kept."))return;
+  jBuf=[];journeySave([]);jCenter=null;renderJourney();toast("Trail cleared");
+});
+$("jGpx").addEventListener("click",()=>{
+  const t=jBuf||journey();
+  if(!t.length)return toast("Nothing recorded yet");
+  const gpx='<?xml version="1.0" encoding="UTF-8"?>\n<gpx version="1.1" creator="Chris in Littleton">\n'+
+    '<trk><name>Littleton girls trip</name><trkseg>\n'+
+    t.map(p=>'<trkpt lat="'+p[0]+'" lon="'+p[1]+'"><time>'+new Date(p[2]).toISOString()+'</time></trkpt>').join("\n")+
+    '\n</trkseg></trk></gpx>';
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([gpx],{type:"application/gpx+xml"}));
+  a.download="littleton-journey.gpx";a.click();
+  toast("&#11015;&#65039; Track saved");
+});
+
 /* ---------- search everything ----------
    One box over Clara's places, the agenda, and the parts of the app
    itself - with a live look at the real world if none of that helps. */
@@ -5134,11 +5450,20 @@ $("shBody").addEventListener("click",e=>{
 });
 /* map a typed word onto one of the live-search categories */
 function guessCat(q){
-  const t=" "+q.toLowerCase()+" ";
+  const t=" "+String(q).toLowerCase().trim()+" ";
   for(const [w,cat] of NEAR_WORDS)if(t.includes(w))return cat;
-  if(/garden|park|walk|trail/.test(t))return "park";
-  if(/antique|gift|book|boutique|shop/.test(t))return "shop";
+  if(/food|restaurant|dining|dinner|lunch|breakfast|brunch|hungry|meal/.test(t))return "eat";
+  if(/coffee|cafe|tea/.test(t))return "coffee";
+  if(/beer|brewery|wine|bar|drink|taproom|cocktail/.test(t))return "bar";
+  if(/garden|park|walk|trail|hike|nature|outdoors/.test(t))return "park";
+  if(/antique|gift|book|boutique|shop|store/.test(t))return "shop";
   if(/museum|gallery|art|pottery/.test(t))return "art";
+  if(/spa|salon|hair|nails|massage/.test(t))return "salon";
+  if(/bank|cash|atm/.test(t))return "atm";
+  if(/grocery|supermarket|market/.test(t))return "grocery";
+  if(/petrol|gas|fuel/.test(t))return "fuel";
+  if(/train|rail|transit|bus/.test(t))return "transit";
+  if(/view|overlook|photo|sunset/.test(t))return "viewpoint";
   return null;
 }
 
@@ -5272,6 +5597,7 @@ async function boot(){
   renderTripForm();renderHero();renderAgenda();renderTodayPlan();renderWedSwitch();
   renderNearbyFilters();renderNearby();renderExploreFilters();renderExplore();
   renderPins();renderFindNow();renderHealth();renderDash();
+  $("jToggle").checked=store.get("journeyOn",true);renderJourney();
   renderCamChips();renderCamGal();renderGal();
   renderChat();renderLoc();renderNotif();renderVoicePanel();renderPack();renderNumbers();renderSettings();
   renderBriefing();netCheck();
