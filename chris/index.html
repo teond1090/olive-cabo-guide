@@ -750,6 +750,10 @@ h2{letter-spacing:-.02em}
   display:none;position:sticky;top:0;z-index:80;background:var(--gold);color:#3D1A31;
   text-align:center;padding:.65rem;font-weight:800;cursor:pointer;font-size:.9rem;
 }
+#voiceBar{
+  display:none;position:sticky;top:0;z-index:81;background:var(--danger);color:#fff;
+  text-align:center;padding:.65rem;font-weight:800;cursor:pointer;font-size:.9rem;
+}
 #netPill{
   display:none;position:fixed;top:calc(.5rem + env(safe-area-inset-top));left:50%;transform:translateX(-50%);
   z-index:95;background:var(--danger);color:#fff;padding:.35rem .8rem;border-radius:999px;font-size:.78rem;font-weight:800;
@@ -782,6 +786,7 @@ h2{letter-spacing:-.02em}
 </defs></svg>
 
 <div id="updateBar">&#8635; A newer version is ready &mdash; tap to refresh</div>
+<div id="voiceBar">&#128266; That wasn't Clara &mdash; her real voice isn't answering. Tap to see why.</div>
 <div id="netPill">&#9888; Offline &mdash; the guide still works</div>
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -1467,7 +1472,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-15-41";
+const BUILD="chris-2026-08-15-42";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1777,6 +1782,11 @@ function xiScrub(k){return String(k||"").replace(/[\s\u0000-\u001F\u200B-\u200D\
 function xiKey(){return xiScrub(store.get("xiKey","")||XI_EMB)}
 const TTS_CACHE="chris-tts-v1";
 let voiceOn=store.get("voice",false), curAudio=null, ttsSpend=store.get("ttsChars",0);
+/* Why her real voice last failed, and whether we have already said so.
+   The app used to drop to the phone's robot voice without a word, which
+   is how a dead key went unnoticed for days - the laptop kept playing
+   lines it had already cached and sounded perfectly fine. */
+let xiLastFail=null,voiceWarned=false;
 
 function stopSpeaking(){
   try{speechSynthesis.cancel()}catch(e){}
@@ -1995,6 +2005,8 @@ async function claraTTS(text,_retried,onEnd){
         /* the wired-in voice isn't in this account - find hers, once */
         if(!_retried&&(r.status===404||r.status===422)&&await resolveVoice(key))
           return claraTTS(text,true);
+        let dt=null;try{dt=(await r.clone().json()).detail}catch(e){}
+        xiLastFail={status:r.status,code:(dt&&dt.status)||"",msg:(dt&&dt.message)||""};
         return false;
       }
       if(cache){try{await cache.put(id,r.clone())}catch(e){}}
@@ -2013,7 +2025,19 @@ function speak(text,force,onEnd){
   if(!voiceOn&&!force){onEnd&&onEnd();return}
   const clean=String(text).replace(/<[^>]*>/g," ").replace(/&nbsp;/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim();
   if(!clean){onEnd&&onEnd();return}
-  claraTTS(clean,false,onEnd).then(ok=>{if(!ok)browserSpeak(clean,onEnd)});
+  claraTTS(clean,false,onEnd).then(ok=>{
+    if(ok)return;
+    voiceFellBack();
+    browserSpeak(clean,onEnd);
+  });
+}
+/* Once per session, and never for a plain lack of signal - offline is
+   honest, a rejected key is not. */
+function voiceFellBack(){
+  if(voiceWarned||!navigator.onLine||!xiLastFail)return;
+  voiceWarned=true;
+  const b=$("voiceBar");if(!b)return;
+  b.style.display="block";
 }
 function syncVoiceBtn(){
   const b=$("btnVoice");
@@ -4276,9 +4300,9 @@ async function vtTrySave(force){
 function xiAdvice(pr){
   const c=(pr&&pr.code||"").toLowerCase(),st=pr&&pr.status;
   if(c==="missing_permissions"||/missing the permission/i.test(pr&&pr.msg||""))
-    return "<b>This key was created without permission to speak.</b> On elevenlabs.io the key needs <b>Text to Speech</b> switched on. "+
-           "Profile picture &rarr; API Keys &rarr; the key &rarr; edit, and either turn <b>Text to Speech</b> to <i>Has access</i>, "+
-           "or make a new key and leave it on <b>Full access / no restrictions</b>. Then paste it here again.";
+    return "<b>This key was born with everything switched off.</b> ElevenLabs restricts every new key by default \u2014 which is why making another one never helps. "+
+           "On elevenlabs.io: <b>Developers</b> (left sidebar) &rarr; <b>API Keys</b> &rarr; the <b>&hellip;</b> beside the key &rarr; <b>Edit</b>. "+
+           "Then either switch <b>Restrict Key</b> off, or turn on <b>Text to Speech</b>, <b>Voice Generation</b> and <b>User</b>, and set <b>Voices</b> to <b>Write</b>. Save, and press the check-up again.";
   if(c==="api_key_id_used_as_api_key")
     return "<b>That's the key's ID, not the key.</b> ElevenLabs shows the real key once, in the popup at the moment you create it. Make a new one and copy it straight from that popup.";
   if(c==="invalid_api_key"||st===401)
@@ -4314,7 +4338,9 @@ async function vtReport(){
   lines.push("<b>Voice chosen:</b> "+(store.get("xiVoiceName","")?esc(store.get("xiVoiceName","")):"automatic (finds Clara by name)"));
   let cached=0;
   try{const c=await caches.open(TTS_CACHE);cached=(await c.keys()).length}catch(e){}
-  lines.push("<b>Saved spoken lines:</b> "+cached);
+  lines.push("<b>Saved spoken lines:</b> "+cached+(cached?" <i>\u2014 these play with no internet and no key, so lines you have heard before can sound perfect even when the key has stopped working</i>":""));
+  if(xiLastFail)lines.push("<b>Last refusal from ElevenLabs:</b> "+(xiLastFail.status||"no answer")+
+    (xiLastFail.code?" &middot; "+esc(xiLastFail.code):""));
   lines.push("<b>Sound unlocked on this phone:</b> "+(ttsBlessed?"yes":"not yet \u2014 tap anything once"));
   lines.push("<b>Last voice you heard:</b> "+(lastVoice?esc(lastVoice):"nothing yet"));
   el.innerHTML=lines.join("<br>")+"<br><b>Speech test:</b> running&hellip;";
@@ -4474,6 +4500,7 @@ function checkUpdate(){
   }).catch(()=>{});
 }
 $("updateBar").addEventListener("click",()=>location.reload(true));
+$("voiceBar").addEventListener("click",()=>{$("voiceBar").style.display="none";voiceTrouble()});
 
 /* ============================================================
    THE IMMERSIVE LAYER
