@@ -870,6 +870,13 @@ h2{letter-spacing:-.02em}
       </div>
     </div>
 
+    <div class="card a-plum" id="whatNowCard">
+      <div class="card-h"><span class="ic">&#129504;</span><h3>What Now?</h3></div>
+      <p style="margin-top:0">The question you'll ask most. One tap and Clara weighs the hour, the weather, what's still on today's plan, how far you've already walked and what's actually open &mdash; and gives you one answer.</p>
+      <button class="btn big plum" id="whatNow">&#129504; What should we do right now?</button>
+      <div id="whatNowOut" style="margin-top:.9rem"></div>
+    </div>
+
     <div class="card a-gold">
       <div class="card-h"><span class="ic">&#127920;</span><h3>Can't Decide?</h3></div>
       <p style="margin-top:0">Two of you want gardens and one wants a brewery? Let the wheel settle it. Nobody argues with the wheel.</p>
@@ -1248,7 +1255,12 @@ h2{letter-spacing:-.02em}
     <div class="card a-sage">
       <div class="card-h"><span class="ic">&#128190;</span><h3>Works With No Signal</h3></div>
       <p id="offlineTxt" style="margin-top:0">Save the whole guide to this phone. Every place, every day plan and every checklist then works in a canyon with no bars at all.</p>
-      <div class="btnrow"><button class="btn sage" id="cacheNow">&#128190; Save the guide to this phone</button></div>
+      <div class="btnrow">
+        <button class="btn sage" id="cacheNow">&#128190; Save the guide to this phone</button>
+        <button class="btn sm ghost" id="cacheMaps">&#128506;&#65039; Save the maps too</button>
+      </div>
+      <div id="mapCacheOut" class="small muted" style="margin-top:.6rem"></div>
+      <p class="tiny" style="margin:.6rem 0 0">Waterton Canyon, Conifer, Bailey and half of Evergreen have no phone signal at all. Save the maps on the wifi before you set off and the journey map still draws up there.</p>
     </div>
 
     <div class="card a-rose">
@@ -1385,7 +1397,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-14-32";
+const BUILD="chris-2026-08-15-34";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -5273,6 +5285,149 @@ function claraAside(){
   Clara.remark("aside",Clara.greet()+" "+line,{alert:"Clara says"});
 }
 
+/* ============================================================
+   MAPS THAT SURVIVE THE MOUNTAINS
+   US-285 through Conifer and Bailey, and the bottom of Waterton
+   Canyon, have no signal worth the name. Map tiles are the one part
+   of this app that still needs the network, so they get fetched
+   ahead of time - the whole corridor from Denver to Bailey, at the
+   zooms the journey and friends maps actually use.
+   ============================================================ */
+const MAP_BOX={n:39.82,s:39.36,w:-105.58,e:-104.82};   /* Highlands Ranch to Bailey, Golden to Roxborough */
+function tilesFor(z,box){
+  const out=[];
+  const x0=Math.floor(lon2x(box.w,z)),x1=Math.floor(lon2x(box.e,z));
+  const y0=Math.floor(lat2y(box.n,z)),y1=Math.floor(lat2y(box.s,z));
+  for(let x=x0;x<=x1;x++)for(let y=y0;y<=y1;y++)out.push([z,x,y]);
+  return out;
+}
+function tripTiles(){
+  let all=[];
+  [10,11,12,13].forEach(z=>{all=all.concat(tilesFor(z,MAP_BOX))});
+  /* street-level detail only where they'll actually walk about */
+  all=all.concat(tilesFor(14,{n:39.68,s:39.50,w:-105.13,e:-104.90}));
+  return all;
+}
+async function saveMaps(){
+  const b=$("cacheMaps"),out=$("mapCacheOut");
+  if(!("caches" in window))return toast("This browser can't store maps offline");
+  const list=tripTiles();
+  b.disabled=true;b.innerHTML="&#9203; Saving&hellip;";
+  out.innerHTML="Fetching "+list.length+" map tiles &mdash; this needs wifi and a minute or two.";
+  let done=0,failed=0;
+  try{
+    const c=await caches.open("chris-tiles-v1");
+    /* six at a time: polite to the free tile service, quick enough to watch */
+    for(let i=0;i<list.length;i+=6){
+      await Promise.all(list.slice(i,i+6).map(async([z,x,y])=>{
+        const url=TILE.replace("{z}",z).replace("{x}",x).replace("{y}",y);
+        try{
+          if(await c.match(url)){done++;return}
+          const r=await fetch(url,{mode:"cors"});
+          if(r.ok){await c.put(url,r.clone());done++}else failed++;
+        }catch(e){failed++}
+      }));
+      if(i%60===0)out.innerHTML="Saved <b>"+done+"</b> of "+list.length+" tiles&hellip;";
+    }
+    out.innerHTML="&#9989; <b>"+done+" map tiles saved.</b> The journey map and the friends map now draw in Bailey, Conifer, Waterton Canyon and everywhere else the signal gives out."+
+      (failed?" <span class='muted'>("+failed+" wouldn't come &mdash; try again on better wifi.)</span>":"");
+    toast("&#128506;&#65039; Maps saved for the whole trip");
+    speak("Maps saved. The mountains can take your signal now — the map will still be there.",true);
+  }catch(e){out.innerHTML="Couldn't save the maps &mdash; try again on wifi."}
+  b.disabled=false;b.innerHTML="&#128506;&#65039; Save the maps too";
+}
+$("cacheMaps").addEventListener("click",saveMaps);
+
+/* ============================================================
+   WHAT NOW?
+   The question a traveller actually asks, twenty times a day. Until
+   now the app made her answer it herself: read the plan, check the
+   weather, work out what's open, remember how tired she is. This
+   weighs all of it at once and commits to one answer - which is the
+   difference between a reference book and a companion.
+   ============================================================ */
+/* rough opening hours by kind of place - not gospel, but enough to
+   stop Clara sending anyone to a garden at nine at night */
+const HOURS={garden:[9,18],history:[9,17],art:[10,17],market:[8,14],shop:[10,18],
+  eat:[7,21],sip:[11,22],active:[6,21],relax:[9,21],walk:[6,20],day:[7,19],music:[8,22]};
+function openNow(p,h){const w=HOURS[p.c]||[8,20];return h>=w[0]&&h<w[1]}
+function closingSoon(p,h){const w=HOURS[p.c]||[8,20];return h>=w[1]-1.5&&h<w[1]}
+const whatNowSkip=new Set();
+function whatNow(){
+  const now=new Date(),h=now.getHours()+now.getMinutes()/60;
+  const o=here||HOME,d=tripDay(),A=agenda(),day=d>0?A[d-1]:null;
+  const doneIdx=store.get("done-"+todayISO(),[]);
+  const todaysPlaces=new Set(),pending=[];
+  if(day)day.items.forEach((it,i)=>{
+    if(it.place){todaysPlaces.add(it.place);
+      if(!doneIdx.includes(i)&&byName(it.place))pending.push(it.place)}
+  });
+  const fav=new Set(favs()),seen=allVisited();
+  const walked=store.get("walk-"+todayISO(),0),tired=walked>=3.5;
+  const wet=!!(wx&&wx.daily&&wx.daily.precipitation_probability_max[0]>=55);
+  const hot=!!(wx&&wx.daily&&wx.daily.temperature_2m_max[0]>=88);
+  const mealtime=(h>=11.5&&h<14)?"lunchtime":(h>=17&&h<20)?"dinnertime":(h>=7&&h<10)?"breakfast time":"";
+  const sunset=(wx&&wx.daily&&wx.daily.sunset)?new Date(wx.daily.sunset[0]):null;
+  const mins=sunset?(sunset-now)/60000:999;
+  const golden=mins>10&&mins<80;
+
+  const scored=PLACES.filter(p=>!whatNowSkip.has(p.n)).map(p=>{
+    if(!openNow(p,h))return null;                          /* shut is shut */
+    const dd=dist(o.lat,o.lng,p.lat,p.lng);
+    let sc=0;const why=[];
+    if(pending.includes(p.n)){sc+=45;why.push("it's still on today's plan")}
+    else if(todaysPlaces.has(p.n))sc-=30;
+    if(fav.has(p.n)){sc+=22;why.push("you starred it")}
+    sc+=seen.has(p.n)?-18:12;
+    sc-=dd*2.2;
+    if(dd<1.2){sc+=14;why.push("it's within walking distance")}else if(dd<6)sc+=6;
+    if(mealtime&&p.c==="eat"){sc+=48;why.push("it's "+(mealtime==="breakfast time"?"":"about ")+mealtime)}
+    if(mealtime&&p.c!=="eat"&&p.c!=="sip")sc-=14;
+    if(!mealtime&&p.c==="eat")sc-=22;
+    if(tired&&p.e>=3){sc-=26;why.push("and you've already walked "+(Math.round(walked*10)/10)+" miles today")}
+    if(tired&&p.e<=2){sc+=10;why.push("and it's gentle on the legs")}
+    if(wet&&!p.ind&&["walk","garden","day","market"].includes(p.c)){sc-=38;why.push("and rain is about")}
+    if(wet&&p.ind){sc+=26;why.push("and it's under a roof, which suits the forecast")}
+    if(hot&&h>=12&&h<17&&!p.ind&&p.e>=3){sc-=20;why.push("and it's the hot part of the day")}
+    if(golden&&["walk","day"].includes(p.c)&&p.e<=3){sc+=26;why.push("and the light will be lovely just now")}
+    if(p.mins>=40&&h>=13){sc-=45;why.push("but it's really a whole-day outing")}
+    if(closingSoon(p,h)){sc-=12;why.push("though it closes fairly soon")}
+    if(h>=19.5&&!["eat","sip","music"].includes(p.c))sc-=25;
+    return{p,sc,dd,why};
+  }).filter(Boolean).sort((a,b)=>b.sc-a.sc);
+  if(!scored.length)return null;
+  const top=scored[0];
+  const lead=Clara.pick(["I'd do "+top.p.n+".",top.p.n+", I think.",
+    "Go to "+top.p.n+".","If it were me: "+top.p.n+"."],"wn-lead");
+  const w=top.why.slice(0,2);
+  const reason=w.length?" Partly because "+(w.length>1?w[0]+", and "+w[1].replace(/^and /,""):w[0])+".":"";
+  const where=" It's "+fmtMi(top.dd)+" from you"+(top.dd<1.2?", walkable.":", about "+driveEta(top.dd)+".");
+  return{top,alts:scored.slice(1,3),say:lead+reason+where};
+}
+function renderWhatNow(){
+  const r=whatNow(),box=$("whatNowOut");
+  if(!r){
+    box.innerHTML='<div class="note">Everything on Clara\'s list is shut at this hour — which is its own kind of answer. Put the kettle on.</div>';
+    speak("Everything's shut at this hour. Put the kettle on.",true);return;
+  }
+  box.innerHTML=`
+    <div class="note good"><b>${esc(r.say)}</b>
+      <div class="small" style="margin-top:.5rem">${esc(r.top.p.d.split(". ")[0])}.</div></div>
+    <div class="btnrow" style="margin-top:.8rem">
+      <a class="btn" href="${mapUrl(r.top.p)}" target="_blank" rel="noopener">&#129517; Take me there</a>
+      <button class="btn sm ghost" data-place="${esc(r.top.p.n)}">Tell me more</button>
+      <button class="btn sm ghost" id="whatNowAgain">&#8635; Something else</button>
+    </div>
+    ${r.alts.length?'<div class="eyebrow" style="margin:1rem 0 .3rem">Or</div>'+
+      r.alts.map(a=>`<div class="row clickable" data-place="${esc(a.p.n)}">
+        <div class="ic">${CATS[a.p.c].ic}</div>
+        <div class="bd"><div class="t">${esc(a.p.n)}</div><div class="s">${esc(a.p.tag||CATS[a.p.c].n)}</div></div>
+        <div class="rt"><div class="dist">${fmtMi(a.dd)}</div></div></div>`).join(""):""}`;
+  $("whatNowAgain").addEventListener("click",()=>{whatNowSkip.add(r.top.p.n);renderWhatNow()});
+  speak(r.say,true);
+}
+$("whatNow").addEventListener("click",()=>{whatNowSkip.clear();renderWhatNow()});
+
 /* ---------- Clara's guided tour ----------
    She narrates; each chapter advances when she stops talking, with a
    timer as the backstop for phones that never fire the ended event.
@@ -5292,6 +5447,8 @@ const TOUR=[
   say:"This is not the ordinary camera. There's a big shutter, a countdown I say out loud so everyone knows when to smile, filters, and a photo booth that takes four shots and makes you a strip. Everything you take gets stamped with where you were, and lands in the movie maker."},
  {ic:"&#128140;",t:"Postcards & the movie",go:"movie",
   say:"Any photo can become a proper Greetings from Littleton postcard to text home. And when you're ready, the movie maker turns your photos into a real little film with titles and music. There's a yearbook too — your whole week on one card, ready to send the moment you land."},
+ {ic:"&#129504;",t:"What now?",go:"today",
+  say:"If you remember one thing from all this, remember this button. On the Today page it says: what should we do right now. Tap it and I'll weigh up the hour, the weather, what's still on today's plan, how far you've already walked and what's actually open at this moment — and I'll give you one answer, not a list. If you don't fancy it, tap something else and I'll think again."},
  {ic:"&#127920;",t:"When you can't decide",go:"today",
   say:"Two of you want gardens and one wants a brewery? On the Today page, spin the wheel. It's a proper wheel — it clicks round, slows down, and lands on somewhere near you. Starred places come up more often, because the wheel is loyal. Nobody argues with the wheel."},
  {ic:"&#127903;&#65039;",t:"Bingo",go:"bingo",
@@ -5866,6 +6023,8 @@ function fuzzyPlace(q){
 async function askClara(raw){
   const q=" "+String(raw).toLowerCase().trim()+" ";
   const say=t=>speak(t,true);
+  if(/what now|what should we|what do we do|any ideas|what next|suggest something/.test(q)){
+    location.hash="#/today";setTimeout(()=>{whatNowSkip.clear();renderWhatNow()},350);return}
   if(/wheel|can.?t decide|pick (something|one|for)/.test(q)){say("Spinning the wheel.");spinWheel();return}
   if(/\bbingo\b/.test(q)){location.hash="#/bingo";say("You've stamped "+bingoScore()+" of sixteen bingo squares."+(bingoScore()>=12?" Nearly there, ladies.":""));return}
   if(/diary|journal|recap/.test(q)){const d=tripDay();say(d>0?diaryText(todayISO(),d):"The diary starts on day one of the trip.");return}
