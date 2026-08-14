@@ -1467,7 +1467,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-15-40";
+const BUILD="chris-2026-08-15-41";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1985,7 +1985,7 @@ async function claraTTS(text,_retried,onEnd){
            the built-in key take over on the spot */
         if(!_retried&&(r.status===400||r.status===401)&&store.get("xiKey","")&&store.get("xiKey","")!==XI_EMB){
           let code="";try{code=((await r.clone().json()).detail||{}).status||""}catch(e){}
-          if(code==="invalid_api_key"||code==="api_key_id_used_as_api_key"){
+          if(code==="invalid_api_key"||code==="api_key_id_used_as_api_key"||code==="missing_permissions"){
             store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");
             toast("&#128266; Switched to the built-in voice key");
             try{renderVoicePanel()}catch(e){}
@@ -4267,7 +4267,28 @@ async function vtTrySave(force){
   }
   out.innerHTML="&#10060; <b>Not saved — ElevenLabs rejected this key.</b> ("+(pr.status||"no network")+
     (pr.code?" &middot; "+esc(pr.code):"")+")"+(pr.msg?"<br>They said: "+esc(String(pr.msg).slice(0,140)):"")+warn+
-    "<br><br>The key already on this device was left alone. Make a fresh key at elevenlabs.io &mdash; profile picture, API Keys, Create &mdash; and copy it <b>from the popup</b> the moment it appears.";
+    "<br><br>"+(xiAdvice(pr)||"Make a fresh key at elevenlabs.io &mdash; profile picture, API Keys, Create &mdash; and copy it <b>from the popup</b> the moment it appears.")+
+    "<br><br><i>The key already on this device was left alone, so nothing got worse.</i>";
+}
+/* ElevenLabs refuses keys for several different reasons and the fix is
+   different every time. Say which one it is, in words, rather than
+   handing back a status code and a shrug. */
+function xiAdvice(pr){
+  const c=(pr&&pr.code||"").toLowerCase(),st=pr&&pr.status;
+  if(c==="missing_permissions"||/missing the permission/i.test(pr&&pr.msg||""))
+    return "<b>This key was created without permission to speak.</b> On elevenlabs.io the key needs <b>Text to Speech</b> switched on. "+
+           "Profile picture &rarr; API Keys &rarr; the key &rarr; edit, and either turn <b>Text to Speech</b> to <i>Has access</i>, "+
+           "or make a new key and leave it on <b>Full access / no restrictions</b>. Then paste it here again.";
+  if(c==="api_key_id_used_as_api_key")
+    return "<b>That's the key's ID, not the key.</b> ElevenLabs shows the real key once, in the popup at the moment you create it. Make a new one and copy it straight from that popup.";
+  if(c==="invalid_api_key"||st===401)
+    return "<b>ElevenLabs doesn't recognise this key.</b> It may have been deleted or regenerated. Make a fresh one and copy it from the popup as it appears.";
+  if(c==="quota_exceeded"||st===429)
+    return "<b>The account is out of characters this month.</b> Nothing wrong with the key &mdash; her voice will come back when the allowance resets, or on a higher plan.";
+  if(st===404)
+    return "<b>Clara's voice isn't in this account.</b> Tap <i>Fix it for me</i> and she'll find the nearest voice she has.";
+  if(!st)return "<b>No answer from ElevenLabs.</b> That's usually signal &mdash; try again on wifi.";
+  return "";
 }
 async function xiProbeWith(key,vid){
   try{
@@ -4301,7 +4322,8 @@ async function vtReport(){
   el.innerHTML=lines.join("<br>")+"<br><b>Speech test:</b> "+
     (pr.ok?"&#9989; ElevenLabs spoke — the voice works on this phone"
           :"&#10060; failed ("+(pr.status||"no network")+(pr.code?" &middot; "+esc(pr.code):"")+")"+
-           (pr.msg?" — "+esc(String(pr.msg).slice(0,110)):""));
+           (pr.msg?" — "+esc(String(pr.msg).slice(0,110)):"")+
+           (xiAdvice(pr)?"<br><br>"+xiAdvice(pr):""));
 }
 /* one tap: clear every piece of voice state and start clean */
 async function vtFix(){
