@@ -495,7 +495,7 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
 
 /* ============ LIVING SKY ============ */
 .sky{position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:inherit;transition:background 2.5s ease}
-.hero>*:not(.sky):not(.ridge){position:relative;z-index:2}
+.hero>*:not(.sky):not(.range){position:relative;z-index:2}
 .sky .orb{position:absolute;width:2.9rem;height:2.9rem;border-radius:50%;transition:left 2s,top 2s}
 .sky .orb.sun{background:radial-gradient(circle at 35% 35%,#FFF6D0,#F0CE86 58%,rgba(240,206,134,0) 76%);box-shadow:0 0 46px 16px rgba(240,206,134,.5)}
 .sky .orb.moon{background:radial-gradient(circle at 62% 38%,#F6F1E6 0 44%,#C9CFDC 74%);box-shadow:0 0 28px 8px rgba(215,225,255,.35)}
@@ -630,10 +630,8 @@ h2{letter-spacing:-.02em}
 .hero h2{font-size:2.05rem;letter-spacing:-.028em;line-height:1.08}
 .hero .lbl{letter-spacing:.26em}
 /* three ridgelines at different depths, drawn over the living sky */
-.ridge{position:absolute;left:0;right:0;bottom:0;pointer-events:none;z-index:1;width:100%}
-.ridge.r3{opacity:.30;height:5.4rem}
-.ridge.r2{opacity:.55;height:4.2rem}
-.ridge.r1{opacity:1;height:3rem}
+.range{position:absolute;left:0;right:0;bottom:0;height:9.5rem;pointer-events:none;z-index:1;overflow:hidden}
+.range svg{width:100%;height:100%;display:block}
 .hero::after{display:none}   /* the old single ridge is replaced by the three */
 
 /* ============ SECTION PLATES - a little scene atop each tab ============ */
@@ -701,6 +699,7 @@ h2{letter-spacing:-.02em}
 <g id="s-friends"><circle cx="9" cy="8.4" r="3.4"/><path d="M2.6 20.4a6.4 6.4 0 0 1 12.8 0"/><path d="M16.6 5.4a3.4 3.4 0 0 1 0 6.6M17.4 14.6a6.4 6.4 0 0 1 4 5.8"/></g>
 <g id="s-toolkit"><rect x="2.6" y="7.4" width="18.8" height="12.8" rx="2.2"/><path d="M8.6 7.4V5.6a2 2 0 0 1 2-2h2.8a2 2 0 0 1 2 2v1.8M2.6 12.6h18.8"/></g>
 <g id="s-full"><path d="M3.5 9V4.5a1 1 0 0 1 1-1H9M15 3.5h4.5a1 1 0 0 1 1 1V9M20.5 15v4.5a1 1 0 0 1-1 1H15M9 20.5H4.5a1 1 0 0 1-1-1V15"/></g>
+<g id="s-search"><circle cx="10.8" cy="10.8" r="7"/><path d="m16 16 5 5"/></g>
 <g id="s-mic"><rect x="9" y="2.6" width="6" height="11" rx="3"/><path d="M5.4 11.4a6.6 6.6 0 0 0 13.2 0M12 18v3.4M8.6 21.4h6.8"/></g>
 <g id="s-sound-on"><path d="M4 9.2h3.4L12 5v14L7.4 14.8H4z" stroke-linejoin="round"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.8a7.2 7.2 0 0 1 0 10.4"/></g>
 <g id="s-sound-off"><path d="M4 9.2h3.4L12 5v14L7.4 14.8H4z" stroke-linejoin="round"/><path d="m16 9.6 5 5M21 9.6l-5 5"/></g>
@@ -726,6 +725,7 @@ h2{letter-spacing:-.02em}
     </div>
     <div class="hdr-actions">
       <button class="icon-btn" id="btnFull" title="Full screen" aria-label="Full screen on or off"><svg class="i" viewBox="0 0 24 24"><use href="#s-full"/></svg></button>
+      <button class="icon-btn" id="btnSearch" title="Search everything" aria-label="Search everything"><svg class="i" viewBox="0 0 24 24"><use href="#s-search"/></svg></button>
       <button class="icon-btn" id="btnMic" title="Ask Clara" aria-label="Ask Clara out loud"><svg class="i" viewBox="0 0 24 24"><use href="#s-mic"/></svg></button>
       <button class="icon-btn" id="btnHush" title="Stop talking now" aria-label="Stop talking now"><svg class="i" viewBox="0 0 24 24"><use href="#s-hush"/></svg></button>
       <button class="icon-btn" id="btnVoice" aria-pressed="false" title="Clara's voice on or off" aria-label="Voice on or off"><svg class="i" viewBox="0 0 24 24"><use href="#s-sound-off"/></svg></button>
@@ -757,12 +757,7 @@ h2{letter-spacing:-.02em}
 
     <div class="hero">
       <div class="sky" id="skyLayer" aria-hidden="true"></div>
-      <svg class="ridge r3" viewBox="0 0 1200 150" preserveAspectRatio="none" aria-hidden="true"><path d="M0,150 V96 L104,50 176,88 296,26 402,84 512,44 638,92 760,38 880,80 1002,32 1112,74 1200,46 V150Z" fill="#8FA6BE"/></svg>
-      <svg class="ridge r2" viewBox="0 0 1200 130" preserveAspectRatio="none" aria-hidden="true"><path d="M0,130 V86 L88,44 168,82 262,34 372,86 486,50 604,92 726,42 842,84 964,40 1086,80 1200,54 V130Z" fill="#4E6B88"/></svg>
-      <svg class="ridge r1" viewBox="0 0 1200 110" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M0,110 V74 L110,40 200,76 310,30 430,80 560,48 690,86 820,40 950,78 1080,44 1200,70 V110Z" fill="#2B4159"/>
-        <path d="M0,110 V96 Q120,84 240,96 T480,96 T720,96 T960,96 T1200,92 V110Z" fill="#22344A"/>
-      </svg>
+      <div class="range" id="heroRange" aria-hidden="true"></div>
       <div class="lbl" id="heroLbl">Littleton, Colorado</div>
       <h2 id="heroTitle">Chris's Girls' Trip</h2>
       <p id="heroSub">Highlands Ranch, the Littleton gardens and the mountains &mdash; at your own pace.</p>
@@ -960,6 +955,10 @@ h2{letter-spacing:-.02em}
 
     <div class="card a-rose">
       <div class="card-h"><span class="ic">&#128205;</span><h3>Right Around You</h3></div>
+      <div class="field" style="margin-bottom:.8rem">
+        <label class="fld" for="nearSearch">Search for anything</label>
+        <input type="text" id="nearSearch" placeholder="e.g. lavender, bighorn, antiques, coffee" autocomplete="off">
+      </div>
       <div id="nearHead" class="small muted">Turn on location and Clara will sort everything by how far it is from wherever you're standing.</div>
       <div class="pills" style="margin-top:.8rem" id="nearFilters"></div>
       <div id="nearList" style="margin-top:.4rem"></div>
@@ -1311,7 +1310,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-14-25";
+const BUILD="chris-2026-08-14-27";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -2090,13 +2089,23 @@ $("alertTest").addEventListener("click",()=>{
 });
 $("alertReset").addEventListener("click",()=>{alerted.clear();saveAlerted();toast("&#8635; She'll mention them all again")});
 
+let nearQ="";
 function renderNearby(){
-  const list=nearest(0,nearFilter==="all"?null:[nearFilter]).slice(0,24);
-  $("nearHead").innerHTML=here
-    ? "Sorted from where you're standing right now."
-    : "Sorted from downtown Littleton until location is on — turn it on for real distances.";
-  $("nearList").innerHTML=list.map(p=>rowFor(p)).join("")||emptyMsg();
+  let list=nearest(0,nearFilter==="all"?null:[nearFilter]);
+  if(nearQ)list=list.filter(p=>matchPlace(p,nearQ));
+  list=list.slice(0,24);
+  $("nearHead").innerHTML=nearQ
+    ? (list.length?"<b>"+list.length+"</b> match "+esc(nearQ)+", nearest first."
+      :"Nothing of Clara's matches &ldquo;"+esc(nearQ)+"&rdquo; &mdash; try the live search below, it looks at everything around you.")
+    : (here?"Sorted from where you're standing right now."
+           :"Sorted from Highlands Ranch until location is on — turn it on for real distances.");
+  $("nearList").innerHTML=list.map(p=>rowFor(p)).join("")||"";
 }
+function matchPlace(p,q){
+  const t=(p.n+" "+p.d+" "+p.tip+" "+(p.tag||"")+" "+CATS[p.c].n).toLowerCase();
+  return q.toLowerCase().split(/\s+/).filter(Boolean).every(w=>t.includes(w));
+}
+$("nearSearch").addEventListener("input",e=>{nearQ=e.target.value.trim();renderNearby()});
 function rowFor(p){
   const fav=favs().includes(p.n);
   return `<div class="row clickable" data-place="${esc(p.n)}">
@@ -4011,6 +4020,7 @@ function skyRender(){
       inner+=`<div class="cl" style="top:${(6+Math.random()*40).toFixed(0)}%;width:${(7+Math.random()*8).toFixed(1)}rem;animation-duration:${(48+Math.random()*50).toFixed(0)}s;animation-delay:-${(Math.random()*60).toFixed(0)}s"></div>`;
     el.innerHTML=inner;
   }
+  heroTerrain();
   const orb=el.querySelector("#skyOrb");
   if(orb){
     /* sun rides an arc across the banner through the day;
@@ -4719,6 +4729,107 @@ $("shBody").addEventListener("click",e=>{
   const pk=e.target.closest("[data-pkeep]");if(pk){vsKeep(+pk.dataset.pkeep);return}
 });
 
+/* ============================================================
+   PROCEDURAL TERRAIN
+   Real ridgelines are fractal, not zigzags, and real distance
+   drains colour and contrast out of them. So: midpoint-displacement
+   silhouettes, atmospheric haze per layer, snow above a snowline,
+   fog pooling in the valleys, and a little film grain over the lot.
+   All drawn at runtime - nothing to download, works offline.
+   ============================================================ */
+function seeded(seed){let x=(seed*9301+49297)%233280;return()=>{x=(x*9301+49297)%233280;return x/233280}}
+/* midpoint displacement: the classic way to get a believable skyline */
+function ridgeLine(seed,rough,amp,base,steps){
+  const R=seeded(seed);
+  let pts=[[0,base+(R()-.5)*amp],[1,base+(R()-.5)*amp]];
+  let a=amp;
+  for(let s=0;s<(steps||6);s++){
+    const out=[];
+    for(let i=0;i<pts.length-1;i++){
+      out.push(pts[i]);
+      const mx=(pts[i][0]+pts[i+1][0])/2;
+      const my=(pts[i][1]+pts[i+1][1])/2+(R()-.5)*a;
+      out.push([mx,my]);
+    }
+    out.push(pts[pts.length-1]);
+    pts=out;a*=(rough||.55);
+  }
+  return pts;
+}
+function ridgePath(pts,W,H){
+  let d="M0,"+H+" L0,"+(pts[0][1]).toFixed(1);
+  for(const [x,y] of pts)d+=" L"+(x*W).toFixed(1)+","+y.toFixed(1);
+  return d+" L"+W+","+H+" Z";
+}
+/* one layered range. depth 0 = furthest and haziest, 1 = nearest */
+function terrain(o){
+  o=o||{};
+  const W=o.w||1200,H=o.h||300,seed=o.seed||7,id=o.id||("t"+seed);
+  const layers=o.layers||4;
+  const warm=o.warm||0;                       /* 0 cool blue, 1 golden hour */
+  const R=seeded(seed*31+5);
+  let defs="",body="";
+  /* colour ramp: distance drains saturation and lifts value */
+  const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+  const rgb=c=>"rgb("+c[0]+","+c[1]+","+c[2]+")";
+  const farC=mix([150,172,196],[214,186,168],warm);
+  const nearC=mix([24,38,56],[46,34,44],warm);
+  for(let i=0;i<layers;i++){
+    const depth=i/(layers-1||1);              /* 0 far, 1 near */
+    const base=(o.baseTop||H*0.30)+depth*(H*0.42);
+    const amp=(H*0.46)*(1-depth*0.42);
+    const pts=ridgeLine(seed+i*77,0.54,amp,base,6);
+    const top=mix(farC,nearC,depth);
+    const bot=mix(top,[Math.max(0,top[0]-26),Math.max(0,top[1]-24),Math.max(0,top[2]-18)],1);
+    const gid=id+"-g"+i;
+    defs+='<linearGradient id="'+gid+'" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0" stop-color="'+rgb(top)+'"/>'+
+      '<stop offset="1" stop-color="'+rgb(bot)+'"/></linearGradient>';
+    const path=ridgePath(pts,W,H);
+    /* snow only on the far, high ranges, and only above the snowline */
+    let snow="";
+    if(depth<0.5&&o.snow!==false){
+      const snowline=base-amp*0.30;
+      const cid=id+"-c"+i;
+      defs+='<clipPath id="'+cid+'"><path d="'+path+'"/></clipPath>'+
+        '<linearGradient id="'+cid+'g" x1="0" y1="0" x2="0" y2="1">'+
+        '<stop offset="0" stop-color="#FFFFFF" stop-opacity="'+(0.9-depth).toFixed(2)+'"/>'+
+        '<stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>';
+      snow='<rect x="0" y="0" width="'+W+'" height="'+snowline.toFixed(0)+
+           '" fill="url(#'+cid+'g)" clip-path="url(#'+cid+')"/>';
+    }
+    body+='<g opacity="'+(0.62+depth*0.38).toFixed(2)+'"><path d="'+path+'" fill="url(#'+gid+')"/>'+snow+'</g>';
+    /* fog pools in front of every range but the nearest */
+    if(depth<0.86){
+      const fy=base+amp*0.30+H*0.03;
+      body+='<ellipse cx="'+(W*(0.2+R()*0.6)).toFixed(0)+'" cy="'+fy.toFixed(0)+'" rx="'+(W*(0.34+R()*0.3)).toFixed(0)+
+            '" ry="'+(H*0.05).toFixed(0)+'" fill="#EAF0F6" opacity="'+(0.30-depth*0.2).toFixed(2)+'" filter="url(#'+id+'-blur)"/>';
+    }
+  }
+  defs+='<filter id="'+id+'-blur" x="-20%" y="-60%" width="140%" height="220%"><feGaussianBlur stdDeviation="'+(H*0.045).toFixed(1)+'"/></filter>';
+  /* film grain, very faint - it is what stops flat vector art looking flat */
+  defs+='<filter id="'+id+'-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" result="n"/>'+
+        '<feColorMatrix type="saturate" values="0" in="n" result="g"/>'+
+        '<feComponentTransfer in="g"><feFuncA type="linear" slope="0.06"/></feComponentTransfer></filter>';
+  body+='<rect width="'+W+'" height="'+H+'" filter="url(#'+id+'-grain)" opacity=".55" style="mix-blend-mode:overlay"/>';
+  return {defs,body,W,H};
+}
+function terrainSVG(o){
+  const t=terrain(o);
+  return '<svg viewBox="0 0 '+t.W+' '+t.H+'" preserveAspectRatio="'+(o.pa||"xMidYMax slice")+
+    '" aria-hidden="true"><defs>'+t.defs+'</defs>'+t.body+'</svg>';
+}
+/* the hero's range, redrawn when the light changes */
+function heroTerrain(){
+  const el=$("heroRange");if(!el)return;
+  const h=new Date().getHours()+new Date().getMinutes()/60;
+  const warm=(h>=17&&h<20.5)?0.85:(h<7.5?0.5:(h>=20.5||h<5)?0.12:0.1);
+  const key="hr"+Math.round(warm*10);
+  if(el.dataset.key===key)return;
+  el.dataset.key=key;
+  el.innerHTML=terrainSVG({seed:1804,w:1200,h:340,layers:5,warm,baseTop:120,id:"hero"});
+}
+
 /* ---------- section plates ----------
    A small original scene at the head of each tab, drawn rather than
    photographed: no downloads, no licences, works offline, and it
@@ -4734,7 +4845,24 @@ const PLATES={
   toolkit:{cap:"The toolkit",sub:"Lists, numbers, settings",art:"trail"},
   guide:{cap:"How it works",sub:"Clara shows you round",art:"aspen"}
 };
-function plateArt(kind){
+function plateArt(kind,seed){
+  const T=terrain({seed:seed||11,w:400,h:120,layers:4,warm:0.25,baseTop:26,id:"p"+(seed||11)});
+  const motif={
+    lens:`<circle cx="200" cy="54" r="26" fill="none" stroke="#F6E7C8" stroke-width="2.5" opacity=".8"/><circle cx="200" cy="54" r="14" fill="none" stroke="#F0C9D8" stroke-width="2" opacity=".7"/><circle cx="210" cy="45" r="3.4" fill="#fff" opacity=".75"/>`,
+    reel:Array.from({length:5},(_,i)=>`<rect x="${28+i*72}" y="36" width="50" height="34" rx="4" fill="none" stroke="#F6E7C8" stroke-width="1.8" opacity=".6"/>`).join(""),
+    stars:Array.from({length:9},(_,i)=>{const x=30+i*42,y=22+((i*17)%22);
+      return `<path d="m${x},${y} 2.4,5 5.5.7-4,3.8.9,5.5-4.8-2.6-4.8,2.6.9-5.5-4-3.8 5.5-.7z" fill="${i%3?"#F6E7C8":"#F0C9D8"}" opacity=".85"/>`}).join(""),
+    aspen:Array.from({length:6},(_,i)=>{const x=40+i*62,top=62+((i*13)%12);
+      return `<rect x="${x}" y="${top}" width="3" height="${118-top}" rx="1.5" fill="#EDE4D6" opacity=".85"/>`+
+             `<ellipse cx="${x+1.5}" cy="${top-4}" rx="15" ry="11" fill="#C9A93F" opacity=".6"/>`}).join(""),
+    lake:`<ellipse cx="200" cy="108" rx="160" ry="12" fill="#8FB4D4" opacity=".5"/><path d="M80,107h44M150,111h68M250,106h50" stroke="#EAF4FF" stroke-width="1.4" opacity=".55"/>`,
+    trail:`<path d="M-10,120 Q120,100 190,106 T410,92" stroke="#EDE4D6" stroke-width="3" fill="none" opacity=".55" stroke-dasharray="8 7"/>`,
+    meadow:Array.from({length:18},(_,i)=>`<circle cx="${14+i*22}" cy="${108+(i%3)*4}" r="2.4" fill="${["#F0C9D8","#F6E7C8","#FFFFFF"][i%3]}" opacity=".8"/>`).join(""),
+    valley:`<path d="M110,120 q90,-22 180,-4" stroke="#F6E7C8" stroke-width="2" fill="none" opacity=".4"/>`
+  }[kind]||"";
+  return '<svg viewBox="0 0 400 120" preserveAspectRatio="none"><defs>'+T.defs+'</defs>'+T.body+motif+'</svg>';
+}
+function plateArtOld(kind){
   /* one palette, four depths, so every plate reads as the same place */
   const sky=`<defs><linearGradient id="pg-${kind}" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#7C5A78"/><stop offset=".55" stop-color="#4E6B88"/><stop offset="1" stop-color="#2B4159"/>
@@ -4769,7 +4897,7 @@ function mountPlates(){
     const P=PLATES[v];
     const el=document.createElement("div");
     el.className="plate";
-    el.innerHTML=plateArt(P.art)+'<div class="txt"><span class="sub">'+P.sub+'</span><span class="cap">'+P.cap+"</span></div>";
+    el.innerHTML=plateArt(P.art,(P.cap||"").length*37+13)+'<div class="txt"><span class="sub">'+P.sub+'</span><span class="cap">'+P.cap+"</span></div>";
     stack.insertBefore(el,stack.firstChild);
   });
 }
@@ -4869,6 +4997,99 @@ $("tourList").addEventListener("click",e=>{
   $("tourStage").scrollIntoView({behavior:"smooth",block:"center"});
   speak(TOUR[tourI].say,true);
 });
+
+/* ---------- search everything ----------
+   One box over Clara's places, the agenda, and the parts of the app
+   itself - with a live look at the real world if none of that helps. */
+const SECTIONS=[
+ ["today","Today","the plan, weather and Clara's briefing"],
+ ["guide","How It Works","Clara's narrated tour"],
+ ["agenda","Agenda","the whole trip, day by day"],
+ ["nearby","Nearby","what's close, and the live search"],
+ ["explore","Explore","every place worth doing"],
+ ["camera","Camera","photo booth, filters, postcards"],
+ ["movie","Movie","the film and the yearbook"],
+ ["bingo","Bingo","the girls' trip game"],
+ ["friends","Friends","the map of everyone and the chat"],
+ ["toolkit","Toolkit","packing list, phone numbers, settings"]
+];
+function searchAll(q){
+  const out=$("gsOut");if(!out)return;
+  q=(q||"").trim();
+  if(q.length<2){out.innerHTML='<p class="small muted" style="margin:0">Type two letters or more.</p>';return}
+  const o=here||HOME,ql=q.toLowerCase();
+  const places=PLACES.map(p=>Object.assign({},p,{_d:dist(o.lat,o.lng,p.lat,p.lng)}))
+    .filter(p=>matchPlace(p,q)).sort((a,b)=>a._d-b._d).slice(0,8);
+  const days=[];
+  agenda().forEach((d,i)=>d.items.forEach(it=>{
+    if((it.what+" "+it.why+" "+it.when).toLowerCase().includes(ql)&&days.length<6)
+      days.push({i,d,it});
+  }));
+  const secs=SECTIONS.filter(([v,n,dsc])=>(n+" "+dsc).toLowerCase().includes(ql)).slice(0,4);
+  let h="";
+  if(places.length)h+='<div class="eyebrow" style="margin:.2rem 0 .5rem">Places</div>'+
+    places.map(p=>rowFor(p)).join("");
+  if(days.length)h+='<div class="eyebrow" style="margin:1rem 0 .5rem">In your agenda</div>'+
+    days.map(x=>`<div class="row clickable" data-gsday="${x.i}"><div class="ic">&#128197;</div>
+      <div class="bd"><div class="t">${esc(x.it.what)}</div>
+        <div class="s">${fmtDate(x.d.date)} &middot; ${esc(x.it.when)}</div></div>
+      <div class="rt">&#8594;</div></div>`).join("");
+  if(secs.length)h+='<div class="eyebrow" style="margin:1rem 0 .5rem">Parts of the app</div>'+
+    secs.map(([v,n,dsc])=>`<div class="row clickable" data-gsview="${v}"><div class="ic">&#9776;</div>
+      <div class="bd"><div class="t">${n}</div><div class="s">${dsc}</div></div>
+      <div class="rt">&#8594;</div></div>`).join("");
+  if(!h)h='<p class="small muted">Nothing of Clara\'s matches that.</p>';
+  h+=`<div class="btnrow" style="margin-top:1rem">
+    <button class="btn sm gold" data-gslive="${esc(q)}">&#128269; Search the real world for &ldquo;${esc(q)}&rdquo;</button>
+    <a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}" target="_blank" rel="noopener">&#128506;&#65039; Google Maps</a></div>`;
+  out.innerHTML=h;
+}
+function openSearch(){
+  openSheet("&#128269; Search everything",`
+    <div class="field"><input type="text" id="gsQ" placeholder="Places, your agenda, or any part of the app&hellip;" autocomplete="off"></div>
+    <div class="pills" id="gsQuick" style="margin:.2rem 0 .9rem"></div>
+    <div id="gsOut"></div>`);
+  const QUICK=["coffee","lavender","antiques","bighorn","mountains","gardens","pottery","shopping","lunch"];
+  $("gsQuick").innerHTML=QUICK.map(q=>`<button class="pill" data-gsq="${q}">${q}</button>`).join("");
+  const inp=$("gsQ");
+  setTimeout(()=>inp.focus(),120);
+  let t=null;
+  inp.addEventListener("input",()=>{clearTimeout(t);t=setTimeout(()=>searchAll(inp.value),160)});
+  inp.addEventListener("keydown",e=>{if(e.key==="Enter")searchAll(inp.value)});
+  searchAll("");
+}
+$("btnSearch").addEventListener("click",openSearch);
+$("shBody").addEventListener("click",e=>{
+  const q=e.target.closest("[data-gsq]");
+  if(q){$("gsQ").value=q.dataset.gsq;searchAll(q.dataset.gsq);return}
+  const v=e.target.closest("[data-gsview]");
+  if(v){closeSheet();location.hash="#/"+v.dataset.gsview;return}
+  const d=e.target.closest("[data-gsday]");
+  if(d){closeSheet();location.hash="#/agenda";
+    setTimeout(()=>{const el=$$("#agendaOut .day")[+d.dataset.gsday];
+      if(el){el.classList.add("open");el.scrollIntoView({behavior:"smooth",block:"center"})}},350);
+    return}
+  const L=e.target.closest("[data-gslive]");
+  if(L){
+    closeSheet();location.hash="#/nearby";
+    const term=L.dataset.gslive;
+    setTimeout(()=>{
+      $("nearSearch").value=term;nearQ=term;renderNearby();
+      const cat=guessCat(term);
+      if(cat)findNow(cat,+$("findRadius").value||5,true);
+      else{$("findStatus").innerHTML="Pick a category below to search live for <b>"+esc(term)+"</b> around you.";}
+    },350);
+  }
+});
+/* map a typed word onto one of the live-search categories */
+function guessCat(q){
+  const t=" "+q.toLowerCase()+" ";
+  for(const [w,cat] of NEAR_WORDS)if(t.includes(w))return cat;
+  if(/garden|park|walk|trail/.test(t))return "park";
+  if(/antique|gift|book|boutique|shop/.test(t))return "shop";
+  if(/museum|gallery|art|pottery/.test(t))return "art";
+  return null;
+}
 
 /* ---------- ask Clara ---------- */
 const NEAR_WORDS=[["light rail","transit"],["urgent care","medical"],["coffee","coffee"],["restroom","restroom"],
