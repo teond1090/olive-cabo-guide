@@ -240,6 +240,15 @@ label.fld{display:block;font-weight:700;font-size:.86rem;margin-bottom:.3rem;col
 
 /* ============ PILLS ============ */
 .pills{display:flex;flex-wrap:wrap;gap:.42rem}
+/* Long chip rows swipe sideways instead of stacking eight rows deep.
+   Momentum scrolling and snapping, so a thumb lands on a whole chip. */
+.pills.swipe{
+  flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+  padding-bottom:.35rem;margin:0 -1.2rem;padding-left:1.2rem;padding-right:1.2rem;
+}
+.pills.swipe::-webkit-scrollbar{display:none}
+.pills.swipe>*{flex:0 0 auto;scroll-snap-align:start}
 .pill{
   display:inline-flex;align-items:center;gap:.32rem;padding:.3rem .7rem;border-radius:999px;
   background:var(--card-2);border:2px solid var(--line-2);font-size:.8rem;font-weight:700;color:var(--ink-soft);
@@ -267,7 +276,11 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
 .row .ic{font-size:1.5rem;flex:0 0 2rem;text-align:center}
 .row .bd{flex:1;min-width:0}
 .row .t{font-weight:700;line-height:1.28}
-.row .s{font-size:.82rem;color:var(--ink-soft);line-height:1.4}
+/* two lines and then an ellipsis - a list you can skim beats a list that
+   tells you everything and runs off the bottom of the phone */
+.row .s{font-size:.82rem;color:var(--ink-soft);line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.row .t{overflow:hidden;text-overflow:ellipsis}
 .row .rt{flex:0 0 auto;text-align:right}
 .row.clickable{cursor:pointer;border-radius:12px;padding:.75rem .5rem;margin:0 -.5rem}
 .row.clickable:hover{background:var(--card-2)}
@@ -593,6 +606,49 @@ html[data-hc]{--cream:#FFFFFF;--cream-2:#F1F1F1;--card:#FFFFFF;--card-2:#F3F3F3;
 html[data-hc] body{background-image:none}
 html[data-hc] .card{border-width:3px}
 
+/* ============ FOLDING CARDS ============ */
+/* Every tab had grown into a scroll with no end. Cards now fold, so a
+   tab is a short list of what's there, and she opens the one she wants. */
+/* The whole header row is the button, sized for a thumb rather than a
+   mouse pointer: 56px tall, no 300ms tap delay, no text selection when
+   a tap turns into a drag, and a pressed state you can see, because a
+   touch screen has no hover to tell you anything is happening. */
+.card.fold>.card-h{
+  cursor:pointer;margin-bottom:0;padding:.15rem 0 .7rem;border-bottom:0;
+  min-height:3.5rem;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none;
+}
+.card.fold:not(.open)>.card-h{padding-bottom:.15rem}
+/* a closed card is a row in a list, not a card: tight padding, flat, so a
+   tab reads as a short menu of what is there instead of a wall of boxes */
+.card.fold:not(.open){padding:.5rem .95rem;box-shadow:none;background:var(--card)}
+.card.fold:not(.open)>.card-h h2,.card.fold:not(.open)>.card-h h3{
+  font-size:1.02rem;min-width:0;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.card.fold:not(.open)>.card-h .ic{width:2rem;height:2rem;font-size:.95rem}
+.card.fold:not(.open)::before{opacity:.5}
+.card.fold>.card-h:active{opacity:.62}
+.card.fold.open>.card-h{border-bottom:1px solid var(--line);margin-bottom:.9rem}
+.card.fold>.card-h .cv{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  width:2.4rem;height:2.4rem;margin:-.4rem -.35rem -.4rem .2rem;border-radius:50%;
+  font-size:1rem;color:var(--plum);background:var(--card-2);
+  border:1px solid var(--line);transition:transform .22s,background .2s;
+}
+.card.fold.open>.card-h .cv{transform:rotate(180deg);background:transparent;color:var(--ink-faint)}
+.card.fold>.foldbody{display:none}
+.card.fold.open>.foldbody{display:block;animation:unfold .26s ease}
+@keyframes unfold{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+/* the closed card says what it is for, so nothing is a mystery box */
+.card.fold>.card-h .hint{
+  font-size:.74rem;color:var(--ink-faint);font-weight:600;white-space:nowrap;
+  letter-spacing:.02em;
+}
+.card.fold.open>.card-h .hint{display:none}
+/* on a phone the title gets the room; the chevron is the affordance */
+@media(max-width:560px){.card.fold>.card-h .hint{display:none}}
+
 /* ============ ICONS ============ */
 .i{
   width:1.35em;height:1.35em;flex:0 0 auto;fill:none;stroke:currentColor;
@@ -824,47 +880,15 @@ h2{letter-spacing:-.02em}
 
     <div id="liveAlerts" class="stack"></div>
 
-    <div class="card a-rose">
-      <div class="card-h"><span class="ic">&#9749;</span><h3>Clara's Morning Briefing</h3></div>
-      <div id="briefing" class="muted">Getting the day ready&hellip;</div>
-      <div class="btnrow" style="margin-top:.9rem">
-        <button class="btn sm" id="brRead">&#128266; Read it to me</button>
-        <button class="btn sm ghost" id="brRefresh">&#8635; Refresh</button>
-        <button class="btn sm ghost" id="brShare">&#128228; Send to the girls</button>
-      </div>
-      <p class="tiny" style="margin:.8rem 0 0">&#127908; Or just ask her out loud &mdash; the microphone button up top. "Where's the nearest coffee?" "What's tomorrow?" "Spin the wheel."</p>
-    </div>
-
-    <div class="card a-rose" id="avatarCard" style="display:none">
-      <div class="card-h"><span class="ic">&#127909;</span><h3>Meet Clara</h3></div>
-      <video id="avatarVid" controls playsinline preload="metadata" src="clara-welcome.mp4"
-        style="width:100%;border-radius:14px;border:2px solid var(--line-2);background:#000"></video>
-      <p class="tiny" style="margin:.6rem 0 0">Thirty seconds from Clara herself &mdash; who she is, what she can do, and how to ask.</p>
-    </div>
-
-    <div class="card a-rose">
-      <div class="card-h"><span class="ic">&#127908;</span><h3>Remember This</h3><span class="pill rose" id="memCount"></span></div>
-      <p style="margin-top:0">Hold the button and say it out loud &mdash; what the woman in the antique shop told you, what the air smelled like, who said the funny thing. Clara keeps it, with the spot it happened.</p>
-      <button class="btn big plum" id="memBtn">&#127908; Hold to remember</button>
-      <div id="memStatus" class="small muted" style="margin-top:.5rem;text-align:center"></div>
-      <div id="memList" style="margin-top:.8rem"></div>
-    </div>
-
-    <div class="card a-gold" id="updateCard">
-      <div class="card-h"><span class="ic">&#128231;</span><h3>Today's Update Home</h3></div>
-      <p style="margin-top:0">One tap builds a little picture-card of today &mdash; where you went, how far, your best photograph and a line from Clara &mdash; ready to text to the family.</p>
-      <div class="btnrow"><button class="btn gold" id="updMake">&#128231; Make today's update</button></div>
-      <div id="updOut" style="margin-top:.9rem"></div>
-    </div>
-
-    <div class="card a-plum" id="diaryCard" style="display:none">
-      <div class="card-h"><span class="ic">&#128213;</span><h3>Clara's Diary &mdash; <span id="diaryDayLbl"></span></h3></div>
-      <div id="diaryOut"></div>
-      <div class="btnrow" style="margin-top:.8rem">
-        <button class="btn sm" id="diaryRead">&#128266; Read it to me</button>
-        <button class="btn sm ghost" id="diaryShare">&#128228; Send to the girls</button>
-      </div>
-      <p class="tiny" style="margin:.7rem 0 0">She writes one every evening &mdash; where you actually went, how far you walked, what the day was like. The whole diary collects in the Toolkit.</p>
+    <!-- The question she'll ask most, so it is the one card that starts open. -->
+    <div class="card a-plum" id="whatNowCard">
+      <div class="card-h"><span class="ic">&#129504;</span><h3>What Now?</h3></div>
+      <p style="margin-top:0">One tap and Clara weighs the hour, the weather, what's still on today's plan, how far you've already walked and what's actually open &mdash; and gives you one answer.</p>
+      <button class="btn big plum" id="whatNow">&#129504; What should we do right now?</button>
+      <div id="whatNowOut" style="margin-top:.9rem"></div>
+      <hr class="hr">
+      <p class="small muted" style="margin:0 0 .7rem">Two of you want gardens and one wants a brewery? Nobody argues with the wheel.</p>
+      <button class="btn gold" id="spinBtn">&#127920; Spin the wheel instead</button>
     </div>
 
     <div class="card a-slate">
@@ -876,29 +900,60 @@ h2{letter-spacing:-.02em}
       </div>
     </div>
 
+    <!-- One Clara, not three. Talking to her comes first, because that is
+         what people actually reach for; the morning briefing sits under it. -->
     <div class="card a-rose" id="askCard">
-      <div class="card-h"><span class="ic">&#127908;</span><h3>Just Ask Clara</h3></div>
+      <div class="card-h"><span class="ic">&#127908;</span><h3>Talk to Clara</h3></div>
       <p style="margin-top:0">Tap the big button and <b>talk to her normally</b> &mdash; no typing, no menus. She answers out loud.</p>
       <button class="btn big" id="btnMic">&#127908; Tap, then ask me anything</button>
       <div id="micHeard" class="small" style="margin-top:.6rem;text-align:center"></div>
       <div class="pills" id="askEg" style="margin-top:.7rem;justify-content:center"></div>
+      <hr class="hr">
+      <h4 style="margin:0 0 .5rem">&#9749; This morning</h4>
+      <div id="briefing" class="muted">Getting the day ready&hellip;</div>
+      <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn sm" id="brRead">&#128266; Read it to me</button>
+        <button class="btn sm ghost" id="brRefresh">&#8635; Refresh</button>
+        <button class="btn sm ghost" id="brShare">&#128228; Send to the girls</button>
+      </div>
+      <div id="avatarCard" style="display:none;margin-top:1rem">
+        <hr class="hr">
+        <h4 style="margin:0 0 .5rem">&#127909; Meet Clara</h4>
+        <video id="avatarVid" controls playsinline preload="metadata" src="clara-welcome.mp4"
+          style="width:100%;border-radius:14px;border:2px solid var(--line-2);background:#000"></video>
+        <p class="tiny" style="margin:.6rem 0 0">Thirty seconds from Clara herself &mdash; who she is and how to ask.</p>
+      </div>
     </div>
 
-    <div class="card a-plum" id="whatNowCard">
-      <div class="card-h"><span class="ic">&#129504;</span><h3>What Now?</h3></div>
-      <p style="margin-top:0">The question you'll ask most. One tap and Clara weighs the hour, the weather, what's still on today's plan, how far you've already walked and what's actually open &mdash; and gives you one answer.</p>
-      <button class="btn big plum" id="whatNow">&#129504; What should we do right now?</button>
-      <div id="whatNowOut" style="margin-top:.9rem"></div>
+    <div class="card a-rose">
+      <div class="card-h"><span class="ic">&#127908;</span><h3>Remember This</h3><span class="pill rose" id="memCount"></span></div>
+      <p style="margin-top:0">Hold the button and say it out loud &mdash; what the woman in the antique shop told you, what the air smelled like, who said the funny thing. Clara keeps it, with the spot it happened.</p>
+      <button class="btn big plum" id="memBtn">&#127908; Hold to remember</button>
+      <div id="memStatus" class="small muted" style="margin-top:.5rem;text-align:center"></div>
+      <div id="memList" style="margin-top:.8rem"></div>
     </div>
 
-    <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#127920;</span><h3>Can't Decide?</h3></div>
-      <p style="margin-top:0">Two of you want gardens and one wants a brewery? Let the wheel settle it. Nobody argues with the wheel.</p>
-      <button class="btn big gold" id="spinBtn">&#127920; Spin the wheel</button>
+    <!-- The card home and the evening diary are the same errand: telling
+         people what today was. One card, two halves. -->
+    <div class="card a-gold" id="updateCard">
+      <div class="card-h"><span class="ic">&#128231;</span><h3>Send Today Home</h3></div>
+      <p style="margin-top:0">One tap builds a little picture-card of today &mdash; where you went, how far, your best photograph and a line from Clara &mdash; ready to text to the family.</p>
+      <div class="btnrow"><button class="btn gold" id="updMake">&#128231; Make today's update</button></div>
+      <div id="updOut" style="margin-top:.9rem"></div>
+      <div id="diaryCard" style="display:none;margin-top:1rem">
+        <hr class="hr">
+        <h4 style="margin:0 0 .5rem">&#128213; Clara's Diary &mdash; <span id="diaryDayLbl"></span></h4>
+        <div id="diaryOut"></div>
+        <div class="btnrow" style="margin-top:.8rem">
+          <button class="btn sm" id="diaryRead">&#128266; Read it to me</button>
+          <button class="btn sm ghost" id="diaryShare">&#128228; Send to the girls</button>
+        </div>
+        <p class="tiny" style="margin:.7rem 0 0">She writes one every evening. The whole diary collects in the Toolkit.</p>
+      </div>
     </div>
 
     <div class="card a-sage">
-      <div class="card-h"><span class="ic">&#128225;</span><h3>Show Me What's Around Me</h3></div>
+      <div class="card-h"><span class="ic">&#128225;</span><h3>Where You Are</h3></div>
       <label class="switch">
         <input type="checkbox" id="gpsToggle" checked><span class="track"></span>
         <span><b>Watch for good things nearby</b><br><span class="small muted">On by default. Clara keeps an eye out and speaks up when something worth a stop is close.</span></span>
@@ -907,33 +962,24 @@ h2{letter-spacing:-.02em}
       <div id="gpsStatus" class="small muted" style="margin-top:.6rem">Finding you&hellip;</div>
       <div id="gpsHelp" style="display:none;margin-top:.8rem" class="note warn"></div>
       <div class="btnrow" style="margin-top:.8rem">
-        <a class="btn sm gold" href="#/nearby">&#128205; What's near me now</a>
+        <a class="btn sm gold" href="#/places">&#128205; What's near me now</a>
         <button class="btn sm ghost" id="pinHere">&#128204; Remember this spot</button>
       </div>
       <p class="tiny" style="margin:.7rem 0 0">Your location stays on this phone unless you switch on the Friends map yourself.</p>
     </div>
 
+    <!-- Weather and thin air are the same question: how do I dress and
+         how hard should today be. -->
     <div class="card a-slate">
-      <div class="card-h"><span class="ic">&#9925;</span><h3>Weather &amp; Air</h3></div>
+      <div class="card-h"><span class="ic">&#9925;</span><h3>Weather &amp; Thin Air</h3></div>
       <div id="wxNow"></div>
-      <div id="wxDays" class="pills" style="margin-top:.8rem"></div>
+      <div id="wxDays" class="pills swipe" style="margin-top:.8rem"></div>
       <div id="airQ" class="small muted" style="margin-top:.7rem"></div>
       <div id="wxAdvice" class="note" style="margin-top:.8rem;display:none"></div>
-    </div>
-
-    <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#127956;</span><h3>A Mile Up &mdash; Feeling Good</h3></div>
+      <hr class="hr">
+      <h4 style="margin:0 0 .4rem">&#127956; A mile up &mdash; feeling good</h4>
       <p class="small muted" style="margin-top:0">Littleton sits at about 5,350 feet, and the trails above town go higher. Nothing to worry about &mdash; just three habits that make the whole week easier.</p>
       <div id="healthPanel"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-h"><span class="ic">&#128202;</span><h3>The Trip So Far</h3></div>
-      <div class="stats" id="dashStats"></div>
-      <div style="margin-top:.9rem">
-        <div class="small muted" style="display:flex;justify-content:space-between"><span>Trip progress</span><span id="progTxt"></span></div>
-        <div class="bar" style="margin-top:.35rem"><i id="progBar" style="width:0"></i></div>
-      </div>
     </div>
 
   </div>
@@ -1038,7 +1084,7 @@ h2{letter-spacing:-.02em}
         <input type="text" id="nearSearch" placeholder="food &middot; gardens &middot; a walk &middot; antiques &middot; restrooms" autocomplete="off" aria-label="Search for anywhere">
       </div>
       <p class="tiny" style="margin:.5rem 0 .1rem">Clara searches her own list <b>and</b> everything really around you, together.</p>
-      <div class="pills" style="margin-top:.6rem" id="nearFilters"></div>
+      <div class="pills swipe" style="margin-top:.6rem" id="nearFilters"></div>
       <div id="nearHead" class="small muted" style="margin-top:.9rem"></div>
       <div id="nearList" style="margin-top:.2rem"></div>
       <div id="findStatus" class="small muted" style="margin-top:.5rem"></div>
@@ -1294,6 +1340,12 @@ h2{letter-spacing:-.02em}
         <div class="maplegend">&#128994; you &nbsp; &#128205; places visited</div>
       </div>
       <div class="stats" id="jStats" style="margin-top:.9rem"></div>
+      <hr class="hr">
+      <div class="stats" id="dashStats"></div>
+      <div style="margin-top:.9rem">
+        <div class="small muted" style="display:flex;justify-content:space-between"><span>Trip progress</span><span id="progTxt"></span></div>
+        <div class="bar" style="margin-top:.35rem"><i id="progBar" style="width:0"></i></div>
+      </div>
       <div class="btnrow" style="margin-top:.9rem">
         <button class="btn sm ghost" id="jGpx">&#11015;&#65039; Save the track</button>
         <button class="btn sm ghost" id="jClear">&#8635; Clear the trail</button>
@@ -1413,7 +1465,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-15-36";
+const BUILD="chris-2026-08-15-38";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -2233,7 +2285,7 @@ function renderNearbyFilters(){
     `<button class="pill ${alertCats().includes(k)?"on":""}" data-ac="${k}">${CATS[k].ic} ${CATS[k].n}</button>`).join("");
 }
 $("nearFilters").addEventListener("click",e=>{const b=e.target.closest("[data-nf]");if(!b)return;
-  nearFilter=b.dataset.nf;renderNearbyFilters();runSearch()});
+  nearFilter=b.dataset.nf;nearShowAll=false;renderNearbyFilters();runSearch()});
 $("alertCats").addEventListener("click",e=>{const b=e.target.closest("[data-ac]");if(!b)return;
   const k=b.dataset.ac,cur=alertCats();
   store.set("alertCats",cur.includes(k)?cur.filter(x=>x!==k):cur.concat(k));renderNearbyFilters()});
@@ -2249,17 +2301,21 @@ $("alertTest").addEventListener("click",()=>{
 });
 $("alertReset").addEventListener("click",()=>{alerted.clear();saveAlerted();toast("&#8635; She'll mention them all again")});
 
-let nearQ="",searchSeq=0,searchT=null;
+let nearQ="",searchSeq=0,searchT=null,nearShowAll=false;
 function renderNearby(){
   const chip=chipFor(nearFilter),cat=chip[3];
   let list=nearest(0,cat?[cat]:null);
   if(nearQ)list=list.filter(p=>matchPlace(p,nearQ));
-  list=list.slice(0,20);
+  const total=list.length;
+  list=list.slice(0,nearShowAll?40:5);
   const what=nearQ?("&ldquo;"+esc(nearQ)+"&rdquo;"):(nearFilter==="all"?"":chip[2].toLowerCase());
   $("nearHead").innerHTML=list.length
     ? "<div class='eyebrow' style='margin:.2rem 0 .3rem'>Clara's places"+(what?" &mdash; "+what:"")+"</div>"
     : (what?"<p class='small muted' style='margin:.2rem 0 0'>Nothing of Clara's for "+what+" &mdash; looking around you instead&hellip;</p>":"");
-  $("nearList").innerHTML=list.map(p=>rowFor(p)).join("");
+  $("nearList").innerHTML=list.map(p=>rowFor(p)).join("")+
+    (total>list.length?`<button class="btn sm ghost" id="nearMore" style="margin-top:.7rem">Show the other ${total-list.length}</button>`:"");
+  const mb=$("nearMore");
+  if(mb)mb.addEventListener("click",()=>{nearShowAll=true;renderNearby()});
 }
 /* both halves, fired together */
 function runSearch(){
@@ -2271,7 +2327,7 @@ function runSearch(){
   findNow(live,+$("findRadius").value||5,false,++searchSeq);
 }
 $("nearSearch").addEventListener("input",e=>{
-  nearQ=e.target.value.trim();
+  nearQ=e.target.value.trim();nearShowAll=false;
   renderNearby();                       /* Clara answers as you type */
   clearTimeout(searchT);
   searchT=setTimeout(runSearch,600);    /* the world answers a moment later */
@@ -3687,7 +3743,7 @@ async function findNow(cat,radiusMi,announce,seq){
 }
 function renderFound(){
   if(!found.length){$("findList").innerHTML="";return}
-  $("findList").innerHTML=found.slice(0,18).map(f=>`
+  $("findList").innerHTML=found.slice(0,6).map(f=>`
     <div class="row"><div class="ic">${f.ic}</div>
       <div class="bd"><div class="t">${esc(f.n)}</div>${f.info?`<div class="s">${esc(f.info.slice(0,80))}</div>`:""}</div>
       <div class="rt" style="display:flex;flex-direction:column;align-items:flex-end;gap:.2rem">
@@ -5618,29 +5674,29 @@ const TOUR=[
   say:"This first page is the one you'll open most. At the top there's a living Colorado sky that changes with the real hour and the real weather. Under it, your morning briefing, today's plan, and anything I've spotted nearby. If you only ever look at one page, look at this one."},
  {ic:"&#128197;",t:"Your agenda",go:"agenda",
   say:"Your whole trip is already in here — Tuesday the eighteenth through Saturday the twenty-second. Tap any day to open it up. Wednesday has two versions, the mountain loop your friend wanted and the gardens day, and one tap swaps between them. Every day has one item marked optional. That's the one to drop when you've had enough, and dropping it is not defeat."},
- {ic:"&#128205;",t:"Places",go:"places",
+ {ic:"&#128205;",t:"Places",go:"places",open:"Find Anything",
   say:"Everywhere worth going, in one list, nearest to you first. Search for anything at all — type food, or gardens, or somewhere easy, and I'll know what you mean. Tap a place and I'll tell you about it and hand you directions, and the star puts it on your shortlist. Underneath, a live search finds real things around you that aren't on my list at all. And as you wander, I'll speak up when something good comes close."},
- {ic:"&#127908;",t:"Remember this",go:"today",
+ {ic:"&#127908;",t:"Remember this",go:"today",open:"Remember This",
   say:"My favourite of the new ones. On the Today page there's a button that says hold to remember. Press it, say whatever you want to keep — what the woman in the antique shop told you, what somebody said that made you laugh — and let go. I keep the recording and the spot it happened, and it all goes into the story at the end. Nobody types those things down. Now you don't have to."},
  {ic:"&#128247;",t:"The camera",go:"camera",
   say:"This is not the ordinary camera. There's a big shutter, a countdown I say out loud so everyone knows when to smile, filters, and a photo booth that takes four shots and makes you a strip. Everything you take gets stamped with where you were, and lands in the movie maker."},
  {ic:"&#128140;",t:"Postcards & the movie",go:"movie",
   say:"Any photo can become a proper Greetings from Littleton postcard to text home. And when you're ready, the movie maker turns your photos into a real little film with titles and music. There's a yearbook too — your whole week on one card, ready to send the moment you land."},
- {ic:"&#129504;",t:"What now?",go:"today",
+ {ic:"&#129504;",t:"What now?",go:"today",open:"What Now?",
   say:"If you remember one thing from all this, remember this button. On the Today page it says: what should we do right now. Tap it and I'll weigh up the hour, the weather, what's still on today's plan, how far you've already walked and what's actually open at this moment — and I'll give you one answer, not a list. If you don't fancy it, tap something else and I'll think again."},
- {ic:"&#127920;",t:"When you can't decide",go:"today",
-  say:"Two of you want gardens and one wants a brewery? On the Today page, spin the wheel. It's a proper wheel — it clicks round, slows down, and lands on somewhere near you. Starred places come up more often, because the wheel is loyal. Nobody argues with the wheel."},
+ {ic:"&#127920;",t:"When you can't decide",go:"today",open:"What Now?",
+  say:"Two of you want gardens and one wants a brewery? On the Today page, open What Now and spin the wheel underneath it. It's a proper wheel — it clicks round, slows down, and lands on somewhere near you. Starred places come up more often, because the wheel is loyal. Nobody argues with the wheel."},
  {ic:"&#127903;&#65039;",t:"Bingo",go:"bingo",
   say:"Sixteen little missions for the week. Spot a bighorn. Green chile on something. Make a stranger laugh. Tap a square when it happens — and I stamp a few myself when I notice. A full line gets a celebration. The full card gets bragging rights forever."},
  {ic:"&#128101;",t:"Friends",go:"friends",
   say:"Switch on sharing and everyone with the same trip code appears on a map, so nobody gets lost in a car park again. There's a group chat too, and a Meet me here button that sends your exact spot."},
- {ic:"&#127908;",t:"Just ask me",go:"",
+ {ic:"&#127908;",t:"Just ask me",go:"today",open:"Talk to Clara",
   say:"Here's my favourite part. See the little microphone at the top of the screen? Tap it and simply talk to me. Where's the nearest coffee. What's the plan today. How far is Red Rocks. Spin the wheel. I'll answer out loud. You never have to hunt through menus."},
- {ic:"&#128231;",t:"A card home, every evening",go:"today",
+ {ic:"&#128231;",t:"A card home, every evening",go:"today",open:"Send Today Home",
   say:"The family will want to know you're having a lovely time, and you won't want to sit writing messages. On the Today page there's a button that makes a little picture card of the day — where you went, how far you walked, the route drawn out, your best photograph and a line from me — and your phone texts it like any other message. One tap, and everyone at home has had a postcard."},
- {ic:"&#128220;",t:"The story of your week",go:"toolkit",
+ {ic:"&#128220;",t:"The story of your week",go:"toolkit",open:"Your Trip So Far",
   say:"When it's all over, the Toolkit has two lovely things. I'll write the story of your week — everywhere you went, every mile, the notes you kept — in my own words, and read it to you. And I'll build a page for the family: one file with the map, the photographs and the story in it, that you can email to anyone. It opens on any phone with no app and no internet."},
- {ic:"&#128246;",t:"When there's no signal",go:"toolkit",
+ {ic:"&#128246;",t:"When there's no signal",go:"toolkit",open:"Works With No Signal",
   say:"The mountains eat phone signal, so in the Toolkit there's a button that saves the whole guide to your phone. Every place, every day plan, every checklist then works with no bars at all. Do that on the wifi before you set off, and you'll never be stranded without your plan."},
  {ic:"&#128150;",t:"That's the lot",go:"today",
   say:"That's everything. If you forget where something lives, tap More at the bottom right and it's all there in big letters. Or just ask me — that's what I'm for. Have a wonderful week, Chris. I'll be right here."}
@@ -5654,7 +5710,15 @@ function renderTour(){
   $("tourIc").innerHTML=c.ic;
   $("tourT").textContent=c.t;
   $("tourBody").textContent=c.say;
-  $("tourGoRow").innerHTML=c.go?`<a class="btn sm gold" href="#/${c.go}">Take me there &#8594;</a>`:"";
+  $("tourGoRow").innerHTML=c.go?`<button class="btn sm gold" id="tourGo">Take me there &#8594;</button>`:"";
+  const gb=$("tourGo");
+  if(gb)gb.addEventListener("click",()=>{
+    location.hash="#/"+c.go;
+    /* land on the thing she was just told about, already open */
+    if(c.open)setTimeout(()=>{openCard(c.go,c.open);
+      const t=document.querySelector("#view-"+c.go+" .card.fold.open");
+      if(t)t.scrollIntoView({behavior:"smooth",block:"start"});},220);
+  });
   $("tourDots").innerHTML=TOUR.map((x,i)=>
     `<button data-tdot="${i}" class="${i===tourI?"on":(tourSeen.includes(i)?"seen":"")}" aria-label="Part ${i+1}: ${esc(x.t)}"></button>`).join("");
   $("tourList").innerHTML=TOUR.map((x,i)=>
@@ -5866,6 +5930,95 @@ async function familyPage(){
   speak("Your family page is ready. Everything in one file — send it to whoever you like.",true);
 }
 $("famPage").addEventListener("click",familyPage);
+
+/* ============================================================
+   FOLDING THE LONG TABS
+   Each tab keeps one thing open - the reason you came - and folds
+   the rest into a labelled row you can open. Nothing is hidden: the
+   headings are all still on screen, which is the point. Which ones
+   are open is remembered per card.
+   ============================================================ */
+const FOLD_OPEN={          /* the one card that stays open on each tab */
+  /* Agenda opens nothing: the days themselves are the page, and the
+     planner form underneath them is a thing you touch once. */
+  today:"What Now?", places:"Find Anything", agenda:null,
+  camera:null, movie:"Turn the Photos Into a Little Film",
+  friends:"Where Everybody Is", toolkit:null, bingo:"Girls' Trip Bingo",
+  guide:"Clara Shows You Around"
+};
+const NEVER_FOLD=["Wednesday — you have two good days"];
+function foldCards(){
+  Object.keys(FOLD_OPEN).forEach(v=>{
+    const view=$("view-"+v);if(!view)return;
+    view.querySelectorAll(".card").forEach(card=>{
+      if(card.classList.contains("fold"))return;
+      const h=card.querySelector(":scope > .card-h");
+      if(!h)return;
+      const title=(h.querySelector("h3")||{}).textContent||"";
+      if(NEVER_FOLD.some(t=>title.indexOf(t)===0))return;
+      /* everything after the header becomes the foldable body */
+      const body=document.createElement("div");
+      body.className="foldbody";
+      let n=h.nextSibling;
+      while(n){const next=n.nextSibling;body.appendChild(n);n=next}
+      card.appendChild(body);
+      card.classList.add("fold");
+      const hint=document.createElement("span");
+      hint.className="hint";hint.textContent="Open";
+      h.appendChild(hint);
+      const cv=document.createElement("span");
+      cv.className="cv";cv.innerHTML="&#9662;";
+      cv.setAttribute("aria-hidden","true");
+      h.appendChild(cv);
+      const key="fold:"+v+":"+title.slice(0,26);
+      const remembered=store.get(key,null);
+      const open=remembered==null?(title===FOLD_OPEN[v]):remembered;
+      card.classList.toggle("open",!!open);
+      h.setAttribute("role","button");
+      h.setAttribute("tabindex","0");
+      h.setAttribute("aria-expanded",open?"true":"false");
+      const toggle=()=>{
+        const nowOpen=!card.classList.contains("open");
+        card.classList.toggle("open",nowOpen);
+        h.setAttribute("aria-expanded",nowOpen?"true":"false");
+        store.set(key,nowOpen);
+        if(nowOpen){
+          /* things that only draw when they can see themselves */
+          if(card.querySelector("#jCanvas"))setTimeout(renderJourney,60);
+          if(card.querySelector("#locCanvas"))setTimeout(drawFriendMap,60);
+          setTimeout(()=>card.scrollIntoView({behavior:"smooth",block:"nearest"}),120);
+        }
+      };
+      /* Touch: a tap opens it, a drag that started on the header does not.
+         Only "click" ever toggles - touchend never does - so a phone can
+         not fire both and land back where it started. */
+      let sy=0,sx=0,drag=false;
+      h.addEventListener("touchstart",e=>{
+        const t=e.touches[0];sy=t.clientY;sx=t.clientX;drag=false;
+      },{passive:true});
+      h.addEventListener("touchmove",e=>{
+        const t=e.touches[0];
+        if(Math.abs(t.clientY-sy)>12||Math.abs(t.clientX-sx)>12)drag=true;
+      },{passive:true});
+      h.addEventListener("click",e=>{
+        if(drag){drag=false;return}
+        if(e.target.closest("a,button,input,select,textarea"))return;
+        toggle();
+      });
+      h.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle()}});
+    });
+  });
+}
+/* open a card by name, for the code that jumps someone somewhere */
+function openCard(view,titleStarts){
+  const v=$("view-"+view);if(!v)return;
+  v.querySelectorAll(".card.fold").forEach(c=>{
+    const t=(c.querySelector("h3")||{}).textContent||"";
+    if(t.indexOf(titleStarts)===0&&!c.classList.contains("open")){
+      const h=c.querySelector(":scope > .card-h");if(h)h.click();
+    }
+  });
+}
 
 /* ============================================================
    TODAY'S UPDATE HOME
@@ -6479,7 +6632,7 @@ async function boot(){
   renderCamChips();renderCamGal();renderGal();
   renderChat();renderLoc();renderNotif();renderVoicePanel();renderPack();renderNumbers();renderSettings();
   renderBriefing();netCheck();
-  renderBingo();renderDiary();applyHC();renderTour();mountPlates();
+  renderBingo();renderDiary();applyHC();renderTour();mountPlates();foldCards();
 
   if(store.get("loc-share",false)){locSharing=true;$("locToggle").checked=true}
   chatSubscribe();locSubscribe();
