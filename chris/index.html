@@ -570,6 +570,23 @@ html[data-hc]{--cream:#FFFFFF;--cream-2:#F1F1F1;--card:#FFFFFF;--card-2:#F3F3F3;
 html[data-hc] body{background-image:none}
 html[data-hc] .card{border-width:3px}
 
+/* ============ THE TOUR ============ */
+.tourstage{
+  position:relative;border-radius:var(--r);padding:1.4rem 1.1rem;text-align:center;
+  background:linear-gradient(165deg,var(--card-2),var(--card));border:2.5px solid var(--line-2);
+  min-height:15rem;display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.tourstage.turn{animation:tflip .5s cubic-bezier(.2,.9,.3,1)}
+@keyframes tflip{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.tourbig{font-size:3.6rem;line-height:1}
+.tourdots{display:flex;gap:.35rem;justify-content:center;flex-wrap:wrap;margin-top:.9rem}
+.tourdots button{
+  width:.85rem;height:.85rem;padding:0;border-radius:50%;border:2px solid var(--line-2);
+  background:var(--card);cursor:pointer;min-height:0;
+}
+.tourdots button.on{background:var(--rose);border-color:var(--rose-dk);transform:scale(1.25)}
+.tourdots button.seen{background:var(--line-2)}
+
 /* ============ MISC BARS ============ */
 #updateBar{
   display:none;position:sticky;top:0;z-index:80;background:var(--gold);color:#3D1A31;
@@ -615,6 +632,7 @@ html[data-hc] .card{border-width:3px}
 <nav class="tabs" aria-label="Main">
   <div class="tabscroll">
     <a href="#/today"   data-view="today"><span class="ic">&#9728;&#65039;</span> Today</a>
+    <a href="#/guide"   data-view="guide"><span class="ic">&#127909;</span> How It Works</a>
     <a href="#/agenda"  data-view="agenda"><span class="ic">&#128197;</span> Agenda</a>
     <a href="#/nearby"  data-view="nearby"><span class="ic">&#128205;</span> Nearby</a>
     <a href="#/explore" data-view="explore"><span class="ic">&#127956;</span> Explore</a>
@@ -641,10 +659,10 @@ html[data-hc] .card{border-width:3px}
     </div>
 
     <div class="card a-gold" id="setupCard">
-      <div class="card-h"><span class="ic">&#128075;</span><h3>First time here? Two minutes.</h3></div>
-      <p style="margin:0 0 .8rem">Tell Clara your dates and who is coming, and she will build the whole agenda for you. You can change any of it later.</p>
+      <div class="card-h"><span class="ic">&#128075;</span><h3>First time here?</h3></div>
+      <p style="margin:0 0 .8rem">Your whole trip is already planned and loaded. Let Clara walk you through the app &mdash; about four minutes, and she does the talking.</p>
       <div class="btnrow">
-        <button class="btn gold" id="setupStart">&#10024; Set up my trip</button>
+        <a class="btn gold" href="#/guide">&#127909; Show me how it works</a>
         <button class="btn sm ghost" id="setupHide">Not now</button>
       </div>
     </div>
@@ -733,6 +751,45 @@ html[data-hc] .card{border-width:3px}
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- ============================ HOW IT WORKS ============================ -->
+<div class="view" id="view-guide">
+  <div class="stack">
+    <div class="card a-plum">
+      <div class="card-h"><span class="ic">&#127909;</span><h3>Clara Shows You Around</h3></div>
+      <p style="margin-top:0">Sit back &mdash; she'll talk you through the whole app, one piece at a time, about four minutes.
+      Every card has a button that takes you straight to the real thing.</p>
+      <div class="tourstage" id="tourStage">
+        <div class="tourbig" id="tourIc">&#128075;</div>
+        <h2 id="tourT" style="margin:.2rem 0 .4rem">Welcome</h2>
+        <p id="tourBody" style="margin:0"></p>
+        <div class="btnrow" style="margin-top:1rem" id="tourGoRow"></div>
+      </div>
+      <div class="tourdots" id="tourDots"></div>
+      <div class="btnrow" style="margin-top:.9rem;justify-content:center">
+        <button class="btn sm ghost" id="tourBack">&#8592; Back</button>
+        <button class="btn plum" id="tourPlay">&#9654;&#65039; Play the tour</button>
+        <button class="btn sm ghost" id="tourNext">Next &#8594;</button>
+      </div>
+      <div class="small muted" id="tourStatus" style="margin-top:.6rem;text-align:center"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><span class="ic">&#128220;</span><h3>Jump To Any Part</h3></div>
+      <div id="tourList"></div>
+    </div>
+
+    <div class="card a-gold">
+      <div class="card-h"><span class="ic">&#10067;</span><h3>The Three Things Worth Remembering</h3></div>
+      <div class="row"><div class="ic">&#127908;</div><div class="bd"><div class="t">Ask her out loud</div>
+        <div class="s">Tap the microphone at the top and just talk. "Where's the nearest coffee?" "What's the plan today?"</div></div></div>
+      <div class="row"><div class="ic">&#9776;</div><div class="bd"><div class="t">More shows everything</div>
+        <div class="s">The button at the bottom right opens every part of the app as a big labelled tile.</div></div></div>
+      <div class="row"><div class="ic">AA</div><div class="bd"><div class="t">Text too small? Tap AA</div>
+        <div class="s">Top right, twice for extra large. Nothing else changes.</div></div></div>
+    </div>
   </div>
 </div>
 
@@ -1071,11 +1128,6 @@ html[data-hc] .card{border-width:3px}
       <div class="btnrow"><button class="btn sage" id="cacheNow">&#128190; Save the guide to this phone</button></div>
     </div>
 
-    <div class="card a-plum">
-      <div class="card-h"><span class="ic">&#128266;</span><h3>Clara's Voice</h3></div>
-      <div id="voicePanel"></div>
-    </div>
-
     <div class="card a-gold">
       <div class="card-h"><span class="ic">&#9989;</span><h3>Before You Fly</h3></div>
       <div id="packList"></div>
@@ -1148,7 +1200,7 @@ html[data-hc] .card{border-width:3px}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-14-23";
+const BUILD="chris-2026-08-14-24";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -1496,25 +1548,27 @@ function pickVoice(){
 }
 if("speechSynthesis" in window)speechSynthesis.onvoiceschanged=()=>{_picked=null;pickVoice()};
 
-function browserSpeak(text){
-  if(!("speechSynthesis" in window))return;
+function browserSpeak(text,onEnd){
+  if(!("speechSynthesis" in window)){onEnd&&onEnd();return}
   try{
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(String(text).replace(/[#*_>]/g,"").replace(/&[a-z]+;/g,""));
     u.rate=.9; u.pitch=store.get("devVoice","")?.95:.82; u.volume=1; u.lang="en-US";
     const v=pickVoice();if(v)u.voice=v;
+    if(onEnd)u.onend=onEnd;
     speechSynthesis.speak(u);
-  }catch(e){}
+  }catch(e){onEnd&&onEnd()}
 }
 async function sha(s){
   const b=await crypto.subtle.digest("SHA-1",new TextEncoder().encode(s));
   return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
 }
-function playBlob(blob,onFail){
+function playBlob(blob,onFail,onEnd){
   stopSpeaking();
   try{
     const a=new Audio(URL.createObjectURL(blob));
     a.onerror=()=>{curAudio=null;onFail&&onFail()};
+    a.onended=()=>{curAudio=null;onEnd&&onEnd()};
     curAudio=a;
     const p=a.play();
     if(p&&p.catch)p.catch(()=>{curAudio=null;onFail&&onFail()});
@@ -1543,7 +1597,7 @@ async function resolveVoice(key){
     return true;
   }catch(e){return false}
 }
-async function claraTTS(text,_retried){
+async function claraTTS(text,_retried,onEnd){
   const key=xiKey();
   if(!key)return false;
   const clean=String(text).replace(/<[^>]*>/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim().slice(0,1500);
@@ -1585,17 +1639,17 @@ async function claraTTS(text,_retried){
     }
     const blob=await res.blob();
     if(!blob||blob.size<200)return false;
-    playBlob(blob,()=>browserSpeak(clean));
+    playBlob(blob,()=>browserSpeak(clean,onEnd),onEnd);
     return true;
   }catch(e){return false}
 }
 /* speak(text, force) - force ignores the on/off switch, for things
    the user asked for out loud by tapping a Read-it-to-me button */
-function speak(text,force){
-  if(!voiceOn&&!force)return;
+function speak(text,force,onEnd){
+  if(!voiceOn&&!force){onEnd&&onEnd();return}
   const clean=String(text).replace(/<[^>]*>/g," ").replace(/&nbsp;/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim();
-  if(!clean)return;
-  claraTTS(clean).then(ok=>{if(!ok)browserSpeak(clean)});
+  if(!clean){onEnd&&onEnd();return}
+  claraTTS(clean,false,onEnd).then(ok=>{if(!ok)browserSpeak(clean,onEnd)});
 }
 function syncVoiceBtn(){
   const b=$("btnVoice");
@@ -1645,6 +1699,7 @@ function showView(v){
     s.scrollTo({left:Math.max(0,left-s.clientWidth/2+a.clientWidth/2),behavior:"smooth"});
   }
   if(ok!=="camera")camStop();
+  if(ok!=="guide"&&typeof tourStop==="function")tourStop();
   if(ok==="friends")drawFriendMap();
 }
 function route(){showView((location.hash||"#/today").replace("#/",""))}
@@ -1697,7 +1752,7 @@ $("tpWho").addEventListener("change",()=>{
   const t=trip();t.who=$("tpWho").value.split("\n").map(s=>s.trim()).filter(Boolean).slice(0,10);
   if(!t.who.length)t.who=["Chris"];saveTrip(t);renderHero()});
 
-$("setupStart").addEventListener("click",()=>{location.hash="#/agenda";setTimeout(()=>$("tpStart").focus(),350)});
+
 $("setupHide").addEventListener("click",()=>{store.set("setup-hide",true);$("setupCard").style.display="none"});
 
 /* ============================================================
@@ -1706,7 +1761,7 @@ $("setupHide").addEventListener("click",()=>{store.set("setup-hide",true);$("set
 function renderHero(){
   skyRender();
   const t=trip(),d=tripDay();
-  $("setupCard").style.display=(t.start||store.get("setup-hide",false))?"none":"block";
+  $("setupCard").style.display=(store.get("tour-done",false)||store.get("setup-hide",false))?"none":"block";
   if(!t.start||!t.end){
     $("heroLbl").textContent="Littleton, Colorado";
     $("heroTitle").textContent="Chris's Girls' Trip";
@@ -3550,6 +3605,7 @@ async function xiCheck(){
   out.innerHTML="ElevenLabs answered with an error ("+pr.status+(pr.code?" &middot; "+esc(pr.code):"")+"). "+(pr.msg?esc(pr.msg.slice(0,140)):"Give it a minute and try again.");
 }
 function renderVoicePanel(){
+  if(!$("voicePanel"))return;          /* the card was retired; studio lives in Settings */
   $("voicePanel").innerHTML=`
     <p style="margin-top:0">&#9989; <b>Clara has her real voice${store.get("xiVoiceName","")?" — <i>"+esc(store.get("xiVoiceName",""))+"</i>":""}.</b>
     It's built in — nothing to set up. She reads the briefing, the day plans, the diary, every place description and the camera countdown out loud.</p>
@@ -3683,6 +3739,7 @@ async function vtFix(){
 function openMore(){
   const cur=(location.hash||"#/today").replace("#/","");
   const T=[["today","&#9728;&#65039;","Today","The plan, the weather, Clara's briefing"],
+    ["guide","&#127909;","How It Works","Clara shows you round, out loud"],
     ["agenda","&#128197;","Agenda","The whole trip, day by day"],
     ["nearby","&#128205;","Nearby","What's close, and find-it-right-now"],
     ["explore","&#127956;","Explore","Every place worth doing"],
@@ -3757,7 +3814,9 @@ function renderSettings(){
       <button class="btn sm ghost" id="setExport">&#128228; Export everything</button>
       <button class="btn sm ghost" id="setRebuild">&#8635; Rebuild the agenda</button>
       <button class="btn sm ghost" id="setWipe" style="color:var(--danger)">&#128465;&#65039; Start over</button>
-    </div>`;
+    </div>
+    <p class="tiny" style="margin:.9rem 0 0">Clara's voice is set up and working.
+      <a href="#" id="setVoice">Change her voice</a> &middot; <a href="#" id="setVoiceFix">voice trouble</a>.</p>`;
   $("setGps").addEventListener("change",e=>{$("gpsToggle").checked=e.target.checked;$("gpsToggle").dispatchEvent(new Event("change"))});
   $("setAlerts").addEventListener("change",e=>{$("alertToggle").checked=e.target.checked;store.set("alertsOn",e.target.checked)});
   $("setHC").addEventListener("change",e=>{store.set("hc",e.target.checked);applyHC();toast(e.target.checked?"High contrast on":"High contrast off")});
@@ -3767,6 +3826,8 @@ function renderSettings(){
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="littleton-trip.json";a.click();
     toast("&#128228; Exported");
   });
+  $("setVoice").addEventListener("click",e=>{e.preventDefault();voiceStudio()});
+  $("setVoiceFix").addEventListener("click",e=>{e.preventDefault();voiceTrouble()});
   $("setRebuild").addEventListener("click",()=>buildAgenda(true));
   $("setWipe").addEventListener("click",()=>{
     if(!confirm("This clears the trip, the agenda, the shortlist and the saved spots on this phone. Photos are kept. Carry on?"))return;
@@ -4545,6 +4606,102 @@ $("shBody").addEventListener("click",e=>{
   const pk=e.target.closest("[data-pkeep]");if(pk){vsKeep(+pk.dataset.pkeep);return}
 });
 
+/* ---------- Clara's guided tour ----------
+   She narrates; each chapter advances when she stops talking, with a
+   timer as the backstop for phones that never fire the ended event.
+   Leaving the tab stops her mid-sentence. */
+const TOUR=[
+ {ic:"&#128075;",t:"Hello, Chris",go:"",
+  say:"Hello Chris, and welcome to Colorado. I'm Clara, and this little app is yours for the week. I've already planned the whole trip, I'll keep an eye out for lovely things near you, and I'll do the remembering so you don't have to. Let me show you round — it takes about four minutes, and you can stop me any time."},
+ {ic:"&#9728;&#65039;",t:"Today",go:"today",
+  say:"This first page is the one you'll open most. At the top there's a living Colorado sky that changes with the real hour and the real weather. Under it, your morning briefing, today's plan, and anything I've spotted nearby. If you only ever look at one page, look at this one."},
+ {ic:"&#128197;",t:"Your agenda",go:"agenda",
+  say:"Your whole trip is already in here — Tuesday the eighteenth through Saturday the twenty-second. Tap any day to open it up. Wednesday has two versions, the mountain loop your friend wanted and the gardens day, and one tap swaps between them. Every day has one item marked optional. That's the one to drop when you've had enough, and dropping it is not defeat."},
+ {ic:"&#128205;",t:"Nearby",go:"nearby",
+  say:"This is the clever one. As you move about, I watch what's around you, and when something good comes close I'll speak up — once per place, never nagging. Below that is a live search: tap coffee, or restrooms, or pharmacy, and I'll find the nearest ones wherever you happen to be standing."},
+ {ic:"&#127956;",t:"Explore",go:"explore",
+  say:"Every place I know about, sorted by how far it is from you. Tap any one and I'll tell you about it and hand you directions. If you see something you fancy, tap the star — I'll build it into your days."},
+ {ic:"&#128247;",t:"The camera",go:"camera",
+  say:"This is not the ordinary camera. There's a big shutter, a countdown I say out loud so everyone knows when to smile, filters, and a photo booth that takes four shots and makes you a strip. Everything you take gets stamped with where you were, and lands in the movie maker."},
+ {ic:"&#128140;",t:"Postcards & the movie",go:"movie",
+  say:"Any photo can become a proper Greetings from Littleton postcard to text home. And when you're ready, the movie maker turns your photos into a real little film with titles and music. There's a yearbook too — your whole week on one card, ready to send the moment you land."},
+ {ic:"&#127903;&#65039;",t:"Bingo",go:"bingo",
+  say:"Sixteen little missions for the week. Spot a bighorn. Green chile on something. Make a stranger laugh. Tap a square when it happens — and I stamp a few myself when I notice. A full line gets a celebration. The full card gets bragging rights forever."},
+ {ic:"&#128101;",t:"Friends",go:"friends",
+  say:"Switch on sharing and everyone with the same trip code appears on a map, so nobody gets lost in a car park again. There's a group chat too, and a Meet me here button that sends your exact spot."},
+ {ic:"&#127908;",t:"Just ask me",go:"",
+  say:"Here's my favourite part. See the little microphone at the top of the screen? Tap it and simply talk to me. Where's the nearest coffee. What's the plan today. How far is Red Rocks. Spin the wheel. I'll answer out loud. You never have to hunt through menus."},
+ {ic:"&#128246;",t:"When there's no signal",go:"toolkit",
+  say:"The mountains eat phone signal, so in the Toolkit there's a button that saves the whole guide to your phone. Every place, every day plan, every checklist then works with no bars at all. Do that on the wifi before you set off, and you'll never be stranded without your plan."},
+ {ic:"&#128150;",t:"That's the lot",go:"today",
+  say:"That's everything. If you forget where something lives, tap More at the bottom right and it's all there in big letters. Or just ask me — that's what I'm for. Have a wonderful week, Chris. I'll be right here."}
+];
+let tourI=0,tourPlaying=false,tourTimer=null,tourSeen=store.get("tour-seen",[]);
+function tourWords(n){return (TOUR[n].say||"").split(/\s+/).length}
+function renderTour(){
+  const c=TOUR[tourI];
+  const st=$("tourStage");
+  st.classList.remove("turn");void st.offsetWidth;st.classList.add("turn");
+  $("tourIc").innerHTML=c.ic;
+  $("tourT").textContent=c.t;
+  $("tourBody").textContent=c.say;
+  $("tourGoRow").innerHTML=c.go?`<a class="btn sm gold" href="#/${c.go}">Take me there &#8594;</a>`:"";
+  $("tourDots").innerHTML=TOUR.map((x,i)=>
+    `<button data-tdot="${i}" class="${i===tourI?"on":(tourSeen.includes(i)?"seen":"")}" aria-label="Part ${i+1}: ${esc(x.t)}"></button>`).join("");
+  $("tourList").innerHTML=TOUR.map((x,i)=>
+    `<div class="row clickable" data-tgo="${i}"><div class="ic">${x.ic}</div>
+      <div class="bd"><div class="t">${i+1}. ${esc(x.t)}</div></div>
+      <div class="rt">${tourSeen.includes(i)?"&#9989;":"&#9654;&#65039;"}</div></div>`).join("");
+  $("tourStatus").textContent=tourPlaying?("Part "+(tourI+1)+" of "+TOUR.length+" — tap Play to pause")
+                                         :("Part "+(tourI+1)+" of "+TOUR.length);
+  $("tourPlay").innerHTML=tourPlaying?"&#9209;&#65039; Pause":"&#9654;&#65039; Play the tour";
+  if(!tourSeen.includes(tourI)){tourSeen.push(tourI);store.set("tour-seen",tourSeen)}
+}
+function tourSpeakCurrent(){
+  clearTimeout(tourTimer);
+  let done=false;
+  const advance=()=>{
+    if(done||!tourPlaying)return;
+    done=true;
+    if(tourI<TOUR.length-1){tourI++;renderTour();tourSpeakCurrent()}
+    else{tourPlaying=false;renderTour();store.set("tour-done",true);celebrate("done")}
+  };
+  speak(TOUR[tourI].say,true,advance);
+  /* backstop: some phones never fire the ended event */
+  tourTimer=setTimeout(advance,Math.max(9000,tourWords(tourI)/2.3*1000+3500));
+}
+function tourStop(){
+  tourPlaying=false;clearTimeout(tourTimer);stopSpeaking();
+  if($("tourPlay"))renderTour();
+}
+$("tourPlay").addEventListener("click",()=>{
+  if(tourPlaying){tourStop();return}
+  tourPlaying=true;renderTour();tourSpeakCurrent();
+});
+$("tourNext").addEventListener("click",()=>{
+  clearTimeout(tourTimer);stopSpeaking();
+  tourI=(tourI+1)%TOUR.length;renderTour();
+  if(tourPlaying)tourSpeakCurrent();else speak(TOUR[tourI].say,true);
+});
+$("tourBack").addEventListener("click",()=>{
+  clearTimeout(tourTimer);stopSpeaking();
+  tourI=(tourI-1+TOUR.length)%TOUR.length;renderTour();
+  if(tourPlaying)tourSpeakCurrent();else speak(TOUR[tourI].say,true);
+});
+$("tourDots").addEventListener("click",e=>{
+  const b=e.target.closest("[data-tdot]");if(!b)return;
+  clearTimeout(tourTimer);stopSpeaking();
+  tourI=+b.dataset.tdot;renderTour();
+  if(tourPlaying)tourSpeakCurrent();else speak(TOUR[tourI].say,true);
+});
+$("tourList").addEventListener("click",e=>{
+  const b=e.target.closest("[data-tgo]");if(!b)return;
+  clearTimeout(tourTimer);stopSpeaking();
+  tourI=+b.dataset.tgo;renderTour();
+  $("tourStage").scrollIntoView({behavior:"smooth",block:"center"});
+  speak(TOUR[tourI].say,true);
+});
+
 /* ---------- ask Clara ---------- */
 const NEAR_WORDS=[["light rail","transit"],["urgent care","medical"],["coffee","coffee"],["restroom","restroom"],
   ["bathroom","restroom"],["toilet","restroom"],["ladies room","restroom"],["pharmacy","pharmacy"],
@@ -4678,7 +4835,7 @@ async function boot(){
   renderCamChips();renderCamGal();renderGal();
   renderChat();renderLoc();renderNotif();renderVoicePanel();renderPack();renderNumbers();renderSettings();
   renderBriefing();netCheck();
-  renderBingo();renderDiary();applyHC();
+  renderBingo();renderDiary();applyHC();renderTour();
 
   if(store.get("loc-share",false)){locSharing=true;$("locToggle").checked=true}
   chatSubscribe();locSubscribe();
