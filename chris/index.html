@@ -87,7 +87,7 @@ b,strong{font-weight:700}
 /* ============ HEADER ============ */
 header.top{
   position:relative;overflow:hidden;color:#FCEFF4;
-  padding:calc(.9rem + env(safe-area-inset-top)) 0 3.2rem;
+  padding:calc(.9rem + env(safe-area-inset-top)) 0 4.6rem;
   background-color:var(--plum);
   background-image:
     radial-gradient(ellipse at 50% -25%, rgba(240,206,134,.34), transparent 60%),
@@ -97,14 +97,21 @@ header.top{
   box-shadow:inset 0 -3px 0 var(--gold), 0 4px 16px rgba(61,26,49,.32);
 }
 header.top::before{
-  content:"";position:absolute;inset:.55rem .55rem 2.7rem;
+  content:"";position:absolute;inset:.55rem .55rem 4.1rem;
   border:2px dashed rgba(240,201,216,.34);border-radius:14px;pointer-events:none;
 }
-/* foothills ridgeline spilling into the page */
-header.top::after{
-  content:"";position:absolute;left:0;right:0;bottom:-1px;height:2.9rem;pointer-events:none;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,120 V80 L96,50 Q116,42 136,54 L206,86 L300,32 Q318,22 334,36 L406,88 L512,48 Q530,40 546,52 L640,92 L748,42 Q766,32 782,46 L872,82 L992,36 Q1010,26 1026,40 L1108,78 L1200,54 V120Z' fill='%23FBF5F1'/%3E%3C/svg%3E") bottom/100% 100% no-repeat;
+/* The real western skyline from Highlands Ranch: Mount Blue Sky and
+   Mount Bierstadt over the hogback, drawn to their actual profile.
+   The nearest layer is the page colour, so the plains read as the
+   page itself rising into the header. */
+.skyline{position:absolute;left:0;right:0;bottom:-1px;height:5.4rem;pointer-events:none;z-index:1}
+.skyline svg{width:100%;height:100%;display:block}
+.skyline .peakname{
+  position:absolute;right:1rem;bottom:1.05rem;z-index:2;
+  font-size:.5rem;font-weight:800;letter-spacing:.19em;text-transform:uppercase;
+  color:rgba(240,206,134,.85);text-shadow:0 1px 5px rgba(40,16,34,.9);
 }
+@media(max-width:420px){.skyline .peakname{display:none}}
 .brandbar{display:flex;align-items:center;gap:.7rem;position:relative;z-index:2;flex-wrap:wrap}
 /* four header buttons no longer fit beside the title on a phone -
    they drop to their own row instead of squeezing the name out */
@@ -127,6 +134,17 @@ header.top::after{
   display:inline-flex;align-items:center;justify-content:center;gap:1px;font-family:inherit;
 }
 .icon-btn[aria-pressed="true"]{background:var(--gold);border-color:var(--gold-lt);color:#3D1A31}
+/* six controls have to fit a 360px phone, so they shrink rather than
+   spill off the edge - still comfortably over the 44px tap minimum */
+@media(max-width:520px){
+  .hdr-actions{gap:.28rem;width:100%;justify-content:space-between}
+  .icon-btn{min-width:2.55rem;min-height:2.55rem;border-radius:11px}
+  .icon-btn .i{width:1.15rem;height:1.15rem}
+}
+@media(max-width:380px){
+  .icon-btn{min-width:2.35rem;min-height:2.35rem}
+  .icon-btn .i{width:1.05rem;height:1.05rem}
+}
 .icon-btn .i{width:1.25rem;height:1.25rem;vertical-align:middle}
 
 /* ============ NAV ============ */
@@ -732,6 +750,39 @@ h2{letter-spacing:-.02em}
       <button class="icon-btn" id="btnText" title="Text size" aria-label="Change text size"><b style="font-size:.85rem">A</b><b style="font-size:1.15rem">A</b></button>
     </div>
   </div>
+  <div class="skyline" aria-hidden="true">
+    <svg viewBox="0 0 1200 170" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="fr1" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#C9AEC4"/><stop offset="1" stop-color="#8A6E8C"/></linearGradient>
+        <linearGradient id="fr2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#8A6D8B"/><stop offset="1" stop-color="#63496A"/></linearGradient>
+        <linearGradient id="fr3" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#5E4364"/><stop offset="1" stop-color="#432F4C"/></linearGradient>
+        <clipPath id="frFar"><path d="M0,170 V104 L58,97 118,88 172,95 232,72 282,80 334,64 384,74 432,58
+          474,44 506,34 536,24 562,19 588,23 614,31 638,45 662,37 688,28 714,35 742,52 786,45
+          834,62 884,55 936,70 992,62 1052,76 1112,68 1200,80 V170Z"/></clipPath>
+      </defs>
+      <!-- far range: Mount Blue Sky at centre, the Sawtooth notch, then Bierstadt -->
+      <path d="M0,170 V104 L58,97 118,88 172,95 232,72 282,80 334,64 384,74 432,58
+        474,44 506,34 536,24 562,19 588,23 614,31 638,45 662,37 688,28 714,35 742,52 786,45
+        834,62 884,55 936,70 992,62 1052,76 1112,68 1200,80 V170Z" fill="url(#fr1)" opacity=".8"/>
+      <!-- summit snow, clipped so it can only sit on the mountain itself -->
+      <g clip-path="url(#frFar)">
+        <path d="M470,52 L506,34 536,24 562,19 588,23 614,31 640,48 600,44 566,33 534,38 504,46Z" fill="#FDF3E6" opacity=".75"/>
+        <path d="M660,44 L688,28 714,35 736,52 706,46 686,38Z" fill="#FDF3E6" opacity=".58"/>
+      </g>
+      <!-- mid range -->
+      <path d="M0,170 V126 L74,116 148,124 218,108 296,120 368,104 448,118 524,102 604,114
+        682,98 760,112 842,100 920,114 1002,104 1082,118 1160,108 1200,114 V170Z" fill="url(#fr2)" opacity=".85"/>
+      <!-- the hogback: one long tilted ridge, the way it actually runs -->
+      <path d="M0,170 V148 L110,142 224,134 344,138 448,131 566,136 686,129 802,136 922,130
+        1040,137 1150,132 1200,136 V170Z" fill="url(#fr3)"/>
+      <!-- the plains, in the page's own colour -->
+      <path d="M0,170 V158 Q150,150 300,156 T600,155 T900,153 T1200,157 V170Z" fill="#FBF5F1"/>
+    </svg>
+    <div class="peakname">Mount Blue Sky &middot; 14,265 ft</div>
+  </div>
 </header>
 
 <nav class="tabs" aria-label="Main">
@@ -1310,7 +1361,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-14-27";
+const BUILD="chris-2026-08-14-28";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
