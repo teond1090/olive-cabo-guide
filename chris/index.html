@@ -465,7 +465,7 @@ button.pill{cursor:pointer;font-family:inherit;min-height:44px}
   display:grid;place-items:center;flex:0 0 auto;
 }
 .shutter:active{transform:translateY(3px);box-shadow:0 1px 0 var(--plum-dk)}
-.shutter.rec{background:linear-gradient(170deg,#D9534F,#A62D3E);animation:pulse 1s infinite}
+.btn.rec,.shutter.rec{background:linear-gradient(170deg,#D9534F,#A62D3E);animation:pulse 1s infinite}
 @keyframes pulse{50%{box-shadow:0 4px 0 var(--plum-dk),0 0 0 12px rgba(166,45,62,.22)}}
 .fx{display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;padding:.15rem 0}
 .fx::-webkit-scrollbar{display:none}
@@ -842,6 +842,14 @@ h2{letter-spacing:-.02em}
       <video id="avatarVid" controls playsinline preload="metadata" src="clara-welcome.mp4"
         style="width:100%;border-radius:14px;border:2px solid var(--line-2);background:#000"></video>
       <p class="tiny" style="margin:.6rem 0 0">Thirty seconds from Clara herself &mdash; who she is, what she can do, and how to ask.</p>
+    </div>
+
+    <div class="card a-rose">
+      <div class="card-h"><span class="ic">&#127908;</span><h3>Remember This</h3><span class="pill rose" id="memCount"></span></div>
+      <p style="margin-top:0">Hold the button and say it out loud &mdash; what the woman in the antique shop told you, what the air smelled like, who said the funny thing. Clara keeps it, with the spot it happened.</p>
+      <button class="btn big plum" id="memBtn">&#127908; Hold to remember</button>
+      <div id="memStatus" class="small muted" style="margin-top:.5rem;text-align:center"></div>
+      <div id="memList" style="margin-top:.8rem"></div>
     </div>
 
     <div class="card a-plum" id="diaryCard" style="display:none">
@@ -1325,7 +1333,10 @@ h2{letter-spacing:-.02em}
     <div class="card a-rose">
       <div class="card-h"><span class="ic">&#127881;</span><h3>The Whole Trip, Remembered</h3></div>
       <p style="margin-top:0">When it's over — or any time you fancy — Clara writes the story of the week: everywhere you went, every mile, every photo, in her own words.</p>
-      <div class="btnrow"><button class="btn" id="recapMake">&#128220; Write my trip story</button></div>
+      <div class="btnrow">
+        <button class="btn" id="recapMake">&#128220; Write my trip story</button>
+        <button class="btn gold" id="famPage">&#128231; Make the page for the family</button>
+      </div>
       <div id="recapOut" style="margin-top:.9rem"></div>
     </div>
 
@@ -1389,7 +1400,7 @@ h2{letter-spacing:-.02em}
    One file, no build step, no server. Everything Chris types
    stays in this phone's localStorage.
    ============================================================ */
-const BUILD="chris-2026-08-14-29";
+const BUILD="chris-2026-08-14-31";
 
 const $=id=>document.getElementById(id);
 const $$=s=>Array.from(document.querySelectorAll(s));
@@ -2017,7 +2028,7 @@ async function loadWeather(){
     skyRender();
     loadAir(c);
     renderBriefing();
-    rainCheck();sunsetWatch();
+    rainCheck();sunsetWatch();dayAdvisor();
   }catch(e){$("wxNow").innerHTML='<p class="muted small" style="margin:0">Weather needs a signal. Everything else here works without one.</p>'}
 }
 async function loadAir(c){
@@ -2138,10 +2149,7 @@ function checkProximity(){
   nearest(0,cats,R).forEach(p=>{
     if(alerted.has(p.n))return;
     alerted.add(p.n);saveAlerted();
-    pushAlert({ic:CATS[p.c].ic,cls:"gem",t:p.n+" — "+fmtMi(p._d)+" away",
-      s:p.d.split(". ")[0]+".",place:p.n});
-    speak(p.n+" is "+fmtMi(p._d)+" "+bearing(here.lat,here.lng,p.lat,p.lng)+" of you. "+p.d.split(". ")[0]+".");
-    notify(p.n+" is close",fmtMi(p._d)+" away — "+p.d.split(". ")[0]);
+    if(claraNudge(p))notify(p.n+" is close",fmtMi(p._d)+" away — "+p.d.split(". ")[0]);
   });
 }
 function pushAlert(a){
@@ -3226,7 +3234,7 @@ $("stripShare").addEventListener("click",async()=>{
   $("stripSave").click();
 });
 function renderCamGal(){
-  const today=media.filter(m=>Date.now()-m.t<24*3600*1000);
+  const today=media.filter(m=>m.kind!=="memo"&&Date.now()-m.t<24*3600*1000);
   $("camGalEmpty").style.display=today.length?"none":"block";
   $("camGal").innerHTML=today.slice(0,24).map(m=>
     `<figure><img src="${m.src}" data-lb="${m.id}" alt=""><button class="del" data-del="${m.id}" aria-label="Delete">&#10005;</button>
@@ -3267,12 +3275,12 @@ function handleFiles(files){
 }
 let galFilter="all";
 function renderGal(){
-  const places=[...new Set(media.map(m=>m.place||"Out & about"))];
+  const places=[...new Set(media.filter(m=>m.kind!=="memo").map(m=>m.place||"Out & about"))];
   $("galPlaces").innerHTML=(media.length&&places.length>1)
     ? ["all"].concat(places).map(pl=>`<button class="pill ${galFilter===pl?"on":""}" data-gp="${esc(pl)}">${pl==="all"?"&#10024; Everywhere":"&#128205; "+esc(pl)}</button>`).join("")
     : "";
   if(galFilter!=="all"&&!places.includes(galFilter))galFilter="all";
-  const list=media.filter(m=>galFilter==="all"||(m.place||"Out & about")===galFilter).slice(0,80);
+  const list=media.filter(m=>m.kind!=="memo").filter(m=>galFilter==="all"||(m.place||"Out & about")===galFilter).slice(0,80);
   $("mediaGal").innerHTML=list.map(m=>
     `<figure><img src="${m.src}" data-lb="${m.id}" alt=""><button class="del" data-mdel="${m.id}" aria-label="Remove">&#10005;</button></figure>`).join("");
   $("vidControls").style.display=media.length?"block":"none";
@@ -3351,7 +3359,7 @@ function styleCfg(){
   return{per:3200,fade:700};
 }
 function activePics(){
-  let pics=media.slice().sort((a,b)=>a.t-b.t);
+  let pics=media.filter(m=>m.kind!=="memo").sort((a,b)=>a.t-b.t);
   if($("vidStyle").value==="daily"){
     const cut=Date.now()-24*3600*1000;
     const t=pics.filter(p=>p.t>cut);
@@ -4085,6 +4093,12 @@ function renderSettings(){
       <span><b>Location on</b><br><span class="small muted">Powers distances, nudges and the friends map</span></span></label>
     <label class="switch"><input type="checkbox" id="setAlerts" ${store.get("alertsOn",true)?"checked":""}><span class="track"></span>
       <span><b>Nearby nudges</b><br><span class="small muted">Clara speaks up when something good is close</span></span></label>
+    <div class="field" style="margin-top:.4rem"><label class="fld" for="setChat">How talkative should Clara be?</label>
+      <select id="setChat">
+        <option value="quiet">Quiet — only when it really matters</option>
+        <option value="balanced">Balanced — a good travelling companion</option>
+        <option value="chatty">Chatty — she's good company, let her talk</option>
+      </select></div>
     <label class="switch"><input type="checkbox" id="setHC" ${store.get("hc",false)?"checked":""}><span class="track"></span>
       <span><b>High contrast</b><br><span class="small muted">Stronger text and borders for bright Colorado sun</span></span></label>
     <div class="btnrow" style="margin-top:.9rem">
@@ -4096,6 +4110,13 @@ function renderSettings(){
       <a href="#" id="setVoice">Change her voice</a> &middot; <a href="#" id="setVoiceFix">voice trouble</a>.</p>`;
   $("setGps").addEventListener("change",e=>{$("gpsToggle").checked=e.target.checked;$("gpsToggle").dispatchEvent(new Event("change"))});
   $("setAlerts").addEventListener("change",e=>{$("alertToggle").checked=e.target.checked;store.set("alertsOn",e.target.checked)});
+  $("setChat").value=store.get("chat-mode","balanced");
+  $("setChat").addEventListener("change",e=>{
+    store.set("chat-mode",e.target.value);
+    speak(Clara.greet()+" "+({quiet:"I'll keep it to the important things.",
+      balanced:"That suits me — I'll speak up when it's worth it.",
+      chatty:"Lovely. I do like a chat."})[e.target.value],true);
+  });
   $("setHC").addEventListener("change",e=>{store.set("hc",e.target.checked);applyHC();toast(e.target.checked?"High contrast on":"High contrast off")});
   $("setExport").addEventListener("click",()=>{
     const data={trip:trip(),agenda:agenda(),favs:favs(),pins:pins(),pack:store.get("pack",[])};
@@ -4245,48 +4266,88 @@ function wheelTick(){
     o.start();o.stop(wheelCtx.currentTime+.06);
   }catch(e){}
 }
+let spinToken=0;
 function spinWheel(){
   const o=here||HOME,favSet=new Set(favs());
   let pool=PLACES.map(p=>Object.assign({},p,{_d:dist(o.lat,o.lng,p.lat,p.lng)}))
     .filter(p=>p.c!=="eat"&&p.c!=="sip"&&p._d<40);
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-  /* a starred place wins more often than chance - the wheel is loyal */
-  const starred=pool.filter(p=>favSet.has(p.n));
-  const winner=(starred.length&&Math.random()<.45)?starred[Math.floor(Math.random()*starred.length)]:pool[0];
+  /* eight segments is what reads on a phone; starred places get in more often */
+  const stars=pool.filter(p=>favSet.has(p.n));
+  const seg=[];
+  stars.slice(0,3).forEach(p=>seg.push(p));
+  pool.forEach(p=>{if(seg.length<8&&!seg.includes(p))seg.push(p)});
+  if(seg.length<2)return toast("Not enough places nearby to spin for");
+  const win=Math.floor(Math.random()*seg.length);
+  const me=++spinToken;                     /* only the newest spin may draw */
+
   openSheet("&#127920; The wheel decides",`
-    <div style="min-height:9.5rem;display:grid;place-items:center;text-align:center">
-      <div>
-        <div id="wheelIc" style="font-size:3.4rem;line-height:1.2">&#127920;</div>
-        <div id="wheelName" style="font-family:Fraunces,serif;font-weight:900;font-size:1.45rem;margin-top:.45rem">&hellip;</div>
-        <div id="wheelSub" class="small muted" style="margin-top:.2rem"></div>
-      </div>
+    <div style="text-align:center">
+      <canvas id="wheelC" width="620" height="620" style="width:min(100%,19rem);height:auto;margin:0 auto;display:block"></canvas>
+      <div id="wheelName" style="font-family:Fraunces,serif;font-weight:900;font-size:1.35rem;margin-top:.7rem">Spinning&hellip;</div>
+      <div id="wheelSub" class="small muted"></div>
     </div>
-    <div id="wheelBtns" class="btnrow" style="margin-top:1rem;visibility:hidden">
+    <div id="wheelBtns" class="btnrow" style="margin-top:1rem;visibility:hidden;justify-content:center">
       <a class="btn" id="wheelGo" target="_blank" rel="noopener">&#129517; Take me there</a>
       <button class="btn sm ghost" id="wheelMore">Tell me more</button>
       <button class="btn sm gold" id="wheelAgain">&#127920; Spin again</button>
     </div>`);
-  let i=0,delay=55;
-  (function step(){
-    if(!$("wheelName"))return;             /* sheet was closed mid-spin */
-    const land=delay>330;
-    const p=land?winner:pool[i++%pool.length];
-    $("wheelIc").innerHTML=CATS[p.c].ic;
+
+  const c=$("wheelC"),x=c.getContext("2d"),R=290,CX=310,CY=310;
+  const COL=["#C4517A","#5B2A4A","#C98F2E","#5F8060","#3E5A76","#9E3860","#743760","#B07A2A"];
+  const TAU=Math.PI*2, per=TAU/seg.length;
+  /* land the winning slice under the pointer at the top */
+  const target=TAU*6 + (TAU - (win*per + per/2)) - Math.PI/2;
+  const dur=4200,t0=performance.now();
+  let lastTick=-1;
+  function draw(rot){
+    x.clearRect(0,0,620,620);
+    x.save();x.translate(CX,CY);x.rotate(rot);
+    seg.forEach((p,i)=>{
+      const a0=i*per,a1=a0+per;
+      x.beginPath();x.moveTo(0,0);x.arc(0,0,R,a0,a1);x.closePath();
+      x.fillStyle=COL[i%COL.length];x.fill();
+      x.strokeStyle="rgba(255,253,251,.85)";x.lineWidth=3;x.stroke();
+      /* names read outward - on the left half that means flipping them,
+         or half the wheel is upside down */
+      x.save();
+      const mid=a0+per/2, flip=((mid+rot)%TAU+TAU)%TAU>Math.PI/2&&((mid+rot)%TAU+TAU)%TAU<Math.PI*1.5;
+      x.rotate(mid);
+      x.fillStyle="#FFF6FA";x.font="700 25px Inter, sans-serif";
+      const label=p.n.length>22?p.n.slice(0,21)+"…":p.n;
+      if(flip){x.rotate(Math.PI);x.textAlign="left";x.fillText(label,-(R-22),9)}
+      else{x.textAlign="right";x.fillText(label,R-22,9)}
+      x.restore();
+    });
+    x.restore();
+    /* hub and pointer stay still */
+    x.beginPath();x.arc(CX,CY,54,0,TAU);
+    x.fillStyle="#FFFDFB";x.fill();x.lineWidth=5;x.strokeStyle="#5B2A4A";x.stroke();
+    x.fillStyle="#5B2A4A";x.font="900 34px Fraunces, Georgia, serif";x.textAlign="center";
+    x.fillText("?",CX,CY+13);
+    x.beginPath();x.moveTo(CX-20,10);x.lineTo(CX+20,10);x.lineTo(CX,58);x.closePath();
+    x.fillStyle="#C98F2E";x.fill();x.lineWidth=4;x.strokeStyle="#3D1A31";x.stroke();
+  }
+  (function frame(now){
+    if(me!==spinToken)return;                  /* a newer spin took over */
+    if(!$("wheelC"))return;                    /* sheet closed mid-spin */
+    const t=Math.min(1,(now-t0)/dur);
+    const ease=1-Math.pow(1-t,3.4);            /* fast, then a long slow settle */
+    const rot=target*ease;
+    draw(rot);
+    const tick=Math.floor(rot/per);
+    if(tick!==lastTick&&t<0.985){lastTick=tick;wheelTick()}
+    if(t<1)return requestAnimationFrame(frame);
+    const p=seg[win];
     $("wheelName").textContent=p.n;
-    $("wheelSub").textContent=fmtMi(p._d)+" away · "+CATS[p.c].n;
-    if(land){
-      celebrate("plan");
-      $("wheelBtns").style.visibility="visible";
-      $("wheelGo").href="https://www.google.com/maps/dir/?api=1&destination="+p.lat+","+p.lng;
-      $("wheelMore").addEventListener("click",()=>placeSheet(p.n));
-      $("wheelAgain").addEventListener("click",spinWheel);
-      speak("The wheel says "+p.n+". "+p.d.split(". ")[0]+".",true);
-      return;
-    }
-    wheelTick();
-    delay*=1.13;
-    setTimeout(step,delay);
-  })();
+    $("wheelSub").textContent=fmtMi(p._d)+" away · "+CATS[p.c].n+(favSet.has(p.n)?" · on your shortlist":"");
+    $("wheelBtns").style.visibility="visible";
+    $("wheelGo").href=mapUrl(p);
+    $("wheelMore").addEventListener("click",()=>placeSheet(p.n));
+    $("wheelAgain").addEventListener("click",spinWheel);
+    celebrate("plan");
+    speak("The wheel says "+p.n+". "+p.d.split(". ")[0]+".",true);
+  })(performance.now());
 }
 $("spinBtn").addEventListener("click",spinWheel);
 
@@ -4517,6 +4578,43 @@ function sunsetWatch(){
         " And catching it is a bingo square.");
 }
 
+/* ---------- Clara reads the day ahead ----------
+   She has the forecast, the agenda and the clock. A guide answers
+   questions; a companion notices things first. Once each morning she
+   looks at all three together and says something useful. */
+function dayAdvisor(){
+  if(!wx||!wx.daily||!wx.current)return;
+  const t=todayISO(),d=tripDay(),A=agenda();
+  if(store.get("advice-"+t,false)||d<1||!A[d-1])return;
+  const h=new Date().getHours();
+  if(h<6||h>=12)return;                 /* morning advice, or none */
+  const day=A[d-1];
+  const hi=Math.round(wx.daily.temperature_2m_max[0]);
+  const pop=wx.daily.precipitation_probability_max[0];
+  const uv=wx.daily.uv_index_max[0];
+  const outdoor=day.items.find(it=>{
+    const p=it.place&&byName(it.place);
+    return p&&!p.ind&&["walk","garden","day","market","music"].includes(p.c);
+  });
+  const notes=[];
+  if(outdoor&&hi>=88)
+    notes.push("It's heading for "+hi+" degrees today, and "+outdoor.what+" is outdoors. Do it this morning while it's kind, and save the afternoon for somewhere with air conditioning.");
+  else if(outdoor&&pop>=45)
+    notes.push("There's a "+pop+" percent chance of a storm building this afternoon — Colorado does that in August. Get "+outdoor.what+" done before lunch and keep the afternoon loose.");
+  else if(outdoor&&uv>=8)
+    notes.push("The UV is "+Math.round(uv)+" today, which at this altitude burns faster than it feels. Hats and sunscreen before "+outdoor.what+", please.");
+  const big=day.items.find(it=>/leave by/i.test(it.when));
+  if(big)notes.push("Today's a long one — "+big.what+". Fill the water bottles and put a layer in the car; it's cooler up there.");
+  if(hi<=72&&pop<25&&outdoor)
+    notes.push("It's a beautiful one — "+hi+" degrees and hardly a cloud. Perfect for "+outdoor.what+".");
+  if(!notes.length)return;
+  store.set("advice-"+t,true);
+  const say=notes[0];
+  pushAlert({ic:"&#9749;",cls:"go",t:"A thought about today",s:say,
+    say:"Good morning, ladies. "+say});
+  speak("Good morning. "+say);
+}
+
 /* ---------- rainy-morning re-plan ---------- */
 function rainCheck(){
   if(!wx||!wx.daily)return;
@@ -4679,7 +4777,7 @@ async function drawYearbook(){
     x.fillStyle="#F0CE86";x.font="900 56px Fraunces, Georgia, serif";x.fillText(v,gx+bw/2,gy+72);
     x.fillStyle="#F0C9D8";x.font="800 21px Inter, sans-serif";x.fillText(k,gx+bw/2,gy+114);
   });
-  const pics=media.slice().sort((a,b)=>a.t-b.t);
+  const pics=media.filter(m=>m.kind!=="memo").sort((a,b)=>a.t-b.t);
   const count=Math.min(6,pics.length),take=[];
   for(let i=0;i<count;i++)take.push(pics[Math.floor(i*(pics.length-1)/Math.max(1,count-1))]);
   for(let i=0;i<take.length;i++){
@@ -5059,6 +5157,121 @@ function mountPlates(){
   });
 }
 
+/* ============================================================
+   CLARA - the companion, not the notification
+   Three things separate a travelling friend from an app that talks:
+   she never says the same thing twice, she remembers what you have
+   already done together, and - above all - she knows when to keep
+   quiet. The budget below is the most important code in this file:
+   a warm remark at the right moment is delightful; the same remark
+   every twenty minutes is a reason to turn the sound off.
+   ============================================================ */
+const Clara={
+  /* --- restraint --- */
+  gap:{quiet:22,balanced:9,chatty:5},     /* minutes between unprompted remarks */
+  perHour:{quiet:3,balanced:7,chatty:12},
+  mode(){return store.get("chat-mode","balanced")},
+  log(){try{return JSON.parse(sessionStorage.getItem("ch-said")||"[]")}catch(e){return[]}},
+  logSave(l){try{sessionStorage.setItem("ch-said",JSON.stringify(l.slice(-40)))}catch(e){}},
+  maySpeak(kind){
+    const now=Date.now(),m=this.mode(),L=this.log();
+    if(L.some(e=>e.k===kind&&now-e.t<75*60000))return false;      /* not the same subject twice in over an hour */
+    const last=L[L.length-1];
+    if(last&&now-last.t<this.gap[m]*60000)return false;            /* let the silence breathe */
+    if(L.filter(e=>now-e.t<3600000).length>=this.perHour[m])return false;
+    return true;
+  },
+  noted(kind){const L=this.log();L.push({k:kind,t:Date.now()});this.logSave(L)},
+
+  /* --- never the same words twice --- */
+  used:{},
+  pick(list,key){
+    const k=key||list[0];
+    const seen=this.used[k]||(this.used[k]=[]);
+    let pool=list.filter(x=>!seen.includes(x));
+    if(!pool.length){this.used[k]=[];pool=list}
+    const out=pool[Math.floor(Math.random()*pool.length)];
+    seen.push(out);
+    return out;
+  },
+
+  /* --- what she knows about the week so far --- */
+  facts(){
+    const v=allVisited();
+    return {places:v.size,miles:store.get("walk-total",0),photos:media.filter(m=>m.kind!=="memo").length,
+            day:tripDay(),len:tripLen(),bingo:bingoScore(),notes:memAll().length,
+            name:(trip().who||["Chris"])[0]};
+  },
+  greet(){
+    const h=new Date().getHours();
+    return this.pick(h<11?["Morning.","Good morning.","Right then.","Morning, you."]
+      :h<17?["Afternoon.","Right.","Here we are.","So then."]
+      :["Evening.","Good evening.","Well now."],"greet");
+  },
+  /* an occasional nudge toward the braver choice, never twice running */
+  dare(){
+    return this.pick([
+      "Take the long way back. You're not in a hurry and neither is Colorado.",
+      "Go on — say yes to the thing you'd normally talk yourself out of.",
+      "If somebody local recommends something, do it. They're always right.",
+      "Take the turning you don't recognise. That's usually where the good bit is.",
+      "Ask a stranger what their favourite spot round here is. Best guidebook there is."],"dare");
+  },
+  /* a remark that shows she has been paying attention */
+  observe(){
+    const f=this.facts();
+    const bank=[];
+    if(f.places>=4)bank.push("That's "+f.places+" places you've been to now. You are not wasting this week.");
+    if(f.miles>=4)bank.push("You've walked "+(Math.round(f.miles*10)/10)+" miles since you got here. At a mile up, that counts double.");
+    if(f.photos>=12)bank.push(f.photos+" photographs already. Somebody's going to enjoy making that film.");
+    if(f.bingo>=6)bank.push(f.bingo+" bingo squares. You're playing this properly.");
+    if(f.notes>=2)bank.push("You've kept "+f.notes+" little recordings. Those are the bits you'll be glad of in February.");
+    if(f.day>0&&f.len&&f.day>=f.len-1)bank.push("Nearly the end of it. Don't spend the last day packing.");
+    if(!bank.length)return "";
+    return this.pick(bank,"observe");
+  },
+  /* the one entry point for anything she says unprompted */
+  remark(kind,text,opts){
+    opts=opts||{};
+    if(!opts.force&&!this.maySpeak(kind))return false;
+    this.noted(kind);
+    if(opts.alert)pushAlert(Object.assign({ic:"&#128172;",cls:"go",t:opts.alert,s:text},opts.extra||{}));
+    speak(text,!!opts.force);
+    return true;
+  },
+  /* a warm, varied way of announcing somewhere nearby */
+  nearbyLine(p,d){
+    const open=this.pick([
+      "Oh — "+p.n+" is right there, "+d+" away.",
+      p.n+"'s just "+d+" from you.",
+      "You're "+d+" from "+p.n+".",
+      "Look — "+p.n+", "+d+" away.",
+      "Handy: "+p.n+" is "+d+" from where you're standing."],"near-open");
+    const tail=Math.random()<0.35?" "+this.pick([
+      "Worth a look if the legs are willing.",
+      "Only if you fancy it — the day's yours.",
+      "I'd take the detour.",
+      "No pressure. It'll still be there tomorrow."],"near-tail"):"";
+    return open+" "+p.d.split(". ")[0]+"."+tail;
+  }
+};
+
+/* the nudges now speak in her voice, and respect the budget */
+function claraNudge(p){
+  const d=fmtMi(p._d);
+  return Clara.remark("near:"+p.c,Clara.nearbyLine(p,d),
+    {alert:p.n+" — "+d+" away",extra:{place:p.n,ic:CATS[p.c].ic,cls:"gem"}});
+}
+/* every so often, when she has earned the right, a human aside */
+function claraAside(){
+  if(tripDay()<1)return;
+  const h=new Date().getHours();
+  if(h<8||h>21)return;
+  const line=Math.random()<0.45?Clara.observe():Clara.dare();
+  if(!line)return;
+  Clara.remark("aside",Clara.greet()+" "+line,{alert:"Clara says"});
+}
+
 /* ---------- Clara's guided tour ----------
    She narrates; each chapter advances when she stops talking, with a
    timer as the backstop for phones that never fire the ended event.
@@ -5071,19 +5284,25 @@ const TOUR=[
  {ic:"&#128197;",t:"Your agenda",go:"agenda",
   say:"Your whole trip is already in here — Tuesday the eighteenth through Saturday the twenty-second. Tap any day to open it up. Wednesday has two versions, the mountain loop your friend wanted and the gardens day, and one tap swaps between them. Every day has one item marked optional. That's the one to drop when you've had enough, and dropping it is not defeat."},
  {ic:"&#128205;",t:"Nearby",go:"nearby",
-  say:"This is the clever one. As you move about, I watch what's around you, and when something good comes close I'll speak up — once per place, never nagging. Below that is a live search: tap coffee, or restrooms, or pharmacy, and I'll find the nearest ones wherever you happen to be standing."},
+  say:"This is the clever one. At the top is your journey — every road and path you travel gets drawn on a map, just by carrying the phone, and by Saturday it'll be the whole week in one picture. Below that, search for anything at all. Type food, or flowers, or somewhere easy, and I'll know what you mean. And as you move about I'll speak up when something good comes close."},
+ {ic:"&#127908;",t:"Remember this",go:"today",
+  say:"My favourite of the new ones. On the Today page there's a button that says hold to remember. Press it, say whatever you want to keep — what the woman in the antique shop told you, what somebody said that made you laugh — and let go. I keep the recording and the spot it happened, and it all goes into the story at the end. Nobody types those things down. Now you don't have to."},
  {ic:"&#127956;",t:"Explore",go:"explore",
   say:"Every place I know about, sorted by how far it is from you. Tap any one and I'll tell you about it and hand you directions. If you see something you fancy, tap the star — I'll build it into your days."},
  {ic:"&#128247;",t:"The camera",go:"camera",
   say:"This is not the ordinary camera. There's a big shutter, a countdown I say out loud so everyone knows when to smile, filters, and a photo booth that takes four shots and makes you a strip. Everything you take gets stamped with where you were, and lands in the movie maker."},
  {ic:"&#128140;",t:"Postcards & the movie",go:"movie",
   say:"Any photo can become a proper Greetings from Littleton postcard to text home. And when you're ready, the movie maker turns your photos into a real little film with titles and music. There's a yearbook too — your whole week on one card, ready to send the moment you land."},
+ {ic:"&#127920;",t:"When you can't decide",go:"today",
+  say:"Two of you want gardens and one wants a brewery? On the Today page, spin the wheel. It's a proper wheel — it clicks round, slows down, and lands on somewhere near you. Starred places come up more often, because the wheel is loyal. Nobody argues with the wheel."},
  {ic:"&#127903;&#65039;",t:"Bingo",go:"bingo",
   say:"Sixteen little missions for the week. Spot a bighorn. Green chile on something. Make a stranger laugh. Tap a square when it happens — and I stamp a few myself when I notice. A full line gets a celebration. The full card gets bragging rights forever."},
  {ic:"&#128101;",t:"Friends",go:"friends",
   say:"Switch on sharing and everyone with the same trip code appears on a map, so nobody gets lost in a car park again. There's a group chat too, and a Meet me here button that sends your exact spot."},
  {ic:"&#127908;",t:"Just ask me",go:"",
   say:"Here's my favourite part. See the little microphone at the top of the screen? Tap it and simply talk to me. Where's the nearest coffee. What's the plan today. How far is Red Rocks. Spin the wheel. I'll answer out loud. You never have to hunt through menus."},
+ {ic:"&#128220;",t:"The story of your week",go:"toolkit",
+  say:"When it's all over, the Toolkit has two lovely things. I'll write the story of your week — everywhere you went, every mile, the notes you kept — in my own words, and read it to you. And I'll build a page for the family: one file with the map, the photographs and the story in it, that you can email to anyone. It opens on any phone with no app and no internet."},
  {ic:"&#128246;",t:"When there's no signal",go:"toolkit",
   say:"The mountains eat phone signal, so in the Toolkit there's a button that saves the whole guide to your phone. Every place, every day plan, every checklist then works with no bars at all. Do that on the wifi before you set off, and you'll never be stranded without your plan."},
  {ic:"&#128150;",t:"That's the lot",go:"today",
@@ -5154,6 +5373,162 @@ $("tourList").addEventListener("click",e=>{
   $("tourStage").scrollIntoView({behavior:"smooth",block:"center"});
   speak(TOUR[tourI].say,true);
 });
+
+/* ============================================================
+   REMEMBER THIS - spoken notes, pinned where they happened
+   Travel memories are mostly overheard remarks, and nobody types
+   those. Hold, talk, let go. Audio lives in IndexedDB beside the
+   photos; the text transcript comes free from the phone's own
+   recogniser when it has one.
+   ============================================================ */
+async function memAdd(o){
+  /* photoAdd's twin - the note has to join the in-memory list too,
+     or it exists in the database and nowhere the app can see it */
+  return photoAdd(o);
+}
+function memAll(){return media.filter(m=>m.kind==="memo").sort((a,b)=>b.t-a.t)}
+let memRec=null,memChunks=[],memStart=0,memSR=null,memText="";
+async function memBegin(){
+  if(memRec)return;
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    memChunks=[];memText="";memStart=Date.now();
+    memRec=new MediaRecorder(stream);
+    memRec.ondataavailable=e=>{if(e.data.size)memChunks.push(e.data)};
+    memRec.onstop=async()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      const blob=new Blob(memChunks,{type:memChunks[0]&&memChunks[0].type||"audio/webm"});
+      const secs=Math.round((Date.now()-memStart)/1000);
+      memRec=null;
+      if(secs<1){$("memStatus").textContent="Too short — hold it a little longer.";return}
+      const fr=new FileReader();
+      fr.onload=async()=>{
+        const n=nearest(1)[0];
+        const m={kind:"memo",src:fr.result,t:Date.now(),secs,
+                 place:(n&&n._d<2.5)?n.n:"",cap:memText.trim(),
+                 lat:here?+here.lat.toFixed(5):null,lng:here?+here.lng.toFixed(5):null};
+        await memAdd(m);
+        renderMemos();renderDash();
+        $("memStatus").innerHTML="&#9989; Kept &mdash; "+secs+" seconds"+(m.place?" at "+esc(m.place):"");
+        celebrate("photo");
+      };
+      fr.readAsDataURL(blob);
+    };
+    memRec.start();
+    $("memBtn").classList.add("rec");
+    $("memBtn").innerHTML="&#128308; Listening&hellip; let go when you're done";
+    $("memStatus").textContent="Go on, say it.";
+    /* free transcript from the phone, when it offers one */
+    const SRC=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(SRC){try{
+      memSR=new SRC();memSR.lang="en-US";memSR.interimResults=false;memSR.continuous=true;
+      memSR.onresult=ev=>{for(let i=ev.resultIndex;i<ev.results.length;i++)memText+=ev.results[i][0].transcript+" "};
+      memSR.start();
+    }catch(e){}}
+  }catch(e){
+    $("memStatus").innerHTML="The microphone needs permission &mdash; on iPhone: Settings, Safari, Microphone, Allow.";
+  }
+}
+function memEnd(){
+  $("memBtn").classList.remove("rec");
+  $("memBtn").innerHTML="&#127908; Hold to remember";
+  if(memSR){try{memSR.stop()}catch(e){}memSR=null}
+  if(memRec&&memRec.state!=="inactive"){try{memRec.stop()}catch(e){}}
+}
+(function(){
+  const b=$("memBtn");
+  const down=e=>{e.preventDefault();memBegin()};
+  const up=e=>{e.preventDefault();memEnd()};
+  b.addEventListener("mousedown",down);b.addEventListener("touchstart",down,{passive:false});
+  ["mouseup","mouseleave","touchend","touchcancel"].forEach(ev=>b.addEventListener(ev,up));
+})();
+function renderMemos(){
+  const m=memAll();
+  $("memCount").textContent=m.length?(m.length+" kept"):"";
+  $("memList").innerHTML=m.slice(0,8).map(x=>`
+    <div class="row"><div class="ic">&#127908;</div>
+      <div class="bd"><div class="t">${esc(x.cap||("A note, "+x.secs+" seconds"))}</div>
+        <div class="s">${new Date(x.t).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}${x.place?" · "+esc(x.place):""}</div></div>
+      <div class="rt" style="display:flex;gap:.3rem">
+        <button class="btn sm ghost" data-memplay="${x.id}" aria-label="Play">&#9654;&#65039;</button>
+        <button class="btn sm ghost" data-memdel="${x.id}" aria-label="Delete">&#10005;</button></div>
+    </div>`).join("")||'<p class="small muted" style="margin:0">Nothing kept yet. The best ones are the overheard remarks.</p>';
+}
+$("memList").addEventListener("click",async e=>{
+  const pl=e.target.closest("[data-memplay]");
+  if(pl){const m=media.find(x=>x.id===+pl.dataset.memplay);
+    if(m){stopSpeaking();try{const a=new Audio(m.src);curAudio=a;a.play().catch(()=>{})}catch(e){}}
+    return}
+  const dl=e.target.closest("[data-memdel]");
+  if(dl){await photoDel(+dl.dataset.memdel);renderMemos();renderDash()}
+});
+
+/* ============================================================
+   THE PAGE FOR THE FAMILY
+   One self-contained HTML file - story, map, photos, notes - that
+   opens in any browser, needs no internet and no app. She emails or
+   AirDrops it and everyone can follow along.
+   ============================================================ */
+async function familyPage(){
+  const b=$("famPage");b.disabled=true;b.innerHTML="&#9203; Building the page&hellip;";
+  const t=trip(),pics=media.filter(m=>m.kind!=="memo").slice(0,24);
+  let mapImg="";
+  try{const c=$("jCanvas");if(c&&c.width)mapImg=c.toDataURL("image/jpeg",.75)}catch(e){}
+  const story=recapStory();
+  const memos=memAll().filter(m=>m.cap).slice(0,10);
+  const html='<!doctype html><html lang="en"><head><meta charset="utf-8">'+
+   '<meta name="viewport" content="width=device-width,initial-scale=1">'+
+   '<title>The Littleton Girls\' Trip</title><style>'+
+   'body{margin:0;background:#FBF5F1;color:#2E2028;font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}'+
+   '.w{max-width:760px;margin:0 auto;padding:1.2rem}'+
+   'h1{font:900 2.1rem/1.1 Georgia,serif;color:#5B2A4A;margin:.2rem 0}'+
+   'h3{font:900 1.2rem/1.2 Georgia,serif;color:#5B2A4A}'+
+   '.hd{background:linear-gradient(165deg,#743760,#3D1A31);color:#FFF6FA;padding:2rem 1.2rem;text-align:center}'+
+   '.hd h1{color:#FFF6FA}.hd p{color:#F0CE86;letter-spacing:.16em;text-transform:uppercase;font-size:.72rem;font-weight:800}'+
+   '.card{background:#fff;border:1px solid #E7D6DE;border-radius:18px;padding:1.2rem;margin:1rem 0;box-shadow:0 10px 26px -18px rgba(61,26,49,.4)}'+
+   '.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.5rem}'+
+   '.g img{width:100%;height:150px;object-fit:cover;border-radius:12px;border:1px solid #E7D6DE}'+
+   'img.map{width:100%;border-radius:14px;border:1px solid #E7D6DE}'+
+   '.q{border-left:4px solid #C4517A;padding-left:.9rem;margin:.8rem 0;color:#63505C;font-style:italic}'+
+   '.f{text-align:center;color:#8E7A87;font-size:.8rem;padding:2rem 1rem}'+
+   '</style></head><body>'+
+   '<div class="hd"><p>Girls\' Trip &middot; Colorado</p><h1>The Littleton Girls\' Trip</h1>'+
+   '<p style="letter-spacing:normal;text-transform:none;font-size:.95rem;font-weight:400">'+
+   (t.start?fmtDate(t.start)+" – "+fmtDate(t.end):"")+'</p></div><div class="w">'+
+   '<div class="card">'+story+'</div>'+
+   (mapImg?'<div class="card"><h3>Everywhere we went</h3><img class="map" src="'+mapImg+'" alt="Our journey"></div>':"")+
+   (memos.length?'<div class="card"><h3>Things worth remembering</h3>'+
+      memos.map(m=>'<div class="q">&ldquo;'+esc(m.cap)+'&rdquo;<br><span style="font-size:.8rem;font-style:normal">'+
+      (m.place?esc(m.place)+" &middot; ":"")+new Date(m.t).toLocaleDateString()+'</span></div>').join("")+'</div>':"")+
+   (pics.length?'<div class="card"><h3>Photographs</h3><div class="g">'+
+      pics.map(m=>'<img src="'+m.src+'" alt="">').join("")+'</div></div>':"")+
+   '</div><div class="f">Made with Clara &middot; the Littleton girls\' trip</div></body></html>';
+  const blob=new Blob([html],{type:"text/html"});
+  const url=URL.createObjectURL(blob);
+  b.disabled=false;b.innerHTML="&#128231; Make the page for the family";
+  const mb=(blob.size/1048576).toFixed(1);
+  $("recapOut").innerHTML=`<div class="note good"><b>&#9989; The family page is ready</b> &mdash; ${mb} MB, everything inside one file.
+    Email it, AirDrop it or put it in a message; it opens in any browser with no internet and no app.</div>
+    <div class="btnrow" style="margin-top:.8rem">
+      <button class="btn gold" id="famSave">&#11015;&#65039; Save the page</button>
+      <button class="btn sm ghost" id="famShare">&#128228; Share it</button>
+      <a class="btn sm ghost" href="${url}" target="_blank" rel="noopener">&#128065;&#65039; Have a look first</a>
+    </div>`;
+  $("famSave").addEventListener("click",()=>{
+    const a=document.createElement("a");a.href=url;a.download="littleton-girls-trip.html";a.click();
+    toast("&#11015;&#65039; Saved — send it to whoever you like");
+  });
+  $("famShare").addEventListener("click",async()=>{
+    try{
+      const f=new File([blob],"littleton-girls-trip.html",{type:"text/html"});
+      if(navigator.canShare&&navigator.canShare({files:[f]}))return navigator.share({files:[f],title:"The Littleton Girls' Trip"});
+    }catch(e){}
+    $("famSave").click();
+  });
+  celebrate("done");
+  speak("Your family page is ready. Everything in one file — send it to whoever you like.",true);
+}
+$("famPage").addEventListener("click",familyPage);
 
 /* ============================================================
    THE TRIP, REMEMBERED
@@ -5597,7 +5972,7 @@ async function boot(){
   renderTripForm();renderHero();renderAgenda();renderTodayPlan();renderWedSwitch();
   renderNearbyFilters();renderNearby();renderExploreFilters();renderExplore();
   renderPins();renderFindNow();renderHealth();renderDash();
-  $("jToggle").checked=store.get("journeyOn",true);renderJourney();
+  $("jToggle").checked=store.get("journeyOn",true);renderJourney();renderMemos();
   renderCamChips();renderCamGal();renderGal();
   renderChat();renderLoc();renderNotif();renderVoicePanel();renderPack();renderNumbers();renderSettings();
   renderBriefing();netCheck();
@@ -5623,6 +5998,7 @@ async function boot(){
   }
   setInterval(()=>{renderHero();renderBriefing();renderDiary()},120000);
   setInterval(sunsetWatch,60000);
+  setInterval(claraAside,11*60000);        /* she checks, the budget decides */
   /* the diary, spoken once each evening if her voice is on */
   if(store.get("diary-day","")!==t&&new Date().getHours()>=19&&tripDay()>0){
     store.set("diary-day",t);
