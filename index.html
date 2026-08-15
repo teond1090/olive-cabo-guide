@@ -205,6 +205,38 @@ nav.tabs a .ic{font-size:1.1rem}
 .card.fold>.foldbody{display:none}
 .card.fold.open>.foldbody{display:block;animation:unfold .26s ease}
 @keyframes unfold{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
+
+/* ============ TRAIL CAMERA ============ */
+.camstage{position:relative;border-radius:var(--r);overflow:hidden;background:#14100B;
+  border:3px solid var(--leather);aspect-ratio:3/4;max-height:72vh;margin:0 auto}
+#camVideo{width:100%;height:100%;object-fit:cover;display:block;background:#14100B}
+#camVideo.mirror{transform:scaleX(-1)}
+.camoff{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:1.4rem;color:#F7E9CF}
+.camgrid{position:absolute;inset:0;pointer-events:none;display:none}
+.camgrid.on{display:block;
+  background-image:linear-gradient(rgba(255,255,255,.34) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.34) 1px,transparent 1px);
+  background-size:33.33% 33.33%}
+.camframe{position:absolute;inset:0;pointer-events:none}
+.camband{position:absolute;left:0;right:0;bottom:0;padding:.7rem .9rem 1rem;color:#fff;
+  background:linear-gradient(0deg,rgba(0,0,0,.62),transparent);
+  font-weight:800;letter-spacing:.05em;font-size:.9rem;text-shadow:0 2px 6px rgba(0,0,0,.6)}
+.camcount{position:absolute;inset:0;display:grid;place-items:center;font-family:Rye,Bitter,serif;
+  font-size:7rem;color:#fff;text-shadow:0 6px 26px rgba(0,0,0,.75);pointer-events:none}
+.camflash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity .18s}
+.camflash.on{opacity:.92;transition:none}
+.camctl{display:flex;align-items:center;justify-content:space-between;gap:.7rem;margin-top:.9rem}
+.shutter{width:5.2rem;height:5.2rem;border-radius:50%;border:5px solid var(--leather-dk);
+  background:linear-gradient(170deg,var(--brass-lt),var(--brass));cursor:pointer;
+  box-shadow:0 4px 0 var(--leather-dk),0 8px 20px rgba(58,29,13,.3);color:var(--leather-dk);
+  font-size:1.7rem;display:grid;place-items:center;flex:0 0 auto}
+.shutter:active{transform:translateY(3px);box-shadow:0 1px 0 var(--leather-dk)}
+.fx{display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;padding:.15rem 0}
+.fx::-webkit-scrollbar{display:none}
+.fx button{flex:0 0 auto;min-height:44px;padding:.35rem .75rem;border-radius:999px;border:2px solid var(--line-2);
+  background:var(--card);font-family:inherit;font-weight:700;font-size:.8rem;cursor:pointer;color:var(--ink-soft)}
+.fx button.on{background:var(--rust);border-color:var(--leather-dk);color:#FFF3E2}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;margin-top:.6rem}
+.strip img{border-radius:8px;border:2px solid var(--line-2);width:100%}
 /* left accent straps */
 .card.a-sage{border-left:7px solid var(--sage)}
 .card.a-sky{border-left:7px solid var(--denim)}
@@ -1174,6 +1206,50 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 <div class="view" id="view-memories">
   <div class="stack">
 
+    <!-- ---------- TRAIL CAMERA ---------- -->
+    <div class="card a-canyon">
+      <div class="card-h"><span class="ic">&#128247;</span><h3>Trail Camera</h3></div>
+      <p class="small muted" style="margin-top:0">A real camera for the trip &mdash; live filters, a self-timer so everyone gets in, a four-shot booth, and a postcard stamp that knows where you're standing. Every shot lands straight in the gallery below.</p>
+      <div class="camstage" id="camStage">
+        <video id="camVideo" playsinline autoplay muted></video>
+        <div class="camgrid" id="camGrid"></div>
+        <div class="camframe" id="camFrame"></div>
+        <div class="camband" id="camBand"></div>
+        <div class="camcount" id="camCount" style="display:none"></div>
+        <div class="camflash" id="camFlash"></div>
+        <div class="camoff" id="camOff">
+          <div>
+            <div style="font-size:2.6rem">&#128247;</div>
+            <b>The camera is off</b>
+            <div class="small" style="margin-top:.3rem;opacity:.85">Nothing records until you open it.</div>
+            <button class="btn brass" id="camStart" style="margin-top:.9rem">&#128247; Open the camera</button>
+          </div>
+        </div>
+      </div>
+      <div class="fx" id="camFx" style="margin-top:.8rem"></div>
+      <div class="fx" id="camFrames"></div>
+      <div class="camctl">
+        <button class="btn sm ghost" id="camFlip">&#128260; Flip</button>
+        <button class="shutter" id="camShoot" aria-label="Take the photo">&#128247;</button>
+        <div style="display:flex;flex-direction:column;gap:.3rem">
+          <button class="btn sm ghost" id="camTimer">&#9203; Timer: off</button>
+          <button class="btn sm ghost" id="camGridBtn">&#9638; Grid</button>
+        </div>
+      </div>
+      <div class="btnrow" style="margin-top:.6rem">
+        <button class="btn sm ghost" id="camBooth">&#127918; Photo booth &mdash; 4 shots</button>
+        <button class="btn sm ghost" id="camStop">&#9210; Camera off</button>
+      </div>
+      <div class="field" style="margin-top:.8rem">
+        <label class="fld" for="camCaption">Caption on the photo</label>
+        <input type="text" id="camCaption" placeholder="The Andersons, out west" maxlength="60">
+      </div>
+      <label class="switch"><input type="checkbox" id="camStampWhere" checked><span class="track"></span>
+        <span><b>Stamp where &amp; when</b><br><span class="small muted">The nearest landmark or town, and today's date &mdash; baked into the photo</span></span></label>
+      <div id="camStatus" class="small muted" style="margin-top:.6rem"></div>
+      <div class="strip" id="camStrip"></div>
+    </div>
+
     <div class="card a-sun">
       <div class="card-h"><span class="ic">&#127916;</span><h3>Automatic Video Creator</h3></div>
       <p class="small muted">Add your photos and Olive builds a highlight reel &mdash; slow pans, gentle fades, your trip stats on the title card.</p>
@@ -1213,6 +1289,17 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         </div>
         <div id="vidStatus" class="small muted" style="margin-top:.6rem"></div>
       </div>
+    </div>
+
+    <!-- ---------- TRIP YEARBOOK ---------- -->
+    <div class="card a-sky">
+      <div class="card-h"><span class="ic">&#128214;</span><h3>Trip Yearbook</h3></div>
+      <p class="small muted" style="margin-top:0">The whole journey as one beautiful page &mdash; the story, your trail, the photos, the journal &mdash; in a single file that opens anywhere, no app and no internet needed. Email it, text it, or drop it in the family thread.</p>
+      <div class="btnrow">
+        <button class="btn" id="ybBuild">&#128214; Build the yearbook</button>
+        <button class="btn sm ghost" id="ybShare" style="display:none">&#128228; Share it</button>
+      </div>
+      <div id="ybStatus" class="small muted" style="margin-top:.6rem"></div>
     </div>
 
     <div class="card">
@@ -1375,7 +1462,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w29-2026-08-15";
+const OLIVE_BUILD="w30-2026-08-15";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -3876,6 +3963,351 @@ $("mediaGal").addEventListener("click",e=>{
   media.splice(+b.dataset.mi,1);store.set("media",media.filter(x=>x.k==="i"));renderGal();
 });
 
+/* ============================================================
+   TRAIL CAMERA
+   A real camera for the trip. The look you pick is baked into
+   the saved photo with canvas, so what you saw is what you keep.
+   ============================================================ */
+const CAM_FILTERS=[
+  {k:"none",  n:"As it is",       f:"none"},
+  {k:"golden",n:"Golden hour",    f:"saturate(1.22) contrast(1.06) sepia(.18) brightness(1.04)"},
+  {k:"kodak", n:"Kodachrome '55", f:"saturate(1.35) contrast(1.18) sepia(.12) hue-rotate(-6deg)"},
+  {k:"plains",n:"High plains",    f:"saturate(1.5) contrast(1.14)"},
+  {k:"trail", n:"Sepia trail",    f:"sepia(.55) contrast(1.12) saturate(.85) brightness(1.03)"},
+  {k:"bw",    n:"Ansel B&W",      f:"grayscale(1) contrast(1.22) brightness(1.02)"},
+  {k:"bigsky",n:"Big sky",        f:"saturate(1.12) hue-rotate(-8deg) brightness(1.05)"},
+  {k:"dusk",  n:"Campfire dusk",  f:"saturate(1.2) sepia(.25) contrast(1.08) brightness(.96)"}
+];
+const CAM_FRAMES=[
+  {k:"none",n:"No frame"},{k:"band",n:"Caption band"},{k:"postcard",n:"Postcard"},
+  {k:"polar",n:"Polaroid"},{k:"gold",n:"Gold border"},{k:"corner",n:"Corner date"}
+];
+let camStream=null,camFacing=store.get("camFacing","environment"),
+    camFilter=store.get("camFilter","golden"),camFrameK=store.get("camFrame","band"),
+    camTimerS=0,camBusy=false,boothStrip=[];
+function camWhere(){
+  const n=nearest(1)[0];
+  if(n&&n._d<2.2)return n.n;
+  /* whereAmI is declared further down the file - reading it during boot
+     would throw, and one throw here kills the whole script */
+  let w;try{w=whereAmI}catch(e){w=null}
+  if(w&&w.city)return w.city+(w.stateAb?", "+w.stateAb:"");
+  if(w&&w.state)return w.state;
+  return "The Great American West";
+}
+function camBandText(){
+  const cap=$("camCaption").value.trim()||"The Anderson Family Journey";
+  if(!$("camStampWhere").checked)return cap;
+  return cap+"  ·  "+camWhere()+"  ·  "+new Date().toLocaleDateString([],{month:"short",day:"numeric"});
+}
+function renderCamChips(){
+  $("camFx").innerHTML=CAM_FILTERS.map(f=>`<button data-fx="${f.k}" class="${camFilter===f.k?"on":""}">${f.n}</button>`).join("");
+  $("camFrames").innerHTML=CAM_FRAMES.map(f=>`<button data-fr="${f.k}" class="${camFrameK===f.k?"on":""}">${f.n}</button>`).join("");
+  applyCamLook();
+}
+function applyCamLook(){
+  const f=CAM_FILTERS.find(x=>x.k===camFilter)||CAM_FILTERS[0];
+  $("camVideo").style.filter=f.f;
+  $("camVideo").classList.toggle("mirror",camFacing==="user");
+  const fr=$("camFrame");
+  fr.style.cssText="position:absolute;inset:0;pointer-events:none";
+  if(camFrameK==="polar")fr.style.cssText+=";border:14px solid #FFFDFB;border-bottom-width:52px;border-radius:4px";
+  if(camFrameK==="gold")fr.style.cssText+=";border:9px solid #C8912C;border-radius:10px;box-shadow:inset 0 0 0 3px #F3E6CE";
+  if(camFrameK==="postcard")fr.style.cssText+=";border:12px solid #FFFDFB";
+  $("camBand").style.display=(camFrameK==="band"||camFrameK==="polar")?"block":"none";
+  if(camFrameK==="postcard"){
+    $("camBand").style.display="block";
+    $("camBand").innerHTML='<span style="font-family:Rye,Bitter,serif;font-size:1.15rem;color:#E5BB63">Greetings from '+esc(camWhere())+'</span>';
+  }else $("camBand").innerHTML=esc(camBandText());
+}
+$("camFx").addEventListener("click",e=>{const b=e.target.closest("[data-fx]");if(!b)return;
+  camFilter=b.dataset.fx;store.set("camFilter",camFilter);renderCamChips()});
+$("camFrames").addEventListener("click",e=>{const b=e.target.closest("[data-fr]");if(!b)return;
+  camFrameK=b.dataset.fr;store.set("camFrame",camFrameK);renderCamChips()});
+$("camCaption").addEventListener("input",applyCamLook);
+$("camStampWhere").addEventListener("change",applyCamLook);
+
+async function camStart(){
+  if(camStream)return;
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)
+    return toast("This browser can't open the camera");
+  $("camStatus").textContent="Opening the camera…";
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:camFacing,width:{ideal:1920},height:{ideal:1440}},audio:false});
+    const v=$("camVideo");v.srcObject=camStream;await v.play().catch(()=>{});
+    $("camOff").style.display="none";
+    $("camStatus").innerHTML="&#128994; Ready. Tap the big brass button &mdash; or set the timer and get in the picture.";
+    applyCamLook();
+  }catch(e){
+    $("camStatus").innerHTML="Couldn't open the camera. On iPhone that usually means Safari needs permission: Settings &rarr; Safari &rarr; Camera &rarr; Allow.";
+    toast("Camera permission needed");
+  }
+}
+function camStop(){
+  if(!camStream)return;
+  try{camStream.getTracks().forEach(t=>t.stop())}catch(e){}
+  camStream=null;$("camVideo").srcObject=null;$("camOff").style.display="grid";
+  $("camStatus").textContent="Camera off.";
+}
+$("camStart").addEventListener("click",camStart);
+$("camStop").addEventListener("click",camStop);
+$("camStage").addEventListener("click",e=>{if(!camStream||e.target.closest("button"))return;camShoot()});
+$("camFlip").addEventListener("click",async()=>{
+  camFacing=camFacing==="user"?"environment":"user";store.set("camFacing",camFacing);
+  camStop();await camStart();
+  toast(camFacing==="user"?"Front camera &mdash; the selfie one":"Back camera");
+});
+$("camGridBtn").addEventListener("click",()=>{
+  const on=$("camGrid").classList.toggle("on");
+  $("camGridBtn").innerHTML=on?"&#9638; Grid on":"&#9638; Grid";
+});
+$("camTimer").addEventListener("click",()=>{
+  camTimerS=camTimerS===0?3:camTimerS===3?10:0;
+  $("camTimer").innerHTML="&#9203; Timer: "+(camTimerS?camTimerS+"s":"off");
+  if(camTimerS)toast("&#9203; "+camTimerS+" seconds &mdash; time to get in the picture");
+});
+function camCountdown(secs){
+  return new Promise(res=>{
+    if(!secs){res();return}
+    const el=$("camCount");el.style.display="grid";
+    let n=secs;
+    const say=v=>{if(voiceOn)speak(v===0?"Smile!":String(v),true)};
+    el.textContent=n;if(n<=3)say(n);
+    const iv=setInterval(()=>{
+      n--;
+      if(n<=0){clearInterval(iv);el.innerHTML="&#128512;";say(0);
+        setTimeout(()=>{el.style.display="none";res()},420);return}
+      el.textContent=n;if(n<=3)say(n);
+    },1000);
+  });
+}
+function camFlash(){const f=$("camFlash");f.classList.add("on");setTimeout(()=>f.classList.remove("on"),40)}
+/* one frame of live video onto a canvas, look and frame baked in */
+function camGrab(){
+  const v=$("camVideo");
+  let W=v.videoWidth||1280,H=v.videoHeight||960;
+  const sc=Math.min(1,1600/W);W=Math.round(W*sc);H=Math.round(H*sc);
+  const c=document.createElement("canvas");c.width=W;c.height=H;
+  const x=c.getContext("2d");
+  const f=CAM_FILTERS.find(k=>k.k===camFilter)||CAM_FILTERS[0];
+  try{x.filter=f.f==="none"?"none":f.f}catch(e){}
+  if(camFacing==="user"){x.translate(W,0);x.scale(-1,1)}
+  x.drawImage(v,0,0,W,H);
+  x.setTransform(1,0,0,1,0,0);try{x.filter="none"}catch(e){}
+  const fs=Math.round(W*.035);
+  if(camFrameK==="gold"){
+    x.strokeStyle="#C8912C";x.lineWidth=Math.round(W*.018);x.strokeRect(x.lineWidth/2,x.lineWidth/2,W-x.lineWidth,H-x.lineWidth);
+    x.strokeStyle="#F3E6CE";x.lineWidth=Math.round(W*.005);
+    const o=Math.round(W*.026);x.strokeRect(o,o,W-o*2,H-o*2);
+  }
+  if(camFrameK==="polar"){
+    const b=Math.round(W*.035);
+    x.fillStyle="#FFFDFB";
+    x.fillRect(0,0,W,b);x.fillRect(0,0,b,H);x.fillRect(W-b,0,b,H);x.fillRect(0,H-b*3.6,W,b*3.6);
+  }
+  if(camFrameK==="postcard"){
+    const b=Math.round(W*.03);
+    x.fillStyle="#FFFDFB";
+    x.fillRect(0,0,W,b);x.fillRect(0,0,b,H);x.fillRect(W-b,0,b,H);x.fillRect(0,H-b,W,b);
+    const g=x.createLinearGradient(0,H*.62,0,H);
+    g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(26,15,8,.72)");
+    x.fillStyle=g;x.fillRect(0,H*.62,W,H*.38);
+    x.textAlign="center";
+    x.font="700 "+Math.round(fs*.85)+"px Inter, sans-serif";
+    x.fillStyle="#F3E6CE";x.shadowColor="rgba(0,0,0,.7)";x.shadowBlur=fs*.4;
+    x.fillText("GREETINGS FROM",W/2,H-fs*3.4);
+    x.font=Math.round(fs*2)+"px Rye, Bitter, serif";
+    x.fillStyle="#E5BB63";
+    x.fillText(camWhere(),W/2,H-fs*1.6);
+    x.font="700 "+Math.round(fs*.7)+"px Inter, sans-serif";
+    x.fillStyle="#FFFDFB";
+    x.fillText(new Date().toLocaleDateString([],{month:"long",day:"numeric",year:"numeric"}),W/2,H-fs*.6);
+    x.shadowBlur=0;
+  }
+  if(camFrameK==="band"||camFrameK==="polar"){
+    const txt=camBandText();
+    const y=camFrameK==="polar"?H-Math.round(fs*1.5):H-Math.round(fs*1.1);
+    if(camFrameK==="band"){
+      const g=x.createLinearGradient(0,H-fs*3.2,0,H);
+      g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,.62)");
+      x.fillStyle=g;x.fillRect(0,H-fs*3.2,W,fs*3.2);
+      x.fillStyle="#fff";
+    }else x.fillStyle="#5A3018";
+    x.font="700 "+fs+"px Inter, sans-serif";x.textAlign="center";
+    x.fillText(txt,W/2,y);
+  }
+  if(camFrameK==="corner"){
+    const cs=Math.round(W*.032);
+    x.font="700 "+cs+"px Inter, sans-serif";x.textAlign="right";
+    x.fillStyle="rgba(229,187,99,.92)";x.shadowColor="rgba(0,0,0,.6)";x.shadowBlur=cs*.4;
+    x.fillText(new Date().toLocaleDateString([],{month:"short",day:"numeric",year:"numeric"}),W-cs,H-cs);
+    x.shadowBlur=0;
+  }
+  return c.toDataURL("image/jpeg",.88);
+}
+async function camShoot(){
+  if(!camStream)return camStart();
+  if(camBusy)return;
+  camBusy=true;
+  try{
+    await camCountdown(camTimerS);
+    camFlash();
+    const url=camGrab();
+    addMedia({k:"i",src:url,t:Date.now(),name:"trail-camera"});
+    const w=camWhere();
+    addFeed("place","&#128247;","Photo at "+w,"Taken with the Trail Camera");
+    renderGal();
+    const nPh=media.filter(m=>m.k==="i").length;
+    $("camStatus").innerHTML="&#128248; Got it &mdash; "+nPh+" photo"+(nPh===1?"":"s")+" in the gallery.";
+  }finally{camBusy=false}
+}
+$("camShoot").addEventListener("click",camShoot);
+$("camBooth").addEventListener("click",async()=>{
+  if(!camStream)return camStart();
+  if(camBusy)return;
+  camBusy=true;
+  try{
+    boothStrip=[];
+    $("camStatus").innerHTML="&#127918; Photo booth &mdash; four shots. Change the pose between each!";
+    if(voiceOn)speak("Photo booth. Four pictures. New pose each time!",true);
+    for(let i=0;i<4;i++){
+      await camCountdown(i===0?3:2);
+      camFlash();
+      boothStrip.push(camGrab());
+      $("camStrip").innerHTML=boothStrip.map(s=>`<img src="${s}" alt="">`).join("");
+      await new Promise(r=>setTimeout(r,350));
+    }
+    /* compose the classic vertical strip, brass-bound */
+    const ims=await Promise.all(boothStrip.map(getImg));
+    const w=560,ph=Math.round(w*3/4),pad=18,cap=64;
+    const c=document.createElement("canvas");c.width=w+pad*2;c.height=ph*4+pad*5+cap;
+    const x=c.getContext("2d");
+    x.fillStyle="#F3E6CE";x.fillRect(0,0,c.width,c.height);
+    x.strokeStyle="#C8912C";x.lineWidth=6;x.strokeRect(3,3,c.width-6,c.height-6);
+    ims.forEach((im,i)=>{if(im)x.drawImage(im,pad,pad+i*(ph+pad),w,ph)});
+    x.fillStyle="#5A3018";x.font="700 26px Bitter, serif";x.textAlign="center";
+    x.fillText(camWhere()+" · "+new Date().toLocaleDateString([],{month:"short",day:"numeric",year:"numeric"}),c.width/2,c.height-24);
+    addMedia({k:"i",src:c.toDataURL("image/jpeg",.88),t:Date.now(),name:"photo-booth"});
+    renderGal();
+    $("camStatus").innerHTML="&#127918; Strip saved to the gallery. Make somebody's day with it.";
+  }finally{camBusy=false}
+});
+/* walking away from Memories turns the camera off - no silent recording */
+window.addEventListener("hashchange",()=>{if(!location.hash.includes("memories"))camStop()});
+setTimeout(renderCamChips,0);   /* after the whole script has parsed */
+
+/* ============================================================
+   TRIP YEARBOOK
+   One self-contained page - story, trail, photos, journal - that
+   opens in any browser with no app and no internet. The kind of
+   thing that gets kept.
+   ============================================================ */
+let ybBlob=null;
+function ybStory(){
+  const s=stats(),f=store.get("feed",[]),parks=store.get("parks",[]);
+  const places=f.filter(x=>x.type==="place").slice(0,6).map(x=>x.title.replace(/^Photo at /,""));
+  let t="<h3>The story so far</h3><p>Three Andersons set out from Denver on August 17th, 2026 - "
+    +Math.round(s.mi).toLocaleString()+" miles tracked"
+    +(statesSoFar().length?" across "+statesSoFar().length+" states":"")
+    +(parks.length?", "+parks.length+" national parks":"")+".";
+  if(places.length)t+=" Along the way: "+places.join(", ")+".";
+  t+="</p>";
+  return t;
+}
+async function ybBuild(){
+  const b=$("ybBuild");b.disabled=true;b.innerHTML="&#9203; Building&hellip;";
+  try{
+    if(typeof drawTrail==="function")try{drawTrail()}catch(e){}
+    let mapImg="";
+    try{const c=$("trailCanvas");if(c&&c.width)mapImg=c.toDataURL("image/jpeg",.75)}catch(e){}
+    const pics=media.filter(m=>m.k==="i").slice(0,24);
+    const notes=store.get("feed",[]).filter(x=>x.type==="note").slice(0,10);
+    const html='<!doctype html><html lang="en"><head><meta charset="utf-8">'+
+      '<meta name="viewport" content="width=device-width,initial-scale=1">'+
+      '<title>The Anderson Family Journey</title><style>'+
+      'body{margin:0;background:#F3E6CE;color:#2A1F16;font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}'+
+      '.w{max-width:760px;margin:0 auto;padding:1.2rem}'+
+      'h1{font:900 2.1rem/1.1 Georgia,serif;color:#5A3018;margin:.2rem 0}'+
+      'h3{font:900 1.2rem/1.2 Georgia,serif;color:#5A3018}'+
+      '.hd{background:linear-gradient(165deg,#6B3A1D,#35190B);color:#F7E9CF;padding:2rem 1.2rem;text-align:center}'+
+      '.hd h1{color:#FBEFD8}.hd p{color:#E5BB63;letter-spacing:.16em;text-transform:uppercase;font-size:.72rem;font-weight:800}'+
+      '.card{background:#FFFDF6;border:1px solid #D9C9A8;border-radius:18px;padding:1.2rem;margin:1rem 0;box-shadow:0 10px 26px -18px rgba(58,29,13,.4)}'+
+      '.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.5rem}'+
+      '.g img{width:100%;height:150px;object-fit:cover;border-radius:12px;border:1px solid #D9C9A8}'+
+      'img.map{width:100%;border-radius:14px;border:1px solid #D9C9A8}'+
+      '.q{border-left:4px solid #A63A24;padding-left:.9rem;margin:.8rem 0;color:#5C4A38;font-style:italic}'+
+      '.f{text-align:center;color:#8A7358;font-size:.8rem;padding:2rem 1rem}'+
+      '</style></head><body>'+
+      '<div class="hd"><p>The Great American West &middot; August 17&ndash;31, 2026</p>'+
+      '<h1>The Anderson Family Journey</h1>'+
+      '<p style="letter-spacing:normal;text-transform:none;font-size:.95rem;font-weight:400">Denver &rarr; Black Hills &rarr; Glacier &rarr; Yellowstone &rarr; Denver</p></div>'+
+      '<div class="w">'+
+      '<div class="card">'+ybStory()+'</div>'+
+      (mapImg?'<div class="card"><h3>Everywhere we went</h3><img class="map" src="'+mapImg+'" alt="Our trail"></div>':"")+
+      (pics.length?'<div class="card"><h3>The pictures</h3><div class="g">'+pics.map(p=>'<img src="'+p.src+'" alt="">').join("")+'</div></div>':"")+
+      (notes.length?'<div class="card"><h3>From the journal</h3>'+notes.map(n=>'<div class="q">'+String(n.sub||n.title).replace(/</g,"&lt;")+'</div>').join("")+'</div>':"")+
+      '<div class="f">Made with Olive, the Andersons\' road companion.</div>'+
+      '</div></body></html>';
+    ybBlob=new Blob([html],{type:"text/html"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(ybBlob);a.download="anderson-family-journey.html";a.click();
+    $("ybShare").style.display=navigator.canShare?"inline-flex":"none";
+    $("ybStatus").innerHTML="&#9989; <b>Saved to your downloads.</b> "+pics.length+" photo"+(pics.length===1?"":"s")+", "
+      +Math.round(ybBlob.size/1024)+" KB, works everywhere with no internet.";
+  }finally{b.disabled=false;b.innerHTML="&#128214; Build the yearbook"}
+}
+$("ybBuild").addEventListener("click",ybBuild);
+$("ybShare").addEventListener("click",async()=>{
+  if(!ybBlob)return toast("Build it first");
+  const file=new File([ybBlob],"anderson-family-journey.html",{type:"text/html"});
+  if(navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],title:"The Anderson Family Journey"});return}catch(e){}
+  }
+  toast("Sharing isn't available here &mdash; the file is in your downloads");
+});
+
+/* ============================================================
+   OLIVE'S ASIDES - a companion, not a kiosk.
+   While you're rolling she occasionally has something worth
+   saying: a landmark coming up, the day's tally, today's one
+   thing to remember. Never more than one remark per 25 minutes.
+   ============================================================ */
+let asideLast=+store.get("asideAt",0);
+function oliveAside(){
+  if(!voiceOn||!here)return;
+  if(tripDayIndex()<0)return;
+  if(Date.now()-asideLast<25*60*1000)return;
+  if((here._lastMoveDist||0)<0.05)return;   /* only while actually rolling */
+  const picks=[];
+  const near=nearest(8).filter(p=>p._d>3&&p._d<18&&["landmark","gem","wildlife","scenic"].includes(p.c));
+  if(near.length)picks.push(near[0].n+" is coming up, about "+fmtMi(near[0]._d)+" out. "+(near[0].d||"").split(".")[0]+".");
+  const ex=todayExperience();
+  if(ex.mi>60)picks.push(Math.round(ex.mi)+" miles today already. "+
+    (ex.photos.length?ex.photos.length+" photos in the bag.":"The Trail Camera is feeling neglected."));
+  const i=tripDayIndex();
+  if(i>=0&&DAYS[i].note)picks.push("One thing about today: "+DAYS[i].note.split(".")[0]+".");
+  if(!picks.length)return;
+  asideLast=Date.now();store.set("asideAt",asideLast);
+  speak(picks[Math.floor(Math.random()*picks.length)],false);
+}
+setInterval(oliveAside,8*60*1000);
+
+/* a good morning once a day, and the day's recap spoken each evening */
+(function(){
+  const t=todayISO(),h=new Date().getHours();
+  if(tripDayIndex()<0)return;
+  if(h>=5&&h<12&&store.get("am-day","")!==t){
+    store.set("am-day",t);
+    setTimeout(()=>{const i=tripDayIndex();
+      if(i>=0)speak("Morning, Andersons. Day "+DAYS[i].n+". "+DAYS[i].t+". "+DAYS[i].r+". I'll keep an eye on the road.",false)},3000);
+  }
+  if(h>=19&&store.get("pm-day","")!==t){
+    store.set("pm-day",t);
+    setTimeout(()=>speak(recapText(),false),4000);
+  }
+})();
+
 /* ---- canvas renderer: Ken Burns + crossfade + title card ---- */
 const vc=$("vidCanvas"),vx=vc.getContext("2d");
 const imgCache={};
@@ -5628,13 +6060,19 @@ function heard(txt,ms){
 /* Somewhere to ask from even when the microphone is unavailable -
    inside a preview frame, on iOS Safari, or with the mic refused. */
 const ASK_LIST=[
- ["Where are we?","where are we"],
- ["What's ahead?","what is ahead"],
- ["Where's the next fuel?","where is the next fuel"],
- ["Where should we eat?","where should we eat"],
- ["What's the weather?","what is the weather"],
- ["Tell me a fact","tell me a fact"],
  ["What's the plan today?","what is the plan today"],
+ ["What's ahead?","what is ahead"],
+ ["Where should we eat?","where should we eat"],
+ ["Where's the next fuel?","where is the next fuel"],
+ ["Take a photo","take a photo"],
+ ["Tell me a story","tell me a story"],
+ ["Where are we staying tonight?","where are we staying tonight"],
+ ["What's the weather?","what is the weather"],
+ ["Where are we?","where are we"],
+ ["Tell me a fact","tell me a fact"],
+ ["When's sunset?","when is sunset"],
+ ["How's the bucket list?","how is the bucket list"],
+ ["Make tonight's film","make tonight's film"],
  ["Where did we park?","where did we park"],
  ["What's on the radio?","what is on the radio"],
  ["Show me gas stations","show me gas stations"],
@@ -5803,7 +6241,55 @@ function answerAloud(said,onText){
       return;
     }
   }
-  else reply=oliveKnows(said)||"I didn't catch that. Try: what's ahead, where are we, next fuel, or tell me a fact.";
+  else if(has("camera","photo","picture","selfie","postcard")){
+    location.hash="#/memories";setTimeout(()=>{try{camStart()}catch(e){}},450);
+    reply="Opening the Trail Camera. Pick a filter, then the big brass button. Say cheese.";
+  }
+  else if(has("film","movie","video","reel","highlight")){
+    location.hash="#/memories";
+    if($("vidStyle"))$("vidStyle").value="daily";
+    reply=media.filter(m=>m.k==="i").length
+      ?"Let's cut today's film. I've set it to today's photos - press Create video and I'll do the rest."
+      :"Add a few photos first - the Trail Camera is right at the top of Memories - and then I'll cut the film.";
+  }
+  else if(has("hotel tonight","where are we staying","where do we sleep","tonight's hotel","check in","reservation tonight","staying tonight")){
+    const t=todayISO();
+    const r=RESV.find(x=>x.d<=t&&t<x.out)||RESV.find(x=>x.d===t);
+    reply=r?("Tonight you're at "+r.t+(r.a?", "+r.a:"")+(r.conf?". Confirmation "+r.conf:"")+".")
+           :"Nothing booked for tonight on my list - check Journey, Stays.";
+  }
+  else if(has("sunset","sunrise","stars","stargazing","dark","golden hour")){
+    const sk=$("skyInfo");
+    reply=(sk&&sk.textContent&&!/Turn on location/.test(sk.textContent))
+      ?sk.textContent.replace(/\s+/g," ").trim().slice(0,260)
+      :"Turn location on and give me a minute - then I'll have tonight's sunset and star report.";
+  }
+  else if(has("how many days","days left","day are we","what day","day is it")){
+    const i=tripDayIndex();
+    if(i>=0)reply="Day "+DAYS[i].n+" of 15. "+(15-DAYS[i].n)+" days of the West still ahead of you.";
+    else{const to=daysBetween(todayISO(),TRIP_START);
+      reply=to>0?(to+" days until the wheels roll."):"The trip's behind you - "+Math.round(stats().mi).toLocaleString()+" miles of it.";}
+  }
+  else if(has("story","tell me a story")){
+    const keys=Object.keys(STORIES||{});
+    if(keys.length){const k=keys[Math.floor(Math.random()*keys.length)];
+      reply=k+". "+STORIES[k].slice(0,400);}
+    else reply="My stories live on the Toolkit tab - pick a town and I'll tell it.";
+  }
+  else if(has("bucket","bucket list")){
+    const b=store.get("bucket",{}),total=(typeof BUCKET!=="undefined")?BUCKET.length:0;
+    const done=Object.keys(b).length;
+    const next=(typeof BUCKET!=="undefined")?BUCKET.find((x,i)=>!b[i]):null;
+    reply=done+" of "+total+" checked off."+(next?" Next up: "+next.n+".":" All of them. Remarkable.");
+  }
+  else if(/\bhow far\b/.test(q)&&here){
+    const hit=POI.map(p=>({p,score:p.n.toLowerCase().split(/[^a-z0-9]+/).filter(w=>w.length>3&&q.includes(" "+w+" ")).length}))
+      .filter(x=>x.score>0).sort((a,b)=>b.score-a.score)[0];
+    if(hit){const d=dist(here.lat,here.lng,hit.p.lat,hit.p.lng);
+      reply=hit.p.n+" is "+fmtMi(d)+" from here, about "+eta(d)+" of driving.";}
+    else reply="Tell me the place name again, a little slower - I know every stop on this route.";
+  }
+  else reply=oliveKnows(said)||"I didn't catch that. Try: what's ahead, where are we, next fuel, take a photo, or tell me a story.";
   heard("&ldquo;"+esc(said)+"&rdquo;<br><br>"+esc(reply.slice(0,220)),9000);
   if(onText)onText(reply);
   speak(reply,true);

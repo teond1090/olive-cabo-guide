@@ -2,7 +2,7 @@
    Cache-first for the app shell AND Olive's voice clips, so the whole guide
    plus every spoken line works with no signal - which is most of this route.
    Network-first for live data (weather, chat), which is useless when stale. */
-const CACHE="olive-west-v10";   /* bumped: one-nav layout, More menu, Ask Olive card, mic fixes */
+const CACHE="olive-west-v11";   /* bumped: Trail Camera, Yearbook, Olive's asides & new commands */
 const TILES="olive-tiles-v1";
 const TILE_MAX=1200;   /* roughly 60-90MB of map, plenty for this route */
 const SHELL=["./","./index.html","./manifest.json"];
