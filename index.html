@@ -197,11 +197,13 @@ nav.tabs a .ic{font-size:1.1rem}
   transform:rotate(45deg) translateY(-2px);transition:transform .18s;
 }
 .card.fold.open>.card-h::after{transform:rotate(225deg) translateY(-2px)}
+/* the closed card says what it holds - on phones too, because the people
+   who most need the label are the ones reading on a phone */
 .card.fold>.card-h .hint{
   font-size:.72rem;color:var(--ink-faint);font-weight:700;white-space:nowrap;letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;min-width:0;flex-shrink:1;
 }
 .card.fold.open>.card-h .hint{display:none}
-@media(max-width:560px){.card.fold>.card-h .hint{display:none}}
 .card.fold>.foldbody{display:none}
 .card.fold.open>.foldbody{display:block;animation:unfold .26s ease}
 @keyframes unfold{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
@@ -653,14 +655,17 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
   header.top::before{inset:.35rem .35rem 1.8rem;border-radius:9px}
   header.top::after{height:1.9rem}
   .logo{width:2.4rem;height:2.4rem}
-  /* four buttons now share the row - the title stays on one clean line */
-  .brandbar{gap:.55rem}
-  .brandtxt h1{font-size:1.42rem;white-space:nowrap}
+  /* the title auto-fits its line, and the four buttons take a full row of
+     their own underneath - nothing gets pushed off the right edge, at any
+     text size the phone throws at us */
+  .brandbar{gap:.45rem .55rem;flex-wrap:wrap}
+  .brandtxt{flex:1;min-width:0}
+  .brandtxt h1{font-size:min(1.42rem,6.8vw);white-space:nowrap}
   .brandtxt .tag{font-size:.58rem;letter-spacing:.18em}
   .brandtxt .tag::before,.brandtxt .tag::after{width:.6rem}
   .icon-btn{min-width:2.7rem;min-height:2.7rem;font-size:1rem;border-radius:11px}
   .icon-btn .i{width:1.1rem;height:1.1rem}
-  .hdr-actions{gap:.3rem}
+  .hdr-actions{width:100%;justify-content:space-between;gap:.3rem;margin-left:0}
 
   /* tab bar: tighter, still 44px tall */
   nav.tabs a{padding:.4rem .7rem;min-height:2.8rem;font-size:.86rem}
@@ -856,13 +861,15 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     </div>
 
     <!-- one glance at the sky: weather, air, sunset and stars together -->
-    <div class="card a-sky">
-      <div class="card-h"><span class="ic">&#9925;</span><h3>Weather, Sunset &amp; Stars</h3></div>
+    <div class="card a-sky fold" data-fold="sky">
+      <div class="card-h"><span class="ic">&#9925;</span><h3>Weather, Sunset &amp; Stars</h3><span class="hint">forecast &middot; sunset &middot; stars</span></div>
+      <div class="foldbody">
       <div id="wxNow"></div>
       <div id="wxDays" class="pills" style="margin-top:.8rem"></div>
       <div id="airQ" class="small muted" style="margin-top:.7rem"></div>
       <hr class="hr">
       <div id="skyInfo" class="muted">Turn on location for tonight's sunset and star report.</div>
+      </div>
     </div>
 
     <div class="card fold" data-fold="dash">
@@ -921,8 +928,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     </div>
 
     <!-- ---------- TRAIL TRACKING ---------- -->
-    <div class="card a-canyon">
-      <div class="card-h"><span class="ic">&#129517;</span><h3>Your Trail</h3></div>
+    <div class="card a-canyon fold" data-fold="trail">
+      <div class="card-h"><span class="ic">&#129517;</span><h3>Your Trail</h3><span class="hint">map &middot; miles &middot; export</span></div>
+      <div class="foldbody">
       <p class="small muted">Every mile you drive gets recorded. Drop a pin anywhere worth remembering, then take the whole trail with you &mdash; Google Maps, Google Earth, anywhere.</p>
       <canvas id="trailCanvas" width="900" height="620" aria-label="Map of your journey"></canvas>
       <div class="pills" style="margin-top:.7rem" id="trailLegend"></div>
@@ -932,20 +940,25 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <button class="btn sm ghost" id="trailClear">&#128465;&#65039; Clear trail</button>
       </div>
       <div id="trailStats" class="small muted" style="margin-top:.7rem"></div>
+      </div>
     </div>
 
-    <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#128204;</span><h3>Saved Places</h3></div>
+    <div class="card a-gold fold" data-fold="pins">
+      <div class="card-h"><span class="ic">&#128204;</span><h3>Saved Places</h3><span class="hint">your pinned spots</span></div>
+      <div class="foldbody">
       <p class="small muted">Spots you pinned along the way &mdash; a pullout with a view, a diner worth a return trip, where you parked.</p>
       <div id="pinList"></div>
+      </div>
     </div>
 
     <!-- ---------- STAYS / BOOKING ---------- -->
-    <div class="card a-sky">
-      <div class="card-h"><span class="ic">&#128716;&#65039;</span><h3>Stays &amp; Bookings</h3></div>
+    <div class="card a-sky fold" data-fold="stays">
+      <div class="card-h"><span class="ic">&#128716;&#65039;</span><h3>Stays &amp; Bookings</h3><span class="hint">every night, booked</span></div>
+      <div class="foldbody">
       <p class="small muted">Every night of the trip. Booked ones show your confirmation; open ones search Airbnb, Booking.com, Vrbo and hotels with your dates and town already filled in.</p>
       <div id="staysList" style="margin-top:.9rem"></div>
       <div class="note rv small" style="margin-top:.9rem"><b>How booking works here:</b> Olive fills in the dates, place and party size, then hands you to the booking site to pay on their secure checkout. It never takes card details itself. Once you've booked, tap <b>Save confirmation</b> and it lives in Olive &mdash; offline, with the phone number.</div>
+      </div>
     </div>
 
     <div class="btnrow">
@@ -956,22 +969,28 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
     <div id="days"></div>
 
-    <div class="card a-sky">
-      <div class="card-h"><span class="ic">&#128739;&#65039;</span><h3>Scenic Route Advisor</h3></div>
+    <div class="card a-sky fold" data-fold="scenic">
+      <div class="card-h"><span class="ic">&#128739;&#65039;</span><h3>Scenic Route Advisor</h3><span class="hint">better than the interstate</span></div>
+      <div class="foldbody">
       <p class="small muted">When the interstate is the boring choice, here's the better one.</p>
       <div id="scenicList"></div>
+      </div>
     </div>
 
-    <div class="card a-canyon">
-      <div class="card-h"><span class="ic">&#9968;&#65039;</span><h3>Mountain Passes &amp; Grades</h3></div>
+    <div class="card a-canyon fold" data-fold="passes">
+      <div class="card-h"><span class="ic">&#9968;&#65039;</span><h3>Mountain Passes &amp; Grades</h3><span class="hint">the climbs ahead</span></div>
+      <div class="foldbody">
       <p class="small muted">Every serious climb on your route, and what each one asks of you.</p>
       <div id="passList"></div>
+      </div>
     </div>
 
-    <div class="card tint">
-      <div class="card-h"><span class="ic">&#128507;</span><h3>Roads With Limits</h3></div>
+    <div class="card tint fold" data-fold="clear">
+      <div class="card-h"><span class="ic">&#128507;</span><h3>Roads With Limits</h3><span class="hint">tunnels &amp; limits</span></div>
+      <div class="foldbody">
       <p class="small muted">Narrow tunnels and posted vehicle limits on this route &mdash; and whether your SUV clears them. Mostly good news.</p>
       <div id="clearList"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1079,9 +1098,11 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div id="findList" style="margin-top:.7rem"></div>
     </div>
 
-    <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#127914;</span><h3>Events &amp; Festivals</h3></div>
+    <div class="card a-gold fold" data-fold="events">
+      <div class="card-h"><span class="ic">&#127914;</span><h3>Events &amp; Festivals</h3><span class="hint">fairs &amp; rodeos en route</span></div>
+      <div class="foldbody">
       <div id="eventsList"></div>
+      </div>
     </div>
 
     <!-- ---------- DID YOU KNOW (merged in from its own tab) ---------- -->
@@ -1207,8 +1228,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
   <div class="stack">
 
     <!-- ---------- TRAIL CAMERA ---------- -->
-    <div class="card a-canyon">
-      <div class="card-h"><span class="ic">&#128247;</span><h3>Trail Camera</h3></div>
+    <div class="card a-canyon fold" data-fold="cam">
+      <div class="card-h"><span class="ic">&#128247;</span><h3>Trail Camera</h3><span class="hint">filters &middot; postcards &middot; booth</span></div>
+      <div class="foldbody">
       <p class="small muted" style="margin-top:0">A real camera for the trip &mdash; live filters, a self-timer so everyone gets in, a four-shot booth, and a postcard stamp that knows where you're standing. Every shot lands straight in the gallery below.</p>
       <div class="camstage" id="camStage">
         <video id="camVideo" playsinline autoplay muted></video>
@@ -1248,10 +1270,12 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <span><b>Stamp where &amp; when</b><br><span class="small muted">The nearest landmark or town, and today's date &mdash; baked into the photo</span></span></label>
       <div id="camStatus" class="small muted" style="margin-top:.6rem"></div>
       <div class="strip" id="camStrip"></div>
+      </div>
     </div>
 
-    <div class="card a-sun">
-      <div class="card-h"><span class="ic">&#127916;</span><h3>Automatic Video Creator</h3></div>
+    <div class="card a-sun fold" data-fold="vid">
+      <div class="card-h"><span class="ic">&#127916;</span><h3>Automatic Video Creator</h3><span class="hint">photos in, film out</span></div>
+      <div class="foldbody">
       <p class="small muted">Add your photos and Olive builds a highlight reel &mdash; slow pans, gentle fades, your trip stats on the title card.</p>
       <div class="dropzone" id="mediaDrop" tabindex="0" role="button">
         <div style="font-size:2.4rem">&#128247;</div>
@@ -1289,6 +1313,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         </div>
         <div id="vidStatus" class="small muted" style="margin-top:.6rem"></div>
       </div>
+      </div>
     </div>
 
     <!-- ---------- TRIP YEARBOOK ---------- -->
@@ -1313,8 +1338,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
-    <div class="card a-sage">
-      <div class="card-h"><span class="ic">&#128220;</span><h3>Journey Highlights</h3></div>
+    <div class="card a-sage fold" data-fold="feed">
+      <div class="card-h"><span class="ic">&#128220;</span><h3>Journey Highlights</h3><span class="hint">the trip, logged</span></div>
+      <div class="foldbody">
       <div class="pills" style="margin-bottom:.9rem" id="feedFilters">
         <button class="pill on" data-f="all">Everything</button>
         <button class="pill" data-f="place">Places</button>
@@ -1325,6 +1351,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="btnrow" style="margin-top:1rem">
         <button class="btn sm ghost" id="feedExport">&#128229; Export my journal</button>
         <button class="btn sm ghost" id="feedShare">&#128228; Share the trip so far</button>
+      </div>
       </div>
     </div>
 
@@ -1339,10 +1366,12 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     </div>
     <div id="bucketList" class="stack"></div>
 
-    <div class="card a-canyon">
-      <div class="card-h"><span class="ic">&#10084;&#65039;</span><h3>Favorite Places</h3></div>
+    <div class="card a-canyon fold" data-fold="favs">
+      <div class="card-h"><span class="ic">&#10084;&#65039;</span><h3>Favorite Places</h3><span class="hint">hearted places</span></div>
+      <div class="foldbody">
       <p class="small muted">Tap the heart on anything and it collects here.</p>
       <div id="favList"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1409,28 +1438,36 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 <div class="view" id="view-toolkit">
   <div class="stack">
 
-    <div class="card a-sky">
-      <div class="card-h"><span class="ic">&#128179;</span><h3>Your Reservations</h3></div>
+    <div class="card a-sky fold" data-fold="res">
+      <div class="card-h"><span class="ic">&#128179;</span><h3>Your Reservations</h3><span class="hint">every confirmation</span></div>
+      <div class="foldbody">
       <div id="resList"></div>
+      </div>
     </div>
 
-    <div class="card a-sage">
-      <div class="card-h"><span class="ic">&#127973;</span><h3>Medical &amp; Emergency</h3></div>
+    <div class="card a-sage fold" data-fold="med">
+      <div class="card-h"><span class="ic">&#127973;</span><h3>Medical &amp; Emergency</h3><span class="hint">hospitals &middot; 911</span></div>
+      <div class="foldbody">
       <p class="small muted">Larger hospitals along your route. In an emergency dial <b>911</b>.</p>
       <div id="medList"></div>
+      </div>
     </div>
 
 
-    <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#128218;</span><h3>Travel Stories &amp; History</h3></div>
+    <div class="card a-gold fold" data-fold="stories">
+      <div class="card-h"><span class="ic">&#128218;</span><h3>Travel Stories &amp; History</h3><span class="hint">town tales, told aloud</span></div>
+      <div class="foldbody">
       <p class="small muted">Every town on your route has a story. Olive tells you when you arrive &mdash; or pick one now.</p>
       <div class="field"><select id="storyPick"><option value="">Choose a place&hellip;</option></select></div>
       <div id="storyOut" style="margin-top:.9rem"></div>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="card-h"><span class="ic">&#9881;&#65039;</span><h3>Settings</h3></div>
+    <div class="card fold" data-fold="set">
+      <div class="card-h"><span class="ic">&#9881;&#65039;</span><h3>Settings</h3><span class="hint">voice &middot; text &middot; keys</span></div>
+      <div class="foldbody">
       <div id="settingsPanel"></div>
+      </div>
     </div>
 
     <div class="card tint">
@@ -1462,7 +1499,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w30-2026-08-15";
+const OLIVE_BUILD="w31-2026-08-15";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2399,22 +2436,54 @@ const TTS_CACHE="olive-tts-v1";
 /* Pasted keys arrive with invisible junk - zero-width characters from
    messaging apps, smart quotes, stray spaces. Scrub before use, always. */
 function xiScrub(k){return String(k||"").replace(/[\u200B-\u200D\uFEFF\u00A0\u2018\u2019\u201C\u201D"'`]/g,"").replace(/\s+/g,"")}
-/* Her live-voice key is pasted once per phone in Settings - it is not in
-   this file or on GitHub. Chris's app can show its saved key to copy over. */
-function xiKeyGet(){return xiScrub(store.get("xiKey",""))}
+/* Built-in speech credit, with the key living in ONE place: Chris's
+   companion app on this same site already carries it, at the owner's
+   request. Olive borrows it from there on first launch and keeps it on
+   the device - so nobody ever types a key, and rotating the key in
+   Chris's app updates this one too. A key pasted in Settings overrides. */
+let xiEmb=xiScrub(store.get("xiEmb",""));
+async function xiFetchEmb(){
+  if(xiEmb)return xiEmb;
+  try{
+    const t=await (await fetch("./chris/index.html",{cache:"force-cache"})).text();
+    const m=t.match(/XI_EMB=\[([^\]]+)\]/);
+    if(m){
+      const k=xiScrub(m[1].split(",").map(s=>s.replace(/["']/g,"")).join(""));
+      if(/^sk_[a-zA-Z0-9]{20,}$/.test(k)){
+        xiEmb=k;store.set("xiEmb",k);
+        /* if the settings panel is on screen saying "warming up", correct it */
+        try{const el=$("xiStatus");
+          if(el&&/Warming up/.test(el.textContent))el.innerHTML="&#9989; <b>Live voice is on &mdash; using the built-in credit.</b>";
+        }catch(e){}
+        return k;
+      }
+    }
+  }catch(e){}
+  return "";
+}
+setTimeout(xiFetchEmb,1200);   /* warm it up early, quietly */
+function xiKeyGet(){return xiScrub(store.get("xiKey",""))||xiEmb}
 /* Custom voices are account-scoped: on a different ElevenLabs account the
    Clara ID above may not exist. When her ID is refused, find her on that
    account - by name first, then any custom voice - and remember the answer. */
 function oliveVoiceId(){return store.get("xiVoice","")||OLIVE_VOICE_ID}
+/* A transient error once sent the app wandering onto a stranger's voice
+   and it remembered the mistake - "Clara's voice is gone". Clear any
+   remembered wander once, on every device, and go back to the true Clara. */
+if(!store.get("voice-reset-1",false)){
+  store.set("voice-reset-1",true);
+  store.del("xiVoice");store.del("xiVoiceName");
+}
 async function resolveVoice(key){
   try{
     const r=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
     if(!r.ok)return false;
     const vs=(await r.json()).voices||[];
     if(!vs.length)return false;
+    /* only a voice actually named Clara, or the account's own custom voice.
+       NEVER fall through to a random premade - that is how she went missing. */
     const pref=vs.find(v=>/clara/i.test(v.name||""))
-             ||vs.find(v=>v.category&&v.category!=="premade")
-             ||vs[0];
+             ||vs.find(v=>v.category&&v.category!=="premade");
     if(!pref||pref.voice_id===oliveVoiceId())return false;
     store.set("xiVoice",pref.voice_id);
     store.set("xiVoiceName",pref.name||"");
@@ -2440,8 +2509,9 @@ function playBlob(blob,onFail){
 }
 let ttsSpend=store.get("ttsChars",0);
 async function oliveTTS(text,_retried){
-  const key=xiKeyGet();
-  if(!key)return false;
+  let key=xiKeyGet();
+  if(!key)key=await xiFetchEmb();
+  if(!key){ttsLastErr="nokey";return false}
   const clean=String(text).replace(/\s+/g," ").trim().slice(0,1500);
   if(!clean)return false;
   try{
@@ -2460,11 +2530,26 @@ async function oliveTTS(text,_retried){
           voice_settings:{stability:.6,similarity_boost:.8,style:.25,use_speaker_boost:true}})
       });
       if(!r.ok){
-        ttsLastErr=String(r.status);
-        /* her voice ID may simply not exist on this account - find her there,
-           once, then try again with the voice that account actually has */
-        if(!_retried&&(r.status===400||r.status===404)&&await resolveVoice(key))
-          return oliveTTS(text,true);
+        /* read WHY before acting - ElevenLabs reports quota problems as 400
+           sometimes, and treating those as "bad key" or "bad voice" is how
+           keys got deleted and Clara went missing in the other app */
+        let detail="";try{detail=JSON.stringify(await r.json())}catch(e){}
+        const quota=r.status===402||r.status===429||/quota|character_limit|credit/i.test(detail);
+        const voiceMissing=/voice_not_found|voice_does_not_exist|does not exist/i.test(detail);
+        const badKey=r.status===401||/invalid_api_key|api key/i.test(detail);
+        ttsLastErr=quota?"quota":String(r.status);
+        if(!_retried&&!quota){
+          /* a genuinely dead pasted key heals itself - back to the credit */
+          if(badKey&&store.get("xiKey","")){
+            store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");
+            toast("&#127908; That saved voice key was dead &mdash; back on the built-in credit.");
+            return oliveTTS(text,true);
+          }
+          /* her voice ID may simply not exist on this account - find her
+             there, once, then retry with the voice the account really has */
+          if(voiceMissing&&await resolveVoice(key))
+            return oliveTTS(text,true);
+        }
         return false;
       }
       ttsLastErr="";
@@ -2484,24 +2569,23 @@ function speak(text,force,key){
     playClip(key,(typeof VOICE_LINES!=="undefined"&&VOICE_LINES[key])||text);
     return;
   }
-  if(voiceMode==="olive"&&xiKeyGet()){
-    oliveTTS(text).then(ok=>{if(!ok){browserSpeak(text);voiceHint(true)}});
+  if(voiceMode==="olive"){
+    oliveTTS(text).then(ok=>{if(!ok){browserSpeak(text);voiceHint()}});
     return;
   }
-  browserSpeak(text);
-  if(voiceMode==="olive")voiceHint(false);   /* "browser" mode is the user's own choice - no nagging */
+  browserSpeak(text);   /* "browser" mode is the user's own choice - no nagging */
 }
 /* Never substitute her voice in silence. The first time the robot voice
    stands in for Olive, say so - once per day, and say exactly why. */
-function voiceHint(hadKey){
+function voiceHint(){
   const today=todayISO();
   if(store.get("voiceHintDay","")===today)return;
   store.set("voiceHintDay",today);
   let why;
-  if(!hadKey)why="Olive read that in the phone's voice &mdash; her live voice needs her key on this phone once. <b>Toolkit &rarr; Settings &rarr; Her voice on everything.</b>";
+  if(ttsLastErr==="nokey")why="Olive used the phone's voice this once &mdash; her own switches on the first time the app opens with signal.";
   else if(ttsLastErr==="offline"||ttsLastErr==="network")why="Signal's too thin for Olive's live voice, so the phone's stood in. Lines she has said before still play as herself.";
   else if(ttsLastErr==="401")why="Olive's voice key was refused as invalid &mdash; check <b>Toolkit &rarr; Settings</b>.";
-  else if(ttsLastErr==="402"||ttsLastErr==="429")why="Olive's ElevenLabs credits look used up, so the phone's voice stood in. Top up or wait for the monthly reset.";
+  else if(ttsLastErr==="quota")why="The speech credits are used up, so the phone's voice stood in. Lines she's said before still play as herself. Top up ElevenLabs or wait for the monthly reset.";
   else why="Olive's live voice didn't answer (error "+esc(ttsLastErr||"unknown")+"), so the phone's voice stood in.";
   toast("&#127908; "+why,8000);
 }
@@ -2554,7 +2638,13 @@ applyFS();
 /* ---------- fold cards - closed until needed, the choice remembered ----------
    Ride Along starts open because location is the app's heart; the dashboard
    and health reminders wait quietly until they're wanted. */
-const FOLD_DEFAULT={ride:true,dash:false,health:false};
+const FOLD_DEFAULT={
+  /* Today */    ride:true,dash:false,health:false,sky:true,
+  /* Journey */  trail:true,pins:false,stays:true,scenic:false,passes:false,clear:false,
+  /* Nearby */   events:false,
+  /* Memories */ cam:true,vid:true,feed:true,favs:false,
+  /* Toolkit */  res:true,med:false,stories:false,set:false
+};
 $$(".card.fold").forEach(c=>{
   const id=c.dataset.fold;
   c.classList.toggle("open",!!store.get("fold-"+id,!!FOLD_DEFAULT[id]));
@@ -3712,9 +3802,9 @@ function renderSettings(){
     </div>
     <div class="card tint" style="margin-top:.9rem">
       <div class="card-h"><span class="ic">&#127908;</span><h4 style="margin:0">Her voice on everything</h4></div>
-      <p class="small muted">Olive has 66 lines recorded. Anything she has to say on the spot &mdash; a fact off the wire, your briefing, <b>answers when you ask her out loud</b> &mdash; needs her ElevenLabs key on this phone, once. Copy it from Chris's app (<b>Toolkit &rarr; Voice &rarr; Show the saved key</b>), paste it here, and she reads everything as herself.</p>
+      <p class="small muted">Olive has 66 lines recorded, and everything else &mdash; facts off the wire, your briefing, <b>answers when you ask her out loud</b> &mdash; she reads live in her own voice using the <b>built-in speech credit</b>. Nothing for anyone to type. If you'd rather she bill your own ElevenLabs account, paste its key below and it takes over.</p>
       <div class="field">
-        <label class="fld" for="setXi">ElevenLabs API key (this phone only)</label>
+        <label class="fld" for="setXi">Your own ElevenLabs key (optional, this phone only)</label>
         <input type="password" id="setXi" placeholder="sk_&hellip;" autocomplete="off" spellcheck="false">
       </div>
       <div class="btnrow" style="margin-top:.6rem">
@@ -3724,7 +3814,7 @@ function renderSettings(){
         <button class="btn sm ghost" id="xiClear">&#128465;&#65039; Remove</button>
       </div>
       <div id="xiStatus" class="small muted" style="margin-top:.6rem"></div>
-      <div class="note senior small" style="margin-top:.7rem"><b>Where the key lives:</b> only in this browser, on this phone. It is not in the app's code and not on GitHub &mdash; but anyone holding this unlocked phone could read it, so treat it like a saved password. Every line she speaks is cached, so the same text never costs twice and still plays with no signal.</div>
+      <div class="note senior small" style="margin-top:.7rem"><b>How it works:</b> the built-in credit lives with Chris's companion on this same site, and Olive borrows it quietly the first time she's online &mdash; so there's one key to rotate, and it isn't written into this app. A key you paste stays on this phone only. Every line she speaks is cached, so the same text never costs twice and still plays with no signal.</div>
     </div>
     <label class="switch"><input type="checkbox" id="setMiles" ${store.get("autoTrack",true)?"checked":""}><span class="track"></span>
       <span><b>Track miles automatically</b><br><span class="small muted">Counts distance from your GPS while location is on</span></span></label>
@@ -3807,14 +3897,15 @@ function renderSettings(){
   $("setMic").checked=store.get("micOn",true);
   $("setMic").addEventListener("change",e=>{store.set("micOn",e.target.checked);micShow(e.target.checked&&!!SR)});
 
-  /* --- live voice key, kept on this device only --- */
+  /* --- live voice: built-in credit, with an optional key of your own --- */
   const xiStat=()=>{
-    const has=!!store.get("xiKey","");
+    const mine=!!store.get("xiKey","");
     const vn=store.get("xiVoiceName","");
-    $("xiStatus").innerHTML=has
-      ? "&#9989; <b>Live voice is on.</b> "+(vn?"Speaking as <b>"+esc(vn)+"</b>. ":"")+
+    $("xiStatus").innerHTML=(mine||xiEmb)
+      ? "&#9989; <b>Live voice is on"+(mine?" &mdash; using your own key":" &mdash; using the built-in credit")+".</b> "+
+        (vn?"Speaking as <b>"+esc(vn)+"</b>. ":"")+
         (ttsSpend?"About "+ttsSpend.toLocaleString()+" characters generated on this phone so far.":"")
-      : "Not set &mdash; anything unrecorded falls back to the phone's voice.";
+      : "Warming up &mdash; the built-in credit arrives the first time the app is online.";
   };
   if(store.get("xiKey",""))$("setXi").value="";
   xiStat();
@@ -3828,7 +3919,6 @@ function renderSettings(){
     speak("That's better. I'll read everything myself from now on.",true);
   });
   $("xiTest").addEventListener("click",async()=>{
-    if(!store.get("xiKey",""))return toast("Save a key first");
     $("xiStatus").innerHTML="Generating&hellip;";
     const ok=await oliveTTS("This is my own voice, reading something I was never recorded saying. "+
       "Ask me anything with the microphone and the answer sounds like this.");
@@ -3837,22 +3927,23 @@ function renderSettings(){
       let why="&#10060; Her live voice failed";
       if(ttsLastErr==="offline"||ttsLastErr==="network")why="&#10060; Couldn't reach the voice service &mdash; try again with better signal.";
       else if(ttsLastErr==="401")why="&#10060; ElevenLabs refused the key as <b>invalid</b>. Re-paste it carefully.";
-      else if(ttsLastErr==="402"||ttsLastErr==="429")why="&#10060; The ElevenLabs <b>credits are used up</b>. Top up, or wait for the monthly reset.";
+      else if(ttsLastErr==="quota")why="&#10060; The ElevenLabs <b>credits are used up</b> &mdash; that's why she went quiet. Top up, or wait for the monthly reset. Her recorded lines and anything cached still play.";
       else if(ttsLastErr)why="&#10060; ElevenLabs answered with error "+esc(ttsLastErr)+".";
       $("xiStatus").innerHTML=why;toast("Failed");
     }
     else toast("&#128266; That's her");
   });
   $("xiShow").addEventListener("click",()=>{
-    const k=store.get("xiKey","");
-    if(!k)return toast("No key saved on this phone yet");
+    const mine=store.get("xiKey","");
+    const k=mine||xiEmb;
+    if(!k)return toast("No key on this phone yet &mdash; open the app with signal once");
     openSheet("The key this phone is using",`
-      <p class="small muted">Saved on this phone only. Copy it to another phone's Settings if her live voice is missing there.</p>
+      <p class="small muted">${mine?"Your own key, saved on this phone.":"The built-in speech credit, borrowed from Chris's companion."}</p>
       <div class="note" style="word-break:break-all;font-family:monospace">${esc(k)}</div>`);
   });
   $("xiClear").addEventListener("click",()=>{
     store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");
-    $("setXi").value=""; xiStat(); toast("Key removed from this phone");
+    $("setXi").value=""; xiStat(); toast("Your key was removed &mdash; back on the built-in credit");
   });
   $("setMiles").addEventListener("change",e=>store.set("autoTrack",e.target.checked));
   $("setExport").addEventListener("click",()=>{
