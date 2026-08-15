@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-fs="m">
+<html lang="en" data-fs="l">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -151,6 +151,11 @@ nav.tabs{
 }
 .tabscroll{display:flex;gap:.32rem;overflow-x:auto;scrollbar-width:none;padding:.5rem 1rem;max-width:var(--wrap);margin:0 auto}
 .tabscroll::-webkit-scrollbar{display:none}
+/* on a laptop all eight tabs fit - so nothing scrolls and nothing hides */
+@media(min-width:980px){
+  .tabscroll{flex-wrap:wrap;justify-content:center;overflow:visible}
+  nav.tabs::after{display:none}
+}
 /* only three tabs fit on a phone, so the strip has to LOOK scrollable -
    a soft fade off the right edge is the cue that there is more over there */
 nav.tabs{position:sticky}
@@ -187,6 +192,25 @@ nav.tabs a .ic{font-size:1.1rem}
 .muted{color:var(--ink-soft)}
 .small{font-size:.86rem}
 .hr{height:2px;background:var(--line);border:0;margin:1rem 0}
+
+/* ============ FOLD CARDS - closed until needed, one tap to open ============
+   The closed card still says what it is for, so nothing is a mystery box. */
+.card.fold>.card-h{cursor:pointer;user-select:none}
+.card.fold:not(.open)>.card-h{margin-bottom:0;padding-bottom:0;border-bottom:0}
+.card.fold>.card-h::after{
+  content:"";width:.7rem;height:.7rem;flex:0 0 auto;margin-left:.3rem;
+  border-right:2.5px solid var(--ink-faint);border-bottom:2.5px solid var(--ink-faint);
+  transform:rotate(45deg) translateY(-2px);transition:transform .18s;
+}
+.card.fold.open>.card-h::after{transform:rotate(225deg) translateY(-2px)}
+.card.fold>.card-h .hint{
+  font-size:.72rem;color:var(--ink-faint);font-weight:700;white-space:nowrap;letter-spacing:.02em;
+}
+.card.fold.open>.card-h .hint{display:none}
+@media(max-width:560px){.card.fold>.card-h .hint{display:none}}
+.card.fold>.foldbody{display:none}
+.card.fold.open>.foldbody{display:block;animation:unfold .26s ease}
+@keyframes unfold{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
 /* left accent straps */
 .card.a-sage{border-left:7px solid var(--sage)}
 .card.a-sky{border-left:7px solid var(--denim)}
@@ -761,8 +785,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
-    <div class="card a-canyon">
-      <div class="card-h"><span class="ic">&#127760;</span><h3>Ride Along</h3></div>
+    <div class="card a-canyon fold" data-fold="ride">
+      <div class="card-h"><span class="ic">&#127760;</span><h3>Ride Along</h3><span class="hint">location &amp; tracking</span></div>
+      <div class="foldbody">
       <label class="switch">
         <input type="checkbox" id="gpsToggle" checked><span class="track"></span>
         <span><b>Follow my journey</b><br><span class="small muted">On by default. Olive watches the road and speaks up when something good is coming.</span></span>
@@ -776,22 +801,22 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <button class="btn sm ghost" id="whatsAhead">&#128071; What's ahead?</button>
         <button class="btn sm ghost" id="gpsCheck">&#129513; Location check</button>
       </div>
+      </div>
     </div>
 
+    <!-- one glance at the sky: weather, air, sunset and stars together -->
     <div class="card a-sky">
-      <div class="card-h"><span class="ic">&#9925;</span><h3>Weather &amp; Air</h3></div>
+      <div class="card-h"><span class="ic">&#9925;</span><h3>Weather, Sunset &amp; Stars</h3></div>
       <div id="wxNow"></div>
       <div id="wxDays" class="pills" style="margin-top:.8rem"></div>
       <div id="airQ" class="small muted" style="margin-top:.7rem"></div>
-    </div>
-
-    <div class="card a-sun">
-      <div class="card-h"><span class="ic">&#127749;</span><h3>Sunset &amp; Stargazing</h3></div>
+      <hr class="hr">
       <div id="skyInfo" class="muted">Turn on location for tonight's sunset and star report.</div>
     </div>
 
-    <div class="card">
-      <div class="card-h"><span class="ic">&#128202;</span><h3>Trip Dashboard</h3></div>
+    <div class="card fold" data-fold="dash">
+      <div class="card-h"><span class="ic">&#128202;</span><h3>Trip Dashboard</h3><span class="hint">miles &middot; states &middot; parks</span></div>
+      <div class="foldbody">
       <div class="stats" id="dashStats"></div>
       <div style="margin-top:.9rem">
         <div class="small muted" style="display:flex;justify-content:space-between"><span>Trip progress</span><span id="progTxt"></span></div>
@@ -800,6 +825,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="btnrow" style="margin-top:.9rem">
         <button class="btn sm sage" id="logFuel">&#9981; Log fuel stop</button>
         <a class="btn sm ghost" href="#/memories">&#128221; Add journal entry</a>
+      </div>
       </div>
     </div>
 
@@ -815,9 +841,11 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
-    <div class="card a-sage">
-      <div class="card-h"><span class="ic">&#128138;</span><h3>Comfort &amp; Health</h3></div>
+    <div class="card a-sage fold" data-fold="health">
+      <div class="card-h"><span class="ic">&#128138;</span><h3>Comfort &amp; Health</h3><span class="hint">reminders</span></div>
+      <div class="foldbody">
       <div id="healthPanel"></div>
+      </div>
     </div>
 
   </div>
@@ -1327,7 +1355,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w27-2026-08-15";
+const OLIVE_BUILD="w28-2026-08-15";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2261,6 +2289,34 @@ function briefClip(){
    Every line she generates is cached, so repeats cost nothing and work offline. */
 const OLIVE_VOICE_ID="tMXujoAjiboschVOhAnk";   /* Clara - the voice the Andersons already use */
 const TTS_CACHE="olive-tts-v1";
+/* Pasted keys arrive with invisible junk - zero-width characters from
+   messaging apps, smart quotes, stray spaces. Scrub before use, always. */
+function xiScrub(k){return String(k||"").replace(/[\u200B-\u200D\uFEFF\u00A0\u2018\u2019\u201C\u201D"'`]/g,"").replace(/\s+/g,"")}
+/* Her live-voice key is pasted once per phone in Settings - it is not in
+   this file or on GitHub. Chris's app can show its saved key to copy over. */
+function xiKeyGet(){return xiScrub(store.get("xiKey",""))}
+/* Custom voices are account-scoped: on a different ElevenLabs account the
+   Clara ID above may not exist. When her ID is refused, find her on that
+   account - by name first, then any custom voice - and remember the answer. */
+function oliveVoiceId(){return store.get("xiVoice","")||OLIVE_VOICE_ID}
+async function resolveVoice(key){
+  try{
+    const r=await fetch("https://api.elevenlabs.io/v1/voices",{headers:{"xi-api-key":key}});
+    if(!r.ok)return false;
+    const vs=(await r.json()).voices||[];
+    if(!vs.length)return false;
+    const pref=vs.find(v=>/clara/i.test(v.name||""))
+             ||vs.find(v=>v.category&&v.category!=="premade")
+             ||vs[0];
+    if(!pref||pref.voice_id===oliveVoiceId())return false;
+    store.set("xiVoice",pref.voice_id);
+    store.set("xiVoiceName",pref.name||"");
+    toast("&#127908; Olive found her voice on this account: <b>"+esc(pref.name||"ready")+"</b>");
+    return true;
+  }catch(e){return false}
+}
+/* the last reason her live voice failed, so settings can say it honestly */
+let ttsLastErr="";
 async function sha(s){
   const b=await crypto.subtle.digest("SHA-1",new TextEncoder().encode(s));
   return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,"0")).join("");
@@ -2276,26 +2332,35 @@ function playBlob(blob,onFail){
   }catch(e){onFail&&onFail()}
 }
 let ttsSpend=store.get("ttsChars",0);
-async function oliveTTS(text){
-  const key=store.get("xiKey","");
+async function oliveTTS(text,_retried){
+  const key=xiKeyGet();
   if(!key)return false;
   const clean=String(text).replace(/\s+/g," ").trim().slice(0,1500);
   if(!clean)return false;
   try{
-    const id="/olive-tts/"+await sha(OLIVE_VOICE_ID+"|"+clean);
+    const vid=oliveVoiceId();
+    const id="/olive-tts/"+await sha(vid+"|"+clean);
     let cache=null,res=null;
     /* the cache is a bonus, never a requirement - if it is unavailable
        (private mode, storage full) she should still speak */
     try{cache=await caches.open(TTS_CACHE);res=await cache.match(id)}catch(e){}
     if(!res){
-      if(!navigator.onLine)return false;
-      const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+OLIVE_VOICE_ID+"?output_format=mp3_44100_64",{
+      if(!navigator.onLine){ttsLastErr="offline";return false}
+      const r=await fetch("https://api.elevenlabs.io/v1/text-to-speech/"+vid+"?output_format=mp3_44100_64",{
         method:"POST",
         headers:{"xi-api-key":key,"Content-Type":"application/json"},
         body:JSON.stringify({text:clean,model_id:"eleven_turbo_v2_5",
           voice_settings:{stability:.6,similarity_boost:.8,style:.25,use_speaker_boost:true}})
       });
-      if(!r.ok)return false;
+      if(!r.ok){
+        ttsLastErr=String(r.status);
+        /* her voice ID may simply not exist on this account - find her there,
+           once, then try again with the voice that account actually has */
+        if(!_retried&&(r.status===400||r.status===404)&&await resolveVoice(key))
+          return oliveTTS(text,true);
+        return false;
+      }
+      ttsLastErr="";
       if(cache){try{await cache.put(id,r.clone())}catch(e){}}
       ttsSpend+=clean.length; store.set("ttsChars",ttsSpend);
       res=r;
@@ -2304,7 +2369,7 @@ async function oliveTTS(text){
     if(!blob||blob.size<200)return false;
     playBlob(blob);
     return true;
-  }catch(e){return false}
+  }catch(e){ttsLastErr=ttsLastErr||"network";return false}
 }
 function speak(text,force,key){
   if(!voiceOn&&!force)return;
@@ -2312,11 +2377,26 @@ function speak(text,force,key){
     playClip(key,(typeof VOICE_LINES!=="undefined"&&VOICE_LINES[key])||text);
     return;
   }
-  if(voiceMode==="olive"&&store.get("xiKey","")){
-    oliveTTS(text).then(ok=>{if(!ok)browserSpeak(text)});
+  if(voiceMode==="olive"&&xiKeyGet()){
+    oliveTTS(text).then(ok=>{if(!ok){browserSpeak(text);voiceHint(true)}});
     return;
   }
   browserSpeak(text);
+  if(voiceMode==="olive")voiceHint(false);   /* "browser" mode is the user's own choice - no nagging */
+}
+/* Never substitute her voice in silence. The first time the robot voice
+   stands in for Olive, say so - once per day, and say exactly why. */
+function voiceHint(hadKey){
+  const today=todayISO();
+  if(store.get("voiceHintDay","")===today)return;
+  store.set("voiceHintDay",today);
+  let why;
+  if(!hadKey)why="Olive read that in the phone's voice &mdash; her live voice needs her key on this phone once. <b>Toolkit &rarr; Settings &rarr; Her voice on everything.</b>";
+  else if(ttsLastErr==="offline"||ttsLastErr==="network")why="Signal's too thin for Olive's live voice, so the phone's stood in. Lines she has said before still play as herself.";
+  else if(ttsLastErr==="401")why="Olive's voice key was refused as invalid &mdash; check <b>Toolkit &rarr; Settings</b>.";
+  else if(ttsLastErr==="402"||ttsLastErr==="429")why="Olive's ElevenLabs credits look used up, so the phone's voice stood in. Top up or wait for the monthly reset.";
+  else why="Olive's live voice didn't answer (error "+esc(ttsLastErr||"unknown")+"), so the phone's voice stood in.";
+  toast("&#127908; "+why,8000);
 }
 function syncVoiceBtn(){
   const b=$("btnVoice");
@@ -2338,9 +2418,10 @@ $("btnVoice").addEventListener("click",()=>{
 
 /* ---------- text size ---------- */
 const FS=["m","l","xl"],FSL={m:"Normal",l:"Large",xl:"Extra large"};
-function applyFS(){document.documentElement.setAttribute("data-fs",store.get("fs","m"))}
+/* large by default - most of this app is read at arm's length in a moving car */
+function applyFS(){document.documentElement.setAttribute("data-fs",store.get("fs","l"))}
 $("btnText").addEventListener("click",()=>{
-  const cur=store.get("fs","m"),next=FS[(FS.indexOf(cur)+1)%FS.length];
+  const cur=store.get("fs","l"),next=FS[(FS.indexOf(cur)+1)%FS.length];
   store.set("fs",next);applyFS();toast("Text size: <b>"+FSL[next]+"</b>");
 });
 applyFS();
@@ -2362,6 +2443,23 @@ applyFS();
     b.title=on?"Leave full screen":"Full screen";
   });
 })();
+
+/* ---------- fold cards - closed until needed, the choice remembered ----------
+   Ride Along starts open because location is the app's heart; the dashboard
+   and health reminders wait quietly until they're wanted. */
+const FOLD_DEFAULT={ride:true,dash:false,health:false};
+$$(".card.fold").forEach(c=>{
+  const id=c.dataset.fold;
+  c.classList.toggle("open",!!store.get("fold-"+id,!!FOLD_DEFAULT[id]));
+});
+document.addEventListener("click",e=>{
+  const h=e.target.closest(".card.fold>.card-h");
+  if(!h)return;
+  if(e.target.closest("button,a,input,select"))return;
+  const c=h.parentElement,id=c.dataset.fold;
+  c.classList.toggle("open");
+  store.set("fold-"+id,c.classList.contains("open"));
+});
 
 /* ============================================================
    ROUTING
@@ -3487,7 +3585,7 @@ function renderSettings(){
     </div>
     <div class="card tint" style="margin-top:.9rem">
       <div class="card-h"><span class="ic">&#127908;</span><h4 style="margin:0">Her voice on everything</h4></div>
-      <p class="small muted">Olive has 66 lines recorded. Anything she has to read on the spot &mdash; a fact off the wire, your briefing with today's weather &mdash; uses the phone's robot voice instead. Paste an ElevenLabs key here and she reads <b>everything</b> in her own voice.</p>
+      <p class="small muted">Olive has 66 lines recorded. Anything she has to say on the spot &mdash; a fact off the wire, your briefing, <b>answers when you ask her out loud</b> &mdash; needs her ElevenLabs key on this phone, once. Copy it from Chris's app (<b>Toolkit &rarr; Voice &rarr; Show the saved key</b>), paste it here, and she reads everything as herself.</p>
       <div class="field">
         <label class="fld" for="setXi">ElevenLabs API key (this phone only)</label>
         <input type="password" id="setXi" placeholder="sk_&hellip;" autocomplete="off" spellcheck="false">
@@ -3495,10 +3593,11 @@ function renderSettings(){
       <div class="btnrow" style="margin-top:.6rem">
         <button class="btn sm" id="xiSave">&#128190; Save key</button>
         <button class="btn sm ghost" id="xiTest">&#128266; Test her voice</button>
+        <button class="btn sm ghost" id="xiShow">&#128065;&#65039; Show saved key</button>
         <button class="btn sm ghost" id="xiClear">&#128465;&#65039; Remove</button>
       </div>
       <div id="xiStatus" class="small muted" style="margin-top:.6rem"></div>
-      <div class="note senior small" style="margin-top:.7rem"><b>Where the key lives:</b> only in this browser, on this phone. It is not in the app's code and not on GitHub, so nobody visiting the site gets it &mdash; but anyone holding this unlocked phone could read it, so treat it like a saved password. Every line she speaks is cached, so the same text never costs twice and still plays with no signal.</div>
+      <div class="note senior small" style="margin-top:.7rem"><b>Where the key lives:</b> only in this browser, on this phone. It is not in the app's code and not on GitHub &mdash; but anyone holding this unlocked phone could read it, so treat it like a saved password. Every line she speaks is cached, so the same text never costs twice and still plays with no signal.</div>
     </div>
     <label class="switch"><input type="checkbox" id="setMiles" ${store.get("autoTrack",true)?"checked":""}><span class="track"></span>
       <span><b>Track miles automatically</b><br><span class="small muted">Counts distance from your GPS while location is on</span></span></label>
@@ -3530,7 +3629,7 @@ function renderSettings(){
       <button class="btn sm ghost" id="setReset">&#9888;&#65039; Reset trip data</button>
     </div>
     <p class="small muted" style="margin-top:.7rem">Everything Olive records &mdash; journal, photos, miles, checklists &mdash; is stored on this device only. Nothing is uploaded to any account.</p>`;
-  $("setFs").value=store.get("fs","m");
+  $("setFs").value=store.get("fs","l");
   $("setFs").addEventListener("change",e=>{store.set("fs",e.target.value);applyFS()});
   $("setVoice").addEventListener("change",e=>{voiceOn=e.target.checked;store.set("voice",voiceOn);syncVoiceBtn()});
   $("setVoiceMode").value=voiceMode;
@@ -3584,17 +3683,20 @@ function renderSettings(){
   /* --- live voice key, kept on this device only --- */
   const xiStat=()=>{
     const has=!!store.get("xiKey","");
+    const vn=store.get("xiVoiceName","");
     $("xiStatus").innerHTML=has
-      ? "&#9989; <b>Live voice is on.</b> Olive reads everything herself. "+
+      ? "&#9989; <b>Live voice is on.</b> "+(vn?"Speaking as <b>"+esc(vn)+"</b>. ":"")+
         (ttsSpend?"About "+ttsSpend.toLocaleString()+" characters generated on this phone so far.":"")
       : "Not set &mdash; anything unrecorded falls back to the phone's voice.";
   };
   if(store.get("xiKey",""))$("setXi").value="";
   xiStat();
   $("xiSave").addEventListener("click",()=>{
-    const v=$("setXi").value.trim();
+    const v=xiScrub($("setXi").value);
     if(!v)return toast("Paste a key first");
-    store.set("xiKey",v); $("setXi").value=""; xiStat();
+    if(!/^sk_[a-zA-Z0-9]{20,}$/.test(v))return toast("That doesn't look like an ElevenLabs key &mdash; it starts with sk_");
+    store.set("xiKey",v);store.del("xiVoice");store.del("xiVoiceName");
+    $("setXi").value=""; xiStat();
     toast("&#128190; Saved to this phone");
     speak("That's better. I'll read everything myself from now on.",true);
   });
@@ -3602,13 +3704,28 @@ function renderSettings(){
     if(!store.get("xiKey",""))return toast("Save a key first");
     $("xiStatus").innerHTML="Generating&hellip;";
     const ok=await oliveTTS("This is my own voice, reading something I was never recorded saying. "+
-      "Anything you tap now comes out sounding like this.");
+      "Ask me anything with the microphone and the answer sounds like this.");
     xiStat();
-    if(!ok){$("xiStatus").innerHTML="&#10060; That key was refused, or there's no signal. Check it and try again.";toast("Failed")}
+    if(!ok){
+      let why="&#10060; Her live voice failed";
+      if(ttsLastErr==="offline"||ttsLastErr==="network")why="&#10060; Couldn't reach the voice service &mdash; try again with better signal.";
+      else if(ttsLastErr==="401")why="&#10060; ElevenLabs refused the key as <b>invalid</b>. Re-paste it carefully.";
+      else if(ttsLastErr==="402"||ttsLastErr==="429")why="&#10060; The ElevenLabs <b>credits are used up</b>. Top up, or wait for the monthly reset.";
+      else if(ttsLastErr)why="&#10060; ElevenLabs answered with error "+esc(ttsLastErr)+".";
+      $("xiStatus").innerHTML=why;toast("Failed");
+    }
     else toast("&#128266; That's her");
   });
+  $("xiShow").addEventListener("click",()=>{
+    const k=store.get("xiKey","");
+    if(!k)return toast("No key saved on this phone yet");
+    openSheet("The key this phone is using",`
+      <p class="small muted">Saved on this phone only. Copy it to another phone's Settings if her live voice is missing there.</p>
+      <div class="note" style="word-break:break-all;font-family:monospace">${esc(k)}</div>`);
+  });
   $("xiClear").addEventListener("click",()=>{
-    store.del("xiKey"); $("setXi").value=""; xiStat(); toast("Key removed from this phone");
+    store.del("xiKey");store.del("xiVoice");store.del("xiVoiceName");
+    $("setXi").value=""; xiStat(); toast("Key removed from this phone");
   });
   $("setMiles").addEventListener("change",e=>store.set("autoTrack",e.target.checked));
   $("setExport").addEventListener("click",()=>{
