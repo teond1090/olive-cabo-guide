@@ -34,7 +34,7 @@
   --ink:#2A1F16; --ink-soft:#5E4B3A; --ink-faint:#8B7660;
   --danger:#A32E1E; --ok:#4E7440;
   --line:#D8C4A0; --line-2:#C3A87C;
-  --shadow:0 2px 5px rgba(58,29,13,.10), 0 10px 24px rgba(58,29,13,.09);
+  --shadow:0 1px 2px rgba(58,29,13,.07), 0 14px 32px -18px rgba(58,29,13,.34);
   --shadow-lg:0 6px 16px rgba(58,29,13,.18), 0 24px 56px rgba(58,29,13,.14);
   --r:16px; --r-sm:11px; --r-lg:24px;
   --tap:52px; --wrap:1080px;
@@ -108,10 +108,11 @@ header.top::before{
   content:"";position:absolute;inset:.55rem .55rem 2.9rem;
   border:2px dashed rgba(232,197,133,.42);border-radius:12px;pointer-events:none;
 }
-/* mountain ridgeline into the page */
+/* the real skyline of this trip, in three depths - snowy high country far
+   off, flat-topped badlands mesas in the middle, and the plains up front */
 header.top::after{
-  content:"";position:absolute;left:0;right:0;bottom:-1px;height:3.1rem;pointer-events:none;
-  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,120 L0,78 L95,40 L165,74 L275,22 L390,80 L500,46 L625,88 L745,42 L865,76 L985,34 L1105,72 L1200,48 L1200,120 Z' fill='%23F3E6CE'/%3E%3C/svg%3E") bottom/100% 100% no-repeat;
+  content:"";position:absolute;left:0;right:0;bottom:-1px;height:3.6rem;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 160' preserveAspectRatio='none'%3E%3Cpath d='M0,160 V96 L70,84 150,58 205,30 236,44 290,22 318,40 372,64 450,48 520,76 610,40 648,18 682,34 730,58 810,44 890,72 980,58 1070,84 1200,70 V160Z' fill='%238A5433' opacity='.55'/%3E%3Cpath d='M180,42 205,30 236,44 262,34 290,22 318,40 300,42 270,34 240,50 210,40Z M622,32 648,18 682,34 664,34 646,28 632,38Z' fill='%23F7EAD3' opacity='.7'/%3E%3Cpath d='M0,160 V116 L60,110 96,86 176,86 206,112 300,108 340,78 424,78 458,104 560,100 600,72 690,72 726,98 830,96 866,70 952,70 990,98 1100,104 1200,96 V160Z' fill='%235A3018' opacity='.82'/%3E%3Cpath d='M0,160 V138 Q160,126 320,134 T640,130 T960,128 T1200,134 V160Z' fill='%23F3E6CE'/%3E%3C/svg%3E") bottom/100% 100% no-repeat;
 }
 .brandbar{display:flex;align-items:center;gap:.8rem;position:relative;z-index:2}
 .logo{width:3.2rem;height:3.2rem;flex:0 0 auto;filter:drop-shadow(0 3px 5px rgba(0,0,0,.45))}
@@ -132,6 +133,14 @@ header.top::after{
 }
 .icon-btn:hover{background:var(--brass);color:var(--leather-dk);border-color:var(--brass)}
 .icon-btn[aria-pressed="true"]{background:var(--brass);color:var(--leather-dk);border-color:var(--brass-lt)}
+
+/* drawn stroke icons */
+.i{width:1.35em;height:1.35em;flex:0 0 auto;fill:none;stroke:currentColor;
+  stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.28em}
+.icon-btn .i{width:1.25rem;height:1.25rem}
+nav.tabs .i{width:1.1rem;height:1.1rem}
+.bottombar .i{width:1.5rem;height:1.5rem;stroke-width:1.55}
+.bottombar a.on .i{stroke-width:1.9}
 
 /* ============ NAV ============ */
 nav.tabs{
@@ -580,11 +589,14 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
   header.top::before{inset:.35rem .35rem 1.8rem;border-radius:9px}
   header.top::after{height:1.9rem}
   .logo{width:2.4rem;height:2.4rem}
-  .brandtxt h1{font-size:1.5rem}
+  /* four buttons now share the row - the title stays on one clean line */
+  .brandbar{gap:.55rem}
+  .brandtxt h1{font-size:1.42rem;white-space:nowrap}
   .brandtxt .tag{font-size:.58rem;letter-spacing:.18em}
   .brandtxt .tag::before,.brandtxt .tag::after{width:.6rem}
-  .icon-btn{min-width:2.9rem;min-height:2.9rem;font-size:1rem;border-radius:11px}
-  .hdr-actions{gap:.35rem}
+  .icon-btn{min-width:2.7rem;min-height:2.7rem;font-size:1rem;border-radius:11px}
+  .icon-btn .i{width:1.1rem;height:1.1rem}
+  .hdr-actions{gap:.3rem}
 
   /* tab bar: tighter, still 44px tall */
   nav.tabs a{padding:.4rem .7rem;min-height:2.8rem;font-size:.86rem}
@@ -657,6 +669,23 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 </head>
 <body>
 
+<!-- drawn icons - one western sprite, used by the tabs, header and bottom bar -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<g id="s-today"><circle cx="12" cy="9.5" r="3.6"/><path d="M12 2v1.6M12 15.4V17M4.9 9.5H3.3M20.7 9.5h-1.6M7 4.5 5.9 3.4M18.1 15.6 17 14.5M17 4.5l1.1-1.1M5.9 15.6 7 14.5"/><path d="M2 21h20M4 21l5-6 3.2 3.6L15.5 14l4.5 7"/></g>
+<g id="s-journey"><path d="M9 4 3 6.2v13.6L9 17.8l6 2 6-2.2V4L15 6.2z"/><path d="M9 4v13.8M15 6.2V20"/><path d="M5.4 9.6c1.6 1.4 4 .4 4-1.2" stroke-dasharray="2 1.6"/></g>
+<g id="s-nearby"><path d="M12 21.5s7-6.1 7-11.1a7 7 0 1 0-14 0c0 5 7 11.1 7 11.1z"/><circle cx="12" cy="10.2" r="2.6"/></g>
+<g id="s-guide"><rect x="2.5" y="5" width="19" height="14" rx="2.6"/><path d="m10 9.4 5 2.6-5 2.6z" stroke-linejoin="round"/></g>
+<g id="s-facts"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.9.7 1.6 1.4 1.6 2.2h4c0-.8.7-1.5 1.6-2.2A6 6 0 0 0 12 3z"/></g>
+<g id="s-radio"><rect x="2.6" y="8" width="18.8" height="12" rx="2.2"/><path d="m5.4 8 11-4.6"/><circle cx="8.2" cy="14" r="2.7"/><path d="M14.2 12h4.6M14.2 15.6h4.6"/></g>
+<g id="s-memories"><path d="M3 8.4h3.1l1.6-2.6h8.6l1.6 2.6H21a1.6 1.6 0 0 1 1.6 1.6v8.2A1.6 1.6 0 0 1 21 20.2H3a1.6 1.6 0 0 1-1.6-1.6V10A1.6 1.6 0 0 1 3 8.4z"/><circle cx="12" cy="14" r="3.9"/></g>
+<g id="s-crew"><circle cx="9" cy="8.4" r="3.4"/><path d="M2.6 20.4a6.4 6.4 0 0 1 12.8 0"/><path d="M16.6 5.4a3.4 3.4 0 0 1 0 6.6M17.4 14.6a6.4 6.4 0 0 1 4 5.8"/></g>
+<g id="s-toolkit"><rect x="2.6" y="7.4" width="18.8" height="12.8" rx="2.2"/><path d="M8.6 7.4V5.6a2 2 0 0 1 2-2h2.8a2 2 0 0 1 2 2v1.8M2.6 12.6h18.8"/></g>
+<g id="s-full"><path d="M3.5 9V4.5a1 1 0 0 1 1-1H9M15 3.5h4.5a1 1 0 0 1 1 1V9M20.5 15v4.5a1 1 0 0 1-1 1H15M9 20.5H4.5a1 1 0 0 1-1-1V15"/></g>
+<g id="s-hush"><path d="M4 9.2h3.4L12 5v14L7.4 14.8H4z" stroke-linejoin="round"/><path d="M15.5 4.5 21 20"/></g>
+<g id="s-sound-on"><path d="M4 9.2h3.4L12 5v14L7.4 14.8H4z" stroke-linejoin="round"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.8a7.2 7.2 0 0 1 0 10.4"/></g>
+<g id="s-sound-off"><path d="M4 9.2h3.4L12 5v14L7.4 14.8H4z" stroke-linejoin="round"/><path d="m16 9.6 5 5M21 9.6l-5 5"/></g>
+</defs></svg>
+
 <div id="updateBar">&#8635; A new version of Olive is ready &mdash; tap to refresh</div>
 <div id="netPill">&#9888; Offline &mdash; guide still works</div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -673,8 +702,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <h1>Great American West</h1>
     </div>
     <div class="hdr-actions">
-      <button class="icon-btn" id="btnHush" title="Stop talking now" aria-label="Stop talking now">&#128263;</button>
-      <button class="icon-btn" id="btnVoice" aria-pressed="false" title="Voice companion on/off" aria-label="Voice companion on or off">&#128264;</button>
+      <button class="icon-btn" id="btnFull" title="Full screen" aria-label="Full screen on or off"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-full"/></svg></button>
+      <button class="icon-btn" id="btnHush" title="Stop talking now" aria-label="Stop talking now"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-hush"/></svg></button>
+      <button class="icon-btn" id="btnVoice" aria-pressed="false" title="Voice companion on/off" aria-label="Voice companion on or off"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-sound-off"/></svg></button>
       <button class="icon-btn" id="btnText" title="Text size" aria-label="Change text size"><b style="font-size:.9rem">A</b><b style="font-size:1.2rem">A</b></button>
     </div>
   </div>
@@ -682,16 +712,14 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
 <nav class="tabs" aria-label="Main">
   <div class="tabscroll">
-    <a href="#/today"    data-view="today"><span class="ic">&#127968;</span> Today</a>
-    <a href="#/journey"  data-view="journey"><span class="ic">&#128506;&#65039;</span> Journey</a>
-    <a href="#/nearby"   data-view="nearby"><span class="ic">&#128205;</span> Nearby</a>
-    <a href="#/tour"     data-view="tour"><span class="ic">&#127916;</span> How It Works</a>
-    <a href="#/facts"    data-view="facts"><span class="ic">&#128161;</span> Did You Know</a>
-    <a href="#/radio"    data-view="radio"><span class="ic">&#128251;</span> Radio</a>
-    <a href="#/bucket"   data-view="bucket"><span class="ic">&#127919;</span> Bucket List</a>
-    <a href="#/memories" data-view="memories"><span class="ic">&#128248;</span> Memories</a>
-    <a href="#/crew"     data-view="crew"><span class="ic">&#128172;</span> Crew</a>
-    <a href="#/toolkit"  data-view="toolkit"><span class="ic">&#129520;</span> Toolkit</a>
+    <a href="#/today"    data-view="today"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-today"/></svg> Today</a>
+    <a href="#/journey"  data-view="journey"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-journey"/></svg> Journey</a>
+    <a href="#/nearby"   data-view="nearby"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-nearby"/></svg> Nearby</a>
+    <a href="#/radio"    data-view="radio"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-radio"/></svg> Radio</a>
+    <a href="#/memories" data-view="memories"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-memories"/></svg> Memories</a>
+    <a href="#/crew"     data-view="crew"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-crew"/></svg> Crew</a>
+    <a href="#/toolkit"  data-view="toolkit"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-toolkit"/></svg> Toolkit</a>
+    <a href="#/tour"     data-view="tour"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-guide"/></svg> How It Works</a>
   </div>
 </nav>
 
@@ -775,6 +803,18 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
+    <!-- Olive keeps today's story for you - miles, places, photos - and
+         turns it into something you can send home with one tap -->
+    <div class="card a-sun" id="recapCard" style="display:none">
+      <div class="card-h"><span class="ic">&#127909;</span><h3 id="recapTitle">Tonight's Recap</h3></div>
+      <div id="recapBody"></div>
+      <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn sm brass" id="recapFilm">&#127916; Make today's mini-film</button>
+        <button class="btn sm" id="recapShare">&#128228; Share today</button>
+        <button class="btn sm ghost" id="recapSave">&#128221; Save to journal</button>
+      </div>
+    </div>
+
     <div class="card a-sage">
       <div class="card-h"><span class="ic">&#128138;</span><h3>Comfort &amp; Health</h3></div>
       <div id="healthPanel"></div>
@@ -808,7 +848,6 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <canvas id="trailCanvas" width="900" height="620" aria-label="Map of your journey"></canvas>
       <div class="pills" style="margin-top:.7rem" id="trailLegend"></div>
       <div class="btnrow" style="margin-top:.8rem">
-        <button class="btn sm brass" id="pinHere2">&#128204; Save this spot</button>
         <button class="btn sm ghost" id="trailGpx">&#128229; Export trail (GPX)</button>
         <button class="btn sm ghost" id="trailKml">&#127758; Export for Google Earth</button>
         <button class="btn sm ghost" id="trailClear">&#128465;&#65039; Clear trail</button>
@@ -965,13 +1004,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="card-h"><span class="ic">&#127914;</span><h3>Events &amp; Festivals</h3></div>
       <div id="eventsList"></div>
     </div>
-  </div>
-</div>
 
-<!-- ============================ FACTS ============================ -->
-<div class="view" id="view-facts">
-  <div class="stack">
-    <div class="card a-gold">
+    <!-- ---------- DID YOU KNOW (merged in from its own tab) ---------- -->
+    <div class="card a-gold" id="factsAnchor">
       <div class="card-h"><span class="ic">&#128161;</span><h3>Did You Know</h3></div>
       <div id="factsWhere" class="small muted">Finding out where you are&hellip;</div>
       <p class="small muted" style="margin:.6rem 0 0">Olive keeps an eye on the ground you're covering and digs up what happened here. This refreshes on its own every few miles &mdash; no need to touch anything.</p>
@@ -1088,27 +1123,6 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
   </div>
 </div>
 
-<!-- ============================ BUCKET LIST ============================ -->
-<div class="view" id="view-bucket">
-  <div class="stack">
-    <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#127919;</span><h3>Adventure Bucket List</h3></div>
-      <p class="small muted" style="margin:0">Built from your route. Check them off as you go &mdash; each one lands in your journal automatically.</p>
-      <div style="margin-top:.9rem">
-        <div class="small muted" style="display:flex;justify-content:space-between"><span>Completed</span><span id="bkTxt">0 of 0</span></div>
-        <div class="bar" style="margin-top:.35rem"><i id="bkBar" style="width:0"></i></div>
-      </div>
-    </div>
-    <div id="bucketList" class="stack"></div>
-
-    <div class="card a-canyon">
-      <div class="card-h"><span class="ic">&#10084;&#65039;</span><h3>Favorite Places</h3></div>
-      <p class="small muted">Tap the heart on anything and it collects here.</p>
-      <div id="favList"></div>
-    </div>
-  </div>
-</div>
-
 <!-- ============================ MEMORIES ============================ -->
 <div class="view" id="view-memories">
   <div class="stack">
@@ -1178,6 +1192,23 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <button class="btn sm ghost" id="feedExport">&#128229; Export my journal</button>
         <button class="btn sm ghost" id="feedShare">&#128228; Share the trip so far</button>
       </div>
+    </div>
+
+    <!-- ---------- BUCKET LIST (merged in from its own tab) ---------- -->
+    <div class="card a-gold" id="bucketAnchor">
+      <div class="card-h"><span class="ic">&#127919;</span><h3>Adventure Bucket List</h3></div>
+      <p class="small muted" style="margin:0">Built from your route. Check them off as you go &mdash; each one lands in your journal automatically.</p>
+      <div style="margin-top:.9rem">
+        <div class="small muted" style="display:flex;justify-content:space-between"><span>Completed</span><span id="bkTxt">0 of 0</span></div>
+        <div class="bar" style="margin-top:.35rem"><i id="bkBar" style="width:0"></i></div>
+      </div>
+    </div>
+    <div id="bucketList" class="stack"></div>
+
+    <div class="card a-canyon">
+      <div class="card-h"><span class="ic">&#10084;&#65039;</span><h3>Favorite Places</h3></div>
+      <p class="small muted">Tap the heart on anything and it collects here.</p>
+      <div id="favList"></div>
     </div>
   </div>
 </div>
@@ -1283,11 +1314,11 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 <button id="micBtn" aria-label="Ask Olive out loud" title="Ask Olive out loud">&#127908;</button>
 
 <div class="bottombar" role="navigation" aria-label="Quick">
-  <a href="#/today" data-view="today"><span class="ic">&#127968;</span>Today</a>
-  <a href="#/nearby" data-view="nearby"><span class="ic">&#128205;</span>Nearby</a>
-  <a href="#/facts" data-view="facts"><span class="ic">&#128161;</span>Facts</a>
-  <a href="#/radio" data-view="radio"><span class="ic">&#128251;</span>Radio</a>
-  <a href="#/crew" data-view="crew"><span class="ic">&#128172;</span>Crew</a>
+  <a href="#/today" data-view="today"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-today"/></svg>Today</a>
+  <a href="#/nearby" data-view="nearby"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-nearby"/></svg>Nearby</a>
+  <a href="#/radio" data-view="radio"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-radio"/></svg>Radio</a>
+  <a href="#/memories" data-view="memories"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-memories"/></svg>Memories</a>
+  <a href="#/crew" data-view="crew"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-crew"/></svg>Crew</a>
 </div>
 
 <div class="overlay" id="sheet"><div class="sheet"><div class="sheet-h"><h3 id="shTitle"></h3><button class="x" id="shClose" aria-label="Close">&#10005;</button></div><div id="shBody"></div></div></div>
@@ -1296,10 +1327,11 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w26-2026-08-12";
+const OLIVE_BUILD="w27-2026-08-15";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
-const LODGING_TOTAL=4275.84;   /* from the Aug 2026 planning sheet */
+const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
+const TOURS_TOTAL=347.10;      /* booked Glacier tours - Red Bus + boat */
 
 /* ---------- tiny localStorage wrapper ---------- */
 const store={
@@ -1533,23 +1565,23 @@ const DAYS=[
  sen:["Much shorter day than yesterday - use the recovery.","Carry snacks; services spread out badly across the Hi-Line."],
  note:"Your Havre booking turns this into the easy day it should be. Aug 22-25 is one place - unpack properly."},
 
-{d:"2026-08-23",n:7,t:"Going-to-the-Sun Road",r:"West Glacier → Logan Pass → St. Mary → return",mi:110,hr:"full day, slow",stay:"Airbnb, Whitefish / Columbia Falls",
- am:["Enter by 7:00-7:30am. Pause at Lake McDonald Lodge and the lakeside pullouts."],
- md:["Drive the Sun Road: the Loop, Bird Woman Falls views, Weeping Wall, Logan Pass.","Logan Pass parking is capped at three hours in 2026."],
- pm:["Jackson Glacier Overlook, St. Mary Lake, Wild Goose Island Overlook.","Return the same way if everyone still enjoys mountain driving."],
+{d:"2026-08-23",n:7,t:"Going-to-the-Sun Road & your Red Bus tour",r:"West Glacier → Sun Road → Eastern Alpine Red Bus Tour",mi:110,hr:"full day, slow",stay:"Airbnb, Whitefish / Columbia Falls",
+ am:["Enter by 7:00-7:30am. Pause at Lake McDonald Lodge and the lakeside pullouts.","Leave generous margin to reach your Red Bus departure - check the confirmation for the exact boarding point and time."],
+ md:["BOOKED: Eastern Alpine Red Bus Tour ($222, paid). A 1930s jammer bus takes you over the alpine heart of the Sun Road - Logan Pass, the big walls, the stories - while someone else does the mountain driving."],
+ pm:["Around the tour, fill in what the bus doesn't cover: Jackson Glacier Overlook, St. Mary Lake, Wild Goose Island Overlook."],
  ev:["Dinner near the lodging. No evening program."],
- opt:["Ticketed Logan Pass shuttle if parking worries outweigh driving it.","Two Sisters Cafe in St. Mary for huckleberry pie."],
- sen:["Overlooks and visitor centers, not alpine trails.","At Logan Pass stay on the paved apron near the building.","Bring layers - Logan Pass runs far colder and windier than the valley."],
- note:"No vehicle reservation required in Glacier in 2026, but entrances can restrict traffic temporarily when congestion is severe."},
+ opt:["Two Sisters Cafe in St. Mary for huckleberry pie.","Any Sun Road pullout you missed, on your own schedule."],
+ sen:["The Red Bus is the gentlest way to see the Sun Road - narration, stops and no driving. Exactly the right call.","At Logan Pass stay on the paved apron near the building.","Bring layers - Logan Pass runs far colder and windier than the valley."],
+ note:"Your Red Bus tour is booked and paid - Eastern Alpine departures board on the park's east side, so confirm your boarding point tonight, before you lose signal. No vehicle reservation required in Glacier in 2026."},
 
-{d:"2026-08-24",n:8,t:"Glacier at a gentler pace",r:"Red Bus or boat tour + Many Glacier",mi:120,hr:"varies",stay:"Airbnb, Whitefish / Columbia Falls",
- am:["Reserved Red Bus Tour or a morning boat cruise. The Red Bus gives narration with almost no walking."],
+{d:"2026-08-24",n:8,t:"Glacier at a gentler pace & your boat tour",r:"Many Glacier or Two Medicine + booked boat tour",mi:120,hr:"varies",stay:"Airbnb, Whitefish / Columbia Falls",
+ am:["BOOKED: your Glacier boat tour ($125.10, paid). Check the confirmation for which dock and what time - arrive 30 minutes early.","A narrated cruise on a historic wooden boat: the mountains from the water, with a chair under you."],
  md:["Lunch at a historic lodge or a nearby town."],
- pm:["Pick one district: Many Glacier for the grand hotel and lake, or Two Medicine for quiet and a boat ride.","Do not attempt both."],
+ pm:["Build the rest of the day around the boat's district: Many Glacier for the grand hotel and Swiftcurrent Lake, or Two Medicine for quiet.","Do not attempt both districts."],
  ev:["Back before dark - these mountain roads want your full attention."],
- opt:["Many Glacier Hotel lobby, veranda and Swiftcurrent Lake views.","Two Medicine boat cruise."],
- sen:["Lodge porches give you the view with a chair under you.","Boat tours are scenery without walking.","Never stack Red Bus, Many Glacier and Two Medicine into one day."],
- note:"The recommendation is Red Bus plus Many Glacier Hotel - the most scenery, history and comfort for travelers who are not hiking."},
+ opt:["Many Glacier Hotel lobby, veranda and Swiftcurrent Lake views.","A second lakeshore stroll if energy holds."],
+ sen:["Lodge porches give you the view with a chair under you.","The boat tour is scenery without walking - your smartest booking of the trip.","Never stack multiple districts into one day."],
+ note:"Both Glacier tours are now booked and paid - $347.10 total. Today's boat plus yesterday's Red Bus means the two hardest-to-drive parts of the park come with a guide and a seat."},
 
 {d:"2026-08-25",n:9,t:"Glacier to Island Park",r:"Whitefish → Helena/Butte corridor → Island Park, ID",mi:410,hr:"7-8.5 hr",stay:"Airbnb, Island Park ID (Aug 25-28)",
  am:["Leave by 7:00am. Stop every 90-120 minutes - long rural stretches with few services."],
@@ -1578,25 +1610,25 @@ const DAYS=[
  sen:["Artist Point is a major view for very little walking.","Wildlife watching is best from the vehicle or an established pullout.","This is now an out-and-back rather than a transfer, so it is a genuinely long day in the car. Share the driving.","Binoculars, and 100 yards from bears and wolves, 25 from everything else."],
  note:"Because you now sleep at Island Park rather than Cody, this became a 200-mile loop instead of a one-way run. Beautiful, but pace it - and get to bed early."},
 
-{d:"2026-08-28",n:12,t:"Island Park to Billings - the long one",r:"Island Park → Yellowstone east → Cody → Little Bighorn → Billings",mi:361,hr:"8 hr driving before any stop",stay:"FairBridge Inn Express, Billings Airport",
+{d:"2026-08-28",n:12,t:"Island Park to Billings - the long one",r:"Island Park → Yellowstone east → Cody → Little Bighorn → Billings",mi:361,hr:"8 hr driving before any stop",stay:"Holiday Inn Express, Billings (Lockwood)",
  am:["Leave Island Park at 6:00am. This is not a day you can start slowly.","Across Yellowstone and out the east gate over Sylvan Pass, down the Wapiti Valley to Cody. About 3.5-4 hours."],
  md:["Cody around 10:00am. Buffalo Bill Center of the West - but two hours, not three, and pick two museums.","Quick lunch in Cody, then north and east toward Little Bighorn."],
  pm:["Little Bighorn by about 3:00pm at the latest - the tour road closes at 5:00.","Ninety minutes there: visitor center, Indian Memorial, Last Stand Hill, driving tour."],
- ev:["Into Billings, check in at the FairBridge near the airport, refuel, organise luggage for the morning flight."],
+ ev:["Into Billings, check in at the Holiday Inn Express in Lockwood (conf 68358895), refuel, organise luggage for the morning flight."],
  opt:["Everything on this day is optional except reaching Billings. Drop whatever the clock says to drop."],
  sen:["THIS IS THE HARDEST DAY OF THE TRIP - about 8 hours of driving plus two major sights, 12-14 hours door to door if you attempt all of it.","Strong recommendation: pick ONE of Buffalo Bill Center or Little Bighorn, not both. Little Bighorn is the shorter stop and closer to Billings.","Swap drivers at Cody and again at Little Bighorn.","Sylvan Pass is 8,530 ft with an 8% descent - low gear, easy on the brakes, and it is better done in morning light."],
  note:"HEADS UP: sleeping at Island Park instead of Cody turned this into a 361-mile day with two big stops. It was 250 miles when Cody was the overnight. Buffalo Bill Center opens at 8am and Little Bighorn's road closes at 5pm - the clock, not the mileage, is what makes this tight."},
 
-{d:"2026-08-29",n:13,t:"Billings flight & south to Cheyenne",r:"Billings airport → Sheridan/Buffalo → Cheyenne",mi:455,hr:"6.75-7.75 hr",stay:"Airbnb, Capital City Getaway, Cheyenne",
+{d:"2026-08-29",n:13,t:"Billings flight & south to Cheyenne",r:"Billings airport → Sheridan/Buffalo → Cheyenne",mi:455,hr:"6.75-7.75 hr",stay:"Holiday Inn Express, Cheyenne",
  am:["Generous time for airport check-in and luggage.","After departure, head south on I-90."],
  md:["Lunch in Sheridan or Buffalo - the Occidental Hotel in Buffalo is a proper break, not a gas-station stop."],
  pm:["South through Wyoming. Fuel before the long empty stretches and swap drivers."],
- ev:["Cheyenne, check in, eat near the hotel."],
+ ev:["Cheyenne - check in at the Holiday Inn Express on Fleischli Parkway, eat near the hotel."],
  opt:["Brief drive through downtown Sheridan, or the Mint Bar.","Fort Phil Kearny if it adds no stress."],
- sen:["Another long drive - stop at least every two hours.","Pick an I-25 hotel with an elevator and easy parking."],
+ sen:["Another long drive - stop at least every two hours.","Your hotel is right off I-25 with an elevator and easy parking - exactly right for tonight."],
  note:"The whole point of last night in Billings was protecting this flight. Everything after the airport is optional."},
 
-{d:"2026-08-30",n:14,t:"Red Rocks & Denver",r:"Cheyenne → Red Rocks Park → Denver",mi:130,hr:"2.5 hr plus touring",stay:"Hotel near Denver International",
+{d:"2026-08-30",n:14,t:"Red Rocks & Denver",r:"Cheyenne → Red Rocks Park → Denver",mi:130,hr:"2.5 hr plus touring",stay:"Holiday Inn & Suites, Commerce City - Denver Airport",
  am:["Relaxed breakfast, leave Cheyenne once rush hour eases."],
  md:["Red Rocks Park and Amphitheatre. Check the event schedule - setup days can limit access.","Use the upper lot and viewpoints; the stairs are extensive."],
  pm:["Lunch near Morrison or in Denver.","Pick one relaxed thing: a scenic drive, the Museum of Nature & Science, or simply rest."],
@@ -1744,14 +1776,22 @@ const MEDICAL=[
    RESERVATIONS - from your confirmations
    ============================================================ */
 const RESV=[
-{t:"Airbnb - Custer, South Dakota",d:"2026-08-17",out:"2026-08-20",a:"Custer, SD - see your Airbnb app for the address",p:"",conf:"",pin:"",det:"3 nights, 3 adults. Your Black Hills base for Rushmore, Crazy Horse and Deadwood.",note:"You now sleep here all three nights, so Deadwood and Spearfish Canyon are a day loop rather than a move. Confirm the door code before you leave Denver.",url:"https://www.airbnb.com/rooms/1326244332115941316",lat:43.7666,lng:-103.5991,cost:1081.57},
+{t:"Airbnb - Custer, South Dakota",d:"2026-08-17",out:"2026-08-20",a:"26370 Shirt Tail Canyon Road, Custer, SD 57730",p:"",conf:"",pin:"",det:"3 nights, 3 adults. Your Black Hills base for Rushmore, Crazy Horse and Deadwood.",note:"You now sleep here all three nights, so Deadwood and Spearfish Canyon are a day loop rather than a move. Confirm the door code before you leave Denver.",url:"https://www.airbnb.com/rooms/1326244332115941316",lat:43.7666,lng:-103.5991,cost:1081.57},
 {t:"Baymont by Wyndham Dickinson",d:"2026-08-20",out:"2026-08-21",a:"3233 Legend Drive, Dickinson, ND 58601",p:"+1 701 483 6900",conf:"5383.475.759",pin:"2974",det:"2 rooms - King Studio + Studio with 2 Queens. 3 adults. Breakfast included.",note:"Arrival requested 7-8pm. Free cancellation until 1 day before. Front desk hours are limited - use the courtesy phone. Free parking and WiFi.",url:"",lat:46.8792,lng:-102.7896,cost:240.46},
 {t:"Best Western Plus Havre Inn & Suites",d:"2026-08-21",out:"2026-08-22",a:"1425 Highway 2 NW, Havre, MT 59501",p:"+1 406 265 2888",conf:"5612.031.307",pin:"0978",det:"1 room - Queen Suite with Sofa Bed. 3 adults. Breakfast included.",note:"NON-REFUNDABLE. Arrival requested 3-4pm. NO INTERNET ACCESS at this property - download maps and Olive's narrations before you arrive.",url:"",lat:48.5567,lng:-109.7057,cost:234.17,warn:true},
-{t:"Airbnb - Whitefish, Montana",d:"2026-08-22",out:"2026-08-25",a:"Whitefish / Columbia Falls area - see your Airbnb app",p:"",conf:"",pin:"",det:"3 nights, 3 adults. Your Glacier base.",note:"Confirm check-in instructions and the door code before you lose signal on the Hi-Line.",url:"https://www.airbnb.com/rooms/25802057",lat:48.4111,lng:-114.3376,cost:1019.64},
-{t:"Airbnb - Island Park, Idaho",d:"2026-08-25",out:"2026-08-28",a:"Island Park, ID - see your Airbnb app",p:"",conf:"",pin:"",det:"3 nights, 3 adults. Your Yellowstone base, about 25 minutes west of the west gate.",note:"NEW: this replaces the old West Yellowstone and Cody nights. Island Park is quiet and wooded with thin services - bring supplies. It also means Aug 28 becomes a very long drive; see that day's note.",url:"https://www.airbnb.com/rooms/49065630",lat:44.4169,lng:-111.3661,cost:1200.0},
-{t:"FairBridge Inn Express, Billings Airport",d:"2026-08-28",out:"2026-08-29",a:"Billings, MT - airport side",p:"",conf:"",pin:"",det:"2 rooms, 3 adults. Positioned for the morning flight.",note:"The whole point of this night is protecting the Billings departure. Refuel and organise luggage before bed.",url:"",lat:45.8077,lng:-108.543,cost:200.0},
-{t:"Airbnb - Capital City Getaway, Cheyenne",d:"2026-08-29",out:"2026-08-30",a:"Cheyenne, WY - see your Airbnb app",p:"",conf:"",pin:"",det:"1 night, 2 adults after the Billings departure.",note:"Backup option noted in your planning sheet: A Wanderer's Wonder, also on Airbnb.",url:"",lat:41.14,lng:-104.8202,cost:150.0},
-{t:"Hotel near Denver International",d:"2026-08-30",out:"2026-08-31",a:"Denver airport area",p:"",conf:"",pin:"",det:"1 night, 2 adults. Final night before flying home.",note:"Booked through Booking.com for the DIA area. Near-airport lodging is right for an early Aug 31 flight.",url:"",lat:39.8561,lng:-104.6737,cost:150.0}
+{t:"Airbnb - Whitefish, Montana",d:"2026-08-22",out:"2026-08-25",a:"Whitefish / Columbia Falls area - see your Airbnb app",p:"",conf:"",pin:"",det:"3 nights, 3 adults. Your Glacier base.",note:"Confirm check-in instructions and the door code before you lose signal on the Hi-Line.",url:"https://www.airbnb.com/rooms/25802057",lat:48.4111,lng:-114.3376,cost:1082.78},
+{t:"Airbnb - Island Park, Idaho",d:"2026-08-25",out:"2026-08-28",a:"5400 Henry's Lake Road, Island Park, ID 83429",p:"",conf:"",pin:"",det:"3 nights, 3 adults. Your Yellowstone base, about 25 minutes west of the west gate.",note:"NEW: this replaces the old West Yellowstone and Cody nights. Island Park is quiet and wooded with thin services - bring supplies. It also means Aug 28 becomes a very long drive; see that day's note.",url:"https://www.airbnb.com/rooms/49065630",lat:44.4169,lng:-111.3661,cost:1185.99},
+{t:"Holiday Inn Express Billings East (Lockwood)",d:"2026-08-28",out:"2026-08-29",a:"430 Cole Street, Lockwood, MT 59101",p:"+1 406 259 8600",conf:"68358895",pin:"",det:"3 adults. Positioned for the morning flight from Billings.",note:"UPDATED from Terry's final sheet - this replaces the FairBridge Inn. The whole point of this night is protecting the Billings departure. Refuel and organise luggage before bed.",url:"",lat:45.7833,lng:-108.4610,cost:207.25},
+{t:"Holiday Inn Express & Suites, Cheyenne",d:"2026-08-29",out:"2026-08-30",a:"1741 Fleischli Parkway, Cheyenne, WY 82001",p:"+1 307 433 0751",conf:"",pin:"",det:"1 night, 2 adults after the Billings departure. Breakfast included.",note:"UPDATED from Terry's final sheet - this replaces the Capital City Getaway Airbnb. Right off I-25 with easy parking and an elevator.",url:"",lat:41.1544,lng:-104.8360,cost:180.20},
+{t:"Holiday Inn & Suites, Commerce City - Denver Airport",d:"2026-08-30",out:"2026-08-31",a:"18201 East 81st Avenue, Commerce City, CO 80022",p:"+1 720 285 5060",conf:"",pin:"",det:"1 night, 2 adults. Final night before flying home.",note:"UPDATED from Terry's final sheet. Near-airport lodging is right for an early Aug 31 flight - about 15 minutes to the DIA terminal.",url:"",lat:39.8442,lng:-104.7736,cost:152.77}
+];
+
+/* ============================================================
+   BOOKED TOURS - from Terry's final sheet
+   ============================================================ */
+const TOURS=[
+{t:"Eastern Alpine Red Bus Tour, Glacier NP",d:"2026-08-23",det:"Historic 1930s jammer bus over the alpine heart of Going-to-the-Sun Road - a driver who knows every stop, and no white-knuckle mountain driving for you.",note:"Confirm the departure point and time on your confirmation - Eastern Alpine departures board on the St. Mary side of the park. Bring layers; the top of the pass runs cold even in August.",lat:48.7451,lng:-113.4408,cost:222.00},
+{t:"Glacier Boat Tour",d:"2026-08-24",det:"A narrated cruise on one of Glacier's historic wooden boats - the mountains from the water, with a chair under you the whole time.",note:"Check the confirmation for which lake you sail - Many Glacier's Swiftcurrent Lake and Two Medicine both run historic boats. Arrive 30 minutes early; the dock is a short level walk.",lat:48.7967,lng:-113.6567,cost:125.10}
 ];
 
 /* ============================================================
@@ -2281,7 +2321,7 @@ function speak(text,force,key){
 function syncVoiceBtn(){
   const b=$("btnVoice");
   b.setAttribute("aria-pressed",voiceOn?"true":"false");
-  b.innerHTML=voiceOn?"&#128266;":"&#128264;";
+  b.innerHTML='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-sound-'+(voiceOn?"on":"off")+'"/></svg>';
   b.title=voiceOn?"Voice companion is ON":"Voice companion is OFF";
 }
 /* one tap to shut her up mid-sentence, without turning the companion off */
@@ -2305,25 +2345,50 @@ $("btnText").addEventListener("click",()=>{
 });
 applyFS();
 
+/* ---------- full screen - maximize / minimize the whole app ---------- */
+(function(){
+  const b=$("btnFull");
+  const standalone=matchMedia&&matchMedia("(display-mode: standalone)").matches;
+  if(!document.documentElement.requestFullscreen||standalone){b.style.display="none";return}
+  b.addEventListener("click",async()=>{
+    try{
+      if(document.fullscreenElement)await document.exitFullscreen();
+      else await document.documentElement.requestFullscreen();
+    }catch(e){toast("Full screen isn't available here")}
+  });
+  document.addEventListener("fullscreenchange",()=>{
+    const on=!!document.fullscreenElement;
+    b.setAttribute("aria-pressed",on?"true":"false");
+    b.title=on?"Leave full screen":"Full screen";
+  });
+})();
+
 /* ============================================================
    ROUTING
    ============================================================ */
-const VIEWS=["today","journey","nearby","facts","radio","bucket","memories","crew","tour","toolkit"];
+const VIEWS=["today","journey","nearby","radio","memories","crew","tour","toolkit"];
+/* old tab names still work - they land on the section that absorbed them */
+const VIEW_ALIAS={facts:"nearby",bucket:"memories"};
 function showView(v){
+  const wanted=v;
+  if(VIEW_ALIAS[v])v=VIEW_ALIAS[v];
   if(!VIEWS.includes(v))v="today";
   VIEWS.forEach(x=>{const el=$("view-"+x);if(el)el.classList.toggle("active",x===v)});
   $$("nav.tabs a,.bottombar a").forEach(a=>a.classList.toggle("on",a.dataset.view===v));
   scrollTabIntoView(v);
   window.scrollTo({top:0,behavior:"instant"});
-  if(v==="nearby"){renderNearby();drawMap()}
-  if(v==="memories")renderFeed();
-  if(v==="bucket")renderBucket();
-  if(v==="facts")loadFacts();
+  if(v==="nearby"){renderNearby();drawMap();loadFacts()}
+  if(v==="memories"){renderFeed();renderBucket()}
   if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();if(!podList.length)loadPods();}
   if(v==="journey"){drawTrail();renderStays()}
   if(v==="crew"){unread=0;}
   if(v==="tour"){mountTour();store.set("tour-seen",true);syncTourPrompt()}
   else stopTour();
+  /* an aliased link means the person asked for that section - scroll to it */
+  if(wanted==="facts"||wanted==="bucket"){
+    const el=$(wanted==="facts"?"factsAnchor":"bucketAnchor");
+    if(el)setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"start"}),80);
+  }
 }
 /* The tab strip scrolls, and on a phone only three tabs fit - so the tour
    gets a card on Today too, until they have actually opened it once. */
@@ -2465,6 +2530,7 @@ function renderDash(){
   const pct=Math.max(0,Math.min(100,Math.round((dayN/15)*100)));
   $("progBar").style.width=pct+"%";
   $("progTxt").textContent=pct+"%";
+  renderRecap();
 }
 $("logFuel").addEventListener("click",()=>{
   openSheet("Log a fuel stop",`
@@ -2578,7 +2644,10 @@ function onFix(pos){
     const dt=(here.t-prev.t)/1000;                      /* seconds between fixes */
     here._lastMoveDist=d;
     const ok = d>0.03 && d<600 && (dt<5 ? d<25 : (d/(dt/3600))<95);
-    if(ok){const s=stats();s.mi+=d;saveStats(s);trailPush(lat,lng)}
+    if(ok){const s=stats();s.mi+=d;
+      if(!s.days)s.days={};                      /* miles per calendar day - feeds the recap */
+      s.days[todayISO()]=(s.days[todayISO()]||0)+d;
+      saveStats(s);trailPush(lat,lng)}
   }else if(!prev){
     trailPush(lat,lng);            /* the trail has to start somewhere */
   }
@@ -2596,7 +2665,7 @@ function onFix(pos){
   mapOnFix();
   if(typeof spotlightWatch==='function')spotlightWatch();
   if(typeof parkWatch==='function')parkWatch();
-  if($("view-facts").classList.contains("active"))loadFacts();
+  if($("view-nearby").classList.contains("active"))loadFacts();
   if($("view-radio").classList.contains("active")&&radioSrc==="live")loadLiveStations();
   if(!lastFix||Date.now()-lastFix>15*60*1000){lastFix=Date.now();loadWeather();}
   if(locSharing)publishLoc();
@@ -3192,6 +3261,82 @@ $("feedShare").addEventListener("click",async()=>{
 });
 
 /* ============================================================
+   TODAY'S RECAP - Olive tracks the experience so nobody has to.
+   Miles, places, photos and moments collect themselves all day;
+   in the evening they become a card you can film, share or keep.
+   ============================================================ */
+function todayExperience(){
+  const start=new Date();start.setHours(0,0,0,0);
+  const t0=start.getTime();
+  const feed=store.get("feed",[]).filter(x=>x.t>=t0);
+  const s=stats();
+  const i=tripDayIndex();
+  return {
+    feed,
+    places:feed.filter(x=>x.type==="place"),
+    photos:(typeof media!=="undefined"&&media?media:[]).filter(m=>m.k==="i"&&m.t>=t0),
+    mi:(s.days&&s.days[todayISO()])||0,
+    day:i>=0?DAYS[i]:null
+  };
+}
+function recapText(){
+  const ex=todayExperience();
+  const bits=[];
+  if(ex.mi>1)bits.push(Math.round(ex.mi).toLocaleString()+" miles");
+  if(ex.places.length)bits.push(ex.places.length+" place"+(ex.places.length===1?"":"s"));
+  if(ex.photos.length)bits.push(ex.photos.length+" photo"+(ex.photos.length===1?"":"s"));
+  let txt=(ex.day?"Day "+ex.day.n+" of our Great American West trip — "+ex.day.t:"Our Great American West trip today");
+  if(bits.length)txt+=". "+bits.join(", ")+".";
+  const hl=ex.places.slice(0,3).map(p=>p.title).join(" · ");
+  if(hl)txt+=" Highlights: "+hl+".";
+  return txt;
+}
+function renderRecap(){
+  const el=$("recapCard");if(!el)return;
+  const ex=todayExperience();
+  const active=tripDayIndex()>=0;
+  const any=ex.mi>1||ex.feed.length>0||ex.photos.length>0;
+  if(!active&&!any){el.style.display="none";return}
+  el.style.display="";
+  const evening=new Date().getHours()>=17;
+  $("recapTitle").textContent=evening?"Tonight's Recap":"Today So Far";
+  const rows=[];
+  rows.push(`<div class="stats">
+    <div class="stat"><div class="n">${Math.round(ex.mi).toLocaleString()}</div><div class="l">Miles today</div></div>
+    <div class="stat"><div class="n">${ex.places.length}</div><div class="l">Places seen</div></div>
+    <div class="stat"><div class="n">${ex.photos.length}</div><div class="l">Photos</div></div>
+    <div class="stat"><div class="n">${ex.feed.length}</div><div class="l">Moments</div></div>
+  </div>`);
+  const hl=ex.places.slice(0,3).map(p=>esc(p.title)).join(" &middot; ");
+  if(hl)rows.push(`<div class="small muted" style="margin-top:.7rem"><b>Highlights:</b> ${hl}</div>`);
+  if(!any)rows.push(`<p class="small muted" style="margin:.7rem 0 0">Nothing logged yet — drive, pin a spot or add a photo and today's story builds itself.</p>`);
+  $("recapBody").innerHTML=rows.join("");
+}
+$("recapFilm").addEventListener("click",()=>{
+  const ex=todayExperience();
+  location.hash="#/memories";
+  if($("vidStyle"))$("vidStyle").value="daily";
+  if(!ex.photos.length){
+    toast("Add a photo or two first &mdash; then one tap makes the film");
+    setTimeout(()=>{const d=$("mediaDrop");if(d)d.scrollIntoView({behavior:"smooth",block:"center"})},200);
+    return;
+  }
+  setTimeout(()=>{
+    const v=$("vidCanvas");if(v)v.scrollIntoView({behavior:"smooth",block:"center"});
+    $("vidMake").click();
+  },250);
+});
+$("recapShare").addEventListener("click",async()=>{
+  const txt=recapText();
+  if(navigator.share){try{await navigator.share({title:"Great American West — today",text:txt});return}catch(e){}}
+  try{await navigator.clipboard.writeText(txt);toast("&#128203; Copied — paste it anywhere")}catch(e){toast("Could not share")}
+});
+$("recapSave").addEventListener("click",()=>{
+  addFeed("note","&#127909;","Day recap",recapText());
+  toast("&#128190; Saved to your journal");
+});
+
+/* ============================================================
    HEALTH & COMFORT
    ============================================================ */
 const HEALTH_DEF={med:{on:false,times:["08:00","20:00"],label:"Medications"},water:{on:false,every:45},stretch:{on:false,every:90}};
@@ -3285,7 +3430,20 @@ function renderResv(){
           ${r.lat?`<a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lng}" target="_blank" rel="noopener">&#128506;&#65039; Map</a>`:""}
           ${r.url?`<a class="btn sm ghost" href="${r.url}" target="_blank" rel="noopener">&#128279; Listing</a>`:""}
         </div>
-      </div></div>`).join("")+mineHtml+gapHtml;
+      </div></div>`).join("")
+  +`<div class="card-h" style="margin-top:1.1rem"><span class="ic">&#127915;</span><h3>Booked Tours</h3></div>`
+  +TOURS.map(r=>`
+    <div class="row">
+      <div class="ic">&#127915;</div><div class="bd">
+        <div class="t">${esc(r.t)}</div>
+        <div class="small muted">${fmtDate(r.d)}</div>
+        <div class="s" style="margin-top:.3rem">${esc(r.det)}</div>
+        <div class="pills" style="margin-top:.45rem"><span class="pill sage">&#9989; Booked</span>${r.cost?`<span class="pill gold">$${r.cost.toFixed(2)}</span>`:""}</div>
+        ${r.note?`<div class="note small" style="margin-top:.5rem">${esc(r.note)}</div>`:""}
+        ${r.lat?`<div class="btnrow" style="margin-top:.6rem"><a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lng}" target="_blank" rel="noopener">&#128506;&#65039; Map</a></div>`:""}
+      </div></div>`).join("")
+  +`<div class="note senior small" style="margin-top:.8rem"><b>Trip totals from Terry's final sheet:</b> $${LODGING_TOTAL.toLocaleString(undefined,{minimumFractionDigits:2})} lodging &middot; $${TOURS_TOTAL.toLocaleString(undefined,{minimumFractionDigits:2})} booked tours.</div>`
+  +mineHtml+gapHtml;
 }
 function renderMed(){
   let list=MEDICAL.slice();
@@ -3486,7 +3644,7 @@ function buildBriefing(){
     const to=daysBetween(t,TRIP_START);
     if(to>0){
       h+=`<p><b>${to} day${to===1?"":"s"} until you leave Denver.</b></p>`;
-      h+=`<p>Day one is the long haul — 390 miles to Custer. Worth doing before you go: download offline maps for South Dakota, Montana, Wyoming and North Dakota, confirm the rental fits three adults plus luggage, and check that the Glacier Red Bus tour is reserved.</p>`;
+      h+=`<p>Day one is the long haul — 390 miles to Custer. Worth doing before you go: download offline maps for South Dakota, Montana, Wyoming and North Dakota, confirm the rental fits three adults plus luggage. Your Glacier Red Bus and boat tours are already booked and paid — just check the boarding times on the confirmations.</p>`;
       const unbooked=GAPS.length;
       if(unbooked)h+=`<div class="note warn small"><b>${unbooked} nights aren't in Olive yet</b> — ${GAPS.map(g=>fmtDate(g.d)).join(", ")}. Add the confirmations under Toolkit when you have them.</div>`;
     }else{
@@ -3547,6 +3705,7 @@ function addMedia(m){
   /* keep localStorage under control - videos are kept in memory only */
   try{store.set("media",media.filter(x=>x.k==="i").slice(0,40))}
   catch(e){media=media.slice(0,20);try{store.set("media",media.filter(x=>x.k==="i").slice(0,20))}catch(e2){toast("Storage full — older photos dropped")}}
+  renderRecap();               /* today's photo count feeds the recap card */
 }
 function renderGal(){
   $("mediaGal").innerHTML=media.map((m,i)=>
@@ -3812,7 +3971,6 @@ function savePin(){
   });
 }
 $("pinHere").addEventListener("click",savePin);
-$("pinHere2").addEventListener("click",savePin);
 
 function renderPins(){
   const p=pins();
