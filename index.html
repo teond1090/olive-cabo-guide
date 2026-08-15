@@ -142,25 +142,19 @@ nav.tabs .i{width:1.1rem;height:1.1rem}
 .bottombar .i{width:1.5rem;height:1.5rem;stroke-width:1.55}
 .bottombar a.on .i{stroke-width:1.9}
 
-/* ============ NAV ============ */
+/* ============ NAV ============
+   One navigation per screen, the way Chris's app settled it: phones get
+   the big bottom bar plus a More menu, laptops get the full tab row.
+   Nothing scrolls sideways, nothing is duplicated. */
 nav.tabs{
   position:sticky;top:0;z-index:60;
   background:linear-gradient(180deg,rgba(243,230,206,.98),rgba(235,219,190,.98));
   backdrop-filter:blur(10px);border-bottom:3px solid var(--leather);
   box-shadow:0 2px 8px rgba(58,29,13,.10);
+  display:none;   /* phones navigate with the bottom bar + More menu */
 }
-.tabscroll{display:flex;gap:.32rem;overflow-x:auto;scrollbar-width:none;padding:.5rem 1rem;max-width:var(--wrap);margin:0 auto}
-.tabscroll::-webkit-scrollbar{display:none}
-/* on a laptop all eight tabs fit - so nothing scrolls and nothing hides */
-@media(min-width:980px){
-  .tabscroll{flex-wrap:wrap;justify-content:center;overflow:visible}
-  nav.tabs::after{display:none}
-}
-/* only three tabs fit on a phone, so the strip has to LOOK scrollable -
-   a soft fade off the right edge is the cue that there is more over there */
-nav.tabs{position:sticky}
-nav.tabs::after{content:"";position:absolute;top:0;right:0;bottom:3px;width:2.2rem;
-  pointer-events:none;background:linear-gradient(90deg,rgba(238,224,197,0),rgba(236,221,192,.97))}
+@media(min-width:980px){nav.tabs{display:block}}
+.tabscroll{display:flex;flex-wrap:wrap;justify-content:center;gap:.32rem;padding:.5rem 1rem;max-width:var(--wrap);margin:0 auto}
 nav.tabs a{
   flex:0 0 auto;display:flex;align-items:center;gap:.4rem;
   padding:.55rem .9rem;min-height:var(--tap);border-radius:11px;
@@ -249,8 +243,8 @@ nav.tabs a .ic{font-size:1.1rem}
 
 /* ============ FORM ============ */
 input[type=text],input[type=date],input[type=time],input[type=number],input[type=search],input[type=tel],select,textarea{
-  width:100%;min-height:var(--tap);padding:.6rem .85rem;border-radius:10px;
-  border:2px solid var(--line-2);background:#FFFDF6;
+  width:100%;min-height:var(--tap);padding:.6rem .85rem;border-radius:12px;
+  border:1.5px solid var(--line-2);background:#FFFDF6;
   font-family:inherit;font-size:1rem;
   color:var(--ink);-webkit-text-fill-color:var(--ink);
 }
@@ -412,6 +406,20 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 }
 .bottombar a .ic{font-size:1.35rem;line-height:1}
 .bottombar a.on{color:var(--leather-dk);background:linear-gradient(170deg,var(--brass-lt),var(--brass))}
+/* a laptop has the tab row - one navigation per screen */
+@media(min-width:980px){.bottombar{display:none} body{padding-bottom:1.5rem}}
+
+/* the More menu: every part of the app as one big friendly tile */
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.mtile{
+  display:flex;flex-direction:column;gap:.15rem;align-items:flex-start;text-align:left;
+  padding:.85rem .9rem;min-height:5.2rem;border-radius:14px;border:2px solid var(--line-2);
+  background:var(--card);cursor:pointer;font-family:inherit;text-decoration:none;color:var(--ink);
+}
+.mtile.on{border-color:var(--rust);box-shadow:0 0 0 2px rgba(166,58,36,.18)}
+.mtile .mi{font-size:1.5rem;line-height:1}
+.mtile .mt{font-weight:800;font-size:.98rem}
+.mtile .ms{font-size:.74rem;color:var(--ink-faint);line-height:1.35}
 
 /* ============ SHEET ============ */
 .overlay{position:fixed;inset:0;z-index:200;background:rgba(42,31,22,.6);backdrop-filter:blur(3px);display:none;align-items:flex-end;justify-content:center}
@@ -708,6 +716,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 <g id="s-hush"><path d="M4 9.2h3.4L12 5v14L7.4 14.8H4z" stroke-linejoin="round"/><path d="M15.5 4.5 21 20"/></g>
 <g id="s-sound-on"><path d="M4 9.2h3.4L12 5v14L7.4 14.8H4z" stroke-linejoin="round"/><path d="M15.6 9.4a3.6 3.6 0 0 1 0 5.2M18.2 6.8a7.2 7.2 0 0 1 0 10.4"/></g>
 <g id="s-sound-off"><path d="M4 9.2h3.4L12 5v14L7.4 14.8H4z" stroke-linejoin="round"/><path d="m16 9.6 5 5M21 9.6l-5 5"/></g>
+<g id="s-more"><path d="M4 7h16M4 12h16M4 17h16"/></g>
 </defs></svg>
 
 <div id="updateBar">&#8635; A new version of Olive is ready &mdash; tap to refresh</div>
@@ -783,6 +792,16 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <button class="btn sm" id="brRead">&#128266; Read it to me</button>
         <button class="btn sm ghost" id="brRefresh">&#8635; Refresh</button>
       </div>
+    </div>
+
+    <!-- the microphone, made obvious - one big button and questions
+         that always work, even on phones that can't listen -->
+    <div class="card a-canyon">
+      <div class="card-h"><span class="ic">&#127908;</span><h3>Ask Olive</h3></div>
+      <button class="btn wide brass" id="askBig">&#127908; Tap, then ask me anything</button>
+      <div id="askHeard" class="small" style="display:none;margin-top:.7rem"></div>
+      <p class="small muted" style="margin:.8rem 0 .4rem">Or tap a question &mdash; she answers out loud either way:</p>
+      <div class="pills" id="askChips"></div>
     </div>
 
     <div class="card a-canyon fold" data-fold="ride">
@@ -1343,10 +1362,11 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
 <div class="bottombar" role="navigation" aria-label="Quick">
   <a href="#/today" data-view="today"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-today"/></svg>Today</a>
+  <a href="#/journey" data-view="journey"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-journey"/></svg>Journey</a>
   <a href="#/nearby" data-view="nearby"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-nearby"/></svg>Nearby</a>
-  <a href="#/radio" data-view="radio"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-radio"/></svg>Radio</a>
   <a href="#/memories" data-view="memories"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-memories"/></svg>Memories</a>
   <a href="#/crew" data-view="crew"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-crew"/></svg>Crew</a>
+  <a href="#" id="moreTab" aria-label="Everything else"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><use href="#s-more"/></svg>More</a>
 </div>
 
 <div class="overlay" id="sheet"><div class="sheet"><div class="sheet-h"><h3 id="shTitle"></h3><button class="x" id="shClose" aria-label="Close">&#10005;</button></div><div id="shBody"></div></div></div>
@@ -1355,7 +1375,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w28-2026-08-15";
+const OLIVE_BUILD="w29-2026-08-15";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2473,6 +2493,8 @@ function showView(v){
   if(!VIEWS.includes(v))v="today";
   VIEWS.forEach(x=>{const el=$("view-"+x);if(el)el.classList.toggle("active",x===v)});
   $$("nav.tabs a,.bottombar a").forEach(a=>a.classList.toggle("on",a.dataset.view===v));
+  /* views that live behind More light the More tab up */
+  const mt=$("moreTab");if(mt)mt.classList.toggle("on",["radio","toolkit","tour"].includes(v));
   scrollTabIntoView(v);
   window.scrollTo({top:0,behavior:"instant"});
   if(v==="nearby"){renderNearby();drawMap();loadFacts()}
@@ -2550,6 +2572,24 @@ function stopTour(){
     if(w&&typeof w.haltTour==="function")w.haltTour();
   }catch(e){}
 }
+/* the More menu - every part of the app as one big friendly tile */
+function openMore(){
+  const cur=(location.hash||"#/today").replace("#/","");
+  const T=[["today","&#127968;","Today","Briefing, weather, recap and Ask Olive"],
+    ["journey","&#128506;&#65039;","Journey","All 15 days, every booking, your trail"],
+    ["nearby","&#128205;","Nearby","Live map, fuel, eats and Did You Know"],
+    ["radio","&#128251;","Radio","Real stations and podcasts for these roads"],
+    ["memories","&#128248;","Memories","Photos, films, journal and bucket list"],
+    ["crew","&#128172;","Crew","Chat, family map and notifications"],
+    ["toolkit","&#129520;","Toolkit","Reservations, medical, stories, settings"],
+    ["tour","&#127916;","How It Works","Clara shows you round, out loud"]];
+  openSheet("Everything in the app",
+    '<div class="menu-grid">'+T.map(([v,ic,t,d])=>
+      `<a class="mtile${v===cur?" on":""}" href="#/${v}" data-mgo="${v}">
+        <span class="mi">${ic}</span><span class="mt">${t}</span><span class="ms">${d}</span></a>`).join("")+"</div>");
+  $("shBody").addEventListener("click",e=>{if(e.target.closest("[data-mgo]"))closeSheet()});
+}
+$("moreTab").addEventListener("click",e=>{e.preventDefault();openMore()});
 function route(){showView((location.hash||"#/today").replace("#/",""))}
 window.addEventListener("hashchange",route);
 
@@ -5582,6 +5622,8 @@ function heard(txt,ms){
   const el=$("micHeard");
   el.innerHTML=txt; el.style.display="block";
   clearTimeout(heard._t); heard._t=setTimeout(()=>el.style.display="none",ms||4200);
+  /* the Ask Olive card mirrors everything, where it can actually be read */
+  const a=$("askHeard"); if(a){a.style.display="block"; a.innerHTML=txt;}
 }
 /* Somewhere to ask from even when the microphone is unavailable -
    inside a preview frame, on iOS Safari, or with the mic refused. */
@@ -5629,6 +5671,7 @@ async function micDiag(){
 function startListening(){
   if(!SR)return micDiag();
   if(listening){stopListening();return}
+  stopSpeaking();   /* she stops talking the moment you want to ask - otherwise the mic hears her, not you */
   try{
     rec=new SR();
     rec.lang="en-US"; rec.interimResults=false; rec.maxAlternatives=1; rec.continuous=false;
@@ -5643,16 +5686,31 @@ function startListening(){
     rec.onresult=e=>{
       const said=(e.results[0][0].transcript||"").trim();
       heard("&ldquo;"+esc(said)+"&rdquo;",6000);
-      answerAloud(said);
+      answerAloud(said,txt=>heard("&ldquo;"+esc(said)+"&rdquo;<br><b>"+esc(txt)+"</b>",12000));
     };
     rec.start();
   }catch(e){micDiag()}
 }
 function stopListening(){try{rec&&rec.stop()}catch(e){}listening=false;$("micBtn").classList.remove("hot")}
-$("micBtn").addEventListener("click",startListening);
-let micHold=null;
-$("micBtn").addEventListener("pointerdown",()=>{micHold=setTimeout(()=>{stopListening();askSheet(null)},600)});
+/* A firm, slow press on a phone is NOT a hold - 600ms fired constantly and
+   the question list kept opening instead of listening. 900ms is a real hold,
+   and once it fires the release-click must be swallowed or the two fight. */
+let micHold=null,micHeld=false;
+$("micBtn").addEventListener("click",()=>{if(micHeld){micHeld=false;return}startListening()});
+$("micBtn").addEventListener("pointerdown",()=>{micHeld=false;micHold=setTimeout(()=>{micHeld=true;stopListening();askSheet(null)},900)});
 ["pointerup","pointerleave","pointercancel"].forEach(ev=>$("micBtn").addEventListener(ev,()=>clearTimeout(micHold)));
+
+/* the Ask Olive card - the same engine with a button you can actually find */
+$("askBig").addEventListener("click",()=>{SR?startListening():micDiag()});
+if(!SR)$("askBig").innerHTML="&#127908; Tap a question below &mdash; she answers out loud";
+$("askChips").innerHTML=ASK_LIST.slice(0,8).map((a,i)=>
+  `<button class="pill" data-askchip="${i}">${esc(a[0])}</button>`).join("");
+$("askChips").addEventListener("click",e=>{
+  const b=e.target.closest("[data-askchip]");if(!b)return;
+  const a=ASK_LIST[+b.dataset.askchip];
+  heard("<b>"+esc(a[0])+"</b><br>&hellip;",4000);
+  answerAloud(a[1],txt=>heard("<b>"+esc(a[0])+"</b><br>"+esc(txt),12000));
+});
 
 /* Route a spoken question to the answer Olive already knows how to give. */
 function answerAloud(said,onText){
