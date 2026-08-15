@@ -546,6 +546,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 .mk.fuel{background:var(--leather-2)} .mk.rv{background:var(--denim)}
 .mk.scenic{background:#7A6BA8}        .mk.wildlife{background:var(--sage)}
 .mk.pin{background:var(--brass);border-color:var(--leather-dk)}
+.mk.crew{background:var(--denim);border-color:#fff;box-shadow:0 0 0 3px rgba(58,94,130,.35),0 2px 6px rgba(0,0,0,.35)}
 .mk-lbl{
   position:absolute;transform:translate(-50%,-2.5rem);white-space:nowrap;pointer-events:none;
   background:rgba(42,31,22,.86);color:#FFF3E2;font-size:.68rem;font-weight:700;
@@ -817,28 +818,34 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     </div>
 
     <div id="liveAlerts" class="stack"></div>
-    <div class="card a-canyon" id="parkAlertCard" style="display:none">
-      <div class="card-h"><span class="ic">&#9888;&#65039;</span><h3>Park &amp; Road Alerts</h3></div>
+    <div class="card a-canyon fold" data-fold="alerts" id="parkAlertCard" style="display:none">
+      <div class="card-h"><span class="ic">&#9888;&#65039;</span><h3>Park &amp; Road Alerts</h3><span class="hint">closures on your route</span></div>
+      <div class="foldbody">
       <div id="parkAlerts"></div>
+      </div>
     </div>
 
-    <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#9749;</span><h3>Trail Boss Briefing</h3></div>
+    <div class="card a-gold fold" data-fold="brief">
+      <div class="card-h"><span class="ic">&#9749;</span><h3>Trail Boss Briefing</h3><span class="hint">today, in a minute</span></div>
+      <div class="foldbody">
       <div id="briefing" class="muted">Saddling up&hellip;</div>
       <div class="btnrow" style="margin-top:.9rem">
         <button class="btn sm" id="brRead">&#128266; Read it to me</button>
         <button class="btn sm ghost" id="brRefresh">&#8635; Refresh</button>
       </div>
+      </div>
     </div>
 
     <!-- the microphone, made obvious - one big button and questions
          that always work, even on phones that can't listen -->
-    <div class="card a-canyon">
-      <div class="card-h"><span class="ic">&#127908;</span><h3>Ask Olive</h3></div>
+    <div class="card a-canyon fold" data-fold="ask">
+      <div class="card-h"><span class="ic">&#127908;</span><h3>Ask Olive</h3><span class="hint">she answers out loud</span></div>
+      <div class="foldbody">
       <button class="btn wide brass" id="askBig">&#127908; Tap, then ask me anything</button>
       <div id="askHeard" class="small" style="display:none;margin-top:.7rem"></div>
       <p class="small muted" style="margin:.8rem 0 .4rem">Or tap a question &mdash; she answers out loud either way:</p>
       <div class="pills" id="askChips"></div>
+      </div>
     </div>
 
     <div class="card a-canyon fold" data-fold="ride">
@@ -894,7 +901,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div id="recapBody"></div>
       <div class="btnrow" style="margin-top:.9rem">
         <button class="btn sm brass" id="recapFilm">&#127916; Make today's mini-film</button>
-        <button class="btn sm" id="recapShare">&#128228; Share today</button>
+        <button class="btn sm brass" id="recapSms">&#128172; Text it</button>
+        <button class="btn sm" id="recapEmail">&#9993;&#65039; Email it</button>
+        <button class="btn sm ghost" id="recapShare">&#128228; Share</button>
         <button class="btn sm ghost" id="recapSave">&#128221; Save to journal</button>
       </div>
     </div>
@@ -1029,6 +1038,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <span class="small muted" id="mapInfo">Finding you&hellip;</span>
         <span class="sp"></span>
         <button class="btn sm brass" id="mapPin">&#128204; Pin here</button>
+        <button class="btn sm sage" id="mapImHere">&#128075; I'm here</button>
         <button class="btn sm ghost" id="mapNav">&#129517; Navigate</button>
       </div>
     </div>
@@ -1067,15 +1077,18 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
-    <div class="card a-sun" id="fuelPlanner">
-      <div class="card-h"><span class="ic">&#9981;</span><h3>Fuel Watch</h3></div>
+    <div class="card a-sun fold" data-fold="fuel" id="fuelPlanner">
+      <div class="card-h"><span class="ic">&#9981;</span><h3>Fuel Watch</h3><span class="hint">the empty stretches</span></div>
+      <div class="foldbody">
       <div id="fuelInfo" class="small muted">Olive warns you before the long empty stretches &mdash; the Hi&#8209;Line and central Montana have real gaps.</div>
+      </div>
     </div>
 
     <div id="nearbyList" class="stack"></div>
 
-    <div class="card a-sage">
-      <div class="card-h"><span class="ic">&#128269;</span><h3>Find It Right Now</h3></div>
+    <div class="card a-sage fold" data-fold="find">
+      <div class="card-h"><span class="ic">&#128269;</span><h3>Find It Right Now</h3><span class="hint">gas &middot; food &middot; anything</span></div>
+      <div class="foldbody">
       <p class="small muted">Live search for whatever you need this minute. Results land on the map above, in gold, alongside Olive's own places.</p>
       <div class="field" style="margin:.7rem 0 0">
         <label class="fld" for="searchBox">Looking for something specific?</label>
@@ -1096,6 +1109,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="findgrid" id="findNow" style="margin-top:.8rem"></div>
       <div id="findStatus" class="small muted" style="margin-top:.8rem"></div>
       <div id="findList" style="margin-top:.7rem"></div>
+      </div>
     </div>
 
     <div class="card a-gold fold" data-fold="events">
@@ -1106,8 +1120,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     </div>
 
     <!-- ---------- DID YOU KNOW (merged in from its own tab) ---------- -->
-    <div class="card a-gold" id="factsAnchor">
-      <div class="card-h"><span class="ic">&#128161;</span><h3>Did You Know</h3></div>
+    <div class="card a-gold fold" data-fold="facts" id="factsAnchor">
+      <div class="card-h"><span class="ic">&#128161;</span><h3>Did You Know</h3><span class="hint">history under your wheels</span></div>
+      <div class="foldbody">
       <div id="factsWhere" class="small muted">Finding out where you are&hellip;</div>
       <p class="small muted" style="margin:.6rem 0 0">Olive keeps an eye on the ground you're covering and digs up what happened here. This refreshes on its own every few miles &mdash; no need to touch anything.</p>
       <div class="btnrow" style="margin-top:.8rem">
@@ -1115,13 +1130,16 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <button class="btn sm ghost" id="factsRead">&#128266; Read them to me</button>
         <button class="btn sm ghost" id="factsSave">&#128221; Save to journal</button>
       </div>
+      </div>
     </div>
 
     <div id="factsList" class="stack"></div>
 
-    <div class="card tint">
-      <div class="card-h"><span class="ic">&#128218;</span><h3>Where these come from</h3></div>
+    <div class="card tint fold" data-fold="factsrc">
+      <div class="card-h"><span class="ic">&#128218;</span><h3>Where these come from</h3><span class="hint">for the curious</span></div>
+      <div class="foldbody">
       <p class="small" style="margin:0">Two places. Olive's own written history of the towns on your route &mdash; those work with no signal and are narrated in her voice. And, when you have bars, whatever else happened within a few miles of where you're sitting, drawn live from Wikipedia. Off the planned route, that live layer is doing all the work &mdash; which is how you get facts in Arizona as easily as in Montana.</p>
+      </div>
     </div>
   </div>
 </div>
@@ -1146,8 +1164,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="scale"><div class="needle" id="dialNeedle" style="left:0"></div></div>
     </div>
 
-    <div class="card">
-      <div class="card-h"><span class="ic">&#128251;</span><h3>Stations Near You</h3></div>
+    <div class="card fold" data-fold="stations">
+      <div class="card-h"><span class="ic">&#128251;</span><h3>Stations Near You</h3><span class="hint">what the dial has here</span></div>
+      <div class="foldbody">
       <div id="radioStatus" class="small muted">Finding your area&hellip;</div>
       <label class="switch" style="margin-top:.5rem">
         <input type="checkbox" id="radioEnable" checked><span class="track"></span>
@@ -1184,10 +1203,12 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
       <div id="stationList" style="margin-top:.9rem"></div>
       <div id="nowPlaying" style="display:none;margin-top:.9rem"></div>
+      </div>
     </div>
 
-    <div class="card a-gold">
-      <div class="card-h"><span class="ic">&#127911;</span><h3>Podcasts</h3></div>
+    <div class="card a-gold fold" data-fold="pods">
+      <div class="card-h"><span class="ic">&#127911;</span><h3>Podcasts</h3><span class="hint">for the empty stretches</span></div>
+      <div class="foldbody">
       <p class="small muted">What the country is listening to right now, plus a few picked for these particular roads. Episodes play right here &mdash; good for the long empty stretches where the radio gives up.</p>
       <div class="pills" style="margin-top:.8rem" id="podGenres">
         <button class="pill on" data-pg="trip">&#129517; For this trip</button>
@@ -1202,23 +1223,30 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
       <div id="podStatus" class="small muted" style="margin-top:.8rem"></div>
       <div id="podList" style="margin-top:.8rem"></div>
+      </div>
     </div>
 
-    <div class="card a-canyon">
-      <div class="card-h"><span class="ic">&#9888;&#65039;</span><h3>NOAA Weather Radio</h3></div>
+    <div class="card a-canyon fold" data-fold="noaa">
+      <div class="card-h"><span class="ic">&#9888;&#65039;</span><h3>NOAA Weather Radio</h3><span class="hint">works with no bars</span></div>
+      <div class="foldbody">
       <p class="small muted">Seven frequencies, nationwide, 24 hours a day. When a storm is coming and your phone has no bars, this still works. Most RV and marine radios receive these.</p>
       <div id="noaaList"></div>
+      </div>
     </div>
 
-    <div class="card a-sky">
-      <div class="card-h"><span class="ic">&#128226;</span><h3>Travel &amp; Park Information Radio</h3></div>
+    <div class="card a-sky fold" data-fold="tis">
+      <div class="card-h"><span class="ic">&#128226;</span><h3>Travel &amp; Park Information Radio</h3><span class="hint">the "Tune to&hellip;" signs</span></div>
+      <div class="foldbody">
       <p class="small muted">Low-power stations at park gates and highway signs. Watch for "Tune to&hellip;" signs and these are what they mean.</p>
       <div id="hiwayList"></div>
+      </div>
     </div>
 
-    <div class="card tint">
-      <div class="card-h"><span class="ic">&#8505;&#65039;</span><h3>About this tab</h3></div>
+    <div class="card tint fold" data-fold="radioabout">
+      <div class="card-h"><span class="ic">&#8505;&#65039;</span><h3>About this tab</h3><span class="hint">for the curious</span></div>
+      <div class="foldbody">
       <p class="small" style="margin:0">A phone browser can't tune a real radio &mdash; there's no hardware access for it. So Olive does two things instead. <b>Live</b> looks up the broadcasters actually licensed around you, wherever in the country you are, and shows the dial position to turn to &mdash; many of them you can also stream right here. <b>The August route</b> is Olive's own hand-checked list for the trip, and it works with no signal at all.</p>
+      </div>
     </div>
   </div>
 </div>
@@ -1226,6 +1254,21 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 <!-- ============================ MEMORIES ============================ -->
 <div class="view" id="view-memories">
   <div class="stack">
+
+    <!-- ---------- THE JOURNEY STORY - written by Olive, always current ---------- -->
+    <div class="card a-gold fold" data-fold="story">
+      <div class="card-h"><span class="ic">&#128220;</span><h3>The Story So Far</h3><span class="hint">written for you, ready to send</span></div>
+      <div class="foldbody">
+      <p class="small muted" style="margin-top:0">Olive writes this herself from everything the trip has tracked &mdash; miles, states, parks, places, photos, moments. Nobody types a word. Send it to anyone, any time.</p>
+      <div class="note" id="storyBody" style="line-height:1.55"></div>
+      <div class="btnrow" style="margin-top:.8rem">
+        <button class="btn sm" id="storyRead">&#128266; Read it to me</button>
+        <button class="btn sm brass" id="storyEmail">&#9993;&#65039; Email it</button>
+        <button class="btn sm brass" id="storySms">&#128172; Text it</button>
+        <button class="btn sm ghost" id="storyShare">&#128228; Share</button>
+      </div>
+      </div>
+    </div>
 
     <!-- ---------- TRAIL CAMERA ---------- -->
     <div class="card a-canyon fold" data-fold="cam">
@@ -1317,24 +1360,28 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     </div>
 
     <!-- ---------- TRIP YEARBOOK ---------- -->
-    <div class="card a-sky">
-      <div class="card-h"><span class="ic">&#128214;</span><h3>Trip Yearbook</h3></div>
+    <div class="card a-sky fold" data-fold="yb">
+      <div class="card-h"><span class="ic">&#128214;</span><h3>Trip Yearbook</h3><span class="hint">one page to text home</span></div>
+      <div class="foldbody">
       <p class="small muted" style="margin-top:0">The whole journey as one beautiful page &mdash; the story, your trail, the photos, the journal &mdash; in a single file that opens anywhere, no app and no internet needed. Email it, text it, or drop it in the family thread.</p>
       <div class="btnrow">
         <button class="btn" id="ybBuild">&#128214; Build the yearbook</button>
         <button class="btn sm ghost" id="ybShare" style="display:none">&#128228; Share it</button>
       </div>
       <div id="ybStatus" class="small muted" style="margin-top:.6rem"></div>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="card-h"><span class="ic">&#128221;</span><h3>Journal Entry</h3></div>
+    <div class="card fold" data-fold="journal">
+      <div class="card-h"><span class="ic">&#128221;</span><h3>Journal Entry</h3><span class="hint">write tonight's line</span></div>
+      <div class="foldbody">
       <div class="field">
         <textarea id="jrText" placeholder="What happened today? Olive already knows where you went - tell it the part it can't see."></textarea>
       </div>
       <div class="btnrow" style="margin-top:.7rem">
         <button class="btn" id="jrSave">&#128190; Save entry</button>
         <button class="btn ghost" id="jrPrompt">&#128161; Give me a prompt</button>
+      </div>
       </div>
     </div>
 
@@ -1356,15 +1403,17 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     </div>
 
     <!-- ---------- BUCKET LIST (merged in from its own tab) ---------- -->
-    <div class="card a-gold" id="bucketAnchor">
-      <div class="card-h"><span class="ic">&#127919;</span><h3>Adventure Bucket List</h3></div>
+    <div class="card a-gold fold" data-fold="bucket" id="bucketAnchor">
+      <div class="card-h"><span class="ic">&#127919;</span><h3>Adventure Bucket List</h3><span class="hint">check them off as you go</span></div>
+      <div class="foldbody">
       <p class="small muted" style="margin:0">Built from your route. Check them off as you go &mdash; each one lands in your journal automatically.</p>
       <div style="margin-top:.9rem">
         <div class="small muted" style="display:flex;justify-content:space-between"><span>Completed</span><span id="bkTxt">0 of 0</span></div>
         <div class="bar" style="margin-top:.35rem"><i id="bkBar" style="width:0"></i></div>
       </div>
+      <div id="bucketList" class="stack" style="margin-top:.9rem"></div>
+      </div>
     </div>
-    <div id="bucketList" class="stack"></div>
 
     <div class="card a-canyon fold" data-fold="favs">
       <div class="card-h"><span class="ic">&#10084;&#65039;</span><h3>Favorite Places</h3><span class="hint">hearted places</span></div>
@@ -1400,9 +1449,10 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
-    <div class="card a-sky">
-      <div class="card-h"><span class="ic">&#128205;</span><h3>Family Map</h3><span class="pill sky" style="margin-left:auto">Opt-in</span></div>
-      <p class="small muted">Share your live spot so family back home can follow along &mdash; and so nobody gets separated at a trailhead.</p>
+    <div class="card a-sky fold" data-fold="fam">
+      <div class="card-h"><span class="ic">&#128205;</span><h3>Family Map</h3><span class="hint">everyone, live &middot; switch off any time</span></div>
+      <div class="foldbody">
+      <p class="small muted">Everyone using the app appears on the map automatically &mdash; family back home can follow along, and nobody gets separated at a trailhead. Flip the switch off if you'd rather not be shown; set a name below so you're not a "Traveler".</p>
       <div class="field"><label class="fld" for="locName">You appear on the map as</label><input type="text" id="locName" placeholder="Your name" maxlength="24"></div>
       <label class="switch" style="margin-top:.7rem">
         <input type="checkbox" id="locToggle"><span class="track"></span>
@@ -1411,11 +1461,14 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div id="locList" style="margin-top:.9rem"></div>
       <div id="locMap" style="margin-top:.9rem"></div>
       <p class="small muted" style="margin-top:.8rem">&#128274; Shared only with people who have Olive's link, and only while your switch is on. Never posted publicly, never saved to an account.</p>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="card-h"><span class="ic">&#128276;</span><h3>Notifications</h3></div>
+    <div class="card fold" data-fold="notifs">
+      <div class="card-h"><span class="ic">&#128276;</span><h3>Notifications</h3><span class="hint">taps on the shoulder</span></div>
+      <div class="foldbody">
       <div id="notifPanel"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1470,11 +1523,13 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
-    <div class="card tint">
-      <div class="card-h"><span class="ic">&#128246;</span><h3>Works Without Signal</h3></div>
+    <div class="card tint fold" data-fold="offline">
+      <div class="card-h"><span class="ic">&#128246;</span><h3>Works Without Signal</h3><span class="hint">save before the mountains</span></div>
+      <div class="foldbody">
       <p class="small" id="offlineTxt">Olive saves itself to your phone the first time you open it. Every day plan, landmark, story, checklist, radio frequency and phone number works with no bars at all &mdash; only live weather and the crew chat need a signal.</p>
       <div class="btnrow"><button class="btn sm sage" id="cacheNow">&#128190; Save for offline now</button>
       <a class="btn sm ghost" href="#/tour">&#127916; How this app works</a></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1499,7 +1554,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w31-2026-08-15";
+const OLIVE_BUILD="w32-2026-08-15";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2639,11 +2694,13 @@ applyFS();
    Ride Along starts open because location is the app's heart; the dashboard
    and health reminders wait quietly until they're wanted. */
 const FOLD_DEFAULT={
-  /* Today */    ride:true,dash:false,health:false,sky:true,
+  /* Today */    ride:true,dash:false,health:false,sky:true,alerts:true,brief:true,ask:true,
   /* Journey */  trail:true,pins:false,stays:true,scenic:false,passes:false,clear:false,
-  /* Nearby */   events:false,
-  /* Memories */ cam:true,vid:true,feed:true,favs:false,
-  /* Toolkit */  res:true,med:false,stories:false,set:false
+  /* Nearby */   events:false,fuel:false,find:true,facts:true,factsrc:false,
+  /* Radio */    stations:true,pods:false,noaa:false,tis:false,radioabout:false,
+  /* Memories */ story:true,cam:true,vid:true,feed:true,favs:false,yb:false,journal:true,bucket:true,
+  /* Crew */     fam:false,notifs:false,
+  /* Toolkit */  res:true,med:false,stories:false,set:false,offline:false
 };
 $$(".card.fold").forEach(c=>{
   const id=c.dataset.fold;
@@ -2657,6 +2714,27 @@ document.addEventListener("click",e=>{
   c.classList.toggle("open");
   store.set("fold-"+id,c.classList.contains("open"));
 });
+/* a shortcut that jumps straight to a folded card should find it open */
+function foldOpen(id){
+  const c=document.querySelector('.card.fold[data-fold="'+id+'"]');
+  if(c&&!c.classList.contains("open")){c.classList.add("open");store.set("fold-"+id,true)}
+}
+
+/* ---------- the title always fits ----------
+   Phones disagree about widths and text sizes, so measure instead of
+   guessing: shrink the wordmark until it fits its line, on any device. */
+function fitTitle(){
+  const h=document.querySelector(".brandtxt h1");
+  if(!h)return;
+  h.style.fontSize="";
+  let fs=parseFloat(getComputedStyle(h).fontSize),guard=0;
+  while(h.scrollWidth>h.clientWidth+1&&fs>13&&guard++<40){
+    fs-=.5;h.style.fontSize=fs+"px";
+  }
+}
+addEventListener("resize",()=>fitTitle());
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>fitTitle());
+fitTitle();
 
 /* ============================================================
    ROUTING
@@ -2675,14 +2753,16 @@ function showView(v){
   scrollTabIntoView(v);
   window.scrollTo({top:0,behavior:"instant"});
   if(v==="nearby"){renderNearby();drawMap();loadFacts()}
-  if(v==="memories"){renderFeed();renderBucket()}
+  if(v==="memories"){renderFeed();renderBucket();if(typeof renderStory==="function")renderStory()}
   if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();if(!podList.length)loadPods();}
   if(v==="journey"){drawTrail();renderStays()}
   if(v==="crew"){unread=0;}
   if(v==="tour"){mountTour();store.set("tour-seen",true);syncTourPrompt()}
   else stopTour();
-  /* an aliased link means the person asked for that section - scroll to it */
+  /* an aliased link means the person asked for that section - scroll to it,
+     and if it is folded shut, open it for them */
   if(wanted==="facts"||wanted==="bucket"){
+    if(typeof foldOpen==="function")foldOpen(wanted);
     const el=$(wanted==="facts"?"factsAnchor":"bucketAnchor");
     if(el)setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"start"}),80);
   }
@@ -2924,7 +3004,11 @@ function startGPS(){
   store.set("gps",true);$("gpsToggle").checked=true;
   gpsStatus("Finding you…");
   if(watchId!=null)navigator.geolocation.clearWatch(watchId);
-  watchId=navigator.geolocation.watchPosition(onFix,onFixErr,{enableHighAccuracy:true,maximumAge:60000,timeout:45000});
+  /* maximumAge is the accuracy killer: a 60-second-old fix is two miles
+     stale at highway speed. Take only fresh fixes, and fire one precise
+     one-shot alongside - it wakes the GPS radio fully on some phones. */
+  watchId=navigator.geolocation.watchPosition(onFix,onFixErr,{enableHighAccuracy:true,maximumAge:3000,timeout:45000});
+  try{navigator.geolocation.getCurrentPosition(onFix,()=>{},{enableHighAccuracy:true,maximumAge:0,timeout:20000})}catch(e){}
 }
 function onFixErr(err){
   if(err.code===1){                                  /* PERMISSION_DENIED - real stop */
@@ -2940,10 +3024,18 @@ function onFixErr(err){
   }
 }
 let heading=null;                     /* degrees, direction of travel */
+function fmtAcc(m){
+  if(m==null)return "";
+  return m<250?"within "+Math.max(10,Math.round(m*3.281/10)*10)+" ft":"within "+(m/1609.34).toFixed(1)+" mi";
+}
 function onFix(pos){
   const {latitude:lat,longitude:lng}=pos.coords;
+  const acc=pos.coords.accuracy||9999;
+  /* a vague cell-tower guess must never drag the dot away from a good
+     GPS fix that is still fresh - skip it and wait for the real thing */
+  if(here&&here.acc!=null&&acc>150&&here.acc<=150&&Date.now()-here.t<120000)return;
   const prev=here;
-  here={lat,lng,acc:pos.coords.accuracy,t:Date.now()};
+  here={lat,lng,acc,t:Date.now()};
 
   /* direction of travel: use the device heading if it gives one,
      otherwise infer it from the last leg */
@@ -2970,7 +3062,7 @@ function onFix(pos){
   locate(lat,lng);
   const near=nearest(1)[0];
 
-  gpsStatus("&#128205; Tracking &middot; "+
+  gpsStatus("&#128205; Tracking "+(here.acc!=null?"("+fmtAcc(here.acc)+")":"")+" &middot; "+
             (near&&near._d<150?"near <b>"+esc(near.n)+"</b> ("+fmtMi(near._d)+")":"off the planned route")+
             " &middot; "+Math.round(stats().mi).toLocaleString()+" mi tracked","muted");
   renderDash();renderHero();
@@ -3566,14 +3658,84 @@ $("feedExport").addEventListener("click",()=>{
   a.download="great-american-west-journal.txt";a.click();
   toast("&#128229; Journal downloaded");
 });
+/* ============================================================
+   SHARING BY EMAIL AND TEXT - the two ways this family actually
+   sends things. These open the phone's own mail and messages apps
+   with everything pre-written; nothing is sent by the app itself.
+   ============================================================ */
+function shareEmail(subject,text){
+  location.href="mailto:?subject="+encodeURIComponent(subject)+"&body="+encodeURIComponent(text);
+}
+function shareSMS(text){
+  const sep=/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)?"&":"?";
+  location.href="sms:"+sep+"body="+encodeURIComponent(text);
+}
+async function shareAny(title,text){
+  if(navigator.share){try{await navigator.share({title,text});return}catch(e){}}
+  try{await navigator.clipboard.writeText(text);toast("&#128203; Copied — paste it anywhere")}catch(e){toast("Could not share")}
+}
+/* ============================================================
+   QUIET BOOKKEEPING - every use of the app counts itself, so the
+   story below can be written without anyone lifting a finger.
+   ============================================================ */
+function bump(k,n){const u=store.get("use",{});u[k]=(u[k]||0)+(n||1);store.set("use",u)}
 $("feedShare").addEventListener("click",async()=>{
-  const s=stats();
-  const txt="Our Great American West trip so far: "+Math.round(s.mi).toLocaleString()+" miles, "+
-    statesSoFar().length+" states, "+store.get("parks",[]).length+" national parks. "+
-    (store.get("feed",[])[0]?"Latest: "+store.get("feed",[])[0].title:"");
-  if(navigator.share){try{await navigator.share({title:"Great American West",text:txt});return}catch(e){}}
-  try{await navigator.clipboard.writeText(txt);toast("&#128203; Copied — paste it anywhere")}catch(e){toast("Could not share")}
+  await shareAny("Great American West",journeyStory());
 });
+
+/* ============================================================
+   THE JOURNEY STORY - the whole trip, written by Olive from what
+   she has been quietly tracking all along. Nobody types a word;
+   it is always current, always ready to email, text or read aloud.
+   ============================================================ */
+function journeyStory(){
+  const s=stats(), i=tripDayIndex();
+  const dayN=i>=0?i+1:(daysBetween(TRIP_START,todayISO())>0?15:0);
+  const feed=store.get("feed",[]);
+  const places=feed.filter(x=>x.type==="place").map(p=>p.title);
+  const notes=feed.filter(x=>x.type==="note").length;
+  const parks=store.get("parks",[]).length, sts=statesSoFar().length;
+  const bucketDone=Object.values(store.get("bucket",{})||{}).filter(Boolean).length;
+  const photos=(typeof media!=="undefined"&&media?media:[]).filter(m=>m.k==="i").length;
+  const pins=(store.get("pins",[])||[]).length;
+  const u=store.get("use",{});
+  const p=[];
+  if(dayN===0){
+    p.push("The Anderson family's Great American West journey begins "+fmtDateLong(TRIP_START)+
+      " - fifteen days, five national parks, and around 3,400 miles from Denver to the Black Hills, Glacier, Yellowstone and back.");
+  }else{
+    p.push((dayN>=15?"Fifteen days":"Day "+dayN+" of 15")+" on the Anderson family's Great American West journey"+
+      (s.mi>1?" - "+Math.round(s.mi).toLocaleString()+" miles so far":"")+
+      (sts?", across "+sts+" state"+(sts===1?"":"s"):"")+
+      (parks?", with "+parks+" national park"+(parks===1?"":"s")+" stamped":"")+".");
+  }
+  if(places.length){
+    const top=places.slice(0,6);
+    p.push("We stood at "+top.slice(0,-1).join(", ")+(top.length>1?" and "+top[top.length-1]:top[0])+
+      (places.length>top.length?" - "+(places.length-top.length)+" more in the journal":"")+".");
+  }
+  const kept=[];
+  if(photos)kept.push(photos+" photo"+(photos===1?"":"s"));
+  if(notes)kept.push(notes+" journal note"+(notes===1?"":"s"));
+  if(pins)kept.push(pins+" pinned spot"+(pins===1?"":"s"));
+  if(bucketDone)kept.push(bucketDone+" bucket-list check"+(bucketDone===1?"":"s"));
+  if(kept.length)p.push("Along the way we kept "+kept.join(", ")+".");
+  const did=[];
+  if(u.asks)did.push("asked Olive "+u.asks+" question"+(u.asks===1?"":"s"));
+  if(u.tunes)did.push("tuned in "+u.tunes+" radio station"+(u.tunes===1?"":"s"));
+  if(u.facts)did.push("heard "+u.facts+" stretch"+(u.facts===1?"":"es")+" of roadside history");
+  if(u.films)did.push("made "+u.films+" little film"+(u.films===1?"":"s"));
+  if(did.length)p.push("We also "+did.join(", ")+".");
+  return p.join(" ");
+}
+function renderStory(){
+  const el=$("storyBody");if(!el)return;
+  el.textContent=journeyStory();
+}
+$("storyRead").addEventListener("click",()=>speak(journeyStory(),true));
+$("storyEmail").addEventListener("click",()=>shareEmail("Our Great American West journey",journeyStory()));
+$("storySms").addEventListener("click",()=>shareSMS(journeyStory()));
+$("storyShare").addEventListener("click",()=>shareAny("Great American West",journeyStory()));
 
 /* ============================================================
    TODAY'S RECAP - Olive tracks the experience so nobody has to.
@@ -3641,11 +3803,9 @@ $("recapFilm").addEventListener("click",()=>{
     $("vidMake").click();
   },250);
 });
-$("recapShare").addEventListener("click",async()=>{
-  const txt=recapText();
-  if(navigator.share){try{await navigator.share({title:"Great American West — today",text:txt});return}catch(e){}}
-  try{await navigator.clipboard.writeText(txt);toast("&#128203; Copied — paste it anywhere")}catch(e){toast("Could not share")}
-});
+$("recapShare").addEventListener("click",()=>shareAny("Great American West — today",recapText()));
+$("recapSms").addEventListener("click",()=>shareSMS(recapText()));
+$("recapEmail").addEventListener("click",()=>shareEmail("Today on our Great American West trip",recapText()));
 $("recapSave").addEventListener("click",()=>{
   addFeed("note","&#127909;","Day recap",recapText());
   toast("&#128190; Saved to your journal");
@@ -4591,7 +4751,7 @@ $("vidMake").addEventListener("click",async()=>{
     const pics=activePics().length;
     $("vidStatus").innerHTML="&#9989; <b>Your video is ready.</b> "+pics+" photos, "+
       Math.round(stats().mi).toLocaleString()+" miles, "+store.get("parks",[]).length+" national parks. Saved to your downloads.";
-    addFeed("milestone","&#127916;","Made a highlight video",pics+" photos");
+    addFeed("milestone","&#127916;","Made a highlight video",pics+" photos");bump("films");
     $("vidShare").style.display="inline-flex";
     $("vidShare").onclick=async()=>{
       const file=new File([blob],"great-american-west."+ext,{type:blob.type});
@@ -5314,6 +5474,7 @@ $("factsList").addEventListener("click",e=>{
 });
 $("factsRefresh").addEventListener("click",()=>{loadFacts(true);toast("Looking&hellip;")});
 $("factsRead").addEventListener("click",()=>{
+  bump("facts");
   if(!facts.length)return toast("No facts yet");
   const top=facts.slice(0,3);
   speak(top.map(f=>f.t+". "+f.x).join(" "),true,top.length===1?top[0].clip:null);
@@ -5468,6 +5629,7 @@ function renderNowPlaying(s){
   $("stopStreamBtn").addEventListener("click",()=>{stopStream();toast("Stopped")});
 }
 function playStation(s){
+  bump("tunes");
   if(!radioOn)return toast("Radio is switched off");
   if(!s||!s.url)return toast("No stream for that one");
   stopStream();
@@ -5617,6 +5779,17 @@ function drawOverlay(o){
     html.push('<button class="mk pin" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px" '+
       'data-pin="'+i+'" title="'+esc(x.n)+'">'+x.k+'</button>');
   });
+  /* --- the crew - anyone sharing on the Family Map appears here too,
+         with their name, so nobody gets separated at a trailhead --- */
+  if(typeof locMap!=="undefined"&&typeof myId!=="undefined"){
+    const cut=Date.now()-30*60*1000;
+    Array.from(locMap.values()).filter(e=>e.ts>cut&&e.id!==myId).forEach(e=>{
+      if(!inView(e))return;
+      const q=toPx(e.lat,e.lng,o);
+      html.push('<button class="mk crew" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px" title="'+esc(e.by)+'">&#128100;</button>');
+      html.push('<div class="mk-lbl" style="left:'+q.x.toFixed(0)+'px;top:'+(q.y+17).toFixed(0)+'px"><b>'+esc(e.by.slice(0,14))+'</b></div>');
+    });
+  }
   $("mapMarkers").innerHTML=html.join("");
 
   /* --- you --- */
@@ -5633,7 +5806,7 @@ function drawOverlay(o){
   /* --- readout --- */
   const c=mapCenter();
   const place=whereAmI.city?whereAmI.city+", "+whereAmI.state:(whereAmI.state||"");
-  $("mapInfo").innerHTML=(here?"&#128205; <b>"+esc(place||"Tracking")+"</b> &middot; ":"")+
+  $("mapInfo").innerHTML=(here?"&#128205; <b>"+esc(place||"Tracking")+"</b>"+(here.acc!=null?" ("+fmtAcc(here.acc)+")":"")+" &middot; ":"")+
     show.length+" place"+(show.length===1?"":"s")+" in view &middot; zoom "+mapZ+
     (mapFollow?"":" &middot; <b>not following</b>");
 }
@@ -5759,6 +5932,31 @@ $("mapPin").addEventListener("click",savePin);
 $("mapNav").addEventListener("click",()=>{
   const c=mapCenter();
   window.open("https://www.google.com/maps/dir/?api=1&destination="+c.lat+","+c.lng,"_blank");
+});
+/* ---------- "I'm here" - tell the family exactly where you are,
+     one tap, by whichever way they actually read messages ---------- */
+$("mapImHere").addEventListener("click",()=>{
+  if(!here){toast("Waiting for your location &mdash; is Ride Along on?");return}
+  let near="";
+  try{
+    const p=POI.map(x=>({x,d:dist(here.lat,here.lng,x.lat,x.lng)})).sort((a,b)=>a.d-b.d)[0];
+    if(p&&p.d<12)near=" near "+p.x.n;
+  }catch(e){}
+  const name=store.get("chat-name","");
+  const link="https://www.google.com/maps/search/?api=1&query="+here.lat.toFixed(5)+","+here.lng.toFixed(5);
+  const msg=(name?name+" here! ":"")+"I'm here"+near+" right now &mdash; this pin is exactly where I'm standing: "+link;
+  const plain=msg.replace("&mdash;","-");
+  openSheet("&#128075; Tell them where you are",`
+    <p class="small muted">${esc(near?("You're"+near+".").trim():"Your exact spot, as a map pin anyone can open.")}</p>
+    <div class="btnrow">
+      <button class="btn wide brass" id="ihSms">&#128172; Text it</button>
+      <button class="btn wide" id="ihEmail">&#9993;&#65039; Email it</button>
+      <button class="btn wide ghost" id="ihShare">&#128228; Share another way</button>
+    </div>
+    <div class="note small" style="margin-top:.8rem">For a live dot they can watch all day instead of a one-time pin, flip on <b>Share my location</b> in <a href="#/crew">Crew &rarr; Family Map</a> &mdash; everyone sharing shows up on this map with their name.</div>`);
+  $("ihSms").addEventListener("click",()=>{shareSMS(plain);bump("imhere")});
+  $("ihEmail").addEventListener("click",()=>{shareEmail("I'm here",plain);bump("imhere")});
+  $("ihShare").addEventListener("click",()=>{shareAny("I'm here",plain);bump("imhere")});
 });
 
 /* ---------- one selection, shared by the map and the list ---------- */
@@ -6243,6 +6441,7 @@ $("askChips").addEventListener("click",e=>{
 
 /* Route a spoken question to the answer Olive already knows how to give. */
 function answerAloud(said,onText){
+  bump("asks");
   /* Match whole words only, on a padded, punctuation-stripped string.
      Substring matching had "what's the WEATher" answering with a diner and
      "HOTel" answering with the forecast. */
@@ -6825,18 +7024,24 @@ const myId=(()=>{let v=store.get("dev-id","");if(!v){v=Math.random().toString(36
 $("locName").value=store.get("chat-name","");
 $("locName").addEventListener("change",()=>{const v=$("locName").value.trim();if(v)store.set("chat-name",v)});
 
+/* every device gets a name without anyone typing one - the chat name if
+   they have one, otherwise a friendly traveler tag that stays stable */
+function locNameAuto(){
+  return ($("locName")&&$("locName").value.trim())||store.get("chat-name","")||
+         "Traveler "+myId.slice(0,3).toUpperCase();
+}
 $("locToggle").addEventListener("change",e=>{
   if(e.target.checked){
-    const n=$("locName").value.trim()||store.get("chat-name","");
-    if(!n){e.target.checked=false;toast("Add your name first");$("locName").focus();return}
-    store.set("chat-name",n);locSharing=true;store.set("loc-share",true);
+    const typed=$("locName").value.trim();
+    if(typed)store.set("chat-name",typed);
+    locSharing=true;store.set("loc-share",true);
     if(!here)startGPS();
-    toast("&#128205; Sharing your location");publishLoc();
+    toast("&#128205; Sharing as <b>"+esc(locNameAuto())+"</b>");publishLoc();
   }else{locSharing=false;store.set("loc-share",false);toast("Location sharing off")}
 });
 function publishLoc(){
-  const n=($("locName").value||store.get("chat-name","")).trim();
-  if(!n||!here||!locSharing)return;                    /* never broadcast anonymously */
+  if(!here||!locSharing)return;
+  const n=locNameAuto();
   fetch(LOC_URL,{method:"POST",body:JSON.stringify({k:"loc",id:myId,by:n,lat:+here.lat.toFixed(5),lng:+here.lng.toFixed(5),ts:Date.now()})}).catch(()=>{});
 }
 function locHistory(){
@@ -6869,6 +7074,9 @@ function renderLoc(){
       <div class="t">${esc(e.by)}</div><div class="s">${mins<1?"just now":mins+" min ago"}${d}</div></div>
       <div class="rt"><a class="btn sm ghost" href="https://www.google.com/maps/search/?api=1&query=${e.lat},${e.lng}" target="_blank" rel="noopener">Map</a></div></div>`;
   }).join(""):'<p class="small muted" style="margin:0">Nobody is sharing right now. Flip the switch above to put yourself on the map.</p>';
+
+  /* the big map shows the crew too - keep it fresh as positions arrive */
+  try{if(document.querySelector("#view-nearby.active")&&typeof drawMap==="function")drawMap()}catch(e){}
 
   const first=list[0];
   const map=$("locMap");
@@ -6970,7 +7178,12 @@ function boot(){
   loadWeather();
   chatSubscribe();locSubscribe();
   if(chatName)enterChat();
-  if(store.get("loc-share",false)){locSharing=true;$("locToggle").checked=true}
+  /* Everyone on the trip shows up on the map by default - no switch to
+     find, no name to type. The Family Map switch turns it off any time,
+     and it only ever reaches people who have this app's private link. */
+  if(store.get("loc-share",true)){locSharing=true;$("locToggle").checked=true;setTimeout(publishLoc,3000)}
+  /* parked at a viewpoint for an hour, you still stay on the family's map */
+  setInterval(()=>{if(locSharing)publishLoc()},5*60*1000);
   $("gpsToggle").checked=store.get("gps",true)!==false;
   autoStartGPS();                       /* on by default, every time Olive opens */
   route();
