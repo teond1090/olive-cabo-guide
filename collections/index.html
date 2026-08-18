@@ -1,0 +1,1196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TPP Automation Center &middot; Coverage Reports &amp; Collections</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231c5cab'/%3E%3Cpath d='M14 40 26 28l8 8 16-16' stroke='%23fff' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{
+  color-scheme:light;
+  --page:#f9f9f7; --surface:#fcfcfb; --surface-2:#f3f2ef;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --accent:#2a78d6; --accent-dk:#1c5cab; --accent-soft:#e6f0fb;
+  --seq-250:#86b6ef; --seq-400:#3987e5; --seq-550:#1c5cab;
+  --good:#0ca30c; --good-text:#006300; --warn:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --good-soft:#e7f4e7; --warn-soft:#fdf3dc; --serious-soft:#fceee8; --critical-soft:#fae7e7;
+  --shadow:0 1px 2px rgba(11,11,11,.05),0 4px 14px rgba(11,11,11,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme:dark;
+    --page:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
+    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+    --accent:#3987e5; --accent-dk:#6da7ec; --accent-soft:#16283d;
+    --good-text:#0ca30c;
+    --good-soft:#132913; --warn-soft:#332609; --serious-soft:#331d12; --critical-soft:#331111;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.35);
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--page);color:var(--ink);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:4rem}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--axis);border-radius:8px;padding:.45rem .6rem}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+textarea{width:100%;min-height:110px;resize:vertical}
+a{color:var(--accent-dk)}
+
+/* ---------- chrome ---------- */
+header.app{position:sticky;top:0;z-index:40;background:var(--surface);border-bottom:1px solid var(--grid);box-shadow:var(--shadow)}
+.appbar{max-width:1180px;margin:0 auto;padding:.7rem 1rem;display:flex;align-items:center;gap:.9rem;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:.6rem;margin-right:auto}
+.brand .logo{width:36px;height:36px;border-radius:9px;background:linear-gradient(150deg,var(--seq-400),var(--seq-550));display:grid;place-items:center;color:#fff;font-weight:800;font-size:.85rem;letter-spacing:.02em}
+.brand h1{font-size:1.02rem;margin:0;line-height:1.2}
+.brand .sub{font-size:.72rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.ctl{display:flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--ink-2)}
+.ctl select,.ctl input{padding:.3rem .45rem;font-size:.8rem}
+.btn{display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--axis);background:var(--surface);color:var(--ink);border-radius:9px;padding:.5rem .85rem;font-weight:600;font-size:.85rem}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.small{padding:.28rem .6rem;font-size:.76rem;border-radius:7px}
+.btn.danger{color:var(--critical);border-color:var(--critical)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+nav.tabs{max-width:1180px;margin:0 auto;padding:0 1rem;display:flex;gap:.15rem;overflow-x:auto}
+nav.tabs button{border:0;background:none;color:var(--ink-2);font-weight:600;font-size:.86rem;padding:.55rem .8rem;border-bottom:2.5px solid transparent;white-space:nowrap}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button.on{color:var(--accent-dk);border-bottom-color:var(--accent)}
+nav.tabs button .pill{background:var(--critical);color:#fff;border-radius:99px;font-size:.66rem;padding:0 .38rem;margin-left:.25rem;font-weight:700;display:none}
+nav.tabs button .pill.show{display:inline-block}
+main{max-width:1180px;margin:0 auto;padding:1.1rem 1rem}
+.view{display:none}
+.view.on{display:block}
+h2{font-size:1.12rem;margin:.2rem 0 .7rem}
+h3{font-size:.95rem;margin:0 0 .5rem}
+.card{background:var(--surface);border:1px solid var(--grid);border-radius:14px;padding:1rem 1.1rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+@media (max-width:860px){.grid2,.grid3{grid-template-columns:1fr}}
+.row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.spread{justify-content:space-between}
+.hint{font-size:.8rem;color:var(--muted)}
+.note{background:var(--accent-soft);border-left:4px solid var(--accent);border-radius:8px;padding:.6rem .8rem;font-size:.84rem;margin:.6rem 0}
+
+/* ---------- stat tiles ---------- */
+.kgroup{margin-bottom:1rem}
+.kgroup .glabel{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 .45rem}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem}
+@media (max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}}
+.tile{background:var(--surface);border:1px solid var(--grid);border-radius:12px;padding:.7rem .85rem;box-shadow:var(--shadow)}
+.tile .tl{font-size:.75rem;color:var(--ink-2);font-weight:600}
+.tile .tv{font-size:1.65rem;font-weight:800;line-height:1.15;margin-top:.1rem}
+.tile .ts{font-size:.72rem;color:var(--muted);margin-top:.1rem}
+.tile.alert .tv{color:var(--critical)}
+.tile.ok .tv{color:var(--good-text)}
+
+/* ---------- bar chart ---------- */
+.hbar{display:grid;grid-template-columns:110px 1fr 90px;gap:.45rem .6rem;align-items:center;font-size:.82rem}
+.hbar .lab{color:var(--ink-2);text-align:right}
+.hbar .track{background:var(--surface-2);border-radius:6px;height:22px;position:relative}
+.hbar .fill{position:absolute;inset:0 auto 0 0;border-radius:6px 4px 4px 6px;min-width:2px;transition:width .35s}
+.hbar .val{font-weight:700;font-variant-numeric:tabular-nums}
+.meter{height:14px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin:.35rem 0}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,var(--seq-250),var(--seq-550));border-radius:99px;transition:width .35s}
+
+/* ---------- badges / status ---------- */
+.badge{display:inline-flex;align-items:center;gap:.3rem;border-radius:99px;padding:.13rem .55rem;font-size:.72rem;font-weight:700;white-space:nowrap}
+.badge::before{content:"";width:.5em;height:.5em;border-radius:50%;background:currentColor}
+.b-missing{background:var(--warn-soft);color:#7a5200}
+.b-pastdue{background:var(--serious-soft);color:#8f3a17}
+.b-priority{background:var(--critical-soft);color:var(--critical)}
+.b-ok{background:var(--good-soft);color:var(--good-text)}
+.b-pending{background:var(--accent-soft);color:var(--accent-dk)}
+.b-manual{background:var(--surface-2);color:var(--ink-2)}
+@media (prefers-color-scheme: dark){:root:where(:not([data-theme="light"])) .b-missing{color:#fab219}:root:where(:not([data-theme="light"])) .b-pastdue{color:#ec835a}}
+.score{display:inline-grid;place-items:center;width:40px;height:40px;border-radius:50%;font-weight:800;font-size:.82rem;border:3px solid var(--grid)}
+.score.hi{border-color:var(--good);color:var(--good-text)}
+.score.mid{border-color:var(--warn);color:inherit}
+.score.lo{border-color:var(--critical);color:var(--critical)}
+
+/* ---------- tables ---------- */
+.tbl{width:100%;border-collapse:collapse;font-size:.84rem}
+.tbl th{font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);text-align:left;padding:.45rem .55rem;border-bottom:1px solid var(--axis)}
+.tbl td{padding:.5rem .55rem;border-bottom:1px solid var(--grid);vertical-align:middle}
+.tbl tr.click{cursor:pointer}
+.tbl tr.click:hover td{background:var(--surface-2)}
+.tbl .num{text-align:right;font-variant-numeric:tabular-nums}
+.tscroll{overflow-x:auto}
+.empty{color:var(--muted);font-size:.86rem;padding:1rem;text-align:center}
+
+/* ---------- outbox / inbox items ---------- */
+.mail{border:1px solid var(--grid);border-radius:11px;padding:.7rem .85rem;margin-bottom:.6rem;background:var(--surface)}
+.mail .mh{display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap}
+.mail .msub{font-weight:700;font-size:.88rem}
+.mail .mto{font-size:.78rem;color:var(--ink-2)}
+.mail pre{white-space:pre-wrap;font:inherit;font-size:.82rem;background:var(--surface-2);border-radius:8px;padding:.6rem .7rem;margin:.5rem 0;max-height:260px;overflow:auto}
+.mail .collapsed pre{display:none}
+.stamp{font-size:.72rem;color:var(--muted)}
+
+/* ---------- drawer ---------- */
+#drawerBack{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:60;display:none}
+#drawer{position:fixed;top:0;right:-620px;width:min(600px,94vw);height:100%;background:var(--surface);z-index:61;box-shadow:-6px 0 30px rgba(0,0,0,.25);transition:right .25s;overflow-y:auto;padding:1.1rem 1.2rem}
+#drawer.open{right:0}
+#drawerBack.open{display:block}
+.field{margin-bottom:.55rem}
+.field b{display:block;font-size:.7rem;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.timeline{list-style:none;margin:.4rem 0;padding:0 0 0 1rem;border-left:2px solid var(--grid)}
+.timeline li{margin:0 0 .55rem;position:relative;font-size:.82rem;padding-left:.6rem}
+.timeline li::before{content:"";position:absolute;left:-1.32rem;top:.35em;width:.55rem;height:.55rem;border-radius:50%;background:var(--accent)}
+
+/* ---------- misc ---------- */
+.chip{background:var(--surface-2);border:1px solid var(--grid);border-radius:99px;padding:.15rem .6rem;font-size:.74rem;font-weight:600;color:var(--ink-2)}
+.copybox{display:flex;gap:.4rem;align-items:center;background:var(--surface-2);border:1px dashed var(--axis);border-radius:9px;padding:.45rem .65rem;font-size:.84rem;font-weight:600}
+details.guide{border:1px solid var(--grid);border-radius:11px;margin-bottom:.6rem;background:var(--surface)}
+details.guide summary{cursor:pointer;font-weight:700;padding:.65rem .85rem;font-size:.9rem;list-style:none;display:flex;align-items:center;gap:.5rem}
+details.guide summary::after{content:"▸";margin-left:auto;color:var(--muted);transition:transform .15s}
+details.guide[open] summary::after{transform:rotate(90deg)}
+details.guide .gbody{padding:0 .95rem .85rem}
+details.guide ol{margin:.3rem 0;padding-left:1.2rem}
+details.guide li{margin-bottom:.3rem;font-size:.86rem}
+.rec{border:1px solid var(--grid);border-left:4px solid var(--accent);border-radius:10px;padding:.65rem .85rem;margin-bottom:.6rem;background:var(--surface)}
+.rec.warn{border-left-color:var(--warn)}
+.rec.crit{border-left-color:var(--critical)}
+.rec .rt{font-weight:700;font-size:.88rem}
+.rec .rb{font-size:.83rem;color:var(--ink-2);margin:.15rem 0 .4rem}
+#toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--page);padding:.6rem 1rem;border-radius:10px;font-size:.85rem;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:99;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.dropzone{border:2px dashed var(--axis);border-radius:12px;padding:1.1rem;text-align:center;color:var(--ink-2);font-size:.88rem}
+.dropzone.drag{border-color:var(--accent);background:var(--accent-soft)}
+.simnote{font-size:.72rem;color:var(--muted);border:1px solid var(--grid);border-radius:8px;padding:.15rem .5rem}
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="appbar">
+    <div class="brand">
+      <div class="logo">TPP</div>
+      <div>
+        <h1>Automation Center</h1>
+        <div class="sub">Coverage Reports &amp; Collections &middot; Tenant Property Protection</div>
+      </div>
+    </div>
+    <label class="ctl">Role
+      <select id="roleSel" title="Role-based permissions">
+        <option value="admin">Admin</option>
+        <option value="cs">Customer Success</option>
+        <option value="accounting">Accounting</option>
+        <option value="ops">Operations</option>
+        <option value="viewer">Viewer (read-only)</option>
+      </select>
+    </label>
+    <span class="ctl simnote" id="clockLabel" title="Simulated clock — advance days to preview the follow-up sequence"></span>
+    <button class="btn small" id="clockAdv" title="Advance simulated clock 1 day">+1 day</button>
+    <button class="btn primary" id="runBtn" title="Scan all accounts, classify, and queue any communications now due">⚙ Run automation</button>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button data-v="dash" class="on">Dashboard</button>
+    <button data-v="accounts">Accounts <span class="pill" id="pillAcc"></span></button>
+    <button data-v="outbox">Outbox <span class="pill" id="pillOut"></span></button>
+    <button data-v="inbox">Inbox</button>
+    <button data-v="queue">Tasks &amp; Tickets <span class="pill" id="pillTask"></span></button>
+    <button data-v="pms">PMS Guides</button>
+    <button data-v="insights">AI Insights <span class="pill" id="pillRec"></span></button>
+    <button data-v="settings">Settings</button>
+    <button data-v="audit">Audit Log</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ================= DASHBOARD ================= -->
+<section class="view on" id="v-dash">
+  <div class="kgroup"><p class="glabel">Coverage report metrics</p><div class="kpis" id="kCoverage"></div></div>
+  <div class="kgroup"><p class="glabel">Collections metrics</p><div class="kpis" id="kCollections"></div></div>
+  <div class="kgroup"><p class="glabel">Outreach metrics</p><div class="kpis" id="kOutreach"></div></div>
+  <div class="kgroup"><p class="glabel">Automation metrics</p><div class="kpis" id="kAutomation"></div></div>
+  <div class="grid2">
+    <div class="card">
+      <h3>Past-due aging</h3>
+      <div class="hbar" id="agingChart"></div>
+      <p class="hint" id="agingTotal"></p>
+    </div>
+    <div class="card">
+      <h3>Coverage report compliance</h3>
+      <div id="covMeter"></div>
+      <h3 style="margin-top:.9rem">Priority follow-up queue</h3>
+      <div id="dashPriority"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ACCOUNTS ================= -->
+<section class="view" id="v-accounts">
+  <div class="card">
+    <h2>Import customer list</h2>
+    <p class="hint">Upload a CSV or Excel file, or paste rows. In production, spreadsheets emailed to
+      <b>collections@tenantpropertyprotection.com</b> or <b>reports@tenantpropertyprotection.com</b> are ingested automatically.
+      Recognized columns: Account Name, Property Name, Customer Contact, Email Address, Phone Number, Past Due Amount,
+      Past Due Days, Coverage Report Status, Last Report Received Date, Property Management Software.</p>
+    <div class="dropzone" id="dropzone">
+      Drag &amp; drop a <b>.csv</b> / <b>.xlsx</b> file here, or
+      <div class="row" style="justify-content:center;margin-top:.6rem">
+        <label class="btn"><input type="file" id="fileInput" accept=".csv,.tsv,.xlsx,.xls" hidden>Choose file…</label>
+        <button class="btn" id="pasteBtn">Paste CSV</button>
+        <button class="btn" id="sampleBtn">Load sample data</button>
+      </div>
+    </div>
+    <div id="pasteWrap" style="display:none;margin-top:.6rem">
+      <textarea id="pasteArea" placeholder="Account Name,Property Name,Customer Contact,Email Address,Phone Number,Past Due Amount,Past Due Days,Coverage Report Status,Last Report Received Date,Property Management Software"></textarea>
+      <div class="row" style="margin-top:.4rem"><button class="btn primary" id="pasteGo">Import pasted rows</button></div>
+    </div>
+    <div id="importMsg"></div>
+  </div>
+  <div class="card">
+    <div class="row spread">
+      <h2 style="margin:0">Accounts</h2>
+      <div class="row">
+        <select id="fltQueue">
+          <option value="">All queues</option>
+          <option value="priority">Priority follow-up</option>
+          <option value="coverage">Missing coverage report</option>
+          <option value="collections">Past due</option>
+          <option value="none">In good standing</option>
+        </select>
+        <select id="fltStatus">
+          <option value="">All statuses</option>
+          <option value="active">Active</option>
+          <option value="pending_verification">Pending payment verification</option>
+          <option value="escalated">Escalated</option>
+          <option value="manual">Needs manual attention</option>
+          <option value="resolved">Resolved</option>
+        </select>
+        <input id="fltSearch" placeholder="Search name / property / email" style="min-width:210px">
+      </div>
+    </div>
+    <div class="tscroll"><table class="tbl" id="accTable"></table></div>
+  </div>
+</section>
+
+<!-- ================= OUTBOX ================= -->
+<section class="view" id="v-outbox">
+  <div class="card">
+    <div class="row spread">
+      <h2 style="margin:0">Outbox</h2>
+      <div class="row">
+        <button class="btn primary" id="sendAllBtn">Send all queued</button>
+      </div>
+    </div>
+    <p class="hint">Automation drafts every message; each send is recorded, scheduled follow-ups advance automatically, and
+      replies are matched back to the account. Use <i>Open in mail app</i> or <i>Copy</i> to dispatch from this demo, or
+      <i>Mark sent</i> to simulate the production email service.</p>
+    <div id="outboxList"></div>
+  </div>
+</section>
+
+<!-- ================= INBOX ================= -->
+<section class="view" id="v-inbox">
+  <div class="grid2">
+    <div class="card">
+      <h2>Log an inbound email</h2>
+      <p class="hint">In production the system monitors <b>reports@</b> and <b>collections@tenantpropertyprotection.com</b>,
+        reads each message, downloads attachments, matches the sender to a customer record and updates status automatically.
+        This panel simulates that intake: pick the sender (or let it match by address) and the AI classifier does the rest.</p>
+      <div class="field"><b>Mailbox</b>
+        <select id="inMailbox">
+          <option value="reports">reports@tenantpropertyprotection.com</option>
+          <option value="collections">collections@tenantpropertyprotection.com</option>
+        </select>
+      </div>
+      <div class="field"><b>From (customer)</b><select id="inFrom"></select></div>
+      <div class="field"><b>Attachment included</b>
+        <label style="font-size:.85rem"><input type="checkbox" id="inAttach"> Message has a spreadsheet / report attachment</label>
+      </div>
+      <div class="field"><b>Message body</b><textarea id="inBody" placeholder="Paste the customer's reply here…"></textarea></div>
+      <div class="row">
+        <button class="btn primary" id="inProcess">Process with AI classifier</button>
+        <select id="inSample" style="max-width:260px">
+          <option value="">Insert a sample reply…</option>
+          <option value="report">“Report attached — sorry for the delay!”</option>
+          <option value="payment">“We mailed check #2231 yesterday.”</option>
+          <option value="dispute">“This balance is incorrect, we already paid in June.”</option>
+          <option value="assist">“How do I schedule this in SiteLink?”</option>
+          <option value="wrong">“I no longer manage this property.”</option>
+          <option value="ooo">“Out of office until Monday.”</option>
+        </select>
+      </div>
+      <div id="inResult"></div>
+    </div>
+    <div class="card">
+      <h2>Processed responses</h2>
+      <div id="inboxList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TASKS & TICKETS ================= -->
+<section class="view" id="v-queue">
+  <div class="grid2">
+    <div class="card">
+      <h2>Internal tasks</h2>
+      <p class="hint">Created automatically on Day-21 escalations, disputes, wrong-contact replies and assistance requests —
+        the only points where a human is required.</p>
+      <div id="taskList"></div>
+    </div>
+    <div class="card">
+      <h2>Dispute tickets</h2>
+      <div id="ticketList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PMS GUIDES ================= -->
+<section class="view" id="v-pms">
+  <div class="card">
+    <h2>Property management software — automated reporting</h2>
+    <p class="hint">The fastest way to end manual chasing: every customer schedules a recurring monthly report delivered
+      straight to the reports mailbox. Send any guide below to a customer with one click.</p>
+    <div class="copybox"><span>reports@tenantpropertyprotection.com</span><button class="btn small" data-copy="reports@tenantpropertyprotection.com">Copy</button></div>
+    <div id="pmsGuides" style="margin-top:.8rem"></div>
+  </div>
+</section>
+
+<!-- ================= INSIGHTS ================= -->
+<section class="view" id="v-insights">
+  <div class="card">
+    <div class="row spread">
+      <h2 style="margin:0">AI recommendations</h2>
+      <button class="btn small" id="refreshRecs">↻ Refresh</button>
+    </div>
+    <p class="hint">Continuously generated from submission history, payment behaviour, response speed and intervention counts.</p>
+    <div id="recList"></div>
+  </div>
+  <div class="card">
+    <h2>Customer compliance scores</h2>
+    <p class="hint">0–100, weighing on-time report history (40), payment history (30), response rate (20) and manual
+      interventions required (10). Low scores predict future delinquency — prioritize them for automated PMS onboarding.</p>
+    <div class="tscroll"><table class="tbl" id="scoreTable"></table></div>
+  </div>
+</section>
+
+<!-- ================= SETTINGS ================= -->
+<section class="view" id="v-settings">
+  <div class="grid2">
+    <div class="card">
+      <h2>Automation rules</h2>
+      <div class="field"><b>Reporting threshold (days since last report before an account is flagged)</b>
+        <input type="number" id="setThreshold" min="1" style="width:110px"></div>
+      <div class="field"><b>Follow-up cadence (days after first outreach)</b>
+        <div class="row">
+          <label class="ctl">Reminder #1 <input type="number" id="setR1" min="1" style="width:70px"></label>
+          <label class="ctl">Reminder #2 <input type="number" id="setR2" min="1" style="width:70px"></label>
+          <label class="ctl">Final notice <input type="number" id="setFinal" min="1" style="width:70px"></label>
+          <label class="ctl">Escalate <input type="number" id="setEsc" min="1" style="width:70px"></label>
+        </div></div>
+      <div class="field"><b>Overdue multiplier (missing &times; threshold = “overdue” report)</b>
+        <input type="number" id="setOverdueX" min="1" step="0.5" style="width:110px"></div>
+      <div class="row"><button class="btn primary" id="saveRules">Save rules</button></div>
+      <div class="note">Monitored mailboxes: <b>reports@tenantpropertyprotection.com</b> (coverage reports) and
+        <b>collections@tenantpropertyprotection.com</b> (payments &amp; replies).</div>
+    </div>
+    <div class="card">
+      <h2>Email templates</h2>
+      <p class="hint">Placeholders: <span class="chip">{{CustomerName}}</span> <span class="chip">{{AccountName}}</span>
+        <span class="chip">{{PropertyName}}</span> <span class="chip">{{AmountDue}}</span> <span class="chip">{{PMS}}</span></p>
+      <div class="field"><b>Coverage report request</b><textarea id="tplCoverage" rows="8"></textarea></div>
+      <div class="field"><b>Past due balance reminder</b><textarea id="tplCollections" rows="8"></textarea></div>
+      <div class="field"><b>Final notice</b><textarea id="tplFinal" rows="6"></textarea></div>
+      <div class="row"><button class="btn primary" id="saveTpl">Save templates</button>
+        <button class="btn" id="resetTpl">Restore defaults</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Data</h2>
+    <div class="row">
+      <button class="btn" id="exportJson">Export workspace (JSON)</button>
+      <label class="btn"><input type="file" id="importJson" accept=".json" hidden>Import workspace</label>
+      <button class="btn danger" id="resetAll">Reset everything</button>
+    </div>
+    <p class="hint">This demo persists in your browser (localStorage). The production design — event bus, inbound-email
+      workers, AI classification service, RBAC — is documented in <a href="ARCHITECTURE.md">ARCHITECTURE.md</a>.</p>
+  </div>
+</section>
+
+<!-- ================= AUDIT ================= -->
+<section class="view" id="v-audit">
+  <div class="card">
+    <div class="row spread">
+      <h2 style="margin:0">Audit log</h2>
+      <div class="row">
+        <input id="auditSearch" placeholder="Filter…">
+        <button class="btn small" id="auditExport">Export CSV</button>
+      </div>
+    </div>
+    <div class="tscroll"><table class="tbl" id="auditTable"></table></div>
+  </div>
+</section>
+
+</main>
+
+<!-- drawer -->
+<div id="drawerBack"></div>
+<aside id="drawer" aria-label="Account detail"></aside>
+<div id="toast" role="status"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   TPP Automation Center — Coverage Reports & Collections
+   Fully client-side demo of the automation platform. State persists in
+   localStorage. The production event-driven backend is described in
+   ARCHITECTURE.md alongside this file.
+   ===================================================================== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const DAY=864e5, LS='tpp-automation-v1';
+const REPORTS_ADDR='reports@tenantpropertyprotection.com';
+const COLLECTIONS_ADDR='collections@tenantpropertyprotection.com';
+
+const DEFAULT_TEMPLATES={
+coverage:`Hello {{CustomerName}},
+
+We have not yet received your monthly coverage report for {{PropertyName}}.
+
+To make this process as easy as possible, you can submit your report in one of the following ways:
+
+• Email your report to ${REPORTS_ADDR}
+• Schedule an automatic monthly report through your property management software
+
+Supported systems include:
+
+- SiteLink
+- storEDGE
+- Cubby
+- Other property management software platforms
+
+If your software supports automated reporting, we strongly recommend scheduling monthly delivery directly to:
+
+${REPORTS_ADDR}
+
+Please send your report as soon as possible to avoid interruption of processing.
+
+Thank you,
+Tenant Property Protection`,
+collections:`Hello {{CustomerName}},
+
+Our records show an outstanding balance of {{AmountDue}} on account {{AccountName}}.
+
+Please remit payment at your earliest convenience.
+
+If payment has already been sent, please disregard this notice.
+
+If you have questions regarding the balance, simply reply to this email and our team will assist you.
+
+Thank you,
+Tenant Property Protection`,
+final:`Hello {{CustomerName}},
+
+FINAL NOTICE — despite our previous reminders we have not received a response regarding your account {{AccountName}}.
+
+Outstanding items:
+{{OpenItems}}
+
+Please respond within 7 days or this account will be escalated to our Customer Success and Collections teams for direct follow-up.
+
+Thank you,
+Tenant Property Protection`};
+
+const ROLE_LABEL={admin:'Admin',cs:'Customer Success',accounting:'Accounting',ops:'Operations',viewer:'Viewer'};
+const PERMS={
+ admin:['import','send','verify','resolve','task','settings','clock','run','escalate'],
+ cs:['import','send','resolve','task','clock','run','escalate'],
+ accounting:['import','send','verify','resolve','task','clock','run','escalate'],
+ ops:['task','clock','run'],
+ viewer:[]};
+function can(p){return (PERMS[S.settings.role]||[]).includes(p)}
+function guard(p,what){ if(can(p))return true;
+ toast(`Permission denied — the ${ROLE_LABEL[S.settings.role]} role cannot ${what}.`);
+ audit('permission.denied',`${what} blocked for role ${ROLE_LABEL[S.settings.role]}`); return false; }
+
+/* ---------------- state ---------------- */
+function fresh(){return{ver:1,accounts:[],outbox:[],inbound:[],tasks:[],tickets:[],auditLog:[],dismissed:[],
+ counters:{emailsSent:0,responses:0,reportsCollected:0,paymentsCollected:0},
+ settings:{thresholdDays:35,overdueX:2,cadence:{r1:3,r2:7,fin:14,esc:21},role:'admin',clockOffset:0,
+  templates:{...DEFAULT_TEMPLATES}}}}
+let S; try{S=JSON.parse(localStorage.getItem(LS))||fresh()}catch(e){S=fresh()}
+S.settings.templates=Object.assign({...DEFAULT_TEMPLATES},S.settings.templates);
+function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+function uid(){return Math.random().toString(36).slice(2,9)}
+function now(){return new Date(Date.now()+ (S.settings.clockOffset||0)*DAY)}
+function iso(d){return d.toISOString().slice(0,10)}
+function fmtDate(d){return d?new Date(d).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}):'—'}
+function fmt$(n){return (+n||0).toLocaleString(undefined,{style:'currency',currency:'USD'})}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');
+ clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),3200)}
+function audit(action,detail,accId){S.auditLog.unshift({at:new Date().toISOString(),simDay:iso(now()),
+ actor:ROLE_LABEL[S.settings.role]||'System',action,detail,accId});
+ if(S.auditLog.length>800)S.auditLog.length=800}
+function alog(a,txt){(a.log=a.log||[]).unshift({at:iso(now()),txt})}
+
+/* ---------------- classification (Step 2) ---------------- */
+function monthsMissed(a){const t=now();
+ if(!a.lastReportDate)return 6;
+ return Math.max(0,Math.floor((t-new Date(a.lastReportDate))/(30*DAY)))}
+function classify(a){
+ const t=now(), st=(a.reportStatus||'').toLowerCase();
+ const th=S.settings.thresholdDays, last=a.lastReportDate?new Date(a.lastReportDate):null;
+ const ageDays=last?Math.floor((t-last)/DAY):Infinity;
+ const explicitlyMissing=/missing|not\s*received|none|overdue|late|pending/.test(st);
+ let missing = explicitlyMissing || !last || ageDays>th;         // no report this month / threshold exceeded
+ if(a.coverageResolved) missing=false;
+ const pastDue=(+a.amountDue||0)>0 && !a.collectionsResolved;
+ a.flags={missingReport:missing,pastDue,
+  overdueReport: missing && (!last || ageDays>th*(S.settings.overdueX||2))};
+ a.queue = missing&&pastDue?'priority': missing?'coverage': pastDue?'collections':'none';
+ recomputeStatus(a);
+}
+function recomputeStatus(a){
+ const open=a.queue!=='none';
+ if(!open){a.status='resolved';return}
+ if(a.pendingPayment){a.status='pending_verification';return}
+ if(a.escalated){a.status='escalated';return}
+ if(a.manual){a.status='manual';return}
+ a.status='active';
+}
+const QUEUE_BADGE={priority:['b-priority','Priority follow-up'],coverage:['b-missing','Missing coverage report'],
+ collections:['b-pastdue','Past due'],none:['b-ok','In good standing']};
+const STATUS_BADGE={active:['b-pending','Active — automated'],pending_verification:['b-pending','Pending payment verification'],
+ escalated:['b-priority','Escalated'],manual:['b-manual','Needs manual attention'],resolved:['b-ok','Resolved']};
+
+/* ---------------- compliance score ---------------- */
+function scoreOf(a){
+ const mm=a.flags?.missingReport?Math.max(1,monthsMissed(a)):0;
+ const rep=Math.max(0,40-12*mm);
+ const d=+a.pastDueDays||0;
+ const pay=!a.flags?.pastDue?30: d>=90?2: d>=60?8: d>=30?15:22;
+ const sent=a.emailsSent||0, got=(a.responses||[]).length;
+ const resp=sent===0?14:Math.round(20*Math.min(1,got/Math.max(1,Math.min(sent,3))));
+ const iv=Math.max(0,10-4*(a.interventions||0));
+ return {total:Math.max(0,Math.min(100,rep+pay+resp+iv)),rep,pay,resp,iv};
+}
+function scoreChip(n){const c=n>=75?'hi':n>=45?'mid':'lo';return `<span class="score ${c}" title="Compliance score">${n}</span>`}
+
+/* ---------------- templates / email builder (Steps 3-4) ---------------- */
+function fill(tpl,a,extra={}){
+ const map={CustomerName:a.contact||a.name,AccountName:a.name,PropertyName:a.property||a.name,
+  AmountDue:fmt$(a.amountDue),PMS:a.pms||'your property management software',...extra};
+ return tpl.replace(/\{\{(\w+)\}\}/g,(_,k)=>map[k]??`{{${k}}}`);
+}
+const STEP_LABEL={initial:'Initial outreach',r1:'Reminder #1 (Day 3)',r2:'Reminder #2 (Day 7)',fin:'Final notice (Day 14)'};
+function buildEmails(a,step){
+ const covOpen=a.flags.missingReport&&!a.coverageResolved;
+ const colOpen=a.flags.pastDue&&!a.collectionsResolved;
+ const T=S.settings.templates, out=[];
+ const pre=step==='r1'?'Reminder: ':step==='r2'?'Second Reminder: ':'';
+ if(step==='fin'){
+  const items=[covOpen?'• Monthly coverage report — not received':'',
+   colOpen?`• Past due balance — ${fmt$(a.amountDue)} (${a.pastDueDays||'?'} days)`:''].filter(Boolean).join('\n');
+  out.push({kind:'final',to:a.email,subject:'FINAL NOTICE: Response Required — Tenant Property Protection',
+   body:fill(T.final,a,{OpenItems:items})});
+  return out;
+ }
+ if(covOpen)out.push({kind:'coverage',to:a.email,
+  subject:pre+'Action Required: Coverage Report Needed',body:fill(T.coverage,a)});
+ if(colOpen)out.push({kind:'collections',to:a.email,
+  subject:pre+'Past Due Balance Reminder',body:fill(T.collections,a)});
+ return out;
+}
+function queueEmail(a,step){
+ let n=0;
+ for(const m of buildEmails(a,step)){
+  if(S.outbox.some(o=>!o.sentAt&&o.accId===a.id&&o.kind===m.kind&&o.step===step))continue;
+  S.outbox.unshift({id:uid(),accId:a.id,step,...m,queuedAt:new Date().toISOString(),simDay:iso(now()),sentAt:null});n++;
+ }
+ if(n){alog(a,`${STEP_LABEL[step]||step} drafted (${n} email${n>1?'s':''})`);
+  audit('outreach.queued',`${STEP_LABEL[step]||step} → ${a.name}`,a.id)}
+ return n;
+}
+
+/* ---------------- automation engine (Step 5) ---------------- */
+function addTask(title,team,accId){
+ if(S.tasks.some(t=>!t.done&&t.title===title&&t.accId===accId))return;
+ S.tasks.unshift({id:uid(),title,team,accId,at:iso(now()),done:false});
+ audit('task.created',`${title} → ${team}`,accId);
+}
+function escalate(a,why){
+ if(a.escalated)return;
+ a.escalated=true;a.interventions=(a.interventions||0)+1;
+ addTask(`Escalation: ${a.name} — ${why}`,'Customer Success Manager',a.id);
+ addTask(`Escalation: ${a.name} — ${why}`,'Collections Team',a.id);
+ alog(a,'Escalated internally: '+why);
+ audit('account.escalated',`${a.name}: ${why}`,a.id);
+ recomputeStatus(a);
+}
+function runAutomation(silent){
+ if(!silent&&!guard('run','run automation'))return;
+ const c=S.settings.cadence;let queued=0,esc=0;
+ for(const a of S.accounts){
+  classify(a);
+  if(a.queue==='none'){a.seq=null;continue}
+  if(!a.email){addTask(`Missing email address for ${a.name} — locate contact`,'Operations',a.id);continue}
+  if(a.status==='manual'||a.status==='pending_verification')continue;   // waiting on a human/verification
+  a.seq=a.seq||{anchor:null,sent:{}};
+  if(!a.seq.anchor){ if(queueEmail(a,'initial')){a.seq.anchor=iso(now());a.seq.sent.initial=1;queued++} continue }
+  const responded=(a.responses||[]).some(r=>r.at>=a.seq.anchor);
+  if(responded)continue;                                                 // reply pauses the sequence
+  const el=Math.floor((now()-new Date(a.seq.anchor))/DAY);
+  if(el>=c.esc&&!a.seq.sent.esc){a.seq.sent.esc=1;escalate(a,'no response after final notice');esc++}
+  else if(el>=c.fin&&!a.seq.sent.fin){if(queueEmail(a,'fin')){a.seq.sent.fin=1;queued++}}
+  else if(el>=c.r2&&!a.seq.sent.r2){if(queueEmail(a,'r2')){a.seq.sent.r2=1;queued++}}
+  else if(el>=c.r1&&!a.seq.sent.r1){if(queueEmail(a,'r1')){a.seq.sent.r1=1;queued++}}
+ }
+ audit('automation.run',`Scan complete — ${queued} message(s) drafted, ${esc} escalation(s)`);
+ save();renderAll();
+ if(!silent)toast(queued||esc?`Automation run: ${queued} email(s) drafted, ${esc} escalation(s). Check the Outbox.`:'Automation run: everything is on schedule — nothing new due.');
+}
+
+/* ---------------- sending ---------------- */
+function sendMail(id){
+ if(!guard('send','send emails'))return;
+ const o=S.outbox.find(x=>x.id===id);if(!o||o.sentAt)return;
+ o.sentAt=new Date().toISOString();o.sentSimDay=iso(now());
+ S.counters.emailsSent++;
+ const a=byId(o.accId);
+ if(a){a.emailsSent=(a.emailsSent||0)+1;a.lastSentDay=iso(now());alog(a,`Sent: ${o.subject}`)}
+ audit('email.sent',`"${o.subject}" → ${o.to}`,o.accId);
+ save();renderAll();
+}
+function sendAll(){ if(!guard('send','send emails'))return;
+ const q=S.outbox.filter(o=>!o.sentAt);q.forEach(o=>{
+  o.sentAt=new Date().toISOString();o.sentSimDay=iso(now());S.counters.emailsSent++;
+  const a=byId(o.accId);if(a){a.emailsSent=(a.emailsSent||0)+1;a.lastSentDay=iso(now());alog(a,`Sent: ${o.subject}`)}
+  audit('email.sent',`"${o.subject}" → ${o.to}`,o.accId)});
+ save();renderAll();toast(`${q.length} email(s) sent.`);
+}
+function byId(id){return S.accounts.find(a=>a.id===id)}
+
+/* ---------------- intelligent response processing (Step 6) ---------------- */
+const INTENTS={report:'Coverage Report Submitted',assist:'Need Assistance',payment:'Payment Sent',
+ dispute:'Dispute Balance',wrong:'Wrong Contact',ooo:'Out of Office',general:'General Question'};
+function classifyReply(text,hasAttach){
+ const t=(text||'').toLowerCase();
+ if(/out of office|auto.?reply|away until|on vacation|automatic reply/.test(t))return 'ooo';
+ if(/no longer (with|manage|at)|not the right|wrong (person|contact)|left the company|please remove me/.test(t))return 'wrong';
+ if(/dispute|incorrect|not correct|already paid|don.?t owe|do not owe|billing error|wrong amount|overcharg/.test(t))return 'dispute';
+ if(hasAttach||/report (is )?attached|attached (is|please find)|here('s| is) (the|our) report|submitt(ed|ing) (the|our) report|see attached/.test(t))return 'report';
+ if(/payment|check\s*#?\d*|ach|wire|remitt|\bpaid\b|paying|will pay/.test(t))return 'payment';
+ if(/how (do|can|to)|help|assist|trouble|can.?t figure|unable to|instructions|walk me through/.test(t))return 'assist';
+ return 'general';
+}
+function markReportReceived(a,via){
+ a.lastReportDate=iso(now());a.reportStatus='Received';a.coverageResolved=true;
+ S.counters.reportsCollected++;
+ alog(a,'Coverage report received'+(via?` (${via})`:''));
+ audit('report.received',`${a.name} — coverage report on file`,a.id);
+ classify(a); if(a.queue==='none')a.seq=null;
+}
+function applyReply(a,intent,mailbox){
+ S.counters.responses++;
+ a.responses=a.responses||[];a.responses.push({at:iso(now()),intent});
+ if(a.lastSentDay){const d=Math.floor((now()-new Date(a.lastSentDay))/DAY);if(d<=1)a.fastResponder=true}
+ let effect='';
+ switch(intent){
+  case 'report': markReportReceived(a,'email to '+(mailbox==='reports'?REPORTS_ADDR:COLLECTIONS_ADDR));
+   effect=a.queue==='none'?'Account marked Resolved — workflow closed.':'Coverage workflow resolved; collections workflow continues.';break;
+  case 'payment': a.pendingPayment=true;recomputeStatus(a);
+   alog(a,'Customer reports payment sent — awaiting verification');
+   addTask(`Verify payment received: ${a.name} (${fmt$(a.amountDue)})`,'Accounting',a.id);
+   effect='Marked Pending Payment Verification; Accounting task created.';break;
+  case 'dispute': a.manual=true;a.interventions=(a.interventions||0)+1;recomputeStatus(a);
+   S.tickets.unshift({id:uid(),accId:a.id,summary:`Balance dispute — ${a.name} (${fmt$(a.amountDue)})`,at:iso(now()),status:'open'});
+   addTask(`Review disputed balance: ${a.name}`,'Accounting',a.id);
+   alog(a,'Balance disputed — ticket opened');
+   effect='Dispute ticket created and Accounting notified; automated reminders paused.';break;
+  case 'wrong': a.manual=true;a.interventions=(a.interventions||0)+1;recomputeStatus(a);
+   addTask(`Update contact information: ${a.name}`,'Operations',a.id);
+   alog(a,'Wrong contact — outreach paused until record is updated');
+   effect='Contact flagged as wrong; Operations task created; outreach paused.';break;
+  case 'ooo': if(a.seq&&a.seq.anchor){a.seq.anchor=iso(new Date(+new Date(a.seq.anchor)+3*DAY))}
+   alog(a,'Out-of-office reply — follow-up pushed 3 days');
+   effect='Follow-up sequence pushed back 3 days.';break;
+  case 'assist': addTask(`Assist customer with report submission: ${a.name}${a.pms?' ('+a.pms+')':''}`,'Customer Success Manager',a.id);
+   alog(a,'Customer asked for help — CS task created');
+   effect='Customer Success task created'+(a.pms?` — see the ${a.pms} guide in PMS Guides.`:'.');break;
+  default: addTask(`Reply to customer question: ${a.name}`,'Customer Success Manager',a.id);
+   alog(a,'General question received');
+   effect='Routed to Customer Success for a reply.';
+ }
+ audit('reply.classified',`${a.name} → ${INTENTS[intent]}`,a.id);
+ return effect;
+}
+function verifyPayment(a){
+ if(!guard('verify','verify payments'))return;
+ a.pendingPayment=false;a.collectionsResolved=true;
+ S.counters.paymentsCollected+= +a.amountDue||0;
+ alog(a,`Payment verified — ${fmt$(a.amountDue)} collected`);
+ audit('payment.verified',`${a.name} — ${fmt$(a.amountDue)}`,a.id);
+ a.amountDue=0;a.pastDueDays=0;
+ S.tasks.forEach(t=>{if(t.accId===a.id&&/Verify payment/.test(t.title))t.done=true});
+ classify(a);if(a.queue==='none')a.seq=null;
+ save();renderAll();toast('Payment verified — collections workflow closed.');
+}
+
+/* ---------------- import (Step 1) ---------------- */
+const HEAD_MAP={accountname:'name',account:'name',customer:'name',
+ propertyname:'property',property:'property',facility:'property',
+ customercontact:'contact',contact:'contact',contactname:'contact',
+ emailaddress:'email',email:'email',
+ phonenumber:'phone',phone:'phone',
+ pastdueamount:'amountDue',amountdue:'amountDue',balance:'amountDue',outstandingbalance:'amountDue',
+ pastduedays:'pastDueDays',dayspastdue:'pastDueDays',agingdays:'pastDueDays',
+ coveragereportstatus:'reportStatus',reportstatus:'reportStatus',
+ lastreportreceiveddate:'lastReportDate',lastreportdate:'lastReportDate',lastreport:'lastReportDate',
+ propertymanagementsoftware:'pms',pms:'pms',software:'pms'};
+function normHead(h){return String(h||'').toLowerCase().replace(/[^a-z]/g,'')}
+function parseCSV(text){
+ const rows=[];let row=[],cell='',q=false;
+ for(let i=0;i<text.length;i++){const ch=text[i];
+  if(q){ if(ch==='"'){ if(text[i+1]==='"'){cell+='"';i++} else q=false } else cell+=ch }
+  else if(ch==='"')q=true;
+  else if(ch===','||ch==='\t'){row.push(cell);cell=''}
+  else if(ch==='\n'||ch==='\r'){ if(ch==='\r'&&text[i+1]==='\n')i++;
+   row.push(cell);cell='';if(row.some(c=>c.trim()!==''))rows.push(row);row=[] }
+  else cell+=ch }
+ row.push(cell);if(row.some(c=>c.trim()!==''))rows.push(row);
+ return rows;
+}
+function importRows(rows,source){
+ if(!rows.length){toast('No rows found.');return}
+ const heads=rows[0].map(normHead);
+ const idx={};heads.forEach((h,i)=>{if(HEAD_MAP[h]&&!(HEAD_MAP[h] in idx))idx[HEAD_MAP[h]]=i});
+ if(!('name'in idx)&&!('email'in idx)){$('#importMsg').innerHTML=
+  '<div class="note">Could not find an <b>Account Name</b> or <b>Email Address</b> column. Check the header row.</div>';return}
+ let added=0,updated=0;
+ for(const r of rows.slice(1)){
+  const rec={};for(const[k,i]of Object.entries(idx)){rec[k]=(r[i]??'').toString().trim()}
+  if(!rec.name&&!rec.email)continue;
+  rec.amountDue=parseFloat(String(rec.amountDue||'0').replace(/[^0-9.\-]/g,''))||0;
+  rec.pastDueDays=parseInt(String(rec.pastDueDays||'0').replace(/[^0-9\-]/g,''))||0;
+  if(rec.lastReportDate){const d=new Date(rec.lastReportDate);rec.lastReportDate=isNaN(d)?null:iso(d)}
+  rec.email=(rec.email||'').toLowerCase();
+  let a=S.accounts.find(x=>(rec.email&&x.email===rec.email)||(x.name===rec.name&&x.property===rec.property));
+  if(a){Object.assign(a,rec);a.coverageResolved=false;a.collectionsResolved=false;updated++;alog(a,'Record updated from import')}
+  else{a={id:uid(),...rec,responses:[],log:[],interventions:0,emailsSent:0};S.accounts.push(a);added++;alog(a,'Imported from '+source)}
+  classify(a);
+ }
+ audit('list.imported',`${source}: ${added} added, ${updated} updated`);
+ save();renderAll();
+ $('#importMsg').innerHTML=`<div class="note">Imported <b>${added}</b> new and updated <b>${updated}</b> account(s) from ${esc(source)}.
+  Records were classified automatically — press <b>⚙ Run automation</b> to draft outreach for every flagged account.</div>`;
+ toast(`${added+updated} account(s) processed and classified.`);
+}
+function handleFile(file){
+ if(!guard('import','import customer lists'))return;
+ const ext=file.name.split('.').pop().toLowerCase();
+ if(ext==='xlsx'||ext==='xls'){
+  if(!window.XLSX){toast('Excel parser still loading (or offline) — save as CSV and retry.');return}
+  const rd=new FileReader();
+  rd.onload=e=>{const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:true});
+   const ws=wb.Sheets[wb.SheetNames[0]];
+   importRows(parseCSV(XLSX.utils.sheet_to_csv(ws)),file.name)};
+  rd.readAsArrayBuffer(file);
+ }else{
+  const rd=new FileReader();
+  rd.onload=e=>importRows(parseCSV(e.target.result),file.name);
+  rd.readAsText(file);
+ }
+}
+function loadSample(){
+ if(!guard('import','import customer lists'))return;
+ const t=now();const ago=d=>iso(new Date(+t-d*DAY));
+ const rows=[
+  ['Account Name','Property Name','Customer Contact','Email Address','Phone Number','Past Due Amount','Past Due Days','Coverage Report Status','Last Report Received Date','Property Management Software'],
+  ['Sunrise Storage LLC','Sunrise Self Storage','Dana Whitfield','dana@sunrisestorage.com','555-0101','0','0','Received',ago(9),'SiteLink'],
+  ['Harbor Point Mini','Harbor Point Storage','Miguel Torres','miguel@harborpoint.com','555-0102','1240.50','42','Missing',ago(71),'SiteLink'],
+  ['Oak Valley Partners','Oak Valley Storage','Priya Nair','priya@oakvalley.com','555-0103','0','0','Missing',ago(52),'storEDGE'],
+  ['Redline Holdings','Redline Storage Center','Chris Boone','chris@redlineholdings.com','555-0104','3480.00','96','Not received',ago(148),'Cubby'],
+  ['Bluebonnet Storage','Bluebonnet Units','Ashley Kim','ashley@bluebonnet.com','555-0105','420.00','18','Received',ago(12),'storEDGE'],
+  ['Summit Storage Group','Summit Peak Storage','Jordan Ellis','jordan@summitgroup.com','555-0106','0','0','Received',ago(20),'SiteLink'],
+  ['Cactus Flats LLC','Cactus Flats Storage','Sam Rivera','sam@cactusflats.com','555-0107','2150.75','63','Missing',ago(98),'Other'],
+  ['Lakeside Storage Co','Lakeside Storage','Taylor Brooks','taylor@lakesideco.com','555-0108','0','0','Missing','','SiteLink'],
+  ['Pinehurst Ventures','Pinehurst Storage','Morgan Lee','morgan@pinehurst.com','555-0109','890.00','35','Received',ago(15),'Cubby'],
+  ['Ironclad Storage','Ironclad Secure Storage','Alex Dunn','alex@ironcladstorage.com','555-0110','5620.00','118','Missing',ago(130),'Other'],
+  ['Meadowbrook Storage','Meadowbrook Units','Riley Chen','riley@meadowbrook.com','555-0111','0','0','Missing',ago(44),'storEDGE'],
+  ['Golden Gate Mini','Golden Gate Ministorage','Pat Alvarez','pat@ggmini.com','555-0112','310.25','12','Received',ago(8),'SiteLink']];
+ importRows(rows,'sample data');
+}
+
+/* ---------------- AI recommendations (Step 10) ---------------- */
+function buildRecs(){
+ const recs=[];const open=S.accounts.filter(a=>a.status!=='resolved');
+ const byPms={};
+ for(const a of S.accounts)if(a.flags?.missingReport&&a.pms)(byPms[a.pms]=byPms[a.pms]||[]).push(a);
+ for(const[pms,list]of Object.entries(byPms))if(list.length>=2)
+  recs.push({id:'pms-'+pms,cls:'',title:`${list.length} customers on ${pms} repeatedly fail to submit reports`,
+   body:`Recommend scheduling automatic monthly delivery through ${pms} directly to ${REPORTS_ADDR}. Send them the ${pms} onboarding guide.`,
+   action:{label:'Open '+pms+' guide',fn:'gotoPms'}});
+ for(const a of S.accounts)if(a.fastResponder)
+  recs.push({id:'fast-'+a.id,cls:'',title:`${a.name} responds within 1 day`,
+   body:'Reduce reminder frequency for this account — a lighter cadence preserves goodwill without losing collection speed.',
+   action:{label:'View account',fn:'openAcc',arg:a.id}});
+ for(const a of open)if(a.flags?.missingReport&&monthsMissed(a)>=4&&!a.escalated)
+  recs.push({id:'esc-'+a.id,cls:'crit',title:`${a.name} has missed reports for ${monthsMissed(a)} consecutive months`,
+   body:'Recommend escalation — automated outreach alone is unlikely to recover this account.',
+   action:{label:'Escalate now',fn:'escNow',arg:a.id}});
+ for(const a of open)if((+a.pastDueDays||0)>=90&&!(a.responses||[]).length&&!a.escalated)
+  recs.push({id:'col90-'+a.id,cls:'warn',title:`${a.name} is ${a.pastDueDays} days past due (${fmt$(a.amountDue)}) with no response`,
+   body:'Recommend direct Collections Team contact by phone in addition to the email sequence.',
+   action:{label:'Create collections task',fn:'colTask',arg:a.id}});
+ for(const a of S.accounts)if(a.coverageResolved&&a.pms&&(a.responses||[]).some(r=>r.intent==='report'))
+  recs.push({id:'auto-'+a.id,cls:'',title:`${a.name} submits reports manually`,
+   body:`They just emailed a report by hand — invite them to schedule automated monthly delivery from ${a.pms} so next month requires zero outreach.`,
+   action:{label:'Queue PMS invite email',fn:'pmsInvite',arg:a.id}});
+ return recs.filter(r=>!S.dismissed.includes(r.id));
+}
+const REC_FN={
+ gotoPms:()=>showView('pms'),
+ openAcc:id=>{openDrawer(id)},
+ escNow:id=>{const a=byId(id);if(a&&guard('escalate','escalate accounts')){escalate(a,'chronic missing reports');save();renderAll()}},
+ colTask:id=>{const a=byId(id);if(a&&guard('task','create tasks')){addTask(`Call customer re: ${fmt$(a.amountDue)} past due — ${a.name}`,'Collections Team',id);save();renderAll();toast('Task created.')}},
+ pmsInvite:id=>{const a=byId(id);if(!a||!guard('send','send emails'))return;
+  S.outbox.unshift({id:uid(),accId:a.id,step:'pms',kind:'pms',to:a.email,
+   subject:`Set up automatic monthly reports from ${a.pms}`,
+   body:fill(`Hello {{CustomerName}},\n\nThanks for sending this month's coverage report!\n\nTo save you the task next month, {{PMS}} can deliver your report automatically. ${pmsSteps(a.pms)}\n\nOnce scheduled, reports arrive at ${REPORTS_ADDR} every month with no action needed on your side.\n\nThank you,\nTenant Property Protection`,a),
+   queuedAt:new Date().toISOString(),simDay:iso(now()),sentAt:null});
+  audit('outreach.queued',`PMS automation invite → ${a.name}`,a.id);save();renderAll();toast('Invite drafted — see Outbox.')}};
+
+/* ---------------- PMS guides (Step 8) ---------------- */
+const PMS_GUIDES=[
+ {name:'SiteLink',steps:['Open SiteLink Web Edition and go to the Corporate Control Center.','Choose Reports → Scheduled Reports → Add Schedule.','Select the Insurance / Coverage Activity report for your site.','Set frequency to Monthly, on the 1st, format XLSX or CSV.',`Set the delivery email to ${REPORTS_ADDR} and save.`]},
+ {name:'storEDGE',steps:['Log in to storEDGE and open Reports.','Open the Insurance or Tenant Protection report and click Schedule.','Choose Recurring → Monthly and pick the first of the month.',`Add ${REPORTS_ADDR} as the recipient and confirm.`]},
+ {name:'Cubby',steps:['In Cubby, go to Reports → Report Subscriptions.','Create a subscription for the Coverage / Protection report.','Set the cadence to Monthly.',`Enter ${REPORTS_ADDR} as the destination address and enable the subscription.`]},
+ {name:'Other platforms',steps:['Open your platform’s reporting or exports area.','Find the report showing tenant coverage / protection activity.','Schedule a recurring monthly delivery (CSV or Excel).',`Send it automatically to ${REPORTS_ADDR}.`]}];
+function pmsSteps(pms){
+ const g=PMS_GUIDES.find(g=>g.name.toLowerCase()===String(pms||'').toLowerCase())||PMS_GUIDES[3];
+ return 'Here’s how:\n\n'+g.steps.map((s,i)=>`${i+1}. ${s}`).join('\n');
+}
+
+/* ---------------- rendering ---------------- */
+function tile(label,value,sub,cls){return `<div class="tile ${cls||''}"><div class="tl">${label}</div><div class="tv">${value}</div>${sub?`<div class="ts">${sub}</div>`:''}</div>`}
+function metrics(){
+ const A=S.accounts;
+ const missing=A.filter(a=>a.flags?.missingReport),overdue=A.filter(a=>a.flags?.overdueReport);
+ const due=A.length,received=due-missing.length;
+ const pd=A.filter(a=>a.flags?.pastDue);
+ const bucket=(lo,hi)=>pd.filter(a=>{const d=+a.pastDueDays||0;return d>=lo&&(hi?d<hi:true)});
+ const total=pd.reduce((s,a)=>s+(+a.amountDue||0),0);
+ const manual=A.filter(a=>(a.interventions||0)>0||a.status==='manual'||a.status==='escalated');
+ const autoA=A.filter(a=>!manual.includes(a));
+ const touched=A.filter(a=>(a.emailsSent||0)>0);
+ const resolvedTouched=touched.filter(a=>a.status==='resolved');
+ return {due,received,missing,overdue,pd,total,
+  b30:bucket(30,60),b60:bucket(60,90),b90:bucket(90,0),bU:bucket(0,30),
+  manual,autoA,rate:touched.length?Math.round(100*resolvedTouched.length/touched.length):null};
+}
+function renderDash(){
+ const m=metrics();
+ $('#kCoverage').innerHTML=
+  tile('Reports due',m.due,'accounts this cycle')+
+  tile('Reports received',m.received,'',m.received===m.due&&m.due?'ok':'')+
+  tile('Missing reports',m.missing.length,'',m.missing.length?'alert':'ok')+
+  tile('Overdue reports',m.overdue.length,`&gt; ${Math.round(S.settings.thresholdDays*(S.settings.overdueX||2))} days`,m.overdue.length?'alert':'ok');
+ $('#kCollections').innerHTML=
+  tile('Total past due',fmt$(m.total),'',m.total?'alert':'ok')+
+  tile('30-day accounts',m.b30.length,'30–59 days')+
+  tile('60-day accounts',m.b60.length,'60–89 days')+
+  tile('90+ day accounts',m.b90.length,'',m.b90.length?'alert':'');
+ $('#kOutreach').innerHTML=
+  tile('Emails sent',S.counters.emailsSent)+
+  tile('Customer responses',S.counters.responses)+
+  tile('Reports collected',S.counters.reportsCollected,'',S.counters.reportsCollected?'ok':'')+
+  tile('Payments collected',fmt$(S.counters.paymentsCollected),'',S.counters.paymentsCollected?'ok':'');
+ $('#kAutomation').innerHTML=
+  tile('Fully automated',m.autoA.length,'no human touch needed','ok')+
+  tile('Manual intervention',m.manual.length,'disputes, escalations, bad contacts',m.manual.length?'alert':'')+
+  tile('Success rate',m.rate==null?'—':m.rate+'%','of contacted accounts resolved')+
+  tile('Open drafts',S.outbox.filter(o=>!o.sentAt).length,'waiting in outbox');
+ // aging chart — single-hue sequential (magnitude of risk), direct-labeled
+ const rows=[['Under 30',m.bU,'var(--seq-250)'],['30–59 days',m.b30,'var(--seq-400)'],
+  ['60–89 days',m.b60,'var(--seq-550)'],['90+ days',m.b90,'var(--seq-550)']];
+ const max=Math.max(1,...rows.map(r=>r[1].reduce((s,a)=>s+(+a.amountDue||0),0)));
+ $('#agingChart').innerHTML=rows.map(([lab,list,col])=>{
+  const v=list.reduce((s,a)=>s+(+a.amountDue||0),0);
+  return `<div class="lab">${lab}</div><div class="track" title="${lab}: ${fmt$(v)} across ${list.length} account(s)">
+   <span class="fill" style="width:${Math.round(100*v/max)}%;background:${col}${lab==='90+ days'?';filter:brightness(.8)':''}"></span></div>
+   <div class="val">${fmt$(v)}</div>`}).join('');
+ $('#agingTotal').textContent=m.pd.length?`${m.pd.length} account(s) carry a balance — ${fmt$(m.total)} outstanding.`:'No outstanding balances. 🎉';
+ const pct=m.due?Math.round(100*m.received/m.due):0;
+ $('#covMeter').innerHTML=`<div class="row spread"><span class="hint">Reports on file this cycle</span><b>${pct}%</b></div>
+  <div class="meter"><i style="width:${pct}%"></i></div>
+  <p class="hint">${m.missing.length?`${m.missing.length} account(s) still owe a report.`:'Every account is current.'}</p>`;
+ const pri=S.accounts.filter(a=>a.queue==='priority'&&a.status!=='resolved');
+ $('#dashPriority').innerHTML=pri.length?pri.map(a=>
+  `<div class="row spread" style="border-bottom:1px solid var(--grid);padding:.35rem 0">
+    <a href="#" onclick="openDrawer('${a.id}');return false"><b>${esc(a.name)}</b></a>
+    <span class="hint">${fmt$(a.amountDue)} · ${a.pastDueDays||0}d · report missing</span>${scoreChip(scoreOf(a).total)}</div>`).join('')
+  :'<p class="empty">No accounts in the priority queue.</p>';
+}
+function renderAccounts(){
+ const q=$('#fltQueue').value,st=$('#fltStatus').value,se=$('#fltSearch').value.toLowerCase();
+ let list=S.accounts.filter(a=>(!q||a.queue===q)&&(!st||a.status===st)&&
+  (!se||[a.name,a.property,a.contact,a.email].join(' ').toLowerCase().includes(se)));
+ list=[...list].sort((x,y)=>({priority:0,coverage:1,collections:1,none:2}[x.queue]-{priority:0,coverage:1,collections:1,none:2}[y.queue])||scoreOf(x).total-scoreOf(y).total);
+ $('#accTable').innerHTML=`<tr><th>Account</th><th>Contact</th><th>PMS</th><th class="num">Past due</th>
+  <th class="num">Days</th><th>Last report</th><th>Queue</th><th>Status</th><th>Score</th></tr>`+
+ (list.length?list.map(a=>{const[qc,ql]=QUEUE_BADGE[a.queue]||QUEUE_BADGE.none;const[sc,sl]=STATUS_BADGE[a.status]||STATUS_BADGE.active;
+  return `<tr class="click" onclick="openDrawer('${a.id}')"><td><b>${esc(a.name)}</b><br><span class="hint">${esc(a.property||'')}</span></td>
+  <td>${esc(a.contact||'')}<br><span class="hint">${esc(a.email||'no email')}</span></td>
+  <td>${esc(a.pms||'—')}</td><td class="num">${(+a.amountDue||0)?fmt$(a.amountDue):'—'}</td>
+  <td class="num">${a.pastDueDays||'—'}</td><td>${fmtDate(a.lastReportDate)}</td>
+  <td><span class="badge ${qc}">${ql}</span></td><td><span class="badge ${sc}">${sl}</span></td>
+  <td>${scoreChip(scoreOf(a).total)}</td></tr>`}).join('')
+  :`<tr><td colspan="9"><p class="empty">No accounts yet — import a list or load the sample data above.</p></td></tr>`);
+ const sel=$('#inFrom');const cur=sel.value;
+ sel.innerHTML='<option value="">— select customer —</option>'+S.accounts.map(a=>
+  `<option value="${a.id}">${esc(a.name)} &lt;${esc(a.email||'no email')}&gt;</option>`).join('');
+ if([...sel.options].some(o=>o.value===cur))sel.value=cur;
+}
+function mailtoHref(o){return `mailto:${encodeURIComponent(o.to)}?subject=${encodeURIComponent(o.subject)}&body=${encodeURIComponent(o.body)}`}
+function renderOutbox(){
+ const items=S.outbox.slice(0,120);
+ $('#outboxList').innerHTML=items.length?items.map(o=>{const a=byId(o.accId);
+  return `<div class="mail"><div class="mh">
+   <span class="badge ${o.sentAt?'b-ok':'b-pending'}">${o.sentAt?'Sent':'Queued'}</span>
+   <span class="msub">${esc(o.subject)}</span>
+   <span class="mto">to ${esc(o.to)}${a?` · ${esc(a.name)}`:''}</span>
+   <span class="stamp" style="margin-left:auto">${STEP_LABEL[o.step]||'One-off'} · ${o.sentAt?('sent '+fmtDate(o.sentSimDay)):('drafted '+fmtDate(o.simDay))}</span></div>
+   <pre>${esc(o.body)}</pre>
+   <div class="row">${o.sentAt?'':`<button class="btn small primary" onclick="sendMail('${o.id}')">Mark sent</button>`}
+    <a class="btn small" href="${mailtoHref(o)}">Open in mail app</a>
+    <button class="btn small" onclick="copyText(${JSON.stringify(o.subject+'\n\n'+o.body).replace(/"/g,'&quot;')})">Copy</button></div></div>`}).join('')
+  :'<p class="empty">Nothing here yet — run automation to draft outreach for flagged accounts.</p>';
+}
+function renderInbox(){
+ $('#inboxList').innerHTML=S.inbound.length?S.inbound.slice(0,60).map(r=>{const a=byId(r.accId);
+  return `<div class="mail"><div class="mh"><span class="badge b-pending">${esc(INTENTS[r.intent])}</span>
+   <span class="msub">${a?esc(a.name):'Unknown sender'}</span>
+   <span class="stamp" style="margin-left:auto">${fmtDate(r.at)} · ${r.mailbox==='reports'?'reports@':'collections@'}</span></div>
+   <pre>${esc(r.body||'(attachment only)')}</pre>
+   <p class="hint" style="margin:.2rem 0 0">↳ ${esc(r.effect)}</p></div>`}).join('')
+  :'<p class="empty">No inbound emails processed yet.</p>';
+}
+function renderQueue(){
+ const open=S.tasks.filter(t=>!t.done),done=S.tasks.filter(t=>t.done);
+ $('#taskList').innerHTML=(open.length||done.length)?
+  open.map(t=>{const a=byId(t.accId);
+   return `<div class="mail"><div class="mh"><span class="badge b-manual">${esc(t.team)}</span><span class="msub">${esc(t.title)}</span>
+   <span class="stamp" style="margin-left:auto">${fmtDate(t.at)}</span></div>
+   <div class="row" style="margin-top:.4rem"><button class="btn small" onclick="doneTask('${t.id}')">Mark complete</button>
+   ${a?`<button class="btn small" onclick="openDrawer('${a.id}')">Open account</button>`:''}</div></div>`}).join('')
+  +(done.length?`<p class="hint">${done.length} completed task(s)</p>`:'')
+  :'<p class="empty">No tasks — the automation hasn’t needed a human yet.</p>';
+ $('#ticketList').innerHTML=S.tickets.length?S.tickets.map(tk=>{const a=byId(tk.accId);
+  return `<div class="mail"><div class="mh"><span class="badge ${tk.status==='open'?'b-priority':'b-ok'}">${tk.status==='open'?'Open':'Closed'}</span>
+  <span class="msub">${esc(tk.summary)}</span><span class="stamp" style="margin-left:auto">${fmtDate(tk.at)}</span></div>
+  ${tk.status==='open'?`<div class="row" style="margin-top:.4rem"><button class="btn small" onclick="closeTicket('${tk.id}')">Resolve ticket</button>
+  ${a?`<button class="btn small" onclick="openDrawer('${a.id}')">Open account</button>`:''}</div>`:''}</div>`}).join('')
+  :'<p class="empty">No dispute tickets.</p>';
+}
+function renderPms(){
+ $('#pmsGuides').innerHTML=PMS_GUIDES.map(g=>{
+  const affected=S.accounts.filter(a=>a.flags?.missingReport&&(g.name==='Other platforms'
+   ? a.pms&&!PMS_GUIDES.slice(0,3).some(x=>x.name.toLowerCase()===a.pms.toLowerCase())
+   : (a.pms||'').toLowerCase()===g.name.toLowerCase()));
+  return `<details class="guide"><summary>${g.name}
+   ${affected.length?`<span class="badge b-missing">${affected.length} missing report${affected.length>1?'s':''}</span>`:''}</summary>
+   <div class="gbody"><ol>${g.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>
+   <div class="row"><button class="btn small" onclick="copyText(${JSON.stringify('How to automate your monthly coverage report ('+g.name+'):\n'+g.steps.map((s,i)=>(i+1)+'. '+s).join('\n')).replace(/"/g,'&quot;')})">Copy instructions</button>
+   ${affected.length?`<button class="btn small primary" onclick="sendGuideAll('${g.name}')">Email guide to ${affected.length} affected customer(s)</button>`:''}</div>
+   </div></details>`}).join('');
+}
+function renderInsights(){
+ const recs=buildRecs();
+ $('#recList').innerHTML=recs.length?recs.map(r=>`<div class="rec ${r.cls}"><div class="rt">${esc(r.title)}</div>
+  <div class="rb">${esc(r.body)}</div><div class="row">
+  ${r.action?`<button class="btn small primary" onclick="recAct('${r.id}','${r.action.fn}','${r.action.arg||''}')">${esc(r.action.label)}</button>`:''}
+  <button class="btn small" onclick="dismissRec('${r.id}')">Dismiss</button></div></div>`).join('')
+  :'<p class="empty">No open recommendations — import data or run automation to generate insights.</p>';
+ const list=[...S.accounts].sort((a,b)=>scoreOf(a).total-scoreOf(b).total);
+ $('#scoreTable').innerHTML=`<tr><th>Account</th><th>Score</th><th class="num">Reports /40</th>
+  <th class="num">Payments /30</th><th class="num">Responsiveness /20</th><th class="num">Interventions /10</th><th>Risk</th></tr>`+
+ (list.length?list.map(a=>{const s=scoreOf(a);
+  const risk=s.total>=75?['b-ok','Low']:s.total>=45?['b-missing','Watch']:['b-priority','Likely delinquent'];
+  return `<tr class="click" onclick="openDrawer('${a.id}')"><td><b>${esc(a.name)}</b></td><td>${scoreChip(s.total)}</td>
+  <td class="num">${s.rep}</td><td class="num">${s.pay}</td><td class="num">${s.resp}</td><td class="num">${s.iv}</td>
+  <td><span class="badge ${risk[0]}">${risk[1]}</span></td></tr>`}).join('')
+  :'<tr><td colspan="7"><p class="empty">No accounts yet.</p></td></tr>');
+ $('#pillRec').textContent=recs.length;$('#pillRec').classList.toggle('show',recs.length>0);
+}
+function renderAudit(){
+ const f=$('#auditSearch').value.toLowerCase();
+ const rows=S.auditLog.filter(e=>!f||JSON.stringify(e).toLowerCase().includes(f)).slice(0,300);
+ $('#auditTable').innerHTML='<tr><th>When</th><th>Sim day</th><th>Actor</th><th>Action</th><th>Detail</th></tr>'+
+ (rows.length?rows.map(e=>`<tr><td class="stamp">${new Date(e.at).toLocaleString()}</td><td class="stamp">${e.simDay}</td>
+  <td>${esc(e.actor)}</td><td><span class="chip">${esc(e.action)}</span></td><td>${esc(e.detail)}</td></tr>`).join('')
+  :'<tr><td colspan="5"><p class="empty">Nothing logged yet.</p></td></tr>');
+}
+function renderChrome(){
+ $('#roleSel').value=S.settings.role;
+ $('#clockLabel').textContent='Sim clock: '+now().toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'})+
+  (S.settings.clockOffset?` (+${S.settings.clockOffset}d)`:'');
+ const pri=S.accounts.filter(a=>a.queue==='priority'&&a.status!=='resolved').length;
+ const outQ=S.outbox.filter(o=>!o.sentAt).length;
+ const tq=S.tasks.filter(t=>!t.done).length+S.tickets.filter(t=>t.status==='open').length;
+ const set=(id,n)=>{const el=$(id);el.textContent=n;el.classList.toggle('show',n>0)};
+ set('#pillAcc',pri);set('#pillOut',outQ);set('#pillTask',tq);
+ $('#runBtn').disabled=!can('run');$('#clockAdv').disabled=!can('clock');$('#sendAllBtn').disabled=!can('send');
+}
+function renderSettings(){
+ const s=S.settings;
+ $('#setThreshold').value=s.thresholdDays;$('#setOverdueX').value=s.overdueX;
+ $('#setR1').value=s.cadence.r1;$('#setR2').value=s.cadence.r2;$('#setFinal').value=s.cadence.fin;$('#setEsc').value=s.cadence.esc;
+ $('#tplCoverage').value=s.templates.coverage;$('#tplCollections').value=s.templates.collections;$('#tplFinal').value=s.templates.final;
+}
+function renderAll(){renderChrome();renderDash();renderAccounts();renderOutbox();renderInbox();renderQueue();renderPms();renderInsights();renderAudit()}
+
+/* ---------------- account drawer ---------------- */
+function openDrawer(id){
+ const a=byId(id);if(!a)return;
+ const s=scoreOf(a);const[qc,ql]=QUEUE_BADGE[a.queue]||QUEUE_BADGE.none;const[sc,sl]=STATUS_BADGE[a.status]||STATUS_BADGE.active;
+ $('#drawer').innerHTML=`
+  <div class="row spread"><h2 style="margin:0">${esc(a.name)}</h2><button class="btn small" onclick="closeDrawer()">✕ Close</button></div>
+  <div class="row" style="margin:.4rem 0 .8rem"><span class="badge ${qc}">${ql}</span><span class="badge ${sc}">${sl}</span>${scoreChip(s.total)}</div>
+  <div class="grid2">
+   <div><div class="field"><b>Property</b>${esc(a.property||'—')}</div>
+    <div class="field"><b>Contact</b>${esc(a.contact||'—')}<br><span class="hint">${esc(a.email||'no email')} · ${esc(a.phone||'')}</span></div>
+    <div class="field"><b>Property management software</b>${esc(a.pms||'Unknown')}</div></div>
+   <div><div class="field"><b>Past due</b>${(+a.amountDue||0)?fmt$(a.amountDue)+' · '+(a.pastDueDays||0)+' days':'None'}</div>
+    <div class="field"><b>Coverage report</b>${esc(a.reportStatus||'—')} · last received ${fmtDate(a.lastReportDate)}</div>
+    <div class="field"><b>Score breakdown</b><span class="hint">Reports ${s.rep}/40 · Payments ${s.pay}/30 · Responsiveness ${s.resp}/20 · Interventions ${s.iv}/10</span></div></div>
+  </div>
+  <div class="row" style="margin:.5rem 0 .9rem">
+   ${a.flags?.missingReport&&!a.coverageResolved?`<button class="btn small primary" onclick="drawerReport('${a.id}')">✓ Mark report received</button>`:''}
+   ${a.pendingPayment?`<button class="btn small primary" onclick="drawerVerify('${a.id}')">✓ Verify payment</button>`:''}
+   ${a.status!=='resolved'&&!a.escalated?`<button class="btn small" onclick="drawerEsc('${a.id}')">⚠ Escalate now</button>`:''}
+   ${a.manual?`<button class="btn small" onclick="drawerResume('${a.id}')">▶ Resume automation</button>`:''}
+   ${a.pms?`<button class="btn small" onclick="recAct('','pmsInvite','${a.id}')">✉ Send PMS setup guide</button>`:''}
+  </div>
+  <h3>Activity</h3>
+  <ul class="timeline">${(a.log||[]).slice(0,25).map(l=>`<li><b>${fmtDate(l.at)}</b> — ${esc(l.txt)}</li>`).join('')||'<li>No activity yet.</li>'}</ul>`;
+ $('#drawer').classList.add('open');$('#drawerBack').classList.add('open');
+}
+function closeDrawer(){$('#drawer').classList.remove('open');$('#drawerBack').classList.remove('open')}
+function drawerVerify(id){const a=byId(id);if(!a)return;verifyPayment(a);if(byId(id))openDrawer(id)}
+function drawerReport(id){const a=byId(id);if(!a||!guard('resolve','resolve workflows'))return;
+ markReportReceived(a,'manual confirmation');save();renderAll();openDrawer(id);toast('Report marked received.')}
+function drawerEsc(id){const a=byId(id);if(!a||!guard('escalate','escalate accounts'))return;
+ escalate(a,'manual escalation');save();renderAll();openDrawer(id)}
+function drawerResume(id){const a=byId(id);if(!a||!guard('resolve','resume automation'))return;
+ a.manual=false;classify(a);alog(a,'Automation resumed');audit('account.resumed',a.name,a.id);save();renderAll();openDrawer(id)}
+
+/* ---------------- small actions ---------------- */
+function doneTask(id){if(!guard('task','complete tasks'))return;
+ const t=S.tasks.find(x=>x.id===id);if(t){t.done=true;audit('task.completed',t.title,t.accId);save();renderAll()}}
+function closeTicket(id){if(!guard('task','resolve tickets'))return;
+ const t=S.tickets.find(x=>x.id===id);if(!t)return;t.status='closed';
+ const a=byId(t.accId);if(a){a.manual=false;classify(a);alog(a,'Dispute resolved — automation resumed')}
+ audit('ticket.closed',t.summary,t.accId);save();renderAll()}
+function dismissRec(id){S.dismissed.push(id);save();renderInsights()}
+function recAct(recId,fn,arg){REC_FN[fn]&&REC_FN[fn](arg)}
+function sendGuideAll(pms){
+ if(!guard('send','send emails'))return;
+ const list=S.accounts.filter(a=>a.flags?.missingReport&&a.email&&(pms==='Other platforms'
+  ? a.pms&&!PMS_GUIDES.slice(0,3).some(x=>x.name.toLowerCase()===a.pms.toLowerCase())
+  : (a.pms||'').toLowerCase()===pms.toLowerCase()));
+ list.forEach(a=>{S.outbox.unshift({id:uid(),accId:a.id,step:'pms',kind:'pms',to:a.email,
+  subject:`Set up automatic monthly reports from ${a.pms||'your software'}`,
+  body:fill(`Hello {{CustomerName}},\n\nYou can stop sending monthly coverage reports by hand — {{PMS}} can deliver them automatically. ${pmsSteps(a.pms)}\n\nOnce scheduled, reports arrive at ${REPORTS_ADDR} every month with no action needed on your side.\n\nThank you,\nTenant Property Protection`,a),
+  queuedAt:new Date().toISOString(),simDay:iso(now()),sentAt:null});
+  audit('outreach.queued',`PMS onboarding guide (${pms}) → ${a.name}`,a.id)});
+ save();renderAll();toast(`${list.length} guide email(s) drafted — see Outbox.`);
+}
+function copyText(t){
+ (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Copied.'))
+ .catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');toast('Copied.')}catch(e){toast('Copy failed.')}ta.remove()});
+}
+function showView(v){$$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+ $$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v))}
+
+/* ---------------- wiring ---------------- */
+$('#tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)showView(b.dataset.v)});
+$('#drawerBack').onclick=closeDrawer;
+$('#roleSel').onchange=e=>{S.settings.role=e.target.value;audit('role.changed','Now acting as '+ROLE_LABEL[S.settings.role]);save();renderAll();
+ toast(`Acting as ${ROLE_LABEL[S.settings.role]}${S.settings.role==='viewer'?' — read-only':''}.`)};
+$('#runBtn').onclick=()=>runAutomation(false);
+$('#clockAdv').onclick=()=>{if(!guard('clock','advance the clock'))return;
+ S.settings.clockOffset=(S.settings.clockOffset||0)+1;
+ audit('clock.advanced','Simulated day +1 (nightly automation sweep)');
+ runAutomation(true);toast('Advanced one day — nightly automation sweep ran.')};
+$('#sendAllBtn').onclick=sendAll;
+$('#fileInput').onchange=e=>{if(e.target.files[0])handleFile(e.target.files[0]);e.target.value=''};
+$('#pasteBtn').onclick=()=>{const w=$('#pasteWrap');w.style.display=w.style.display==='none'?'block':'none'};
+$('#pasteGo').onclick=()=>{if(!guard('import','import customer lists'))return;
+ importRows(parseCSV($('#pasteArea').value),'pasted CSV');$('#pasteArea').value=''};
+$('#sampleBtn').onclick=loadSample;
+const dz=$('#dropzone');
+['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag')}));
+['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag')}));
+dz.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleFile(f)});
+['fltQueue','fltStatus','fltSearch'].forEach(id=>$('#'+id).addEventListener('input',renderAccounts));
+$('#auditSearch').addEventListener('input',renderAudit);
+$('#inSample').onchange=e=>{const v=e.target.value;if(!v)return;
+ const samples={report:'Hi — report attached, sorry for the delay! Let me know if the format works.',
+  payment:'We mailed check #2231 yesterday, should arrive this week.',
+  dispute:'This balance is incorrect — we already paid this invoice in June. Please review.',
+  assist:'How do I schedule this in SiteLink? I can’t find the setting.',
+  wrong:'I no longer manage this property, please remove me from this list.',
+  ooo:'Automatic reply: Out of office until Monday with limited email access.'};
+ $('#inBody').value=samples[v]||'';$('#inAttach').checked=v==='report';e.target.value=''};
+$('#inProcess').onclick=()=>{
+ const accId=$('#inFrom').value,body=$('#inBody').value.trim(),hasAttach=$('#inAttach').checked,mailbox=$('#inMailbox').value;
+ const a=byId(accId);
+ if(!a){toast('Select the customer the email came from.');return}
+ if(!body&&!hasAttach){toast('Paste the message body or tick the attachment box.');return}
+ const intent=(mailbox==='reports'&&hasAttach)?'report':classifyReply(body,hasAttach);
+ const effect=applyReply(a,intent,mailbox);
+ S.inbound.unshift({id:uid(),accId,mailbox,body,intent,effect,at:iso(now())});
+ save();renderAll();
+ $('#inResult').innerHTML=`<div class="note"><b>Classified as: ${INTENTS[intent]}</b><br>${esc(effect)}</div>`;
+ $('#inBody').value='';$('#inAttach').checked=false;
+};
+$('#saveRules').onclick=()=>{if(!guard('settings','change settings'))return;
+ const s=S.settings;
+ s.thresholdDays=Math.max(1,+$('#setThreshold').value||35);s.overdueX=Math.max(1,+$('#setOverdueX').value||2);
+ s.cadence={r1:+$('#setR1').value||3,r2:+$('#setR2').value||7,fin:+$('#setFinal').value||14,esc:+$('#setEsc').value||21};
+ S.accounts.forEach(classify);audit('settings.updated',`Threshold ${s.thresholdDays}d, cadence ${s.cadence.r1}/${s.cadence.r2}/${s.cadence.fin}/${s.cadence.esc}`);
+ save();renderAll();toast('Automation rules saved and accounts re-classified.')};
+$('#saveTpl').onclick=()=>{if(!guard('settings','change settings'))return;
+ S.settings.templates={coverage:$('#tplCoverage').value,collections:$('#tplCollections').value,final:$('#tplFinal').value};
+ audit('templates.updated','Email templates edited');save();toast('Templates saved.')};
+$('#resetTpl').onclick=()=>{if(!guard('settings','change settings'))return;
+ S.settings.templates={...DEFAULT_TEMPLATES};renderSettings();save();toast('Default templates restored.')};
+$('#exportJson').onclick=()=>{const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
+ const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='tpp-automation-workspace.json';a.click();
+ URL.revokeObjectURL(u);audit('data.exported','Workspace JSON downloaded')};
+$('#importJson').onchange=e=>{const f=e.target.files[0];if(!f)return;
+ if(!guard('settings','import a workspace'))return;
+ const rd=new FileReader();rd.onload=ev=>{try{const d=JSON.parse(ev.target.result);
+  if(!d.accounts)throw 0;S=d;S.settings.templates=Object.assign({...DEFAULT_TEMPLATES},S.settings.templates);
+  audit('data.imported','Workspace JSON restored');save();renderSettings();renderAll();toast('Workspace imported.')}
+  catch(err){toast('That file is not a valid workspace export.')}};
+ rd.readAsText(f);e.target.value=''};
+$('#resetAll').onclick=()=>{if(!guard('settings','reset the workspace'))return;
+ if(confirm('Erase all accounts, emails, tasks and history?')){S=fresh();save();renderSettings();renderAll();toast('Workspace reset.')}};
+$('#auditExport').onclick=()=>{
+ const csv=['When,Sim day,Actor,Action,Detail',...S.auditLog.map(e=>
+  [e.at,e.simDay,e.actor,e.action,e.detail].map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(','))].join('\n');
+ const u=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+ const a=document.createElement('a');a.href=u;a.download='tpp-audit-log.csv';a.click();URL.revokeObjectURL(u)};
+$('#refreshRecs').onclick=()=>{renderInsights();toast('Recommendations refreshed.')};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-copy]');if(b)copyText(b.dataset.copy)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer()});
+
+/* boot */
+S.accounts.forEach(classify);
+renderSettings();renderAll();
+if(!S.accounts.length&&!S.auditLog.length)audit('system.ready','Automation Center initialized');
+save();
+</script>
+</body>
+</html>
