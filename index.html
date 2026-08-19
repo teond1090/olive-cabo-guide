@@ -872,6 +872,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="card-h"><span class="ic">&#9925;</span><h3>Weather, Sunset &amp; Stars</h3><span class="hint">forecast &middot; sunset &middot; stars</span></div>
       <div class="foldbody">
       <div id="wxNow"></div>
+      <div id="wxStorm"></div>
       <div id="wxDays" class="pills" style="margin-top:.8rem"></div>
       <div id="airQ" class="small muted" style="margin-top:.7rem"></div>
       <hr class="hr">
@@ -899,18 +900,22 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <div class="card a-sun" id="recapCard" style="display:none">
       <div class="card-h"><span class="ic">&#127909;</span><h3 id="recapTitle">Tonight's Recap</h3></div>
       <div id="recapBody"></div>
+      <div id="recapNudge"></div>
       <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn sm brass" id="recapSendAll">&#128233; Send tonight&#39;s update home</button>
         <button class="btn sm brass" id="recapFilm">&#127916; Make today's mini-film</button>
         <button class="btn sm brass" id="recapSms">&#128172; Text it</button>
         <button class="btn sm" id="recapEmail">&#9993;&#65039; Email it</button>
         <button class="btn sm ghost" id="recapShare">&#128228; Share</button>
         <button class="btn sm ghost" id="recapSave">&#128221; Save to journal</button>
+        <button class="btn sm ghost" id="recapWho">&#128100; Who it goes to</button>
       </div>
     </div>
 
     <div class="card a-sage fold" data-fold="health">
-      <div class="card-h"><span class="ic">&#128138;</span><h3>Comfort &amp; Health</h3><span class="hint">reminders</span></div>
+      <div class="card-h"><span class="ic">&#128138;</span><h3>Comfort &amp; Health</h3><span class="hint">altitude &middot; reminders</span></div>
       <div class="foldbody">
+      <div id="altPanel"></div>
       <div id="healthPanel"></div>
       </div>
     </div>
@@ -941,6 +946,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="card-h"><span class="ic">&#129517;</span><h3>Your Trail</h3><span class="hint">map &middot; miles &middot; export</span></div>
       <div class="foldbody">
       <p class="small muted">Every mile you drive gets recorded. Drop a pin anywhere worth remembering, then take the whole trail with you &mdash; Google Maps, Google Earth, anywhere.</p>
+      <div id="trailLive"></div>
       <canvas id="trailCanvas" width="900" height="620" aria-label="Map of your journey"></canvas>
       <div class="pills" style="margin-top:.7rem" id="trailLegend"></div>
       <div class="btnrow" style="margin-top:.8rem">
@@ -949,6 +955,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <button class="btn sm ghost" id="trailClear">&#128465;&#65039; Clear trail</button>
       </div>
       <div id="trailStats" class="small muted" style="margin-top:.7rem"></div>
+      <div id="trailLog" style="margin-top:.9rem"></div>
       </div>
     </div>
 
@@ -1081,6 +1088,20 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="card-h"><span class="ic">&#9981;</span><h3>Fuel Watch</h3><span class="hint">the empty stretches</span></div>
       <div class="foldbody">
       <div id="fuelInfo" class="small muted">Olive warns you before the long empty stretches &mdash; the Hi&#8209;Line and central Montana have real gaps.</div>
+      <div id="fuelGauge" style="margin-top:.9rem"></div>
+      <div id="fuelRange"></div>
+      </div>
+    </div>
+
+    <!-- ---------- WILDLIFE HOURS + GOLDEN HOUR ---------- -->
+    <div class="card a-sage fold" data-fold="wild">
+      <div class="card-h"><span class="ic">&#129454;</span><h3>Wildlife &amp; Golden Hour</h3><span class="hint">when to look &middot; where to stop</span></div>
+      <div class="foldbody">
+      <p class="small muted">Animals keep to the edges of the day, and so does the good light. Olive works both windows out from today's real sunrise and sunset where you actually are.</p>
+      <div id="wildNow"></div>
+      <div id="wildWho" style="margin-top:.8rem"></div>
+      <div id="wildSpots" style="margin-top:.8rem"></div>
+      <div id="photoAhead" style="margin-top:.8rem"></div>
       </div>
     </div>
 
@@ -1554,7 +1575,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w32-2026-08-15";
+const OLIVE_BUILD="w33-2026-08-19";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2755,7 +2776,7 @@ function showView(v){
   if(v==="nearby"){renderNearby();drawMap();loadFacts()}
   if(v==="memories"){renderFeed();renderBucket();if(typeof renderStory==="function")renderStory()}
   if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();if(!podList.length)loadPods();}
-  if(v==="journey"){drawTrail();renderStays()}
+  if(v==="journey"){drawTrail();renderTrailLog();renderStays()}
   if(v==="crew"){unread=0;}
   if(v==="tour"){mountTour();store.set("tour-seen",true);syncTourPrompt()}
   else stopTour();
@@ -2941,7 +2962,9 @@ $("logFuel").addEventListener("click",()=>{
   $("fSave").addEventListener("click",()=>{
     const g=+$("fGal").value||0,c=+$("fCost").value||0,w=$("fWhere").value.trim();
     if(!g&&!c)return toast("Enter gallons or cost");
-    const st=stats();st.fuel.push({g,c,w,t:Date.now()});saveStats(st);
+    const st=stats();st.fuel.push({g,c,w,t:Date.now(),mi:st.mi});saveStats(st);
+    store.set("fuelLevel",1);            /* you just filled it - say so on the gauge */
+    if(typeof renderFuelGauge==="function"){renderFuelGauge();renderRange()}
     addFeed("milestone","&#9981;","Fuel stop"+(w?" — "+w:""),g?g.toFixed(1)+" gallons"+(c?", $"+c.toFixed(2):""):"$"+c.toFixed(2));
     closeSheet();toast("Fuel stop logged");renderDash();
   });
@@ -2961,6 +2984,7 @@ $("gpsToggle").addEventListener("change",e=>{
 });
 function stopGPS(){
   if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null}
+  releaseAwake();
   store.set("gps",false);
   gpsStatus("Location is off. Turn it on to unlock landmark alerts, hidden gems, fuel and the right radio stations for where you are.");
   $("gpsToggle").checked=false;
@@ -2997,12 +3021,34 @@ async function autoStartGPS(){
 function reviveGPS(){
   if(document.hidden)return;
   if(store.get("gps",true)===false)return;
+  keepAwake();                     /* a wake lock is always lost on backgrounding */
   if(watchId==null)autoStartGPS();
 }
+/* ---------------------------------------------------------------
+   KEEPING THE LOG ALIVE WHILE YOU DRIVE
+   A phone that locks its screen suspends watchPosition, and the trail
+   quietly stops recording until somebody picks it up again. A screen
+   wake lock is the only lever a web app has here, so Olive takes one
+   while tracking is on and hands it straight back when it is not.
+   --------------------------------------------------------------- */
+let wakeLock=null;
+async function keepAwake(){
+  if(!("wakeLock" in navigator))return;
+  if(!store.get("keepAwake",true))return;
+  if(store.get("gps",true)===false)return;
+  if(wakeLock)return;
+  try{
+    wakeLock=await navigator.wakeLock.request("screen");
+    wakeLock.addEventListener("release",()=>{wakeLock=null});
+  }catch(e){wakeLock=null}        /* phones refuse this on low battery - not worth a warning */
+}
+function releaseAwake(){try{if(wakeLock)wakeLock.release()}catch(e){}wakeLock=null}
+
 function startGPS(){
   if(!("geolocation" in navigator)){gpsStatus("This device has no location support.","danger");return}
   store.set("gps",true);$("gpsToggle").checked=true;
   gpsStatus("Finding you…");
+  keepAwake();
   if(watchId!=null)navigator.geolocation.clearWatch(watchId);
   /* maximumAge is the accuracy killer: a 60-second-old fix is two miles
      stale at highway speed. Take only fresh fixes, and fire one precise
@@ -3046,17 +3092,26 @@ function onFix(pos){
      Filter on implied SPEED, not raw distance: watchPosition gaps (tunnels,
      no signal, phone asleep) legitimately span 40+ miles, but a 40-mile jump
      between two fixes seconds apart is a GPS glitch. --- */
-  if(prev&&store.get("autoTrack",true)){
+  if(prev){
     const d=dist(prev.lat,prev.lng,lat,lng);
     const dt=(here.t-prev.t)/1000;                      /* seconds between fixes */
     here._lastMoveDist=d;
     const ok = d>0.03 && d<600 && (dt<5 ? d<25 : (d/(dt/3600))<95);
-    if(ok){const s=stats();s.mi+=d;
-      if(!s.days)s.days={};                      /* miles per calendar day - feeds the recap */
-      s.days[todayISO()]=(s.days[todayISO()]||0)+d;
-      saveStats(s);trailPush(lat,lng)}
-  }else if(!prev){
-    trailPush(lat,lng);            /* the trail has to start somewhere */
+    if(ok){
+      /* The odometer is optional - the breadcrumb trail is not. Someone who
+         pauses mile counting still wants to see where they went, so the two
+         are recorded independently. */
+      if(store.get("autoTrack",true)){
+        const s=stats();s.mi+=d;
+        if(!s.days)s.days={};                    /* miles per calendar day - feeds the recap */
+        s.days[todayISO()]=(s.days[todayISO()]||0)+d;
+        saveStats(s);
+      }
+      if(dt>0)here.mph=Math.round(d/(dt/3600));       /* implied speed, for the trail log */
+      trailPush(lat,lng,pos);
+    }
+  }else{
+    trailPush(lat,lng,pos);        /* the trail has to start somewhere */
   }
   /* --- where are we actually? real geography, not "nearest landmark" --- */
   locate(lat,lng);
@@ -3068,6 +3123,9 @@ function onFix(pos){
   renderDash();renderHero();
   checkAlerts();
   renderNearby();
+  loadElevation();                   /* terrain height, cached hard - cheap to call */
+  renderAltitude();
+  rangeWatch();
   followRadio();                     /* stations follow you down the road */
   mapOnFix();
   if(typeof spotlightWatch==='function')spotlightWatch();
@@ -3279,11 +3337,235 @@ function renderNearby(){
   if($("dirSel").value==="ahead")list=list.filter(isAhead);
   el.innerHTML=list.length?cardList(list.slice(0,50),true):
     `<div class="card"><p class="muted" style="margin:0">Nothing in that category ${$("dirSel").value==="ahead"?"ahead of you ":""}within ${radius===99999?"the route":radius+" miles"}. Try a wider distance or switch back to "All around me".</p></div>`;
-  renderFindNow();renderEvents();renderFuelWatch();
+  renderFindNow();renderEvents();renderFuelWatch();renderFuelGauge();renderRange();renderWild();
 }
 const bearingFromDeg=d=>["north","northeast","east","southeast","south","southwest","west","northwest"][Math.round(d/45)%8];
 
 /* ---------- Fuel Watch: warn before the empty stretches ---------- */
+/* ============================================================
+   RANGE - "can we make it?"
+   The honest version of this question needs three numbers: how big the
+   tank is, how far a gallon actually goes in this vehicle on these roads,
+   and how much is in there right now. The first two Olive can learn from
+   the fuel stops already being logged; the third only Terry knows, so it
+   is one tap on a gauge rather than a number to type.
+   ============================================================ */
+const TANK_DEFAULT=21, MPG_DEFAULT=21;      /* full-size SUV, loaded, western grades */
+function vehicle(){const v=store.get("vehicle",{});return {tank:+v.tank||TANK_DEFAULT,mpg:+v.mpg||MPG_DEFAULT}}
+function fuelLevel(){const f=store.get("fuelLevel",null);return f==null?null:+f}
+
+/* Observed economy beats any published figure. Two logged fill-ups and the
+   odometer between them tell the truth about this vehicle on these hills. */
+function observedMpg(){
+  const s=stats(), f=(s.fuel||[]).filter(x=>x.g>0).sort((a,b)=>a.t-b.t);
+  if(f.length<2||!s.mi)return null;
+  /* gallons burned between the first and last fill-up, against miles covered
+     in that window - the first fill-up's gallons went into the tank before
+     the window, so they are not part of the burn */
+  const gal=f.slice(1).reduce((a,x)=>a+x.g,0);
+  const span=(f[f.length-1].mi!=null&&f[0].mi!=null)?f[f.length-1].mi-f[0].mi:null;
+  const miles=span!=null?span:s.mi;
+  if(!gal||!miles||miles<60)return null;
+  const m=miles/gal;
+  return (m>6&&m<45)?Math.round(m*10)/10:null;    /* reject nonsense from a mistyped entry */
+}
+function effMpg(){return observedMpg()||vehicle().mpg}
+
+const FUEL_STEPS=[[1,"Full"],[.75,"&frac34;"],[.5,"&frac12;"],[.25,"&frac14;"],[.125,"Low"]];
+function renderFuelGauge(){
+  const el=$("fuelGauge"); if(!el)return;
+  const lv=fuelLevel(), v=vehicle(), mpg=effMpg(), obs=observedMpg();
+  el.innerHTML='<div class="small muted" style="margin-bottom:.4rem"><b>How full is the tank?</b> One tap &mdash; Olive does the rest.</div>'+
+    '<div class="pills">'+FUEL_STEPS.map(s=>'<button class="pill'+(lv===s[0]?" on":"")+'" data-fuel="'+s[0]+'">'+s[1]+"</button>").join("")+"</div>"+
+    '<div class="small muted" style="margin-top:.45rem">'+v.tank+"-gallon tank &middot; "+mpg+" mpg"+
+    (obs?" <b>(measured from your own fill-ups)</b>":" (estimated)")+
+    ' &middot; <button class="btn sm ghost" id="fuelSetup">Change</button></div>';
+}
+function rangeNow(){
+  const lv=fuelLevel(); if(lv==null)return null;
+  return Math.round(vehicle().tank*lv*effMpg());
+}
+function renderRange(){
+  const el=$("fuelRange"); if(!el)return;
+  const r=rangeNow();
+  if(r==null){el.innerHTML='<div class="note small" style="margin-top:.7rem">Tap the gauge above and Olive works out whether the next fill-up is comfortably in reach, or whether this one matters.</div>';return}
+  const RESERVE=30;                                  /* never plan to arrive on fumes */
+  const usable=Math.max(0,r-RESERVE);
+  const f=here?nearest(null,["fuel"],400):[];
+  const ahead=f.filter(isAhead), next=ahead[0]||f[0];
+  const after=ahead[1]||f[1];
+  let verdict="",cls="sage";
+  if(next){
+    const d=next._d, gap=after?dist(next.lat,next.lng,after.lat,after.lng):null;
+    if(d>usable){cls="danger";verdict="<b>Not on this tank.</b> "+esc(fuelName(next))+" is "+fmtMi(d)+" away and you have about "+usable+" usable miles. Find fuel before you commit to that stretch.";}
+    else if(gap&&gap>usable){cls="gold";verdict="<b>Reachable &mdash; then fill up.</b> You can make "+esc(fuelName(next))+", but the "+Math.round(gap)+"-mile run after it is longer than a full tank of margin. Top off there, not later.";}
+    else{verdict="<b>Comfortable.</b> "+esc(fuelName(next))+" is "+fmtMi(d)+" out and you are carrying about "+usable+" usable miles"+(gap?", with "+Math.round(gap)+" miles to the one after":"")+".";}
+  }else{
+    verdict="<b>About "+usable+" usable miles</b> in the tank ("+RESERVE+" held back as reserve). Turn on location and Olive measures it against the real gaps ahead.";
+  }
+  el.innerHTML='<div class="stats" style="margin-top:.8rem">'+
+      '<div class="stat"><div class="n">'+r+'</div><div class="l">Miles in the tank</div></div>'+
+      '<div class="stat"><div class="n">'+usable+'</div><div class="l">Before reserve</div></div>'+
+      '<div class="stat"><div class="n">'+effMpg()+'</div><div class="l">mpg</div></div>'+
+    "</div>"+
+    '<div class="note '+(cls==="sage"?"":cls==="danger"?"warn":"warn")+' small" style="margin-top:.7rem">'+verdict+"</div>";
+}
+function fuelName(p){return (p.n||"").replace("Fuel - ","")}
+
+/* Say it out loud when the arithmetic stops working - once per fuel stop,
+   not every fix, or it becomes noise they learn to ignore. */
+function rangeWatch(){
+  const r=rangeNow(); if(r==null||!here)return;
+  const usable=Math.max(0,r-30);
+  const f=nearest(null,["fuel"],400), ahead=f.filter(isAhead), next=ahead[0]||f[0];
+  if(!next)return;
+  const after=ahead[1]||f[1];
+  const gap=after?dist(next.lat,next.lng,after.lat,after.lng):null;
+  const key=fuelName(next)+"|"+Math.round(usable/25);
+  if(next._d>usable){
+    pushOnce("range-hard-"+key,{ic:"&#9981;",cls:"health",
+      t:"Fuel before the next stretch",
+      s:fuelName(next)+" is "+fmtMi(next._d)+" away and you have roughly "+usable+" usable miles. Do not pass a pump."},"fuel-gap");
+  }else if(gap&&gap>usable){
+    pushOnce("range-soft-"+key,{ic:"&#9981;",cls:"",
+      t:"Fill up at "+fuelName(next),
+      s:"The run after it is about "+Math.round(gap)+" miles, which is more than this tank has in it. Top off there rather than later."},"fuel-gap");
+  }
+}
+
+/* one delegated listener covers the gauge, which is re-rendered constantly */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-fuel]");
+  if(b){store.set("fuelLevel",+b.dataset.fuel);renderFuelGauge();renderRange();return}
+  if(e.target.id==="fuelSetup")fuelSetupSheet();
+});
+function fuelSetupSheet(){
+  const v=vehicle();
+  openSheet("Your vehicle",`
+    <p class="small muted">Set these once. Olive keeps measuring the real economy from your logged fill-ups and uses that instead as soon as it has enough to go on.</p>
+    <div class="field"><label class="fld" for="vTank">Tank size (gallons)</label>
+      <input type="number" id="vTank" inputmode="decimal" step="0.5" min="5" max="60" value="${v.tank}"></div>
+    <div class="field"><label class="fld" for="vMpg">Miles per gallon</label>
+      <input type="number" id="vMpg" inputmode="decimal" step="0.5" min="6" max="45" value="${v.mpg}">
+      <p class="small muted" style="margin-top:.35rem">A loaded SUV against western grades and headwinds does worse than the sticker. 20-22 is realistic.</p></div>
+    <div class="btnrow"><button class="btn brass" id="vSave">Save</button></div>`);
+  $("vSave").addEventListener("click",()=>{
+    const tank=+$("vTank").value||TANK_DEFAULT, mpg=+$("vMpg").value||MPG_DEFAULT;
+    store.set("vehicle",{tank,mpg});
+    closeSheet();renderFuelGauge();renderRange();toast("Saved");
+  });
+}
+/* ============================================================
+   WILDLIFE HOURS + GOLDEN HOUR
+   Both questions have the same answer - the edges of the day - so they
+   share a card. Windows are computed from today's real sunrise and sunset
+   at the family's actual position, not from a rule of thumb.
+   ============================================================ */
+const WILD_WHERE=[
+  {st:"SD",who:[
+    {n:"Bison",ic:"&#129452;",w:"Custer State Park Wildlife Loop, and the prairie at Wind Cave",
+     t:"Roughly 1,400 of them on the loop. Early morning or the last two hours of light. They have right of way, always - stay in the vehicle."},
+    {n:"Pronghorn &amp; burros",ic:"&#129420;",w:"Custer State Park Wildlife Loop",
+     t:"The begging burros will walk up to the window. Do not feed them, however much they ask."},
+    {n:"Elk",ic:"&#129433;",w:"Wind Cave and the Black Hills meadows",
+     t:"Dawn and dusk at the meadow edges."}]},
+  {st:"MT",who:[
+    {n:"Grizzly &amp; black bear",ic:"&#128059;",w:"Glacier - Many Glacier valley, Two Medicine, the Going-to-the-Sun corridor",
+     t:"Dawn and the last light. Many Glacier is the best odds in the park. Carry spray on any trail, keep 100 yards, and never step between a sow and cubs."},
+    {n:"Mountain goats",ic:"&#128016;",w:"Logan Pass - the boardwalk and the Hidden Lake overlook",
+     t:"Around the pass most of the day, best early before the lot fills. Bighorn sheep on the same slopes."},
+    {n:"Moose",ic:"&#127994;",w:"Two Medicine and the willow flats",
+     t:"First and last light, in the wet ground. Give them more room than a bear - they charge more readily."}]},
+  {st:"WY",who:[
+    {n:"Wolves",ic:"&#128058;",w:"Lamar Valley, and Hayden Valley second",
+     t:"First light is not a suggestion here - be parked before sunrise. Look for the spotting scopes; those people will show you and tell you what they are watching."},
+    {n:"Bison",ic:"&#129452;",w:"Lamar and Hayden Valleys",
+     t:"All day, in herds, often on the road. A raised tail means back off."},
+    {n:"Grizzly",ic:"&#128059;",w:"Lamar and Hayden Valleys, the Dunraven slopes",
+     t:"Dawn and dusk on the open sage. 100 yards minimum, and that is the law here, not manners."},
+    {n:"Elk",ic:"&#129433;",w:"Mammoth Hot Springs terraces and the Madison river flats",
+     t:"They stand on the Mammoth lawns most evenings. August is the run-up to the rut - bulls get unpredictable."}]},
+  {st:"ND",who:[
+    {n:"Wild horses &amp; bison",ic:"&#128014;",w:"Theodore Roosevelt South Unit loop",
+     t:"Early and late on the loop road. The horse bands are the draw here and nowhere else on your route."}]}
+];
+function sunWindows(){
+  if(!sunToday)return null;
+  const r=sunToday.rise.getTime(), s=sunToday.set.getTime();
+  return {
+    dawn:[r-30*60000, r+2*3600000],          /* animals move */
+    dusk:[s-2*3600000, s+30*60000],
+    goldA:[r, r+3600000],                    /* the light is good */
+    goldB:[s-3600000, s],
+    blue:[s, s+30*60000]
+  };
+}
+function inWin(w,t){return t>=w[0]&&t<=w[1]}
+function untilStr(ms){
+  const m=Math.round(ms/60000);
+  if(m<1)return "now";
+  if(m<60)return "in "+m+" min";
+  const hr=m/60;
+  return "in "+(hr<10?hr.toFixed(1).replace(".0",""):Math.round(hr))+" hr";
+}
+function renderWild(){
+  const now=$("wildNow"); if(!now)return;
+  const w=sunWindows(), t=Date.now();
+  if(!w){now.innerHTML='<div class="note small" style="margin:0">Olive needs one weather check to know today\'s sunrise and sunset here. It happens automatically as soon as you have a signal.</div>';}
+  else{
+    const animal=inWin(w.dawn,t)||inWin(w.dusk,t);
+    const gold=inWin(w.goldA,t)||inWin(w.goldB,t);
+    const blue=inWin(w.blue,t);
+    let head,cls,sub;
+    if(animal&&gold){cls="sage";head="&#127752; Both windows are open right now";sub="Animals are moving and the light is at its best. This is the hour to be out of the car with the camera.";}
+    else if(animal){cls="sage";head="&#129454; Wildlife hour - open now";sub="The edges of the day are when they move. Drive slowly, scan the meadow edges and treelines, and stop for the pullouts.";}
+    else if(gold){cls="sage";head="&#128247; Golden hour - open now";sub="Low, warm, side-on light. Anything you shoot in the next hour will look better than the same thing at noon.";}
+    else if(blue){cls="gold";head="&#127756; Blue hour";sub="The light is going. Good for wide landscapes, too dark for animals at distance.";}
+    else{
+      /* name the next window rather than just saying "not now" */
+      const cands=[[w.dawn[0],"wildlife hour"],[w.goldA[0],"golden hour"],[w.goldB[0],"golden hour"],[w.dusk[0],"wildlife hour"]]
+        .filter(x=>x[0]>t).sort((a,b)=>a[0]-b[0]);
+      const night = t>w.dusk[1] || t<w.dawn[0];
+      cls="";head=night?"&#127769; After dark":"&#9728;&#65039; Middle of the day";
+      const nextLine=cands.length?" Next "+cands[0][1]+" "+untilStr(cands[0][0]-t)+
+          " ("+new Date(cands[0][0]).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+")."
+        :" Next window is tomorrow at first light.";
+      sub=(night
+        ? "Too dark to see them coming, which is exactly when deer and elk cross. Drop your speed on the rural roads and watch the verges for eyeshine."
+        : "Animals are bedded down in the shade and the light is flat.")+nextLine;
+    }
+    now.innerHTML='<div class="note '+(cls==="sage"?"":"warn")+'" style="margin:0"><b>'+head+"</b><div class=\"small\" style=\"margin-top:.25rem\">"+sub+"</div>"+
+      '<div class="pills" style="margin-top:.5rem">'+
+        '<span class="pill">Sunrise '+sunToday.rise.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+"</span>"+
+        '<span class="pill">Sunset '+sunToday.set.toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+"</span>"+
+      "</div></div>";
+  }
+
+  /* who is actually around, by the state you are standing in */
+  const who=$("wildWho");
+  /* the state you are standing in, from the geocoder, falling back to the
+     nearest mapped place when there has been no signal to ask */
+  const st=(typeof whereAmI!=="undefined"&&whereAmI&&whereAmI.stateAb)?whereAmI.stateAb
+           :(here?(nearest(1)[0]||{}).st:null);
+  const grp=WILD_WHERE.find(x=>x.st===st);
+  who.innerHTML=grp?'<div class="small muted" style="margin-bottom:.45rem"><b>What is out there here</b></div>'+
+    grp.who.map(a=>'<div class="row"><div class="ic">'+a.ic+'</div><div class="bd"><div class="t">'+a.n+
+      '</div><div class="s">'+a.w+"</div><div class=\"small muted\" style=\"margin-top:.3rem\">"+a.t+"</div></div></div>").join("")
+    :'<div class="small muted">Olive names the animals and the best spots for each state as you reach it.</div>';
+
+  /* mapped wildlife stops near you */
+  const sp=$("wildSpots");
+  const near=here?nearest(3,["wildlife"],120):[];
+  sp.innerHTML=near.length?'<div class="small muted" style="margin-bottom:.45rem"><b>Wildlife stops near you</b></div>'+cardList(near,true):"";
+
+  /* photo pullouts you have not passed yet */
+  const ph=$("photoAhead");
+  const scen=here?nearest(null,["scenic"],40).filter(isAhead).slice(0,3):[];
+  ph.innerHTML=scen.length?'<div class="small muted" style="margin-bottom:.45rem"><b>Photo stops ahead of you</b>'+
+    (sunWindows()&&(inWin(sunWindows().goldA,Date.now())||inWin(sunWindows().goldB,Date.now()))?' &mdash; and the light is right':"")+
+    "</div>"+cardList(scen,true):
+    (here?'<div class="small muted">No mapped viewpoints in the next 40 miles.</div>':"");
+}
 function renderFuelWatch(){
   const el=$("fuelInfo");
   if(!here){el.innerHTML="Turn on location and Olive warns you before the long empty stretches &mdash; the Hi&#8209;Line and central Montana have real gaps.";return}
@@ -3395,6 +3677,7 @@ async function loadWeather(){
   try{
     const u="https://api.open-meteo.com/v1/forecast?latitude="+c.lat+"&longitude="+c.lng+
       "&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,apparent_temperature"+
+      "&hourly=precipitation_probability,weather_code,wind_gusts_10m"+
       "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset"+
       "&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto&forecast_days=6";
     const r=await fetch(u);const j=await r.json();
@@ -3414,7 +3697,11 @@ async function loadWeather(){
       const lbl=i===0?"Today":new Date(t+"T12:00").toLocaleDateString([],{weekday:"short"});
       return `<span class="pill">${dw[1]} <b>${lbl}</b> ${Math.round(j.daily.temperature_2m_max[i])}&deg;/${Math.round(j.daily.temperature_2m_min[i])}&deg;${j.daily.precipitation_probability_max[i]>20?" &#128167;"+j.daily.precipitation_probability_max[i]+"%":""}</span>`;
     }).join("");
+    /* the sun times drive wildlife windows and golden hour, so keep them */
+    sunToday={rise:new Date(j.daily.sunrise[0]),set:new Date(j.daily.sunset[0])};
     renderSky(j.daily.sunrise[0],j.daily.sunset[0],j.daily.weather_code[0]);
+    renderWild();
+    stormWatch(j);
     /* heat warning matters for this group */
     if(j.daily.temperature_2m_max[0]>=93){
       pushOnce("heat"+todayISO(),{ic:"&#127777;&#65039;",cls:"health",t:"Hot day ahead — "+Math.round(j.daily.temperature_2m_max[0])+"°F",
@@ -3446,6 +3733,72 @@ function moonPhase(d){
   const lp=2551442.9, now=d.getTime()/1000, new0=592500;   /* known new moon epoch (s) */
   return (((now-new0)%lp)+lp)%lp/lp;
 }
+/* ============================================================
+   STORMS ON THE EXPOSED GROUND
+   Afternoon convection is the signature weather of this route: it builds
+   over the high country from about noon and it is worst exactly where the
+   family is least sheltered - Logan Pass, the Beartooth, an open overlook.
+   So the warning is not "rain today", it is which hours, how hard, and
+   whether they are due to be somewhere exposed when it lands.
+   ============================================================ */
+function stormWatch(j){
+  const el=$("wxStorm"); if(!el)return;
+  el.innerHTML="";
+  const H=j&&j.hourly; if(!H||!H.time)return;
+  const now=Date.now(), horizon=now+9*3600000;
+  const rows=[];
+  for(let i=0;i<H.time.length;i++){
+    const t=new Date(H.time[i]).getTime();
+    if(t<now-1800000||t>horizon)continue;
+    const code=H.weather_code[i], pp=H.precipitation_probability[i]||0, g=H.wind_gusts_10m[i]||0;
+    const thunder=[95,96,99].includes(code);
+    const heavy=[65,67,82,75,86].includes(code);
+    if(thunder||heavy||pp>=60||g>=40)rows.push({t,code,pp,g,thunder,heavy});
+  }
+  if(!rows.length)return;
+  const first=rows[0], last=rows[rows.length-1];
+  const anyThunder=rows.some(r=>r.thunder);
+  const maxG=Math.max.apply(null,rows.map(r=>r.g));
+  const maxP=Math.max.apply(null,rows.map(r=>r.pp));
+  const when=new Date(first.t).toLocaleTimeString([],{hour:"numeric"});
+  const until=new Date(last.t+3600000).toLocaleTimeString([],{hour:"numeric"});
+
+  /* is today a day with real exposure on it? */
+  const i=tripDayIndex();
+  const passes=i>=0?PASSES.filter(p=>p.day===DAYS[i].n):[];
+  const high=passes.filter(p=>p.el>=6000);
+
+  let advice;
+  if(anyThunder){
+    advice="Lightning is the risk, not the rain. Be off summits, boardwalks, open overlooks and exposed pullouts before it arrives &mdash; the vehicle is the safe place, and a thermal basin boardwalk is the worst one.";
+  }else if(maxG>=40){
+    advice="Gusts to "+Math.round(maxG)+" mph. Two hands on the wheel on the open stretches, and take care opening doors at viewpoints.";
+  }else{
+    advice="Heavy enough to matter on mountain roads. Slow down, lights on, and give the switchbacks more room than usual.";
+  }
+  const passLine=high.length
+    ? "<b>Today you are over "+high.map(p=>esc(p.n)+" ("+p.el.toLocaleString()+" ft)</b>").join(" and ")+
+      ". Cross it before the build-up if you can &mdash; morning is reliably the calmer half of the day up there."
+    : (passes.length?"Today's crossing is "+passes.map(p=>esc(p.n)).join(" and ")+", which is low and sheltered by comparison.":"");
+
+  el.innerHTML='<div class="note warn" style="margin:.8rem 0 0">'+
+    "<b>&#9928;&#65039; "+(anyThunder?"Thunderstorms":"Rough weather")+" building from about "+when+"</b>"+
+    '<div class="small" style="margin-top:.3rem">Through roughly '+until+
+      (maxP?" &middot; "+maxP+"% chance at the peak":"")+
+      (maxG>=30?" &middot; gusts to "+Math.round(maxG)+" mph":"")+". "+advice+"</div>"+
+    (passLine?'<div class="small" style="margin-top:.45rem">'+passLine+"</div>":"")+
+    "</div>";
+
+  /* and say it once out loud on the alert feed, where they will see it */
+  if(anyThunder||maxG>=40){
+    pushOnce("storm"+todayISO()+new Date(first.t).getHours(),
+      {ic:"&#9928;&#65039;",cls:"health",
+       t:(anyThunder?"Thunderstorms":"High wind")+" from about "+when,
+       s:advice},"storm");
+  }
+}
+
+let sunToday=null;
 function renderSky(sunriseISO,sunsetISO,code){
   const ss=new Date(sunsetISO),sr=new Date(sunriseISO);
   const ph=moonPhase(new Date()),illum=Math.round((1-Math.cos(2*Math.PI*ph))/2*100);
@@ -3788,6 +4141,7 @@ function renderRecap(){
   if(hl)rows.push(`<div class="small muted" style="margin-top:.7rem"><b>Highlights:</b> ${hl}</div>`);
   if(!any)rows.push(`<p class="small muted" style="margin:.7rem 0 0">Nothing logged yet — drive, pin a spot or add a photo and today's story builds itself.</p>`);
   $("recapBody").innerHTML=rows.join("");
+  renderRecapNudge();
 }
 $("recapFilm").addEventListener("click",()=>{
   const ex=todayExperience();
@@ -3803,6 +4157,127 @@ $("recapFilm").addEventListener("click",()=>{
     $("vidMake").click();
   },250);
 });
+/* ============================================================
+   THE NIGHTLY UPDATE HOME
+   A phone browser cannot send a message on its own - no web app can,
+   and anything claiming otherwise is lying. What Olive can honestly do
+   is write the whole thing, remember who it goes to, and buzz the phone
+   at the hour they picked so it takes one tap instead of ten minutes.
+   ============================================================ */
+function folks(){return store.get("folks",[])}
+function recapHour(){return store.get("recapHour",20)}      /* 8pm by default */
+
+/* a fuller message than the share text - this one is for people who are not here */
+function recapHome(){
+  const ex=todayExperience(), i=tripDayIndex();
+  const d=i>=0?DAYS[i]:null;
+  const L=[];
+  L.push(d?"Day "+d.n+" of the Great American West — "+d.t:"Great American West");
+  if(d&&d.r)L.push(d.r);
+  const day=trailDays().find(x=>x.k===todayISO());
+  const bits=[];
+  if(ex.mi>1)bits.push(Math.round(ex.mi).toLocaleString()+" miles driven");
+  if(day&&day.hi!=null&&day.hi>4000)bits.push("topped out at "+day.hi.toLocaleString()+" ft");
+  if(ex.places.length)bits.push(ex.places.length+" place"+(ex.places.length===1?"":"s")+" seen");
+  if(ex.photos.length)bits.push(ex.photos.length+" photo"+(ex.photos.length===1?"":"s")+" taken");
+  if(bits.length)L.push(bits.join(", ")+".");
+  /* feed titles are written for the journal ("Passed near X"); the family
+     back home just wants the place */
+  const hl=ex.places.slice(0,4).map(p=>String(p.title||"").replace(/^(Passed near|Arrived at|Stopped at) /,""));
+  if(hl.length)L.push("Highlights: "+hl.join(", ")+".");
+  if(d&&d.stay)L.push("Tonight we are in "+d.stay+".");
+  L.push("— sent from Olive");
+  return L.join("\n");
+}
+function smsTo(nums,text){
+  const sep=/iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent)?"&":"?";
+  location.href="sms:"+nums.join(",")+sep+"body="+encodeURIComponent(text);
+}
+function sendHome(){
+  const f=folks();
+  const txt=recapHome();
+  if(!f.length){folksSheet();return}
+  const tels=f.filter(x=>x.tel).map(x=>x.tel);
+  const mails=f.filter(x=>x.email).map(x=>x.email);
+  store.set("recapSent",todayISO());
+  renderRecapNudge();
+  addFeed("note","&#128233;","Sent tonight's update home",txt.split("\n")[0]);
+  if(tels.length&&mails.length){
+    openSheet("Send tonight's update",`
+      <p class="small muted">Going to ${f.map(x=>esc(x.n)).join(", ")}.</p>
+      <div class="note small" style="white-space:pre-wrap">${esc(txt)}</div>
+      <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn brass" id="shTxt">&#128172; Text ${tels.length}</button>
+        <button class="btn" id="shMail">&#9993;&#65039; Email ${mails.length}</button>
+      </div>`);
+    $("shTxt").addEventListener("click",()=>{closeSheet();smsTo(tels,txt)});
+    $("shMail").addEventListener("click",()=>{closeSheet();
+      location.href="mailto:"+mails.join(",")+"?subject="+encodeURIComponent("Our Great American West trip — today")+"&body="+encodeURIComponent(txt)});
+  }
+  else if(tels.length)smsTo(tels,txt);
+  else if(mails.length)location.href="mailto:"+mails.join(",")+"?subject="+encodeURIComponent("Our Great American West trip — today")+"&body="+encodeURIComponent(txt);
+  else folksSheet();
+}
+function folksSheet(){
+  const f=folks();
+  openSheet("Who gets the nightly update",`
+    <p class="small muted">Add the people back home once. Every evening Olive writes the day up and nudges you &mdash; one tap sends it to all of them.</p>
+    <div id="folkList">${f.length?f.map((x,i)=>`<div class="row"><div class="ic">&#128100;</div><div class="bd"><div class="t">${esc(x.n)}</div><div class="s">${esc(x.tel||"")}${x.tel&&x.email?" &middot; ":""}${esc(x.email||"")}</div></div><button class="btn sm ghost" data-folkdel="${i}">Remove</button></div>`).join(""):'<p class="small muted">Nobody added yet.</p>'}</div>
+    <hr class="hr">
+    <div class="field"><label class="fld" for="fkName">Name</label><input type="text" id="fkName" maxlength="40" placeholder="e.g. Sarah"></div>
+    <div class="field"><label class="fld" for="fkTel">Mobile number (for a text)</label><input type="tel" id="fkTel" inputmode="tel" placeholder="optional"></div>
+    <div class="field"><label class="fld" for="fkMail">Email</label><input type="email" id="fkMail" inputmode="email" placeholder="optional" autocapitalize="off" spellcheck="false"></div>
+    <div class="btnrow"><button class="btn brass" id="fkAdd">Add them</button></div>
+    <hr class="hr">
+    <div class="field"><label class="fld" for="fkHour">Nudge me each evening at</label>
+      <select id="fkHour">${[17,18,19,20,21,22].map(x=>`<option value="${x}"${recapHour()===x?" selected":""}>${x>12?x-12:x}:00 ${x>=12?"pm":"am"}</option>`).join("")}</select></div>
+    <div class="note small">A web app can't send a message by itself &mdash; Olive writes it and reminds you, you tap send. If you turn on notifications in the Crew tab, the reminder reaches you even when Olive is closed.</div>`);
+  $("fkAdd").addEventListener("click",()=>{
+    const n=$("fkName").value.trim(), tel=$("fkTel").value.trim(), email=$("fkMail").value.trim();
+    if(!n)return toast("Give them a name");
+    if(!tel&&!email)return toast("Add a number or an email");
+    const a=folks();a.push({n,tel,email});store.set("folks",a);
+    closeSheet();toast("Added");renderRecapNudge();
+  });
+  $("fkHour").addEventListener("change",e=>{store.set("recapHour",+e.target.value);renderRecapNudge()});
+  const list=$("folkList");
+  if(list)list.addEventListener("click",e=>{
+    const b=e.target.closest("[data-folkdel]");if(!b)return;
+    const a=folks();a.splice(+b.dataset.folkdel,1);store.set("folks",a);
+    closeSheet();folksSheet();
+  });
+}
+function renderRecapNudge(){
+  const el=$("recapNudge"); if(!el)return;
+  const f=folks(), hr=recapHour(), sent=store.get("recapSent","")===todayISO();
+  const due=new Date().getHours()>=hr;
+  if(!f.length){
+    el.innerHTML='<div class="note small" style="margin:.8rem 0 0">&#128233; <b>Send a nightly update home?</b> Add the family once and Olive writes it up every evening for you. <button class="btn sm ghost" id="recapAddFolk" style="margin-left:.3rem">Add them</button></div>';
+    const b=$("recapAddFolk"); if(b)b.addEventListener("click",folksSheet);
+    return;
+  }
+  if(sent){el.innerHTML='<div class="note small" style="margin:.8rem 0 0">&#9989; Tonight\'s update has gone to '+f.map(x=>esc(x.n)).join(", ")+".</div>";return}
+  if(due){el.innerHTML='<div class="note warn small" style="margin:.8rem 0 0">&#128233; <b>Tonight\'s update is written and waiting.</b> One tap sends it to '+f.map(x=>esc(x.n)).join(", ")+".</div>";return}
+  el.innerHTML='<div class="note small" style="margin:.8rem 0 0">&#128233; Olive will nudge you at '+(hr>12?hr-12:hr)+":00 "+(hr>=12?"pm":"am")+" to send the day home to "+f.map(x=>esc(x.n)).join(", ")+".</div>";
+}
+/* the evening nudge itself - once a day, and it buzzes the phone if allowed */
+function recapNudgeCheck(){
+  if(!folks().length)return;
+  const t=todayISO();
+  if(store.get("recapSent","")===t)return;
+  if(store.get("recapNudged","")===t)return;
+  if(new Date().getHours()<recapHour())return;
+  store.set("recapNudged",t);
+  pushAlert({ic:"&#128233;",cls:"",t:"Tonight's update home is ready",
+             s:"Olive has written the day up. Open Today and tap Send tonight's update home."});
+  if(store.get("notif",false)&&"Notification" in window&&Notification.permission==="granted"){
+    try{new Notification("Tonight's update is ready",{body:recapHome().split("\n").slice(0,2).join(" — "),tag:"olive-recap"})}catch(e){}
+  }
+  renderRecapNudge();
+}
+$("recapSendAll").addEventListener("click",sendHome);
+$("recapWho").addEventListener("click",folksSheet);
+
 $("recapShare").addEventListener("click",()=>shareAny("Great American West — today",recapText()));
 $("recapSms").addEventListener("click",()=>shareSMS(recapText()));
 $("recapEmail").addEventListener("click",()=>shareEmail("Today on our Great American West trip",recapText()));
@@ -3816,6 +4291,80 @@ $("recapSave").addEventListener("click",()=>{
    ============================================================ */
 const HEALTH_DEF={med:{on:false,times:["08:00","20:00"],label:"Medications"},water:{on:false,every:45},stretch:{on:false,every:90}};
 function health(){return Object.assign({},HEALTH_DEF,store.get("health",{}))}
+/* ============================================================
+   ALTITUDE
+   Denver starts them at 5,280 ft and the route only goes up from there.
+   For a group this age that is not trivia - it changes how much water
+   they need, how the first night's sleep goes, and how hard the day's
+   walking should be. Terrain elevation comes from Open-Meteo because a
+   phone's own GPS altitude is often absent and frequently wrong.
+   ============================================================ */
+let elevFt=null, elevAt=0, elevKey="";
+async function loadElevation(){
+  if(!here)return;
+  const k=here.lat.toFixed(2)+","+here.lng.toFixed(2);      /* ~1km grid is plenty */
+  if(k===elevKey&&Date.now()-elevAt<30*60*1000)return;
+  const cache=store.get("elevCache",{});
+  if(cache[k]!=null){elevFt=cache[k];elevKey=k;elevAt=Date.now();renderAltitude();return}
+  try{
+    const r=await fetch("https://api.open-meteo.com/v1/elevation?latitude="+here.lat.toFixed(4)+"&longitude="+here.lng.toFixed(4));
+    const j=await r.json();
+    const m=j&&j.elevation&&j.elevation[0];
+    if(m==null||isNaN(m))return;
+    elevFt=Math.round(m*3.28084);elevKey=k;elevAt=Date.now();
+    cache[k]=elevFt;
+    /* keep the cache from growing forever - offline days still get a number */
+    const keys=Object.keys(cache); if(keys.length>800)keys.slice(0,400).forEach(x=>delete cache[x]);
+    store.set("elevCache",cache);
+    renderAltitude();
+  }catch(e){
+    if(here&&here.ele!=null){elevFt=here.ele;renderAltitude()}   /* fall back to the phone */
+  }
+}
+const ALT_BANDS=[
+  {min:0,    lbl:"Low elevation", cls:"sage",
+   a:"Nothing to think about here. Drink normally."},
+  {min:4000, lbl:"Mile-high country", cls:"sage",
+   a:"Thin enough to dry you out. Drink more water than you feel like, and go easy on alcohol tonight."},
+  {min:6000, lbl:"High elevation", cls:"gold",
+   a:"Expect to be short of breath on stairs and to sleep lightly. Slow the walking pace, keep water constantly in reach, and save the big climb for after you have had a night at this height."},
+  {min:8000, lbl:"Very high elevation", cls:"danger",
+   a:"Headache, nausea or a pounding heart at rest are altitude, not a bug. The cure is going down, not pushing through. Keep exertion light and do not sleep this high if anyone feels rough."}
+];
+function altBand(ft){let b=ALT_BANDS[0];ALT_BANDS.forEach(x=>{if(ft>=x.min)b=x});return b}
+
+/* how much climbing has happened today, straight out of the breadcrumbs */
+function climbToday(){
+  const t=trail(),k=todayISO();
+  const day=t.filter(p=>p[4]!=null&&new Date(p[2]).toLocaleDateString("en-CA")===k);
+  if(day.length<2)return null;
+  let gain=0;
+  for(let i=1;i<day.length;i++){const d=day[i][4]-day[i-1][4];if(d>0&&d<2000)gain+=d}
+  return {gain:Math.round(gain),hi:Math.max.apply(null,day.map(p=>p[4])),lo:Math.min.apply(null,day.map(p=>p[4]))};
+}
+function renderAltitude(){
+  const el=$("altPanel"); if(!el)return;
+  const i=tripDayIndex();
+  const todayPasses=i>=0?PASSES.filter(p=>p.day===DAYS[i].n):[];
+  if(elevFt==null&&!todayPasses.length){el.innerHTML="";return}
+  let out="";
+  if(elevFt!=null){
+    const b=altBand(elevFt), c=climbToday();
+    out+='<div class="row" style="border:0;background:transparent;padding:0 0 .6rem">'+
+      '<div class="ic">&#9968;&#65039;</div><div class="bd">'+
+      '<div class="t">'+elevFt.toLocaleString()+' ft &middot; '+b.lbl+'</div>'+
+      '<div class="s">'+b.a+'</div>'+
+      (c&&c.gain>500?'<div class="pills" style="margin-top:.4rem"><span class="pill">&#11014;&#65039; '+c.gain.toLocaleString()+' ft climbed today</span><span class="pill sky">high point '+c.hi.toLocaleString()+' ft</span></div>':"")+
+      "</div></div>";
+  }
+  if(todayPasses.length){
+    out+='<div class="note '+(todayPasses.some(p=>p.el>=6000)?"warn":"")+' small" style="margin:0 0 .8rem">'+
+      "<b>Today's climb"+(todayPasses.length>1?"s":"")+":</b> "+
+      todayPasses.map(p=>esc(p.n)+" at "+p.el.toLocaleString()+" ft ("+esc(p.grade)+")").join("; ")+
+      ". Full detail on the Journey tab.</div>";
+  }
+  el.innerHTML=out;
+}
 function renderHealth(){
   const h=health();
   $("healthPanel").innerHTML=`
@@ -3978,6 +4527,8 @@ function renderSettings(){
     </div>
     <label class="switch"><input type="checkbox" id="setMiles" ${store.get("autoTrack",true)?"checked":""}><span class="track"></span>
       <span><b>Track miles automatically</b><br><span class="small muted">Counts distance from your GPS while location is on</span></span></label>
+    <label class="switch"><input type="checkbox" id="setAwake" ${store.get("keepAwake",true)?"checked":""}><span class="track"></span>
+      <span><b>Keep the screen awake while driving</b><br><span class="small muted">A locked phone stops recording the trail. Leave this on while you are moving; turn it off to save battery when you are parked.</span></span></label>
     <hr class="hr">
     <div class="field">
       <label class="fld" for="setNps">Park Service key (optional, free)</label>
@@ -4106,6 +4657,11 @@ function renderSettings(){
     $("setXi").value=""; xiStat(); toast("Your key was removed &mdash; back on the built-in credit");
   });
   $("setMiles").addEventListener("change",e=>store.set("autoTrack",e.target.checked));
+  $("setAwake").addEventListener("change",e=>{
+    store.set("keepAwake",e.target.checked);
+    if(e.target.checked)keepAwake(); else releaseAwake();
+    renderTrailLog();
+  });
   $("setExport").addEventListener("click",()=>{
     const dump={};["feed","stats","states","parks","bucket","favs","pack","health","media"].forEach(k=>dump[k]=store.get(k,null));
     const b=new Blob([JSON.stringify(dump,null,2)],{type:"application/json"});
@@ -4772,13 +5328,108 @@ $("vidMake").addEventListener("click",async()=>{
    TRAIL TRACKING - breadcrumbs, a drawn map, and exports
    ============================================================ */
 function trail(){return store.get("trail",[])}
-function trailPush(lat,lng){
+/* A point is [lat, lng, time, mph, feet]. The last two are optional - older
+   points saved before speed logging existed simply do not have them, and every
+   reader below tolerates that. */
+const TRAIL_CAP=20000;
+function trailPush(lat,lng,pos){
   const t=trail(),last=t[t.length-1];
-  /* one point per ~0.5 mi keeps the file small but the shape honest */
-  if(last&&dist(last[0],last[1],lat,lng)<0.5)return;
-  t.push([+lat.toFixed(5),+lng.toFixed(5),Date.now()]);
-  store.set("trail",t.slice(-4000));
-  if($("view-journey").classList.contains("active"))drawTrail();
+  const sp=store.get("trailSp",0.15);
+  /* one point per ~0.15 mi: fine enough to show which side of a canyon you
+     took, coarse enough that a two-week trip still fits in local storage */
+  if(last&&dist(last[0],last[1],lat,lng)<sp)return;
+  let mph=null,ft=null;
+  if(pos&&pos.coords){
+    const s=pos.coords.speed, a=pos.coords.altitude;
+    if(s!=null&&!isNaN(s)&&s>=0)mph=Math.round(s*2.23694);
+    if(a!=null&&!isNaN(a))ft=Math.round(a*3.28084);
+  }
+  if(mph==null&&here&&here.mph!=null&&here.mph<=95)mph=here.mph;   /* inferred from the last leg */
+  if(ft!=null)here&&(here.ele=ft);
+  t.push([+lat.toFixed(5),+lng.toFixed(5),Date.now(),mph,ft]);
+  /* Never throw away the start of the trip. When the log gets long, halve the
+     resolution of the whole thing instead - the shape of every day survives,
+     the storage cost does not grow. */
+  if(t.length>TRAIL_CAP){
+    store.set("trailSp",+(sp*2).toFixed(3));
+    store.set("trail",t.filter((p,i)=>i%2===0||i===t.length-1));
+  }else store.set("trail",t);
+  trailBeat=Date.now();
+  if($("view-journey").classList.contains("active")){drawTrail();renderTrailLog()}
+}
+/* when the last breadcrumb landed - drives the live recording indicator */
+let trailBeat=0;
+
+/* Group the breadcrumbs into calendar days so "where have we been" has an
+   answer per day, not just one long line. */
+function trailDays(){
+  const t=trail(),out={};
+  for(let i=0;i<t.length;i++){
+    const p=t[i], k=new Date(p[2]).toLocaleDateString("en-CA");
+    const o=out[k]||(out[k]={k,mi:0,pts:0,first:p[2],last:p[2],top:0,hi:null,lo:null});
+    o.pts++;o.last=p[2];
+    if(p[3]!=null&&p[3]>o.top&&p[3]<=95)o.top=p[3];
+    if(p[4]!=null){o.hi=o.hi==null?p[4]:Math.max(o.hi,p[4]);o.lo=o.lo==null?p[4]:Math.min(o.lo,p[4])}
+    const q=t[i-1];
+    /* only join two points that belong to the same day, or the overnight
+       gap gets drawn as a mile of driving that never happened */
+    if(q&&new Date(q[2]).toLocaleDateString("en-CA")===k){
+      const d=dist(q[0],q[1],p[0],p[1]);
+      if(d<600)o.mi+=d;
+    }
+  }
+  return Object.values(out).sort((a,b)=>a.k<b.k?1:-1);
+}
+
+/* ---------- live recording state ----------
+   Terry needs to be able to glance at this and know the trail is actually
+   being written, so it reports the honest state: recording, waiting for a
+   fix, or off - never a green light it has not earned. */
+function renderTrailLog(){
+  const live=$("trailLive"); if(!live)return;
+  const on=store.get("gps",true)!==false && watchId!=null;
+  const age=trailBeat?Date.now()-trailBeat:null;
+  const fixAge=here?Date.now()-here.t:null;
+  let cls,dot,txt;
+  if(!on){cls="";dot="&#9898;";txt="<b>Not recording.</b> Turn on location below and the trail writes itself as you drive.";}
+  else if(fixAge!=null&&fixAge<90000){
+    cls="sage";dot="&#128308;";
+    const bits=[];
+    bits.push("<b>Recording</b>");
+    if(here&&here.mph!=null&&here.mph<=95)bits.push(here.mph+" mph");
+    if(here&&here.acc!=null)bits.push(fmtAcc(here.acc));
+    if(here&&here.ele!=null)bits.push(here.ele.toLocaleString()+" ft");
+    txt=bits.join(" &middot; ")+(age!=null?'<div class="small muted" style="margin-top:.2rem">Last breadcrumb '+ago(age)+" &middot; "+trail().length.toLocaleString()+" points saved</div>":"");
+  }
+  else{cls="gold";dot="&#128992;";txt="<b>Waiting for a fix.</b> Normal indoors, in a canyon or in a tunnel &mdash; it picks straight back up.";}
+  live.innerHTML='<div class="note '+(cls==="sage"?"":"warn")+' small" style="margin:0 0 .8rem">'+dot+" "+txt+
+    (on&&!("wakeLock" in navigator)?'<div class="small muted" style="margin-top:.35rem">This browser can\'t keep the screen awake, so lock the phone and recording pauses until you wake it.</div>':"")+
+    (on&&wakeLock?'<div class="small muted" style="margin-top:.35rem">&#128161; Screen kept awake so the trail keeps writing while you drive.</div>':"")+"</div>";
+
+  const el=$("trailLog"); if(!el)return;
+  const d=trailDays();
+  if(!d.length){el.innerHTML="";return}
+  el.innerHTML='<div class="small muted" style="margin-bottom:.5rem"><b>Where you have been, day by day</b></div>'+
+    d.slice(0,16).map(x=>{
+      const dy=DAYS.find(v=>v.d===x.k);
+      const hrs=(x.last-x.first)/3600000;
+      const pills=[];
+      if(x.mi>=0.5)pills.push('<span class="pill">'+Math.round(x.mi).toLocaleString()+" mi</span>");
+      if(hrs>=0.3)pills.push('<span class="pill">'+(hrs<1?Math.round(hrs*60)+" min":hrs.toFixed(1)+" hr")+" on the road</span>");
+      if(x.top>15)pills.push('<span class="pill">top '+x.top+" mph</span>");
+      if(x.hi!=null&&x.hi>1000)pills.push('<span class="pill sky">high '+x.hi.toLocaleString()+" ft</span>");
+      return '<div class="row"><div class="ic">&#128205;</div><div class="bd">'+
+        '<div class="t">'+new Date(x.k+"T12:00").toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"})+
+        (dy?" &middot; Day "+dy.n:"")+"</div>"+
+        (dy?'<div class="s">'+esc(dy.r)+"</div>":"")+
+        '<div class="pills" style="margin-top:.4rem">'+pills.join("")+"</div></div></div>";
+    }).join("");
+}
+function ago(ms){
+  const s=Math.round(ms/1000);
+  if(s<75)return s+" sec ago";
+  const m=Math.round(s/60); if(m<90)return m+" min ago";
+  return Math.round(m/60)+" hr ago";
 }
 function pins(){return store.get("pins",[])}
 
@@ -4949,7 +5600,11 @@ $("trailGpx").addEventListener("click",()=>{
   p.forEach(x=>{g+=`<wpt lat="${x.lat}" lon="${x.lng}"><name>${escXml(x.n)}</name><desc>${escXml(x.note||"")}</desc><time>${new Date(x.t).toISOString()}</time></wpt>\n`});
   if(t.length){
     g+='<trk><name>Great American West trail</name><trkseg>\n';
-    t.forEach(pt=>{g+=`<trkpt lat="${pt[0]}" lon="${pt[1]}"><time>${new Date(pt[2]).toISOString()}</time></trkpt>\n`});
+    /* GPX elevation is metres; ours is feet, and only present when the phone
+       gave us one - a missing <ele> is valid, a wrong one is not */
+    t.forEach(pt=>{g+=`<trkpt lat="${pt[0]}" lon="${pt[1]}">`+
+      (pt[4]!=null?`<ele>${(pt[4]/3.28084).toFixed(1)}</ele>`:"")+
+      `<time>${new Date(pt[2]).toISOString()}</time></trkpt>\n`});
     g+='</trkseg></trk>\n';
   }
   g+='</gpx>';
@@ -4974,7 +5629,7 @@ $("trailKml").addEventListener("click",()=>{
 function escXml(s){return String(s||"").replace(/[<>&'"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;","'":"&apos;",'"':"&quot;"}[c]))}
 $("trailClear").addEventListener("click",()=>{
   if(!confirm("Clear the recorded trail? Your saved spots and journal are kept."))return;
-  store.set("trail",[]);drawTrail();toast("Trail cleared");
+  store.set("trail",[]);store.set("trailSp",0.15);trailBeat=0;drawTrail();renderTrailLog();toast("Trail cleared");
 });
 
 /* ============================================================
@@ -7168,7 +7823,7 @@ function boot(){
   renderHealth();renderResv();renderMed();
   renderStories();renderSettings();renderNotif();renderFeed();renderGal();
   renderBriefing();renderNearby();netCheck();syncTourPrompt();
-  renderFindNow();renderStays();renderPins();renderPasses();renderClearance();renderRadio();drawTrail();renderFacts();
+  renderFindNow();renderStays();renderPins();renderPasses();renderClearance();renderRadio();drawTrail();renderTrailLog();renderFacts();
   renderParkAlerts();loadParkAlerts();
   micShow(store.get('micOn',true)&&!!SR);
   if(radarOn){$('mapRadar').classList.add('on');loadRadarFrame().then(()=>{$('radarBar').style.display='block';drawMap();toggleRadarTimer()})}
@@ -7184,6 +7839,13 @@ function boot(){
   if(store.get("loc-share",true)){locSharing=true;$("locToggle").checked=true;setTimeout(publishLoc,3000)}
   /* parked at a viewpoint for an hour, you still stay on the family's map */
   setInterval(()=>{if(locSharing)publishLoc()},5*60*1000);
+  /* the recording indicator has to go stale on its own - a phone sitting still
+     produces no fixes, and a green light that never changes is a lie */
+  setInterval(()=>{if($("view-journey").classList.contains("active"))renderTrailLog()},20000);
+  renderAltitude();renderWild();renderFuelGauge();renderRange();renderRecapNudge();
+  /* the evening nudge home - checked on the minute, fires once a day */
+  recapNudgeCheck();
+  setInterval(recapNudgeCheck,60000);
   $("gpsToggle").checked=store.get("gps",true)!==false;
   autoStartGPS();                       /* on by default, every time Olive opens */
   route();
