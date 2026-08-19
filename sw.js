@@ -4,6 +4,7 @@
    Network-first for live data (weather, chat), which is useless when stale. */
 const CACHE="olive-west-v14";   /* bumped: live trail logging, fuel range, altitude, wildlife hours, storm watch, nightly update home */
 const TILES="olive-tiles-v1";
+const SHARE="olive-share-v1";   /* photos handed to Olive from the phone's own Photos app */
 const TILE_MAX=1200;   /* roughly 60-90MB of map, plenty for this route */
 const SHELL=["./","./index.html","./manifest.json"];
 const VOICE=[
@@ -50,13 +51,39 @@ self.addEventListener("install",e=>{
 });
 self.addEventListener("activate",e=>{
   e.waitUntil(caches.keys()
-    .then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!==TILES).map(k=>caches.delete(k))))
+    .then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k!==TILES&&k!==SHARE).map(k=>caches.delete(k))))
     .then(()=>self.clients.claim()));
 });
 self.addEventListener("fetch",e=>{
   const req=e.request;
-  if(req.method!=="GET")return;
   const url=new URL(req.url);
+
+  /* ---- photos shared in from the phone's own Photos app ----
+     Android delivers a share as a POST to this path. Stash the files where
+     the page can collect them, then redirect back into Olive - a share must
+     never dead-end on a blank page. There is no network involved, so this
+     works with no signal, which is most of this route. */
+  if(req.method==="POST"&&url.pathname.endsWith("/share")){
+    e.respondWith((async()=>{
+      try{
+        const fd=await req.formData();
+        const files=fd.getAll("photos").filter(f=>f&&f.size);
+        const c=await caches.open(SHARE);
+        for(const k of await c.keys())await c.delete(k);      /* last share only */
+        let i=0;
+        for(const f of files){
+          await c.put(
+            new Request("./__shared/"+(i++)+"?name="+encodeURIComponent(f.name||"photo.jpg")),
+            new Response(f,{headers:{"Content-Type":f.type||"application/octet-stream"}})
+          );
+        }
+      }catch(err){}
+      return Response.redirect("./?shared=1",303);
+    })());
+    return;
+  }
+
+  if(req.method!=="GET")return;
 
   /* map tiles: cache-first and keep them, so the roads you have driven
      are still on the map when the signal goes. Trimmed when it gets big. */

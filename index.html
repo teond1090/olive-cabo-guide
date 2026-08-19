@@ -1341,10 +1341,11 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="card-h"><span class="ic">&#127916;</span><h3>Automatic Video Creator</h3><span class="hint">photos in, film out</span></div>
       <div class="foldbody">
       <p class="small muted">Add your photos and Olive builds a highlight reel &mdash; slow pans, gentle fades, your trip stats on the title card.</p>
+      <div id="photoHow"></div>
       <div class="dropzone" id="mediaDrop" tabindex="0" role="button">
         <div style="font-size:2.4rem">&#128247;</div>
-        <b>Add photos &amp; videos</b>
-        <div class="small muted">Tap to choose from your phone, or drag them here</div>
+        <b>Add photos from your camera roll</b>
+        <div class="small muted">Tap to open your phone's photos &mdash; pick as many as you like</div>
       </div>
       <input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden>
       <div id="mediaGal" class="gal" style="margin-top:.9rem"></div>
@@ -4751,6 +4752,60 @@ function handleFiles(files){
   });
   function step(){if(++done===arr.length){renderGal();toast("&#128247; Added")}}
 }
+/* ============================================================
+   PHOTOS TAKEN WITH THE PHONE'S OWN CAMERA
+   No browser will let a web page read the camera roll by itself - that
+   door is shut on every phone, by design. Two honest routes are open:
+   Android can hand photos to Olive through the system share sheet, which
+   is genuinely one tap from the Photos app; everywhere else, the picker
+   below opens the same camera roll and takes as many as you select.
+   ============================================================ */
+async function importShared(){
+  if(!/[?&]shared=1/.test(location.search))return;
+  /* clean the address bar first, so a reload cannot re-import */
+  try{history.replaceState(null,"",location.pathname+location.hash)}catch(e){}
+  try{
+    const c=await caches.open("olive-share-v1");
+    const keys=await c.keys();
+    if(!keys.length)return;
+    const files=[];
+    for(const k of keys){
+      const r=await c.match(k); if(!r)continue;
+      const b=await r.blob();
+      let name="photo.jpg";
+      try{name=new URL(k.url).searchParams.get("name")||name}catch(e){}
+      files.push(new File([b],name,{type:b.type||"image/jpeg"}));
+    }
+    for(const k of keys)await c.delete(k);
+    if(files.length){
+      location.hash="#/memories";
+      handleFiles(files);
+      addFeed("note","&#128247;","Photos added from your camera roll",files.length+" shared straight in from the phone");
+    }
+  }catch(e){}
+}
+/* Can this phone hand photos to Olive from its own Photos app? Only an
+   installed PWA on a browser with Share Target can, so say which it is
+   rather than promising something the phone will not do. */
+function canReceiveShares(){
+  const installed=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  const ios=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  return {installed,ios,supported:!ios&&"serviceWorker" in navigator};
+}
+function renderPhotoHow(){
+  const el=$("photoHow"); if(!el)return;
+  const s=canReceiveShares();
+  let body;
+  if(s.supported&&s.installed){
+    body="<b>Already set up.</b> Take pictures with your normal camera app as you always would. When you want them in here, open Photos, select as many as you like, tap <b>Share</b> and choose <b>Great American West</b>. They land in the Trip Yearbook and count toward tonight's recap.";
+  }else if(s.supported){
+    body="<b>One step to set this up.</b> Add Olive to your home screen (browser menu &rarr; <b>Install app</b> / <b>Add to Home screen</b>). After that, Photos &rarr; <b>Share</b> &rarr; <b>Great American West</b> sends any picture straight in here.";
+  }else{
+    body="<b>On iPhone this cannot be automatic.</b> Apple does not let any web app read the camera roll or receive shares &mdash; that is the phone, not Olive. The button below opens your camera roll instead: tap it, select the day's pictures (you can pick many at once), and they are in.";
+  }
+  el.innerHTML='<div class="note '+(s.supported&&s.installed?"":"warn")+' small" style="margin:0 0 .8rem">&#128247; '+body+"</div>";
+}
+
 function addMedia(m){
   media.unshift(m);
   /* keep localStorage under control - videos are kept in memory only */
@@ -7843,6 +7898,8 @@ function boot(){
      produces no fixes, and a green light that never changes is a lie */
   setInterval(()=>{if($("view-journey").classList.contains("active"))renderTrailLog()},20000);
   renderAltitude();renderWild();renderFuelGauge();renderRange();renderRecapNudge();
+  renderPhotoHow();
+  importShared();                  /* photos handed in from the phone's Photos app */
   /* the evening nudge home - checked on the minute, fires once a day */
   recapNudgeCheck();
   setInterval(recapNudgeCheck,60000);
