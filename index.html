@@ -809,6 +809,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <h2 id="heroTitle">Great American West</h2>
       <p id="heroSub">Denver &rarr; Black Hills &rarr; Glacier &rarr; Yellowstone &rarr; Denver</p>
       <div class="countdown" id="countdown"></div>
+      <div id="heroMiles" class="small" style="display:none;margin-top:.55rem;font-weight:700"></div>
     </div>
 
     <!-- shown until they have watched it, then it gets out of the way -->
@@ -905,9 +906,12 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <div class="card a-sun" id="recapCard" style="display:none">
       <div class="card-h"><span class="ic">&#127909;</span><h3 id="recapTitle">Tonight's Recap</h3></div>
       <div id="recapBody"></div>
+      <div id="recapPhotos" class="gal" style="margin-top:.8rem"></div>
+      <div id="recapCardImg" style="margin-top:.8rem"></div>
       <div id="recapNudge"></div>
       <div class="btnrow" style="margin-top:.9rem">
         <button class="btn sm brass" id="recapSendAll">&#128233; Send tonight&#39;s update home</button>
+        <button class="btn sm sage" id="recapPostcard">&#127912; Make today&#39;s postcard</button>
         <button class="btn sm brass" id="recapFilm">&#127916; Make today's mini-film</button>
         <button class="btn sm brass" id="recapSms">&#128172; Text it</button>
         <button class="btn sm" id="recapEmail">&#9993;&#65039; Email it</button>
@@ -1648,7 +1652,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w39-2026-08-20";
+const OLIVE_BUILD="w40-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2788,7 +2792,7 @@ applyFS();
    Ride Along starts open because location is the app's heart; the dashboard
    and health reminders wait quietly until they're wanted. */
 const FOLD_DEFAULT={
-  /* Today */    ride:true,dash:false,health:false,sky:true,alerts:true,brief:true,ask:true,
+  /* Today */    ride:true,dash:true,health:false,sky:true,alerts:true,brief:true,ask:true,
   /* Journey */  trail:true,pins:false,stays:true,scenic:false,passes:false,clear:false,
   /* Nearby */   events:false,fuel:false,find:true,facts:true,factsrc:false,wild:true,
   /* Radio */    stations:true,pods:false,noaa:false,tis:false,radioabout:false,
@@ -3008,13 +3012,26 @@ function stName(s){
 }
 
 function milesToday(){const s=stats();return (s.days&&s.days[todayISO()])||0}
+/* the first mile of a drive must visibly move - whole-mile rounding shows
+   "0" for half an hour of town driving and reads as a broken tracker */
+function fmtMiles(mi){return mi<10?(Math.round(mi*10)/10).toLocaleString(undefined,{minimumFractionDigits:mi>0&&mi<10?1:0}):Math.round(mi).toLocaleString()}
+function renderHeroMiles(){
+  const el=$("heroMiles");if(!el)return;
+  const s=stats(),today=milesToday();
+  const active=tripDayIndex()>=0;
+  if(!active&&s.mi<1){el.style.display="none";return}
+  el.style.display="block";
+  el.innerHTML="&#128663; <b>"+fmtMiles(today)+" mi today</b> &middot; "+fmtMiles(s.mi)+" this trip"+
+    (store.get("gps",true)!==false&&watchId!=null?' &middot; <span style="opacity:.85">&#128308; tracking</span>':"");
+}
 function renderDash(){
   const s=stats(),parks=store.get("parks",[]);
+  renderHeroMiles();
   const i=tripDayIndex();
   const dayN=i>=0?DAYS[i].n:(daysBetween(TRIP_START,todayISO())>0?15:0);
   const today=milesToday();
   $("dashStats").innerHTML=`
-    <div class="stat"><div class="n">${Math.round(today).toLocaleString()}</div><div class="l">Miles today</div></div>
+    <div class="stat"><div class="n">${fmtMiles(today)}</div><div class="l">Miles today</div></div>
     <div class="stat" id="dashTotal" style="cursor:pointer"><div class="n">${Math.round(s.mi).toLocaleString()}</div><div class="l">Trip miles &#9998;</div></div>
     <div class="stat"><div class="n">${dayN}</div><div class="l">Day of trip</div></div>
     <div class="stat"><div class="n">${statesSoFar().length}</div><div class="l">States</div></div>`;
@@ -3026,10 +3043,10 @@ function renderDash(){
     if(planned>0){
       const pc=Math.max(0,Math.min(100,Math.round(today/planned*100)));
       el.innerHTML=`<div class="small muted" style="display:flex;justify-content:space-between;margin-top:.9rem">
-          <span>Today's drive &middot; ${esc(DAYS[i].r||"")}</span><span><b>${Math.round(today)}</b> of ~${planned} mi</span></div>
+          <span>Today's drive &middot; ${esc(DAYS[i].r||"")}</span><span><b>${fmtMiles(today)}</b> of ~${planned} mi</span></div>
         <div class="bar" style="margin-top:.35rem"><i style="width:${pc}%"></i></div>`;
     }else if(today>0.5){
-      el.innerHTML=`<div class="small muted" style="margin-top:.9rem">Driven today: <b>${Math.round(today).toLocaleString()} miles</b></div>`;
+      el.innerHTML=`<div class="small muted" style="margin-top:.9rem">Driven today: <b>${fmtMiles(today)} miles</b></div>`;
     }else el.innerHTML="";
   }
   const pct=Math.max(0,Math.min(100,Math.round((dayN/15)*100)));
@@ -3298,7 +3315,7 @@ function onFix(pos){
 
   gpsStatus("&#128205; Tracking "+(here.acc!=null?"("+fmtAcc(here.acc)+")":"")+" &middot; "+
             (near&&near._d<150?"near <b>"+esc(near.n)+"</b> ("+fmtMi(near._d)+")":"off the planned route")+
-            " &middot; <b>"+Math.round(milesToday()).toLocaleString()+" mi today</b> &middot; "+
+            " &middot; <b>"+fmtMiles(milesToday())+" mi today</b> &middot; "+
             Math.round(stats().mi).toLocaleString()+" total","muted");
   renderDash();renderHero();
   checkAlerts();
@@ -4301,6 +4318,178 @@ function recapText(){
   if(hl)txt+=" Highlights: "+hl+".";
   return txt;
 }
+/* ============================================================
+   THE DAY, WRITTEN BY ITSELF
+   Everything below comes from what Olive already records on its own -
+   the trail (miles, hours, top speed, high point), the places the
+   proximity alerts logged as they drove past, today's photos and
+   hearts, the cached weather. Nobody types anything; the day just
+   turns into a story, a map and a postcard.
+   ============================================================ */
+function todayTrail(){return trailDays().find(x=>x.k===todayISO())||null}
+function todayPhotos(){
+  const t0=new Date();t0.setHours(0,0,0,0);
+  return media.filter(m=>m.k==="i"&&m.t>=t0.getTime());
+}
+function dayStory(){
+  const ex=todayExperience(), td=todayTrail(), i=tripDayIndex(), d=i>=0?DAYS[i]:null;
+  const bits=[];
+  if(ex.mi>1){
+    let s="You rolled "+fmtMiles(ex.mi)+" miles";
+    if(td){
+      const hrs=(td.last-td.first)/3600000;
+      if(hrs>=0.5)s+=" across "+(hrs<1?Math.round(hrs*60)+" minutes":hrs.toFixed(1).replace(".0","")+" hours")+" on the road";
+    }
+    if(d&&d.r)s+=" — "+d.r;
+    bits.push(s+".");
+  }
+  if(td){
+    const extremes=[];
+    if(td.hi!=null&&td.hi>4000)extremes.push("topped out at "+td.hi.toLocaleString()+" ft");
+    if(td.top>40)extremes.push("touched "+td.top+" mph");
+    if(extremes.length)bits.push("You "+extremes.join(" and ")+".");
+  }
+  const places=ex.places.map(p=>String(p.title||"").replace(/^(Passed near|Arrived at|Stopped at) /,"")).filter(Boolean);
+  if(places.length)bits.push("Along the way: "+places.slice(0,4).join(", ")+(places.length>4?" and "+(places.length-4)+" more":"")+".");
+  const ph=todayPhotos();
+  if(ph.length){
+    const loved=ph.filter(p=>isFav(p.id)).length;
+    bits.push(ph.length+" photo"+(ph.length===1?"":"s")+" in the album"+(loved?", "+loved+" already loved":"")+".");
+  }
+  if(lastWx&&Date.now()-lastWx.at<4*3600000)bits.push(lastWx.temp+"&deg;F and "+lastWx.cond.toLowerCase()+" as the day wound down.");
+  if(d&&d.stay)bits.push("Tonight: "+d.stay+".");
+  return bits.join(" ");
+}
+
+/* ---- today's drive as a little real map, for the card and the postcard ---- */
+function drawDayMap(cv,dayKey,done){
+  const g=cv.getContext("2d"),W=cv.width,H=cv.height;
+  g.fillStyle="#EDE6D4";g.fillRect(0,0,W,H);
+  const t=trail().filter(p=>new Date(p[2]).toLocaleDateString("en-CA")===dayKey);
+  if(t.length<2){g.fillStyle="#8A7358";g.font="600 20px Inter, sans-serif";g.textAlign="center";
+    g.fillText("No drive recorded yet today",W/2,H/2);done&&done(false);return}
+  let minLa=1e9,maxLa=-1e9,minLo=1e9,maxLo=-1e9;
+  t.forEach(p=>{minLa=Math.min(minLa,p[0]);maxLa=Math.max(maxLa,p[0]);minLo=Math.min(minLo,p[1]);maxLo=Math.max(maxLo,p[1])});
+  if(maxLa-minLa<0.01){minLa-=0.02;maxLa+=0.02}
+  if(maxLo-minLo<0.01){minLo-=0.02;maxLo+=0.02}
+  let z=4;
+  for(let c=14;c>=4;c--){
+    const w=(lon2x(maxLo,c)-lon2x(minLo,c))*TILE, hh=(lat2y(minLa,c)-lat2y(maxLa,c))*TILE;
+    if(w<=W-56&&hh<=H-56){z=c;break}
+  }
+  const ox=(lon2x(minLo,z)+lon2x(maxLo,z))/2*TILE-W/2, oy=(lat2y(maxLa,z)+lat2y(minLa,z))/2*TILE-H/2;
+  const X=lo=>lon2x(lo,z)*TILE-ox, Y=la=>lat2y(la,z)*TILE-oy;
+  const L=LAYERS[mapLayer]||LAYERS.topo, n=Math.pow(2,z);
+  let drawn=0;
+  for(let xx=Math.floor(ox/TILE);xx<=Math.floor((ox+W)/TILE);xx++)
+    for(let yy=Math.floor(oy/TILE);yy<=Math.floor((oy+H)/TILE);yy++){
+      if(yy<0||yy>=n)continue;
+      const e=tTile(L.u(z,((xx%n)+n)%n,yy));
+      if(e.ok){try{g.drawImage(e.im,xx*TILE-ox,yy*TILE-oy,TILE,TILE);drawn++}catch(err){}}
+    }
+  if(drawn)g.fillStyle="rgba(247,236,214,.12)",g.fillRect(0,0,W,H);
+  g.lineJoin="round";g.lineCap="round";
+  for(const pass of [0,1]){
+    g.strokeStyle=pass?trailDayColor(dayKey):"rgba(255,249,237,.9)";g.lineWidth=pass?5:9;
+    g.beginPath();
+    t.forEach((p,i)=>{const x=X(p[1]),y=Y(p[0]);i?g.lineTo(x,y):g.moveTo(x,y)});
+    g.stroke();
+  }
+  g.font="22px sans-serif";g.textAlign="center";
+  g.fillText("\u{1F6A9}",X(t[0][1]),Y(t[0][0])-4);
+  const e=t[t.length-1];
+  g.beginPath();g.arc(X(e[1]),Y(e[0]),7,0,7);g.fillStyle="#2E5A78";g.fill();
+  g.strokeStyle="#FFF9ED";g.lineWidth=2.5;g.stroke();
+  done&&done(true);
+}
+
+/* ---- the day postcard: map + best photos + the numbers, one image ---- */
+let postcardBlob=null;
+async function makePostcard(){
+  const i=tripDayIndex(), d=i>=0?DAYS[i]:null, td=todayTrail(), ex=todayExperience();
+  const lk=store.get("vidLook","classic"), st=AB_STYLE[lk]||AB_STYLE.classic;
+  const W=1080,H=1350;
+  const c=document.createElement("canvas");c.width=W;c.height=H;
+  const g=c.getContext("2d");
+  g.fillStyle=st.bg;g.fillRect(0,0,W,H);
+  if(lk==="western"||lk==="silent")abGrain(g,.09);
+  if(lk==="western"){g.strokeStyle="#5A3018";g.lineWidth=10;g.strokeRect(26,26,W-52,H-52)}
+  if(lk==="silent"){g.strokeStyle="rgba(240,235,225,.85)";g.lineWidth=4;g.strokeRect(34,34,W-68,H-68)}
+  /* header */
+  g.textAlign="center";g.fillStyle=st.ink;
+  g.font=(lk==="scrapbook"?"italic ":"")+"900 64px "+(lk==="pop"?"Inter, sans-serif":"Fraunces, Georgia, serif");
+  g.fillText(d?"Day "+d.n:"On the road",W/2,120);
+  g.font="600 30px "+(lk==="pop"?"Inter, sans-serif":"Fraunces, Georgia, serif");
+  g.fillText((d?d.t+"  ·  ":"")+new Date().toLocaleDateString([],{weekday:"long",month:"long",day:"numeric"}),W/2,170);
+  /* the drive, on the real map */
+  const mapC=document.createElement("canvas");mapC.width=W-160;mapC.height=430;
+  await new Promise(res=>{drawDayMap(mapC,todayISO(),()=>res())});
+  g.save();g.shadowColor="rgba(30,20,10,.35)";g.shadowBlur=22;g.shadowOffsetY=8;
+  g.fillStyle=st.frame;g.fillRect(80-10,210-10,(W-160)+20,430+20);
+  g.shadowBlur=0;g.shadowOffsetY=0;g.drawImage(mapC,80,210);g.restore();
+  /* the numbers */
+  const rows=[[fmtMiles(ex.mi),"miles"],
+              [td?(((td.last-td.first)/3600000)<1?Math.round((td.last-td.first)/60000)+"m":((td.last-td.first)/3600000).toFixed(1)+"h"):"—","on the road"],
+              [td&&td.hi!=null?td.hi.toLocaleString()+"ft":"—","high point"],
+              [todayPhotos().length,"photos"]];
+  g.font="900 52px Inter, sans-serif";
+  rows.forEach((r,ix)=>{
+    const x=W*(.14+.24*ix);
+    g.fillStyle=st.accent;g.font="900 52px Inter, sans-serif";g.fillText(String(r[0]),x,740);
+    g.fillStyle=st.ink;g.font="600 24px Inter, sans-serif";g.fillText(r[1],x,776);
+  });
+  /* up to three of today's photos, loved first */
+  const ph=todayPhotos().sort((a,b)=>favNames(b.id).length-favNames(a.id).length).slice(0,3);
+  for(let ix=0;ix<ph.length;ix++){
+    const im=await getImg(ph[ix].src);if(!im)continue;
+    const pw=(W-160-2*30)/3, phh=330, x=80+ix*(pw+30), y=830;
+    g.save();
+    if(lk==="scrapbook"){g.translate(x+pw/2,y+phh/2);g.rotate(((ix%2?1:-1)*2)*Math.PI/180);g.translate(-(x+pw/2),-(y+phh/2))}
+    g.shadowColor="rgba(30,20,10,.3)";g.shadowBlur=16;g.shadowOffsetY=6;
+    g.fillStyle=st.frame;g.fillRect(x-8,y-8,pw+16,phh+16);
+    g.shadowBlur=0;g.shadowOffsetY=0;
+    const iw=im.naturalWidth||im.width, ih=im.naturalHeight||im.height;
+    const sc=Math.max(pw/iw,phh/ih), sw=pw/sc, sh=phh/sc;
+    if(canFilter&&LOOKS[lk]&&LOOKS[lk].filter!=="none")g.filter=LOOKS[lk].filter;
+    g.drawImage(im,(iw-sw)/2,(ih-sh)/2,sw,sh,x,y,pw,phh);
+    g.filter="none";
+    if(isFav(ph[ix].id)){g.font="30px sans-serif";g.textAlign="left";g.fillText("\u2764\uFE0F",x+8,y+38);g.textAlign="center"}
+    g.restore();
+  }
+  /* footer */
+  g.textAlign="center";g.fillStyle=st.ink;g.globalAlpha=.75;
+  g.font="600 26px Inter, sans-serif";
+  g.fillText("The Great American West  ·  the Andersons",W/2,H-70);
+  g.globalAlpha=1;
+  postcardBlob=await new Promise(r=>c.toBlob(r,"image/jpeg",.9));
+  return postcardBlob;
+}
+async function showPostcard(){
+  const btn=$("recapPostcard");btn.disabled=true;btn.innerHTML="&#9203; Making it&hellip;";
+  try{
+    const blob=await makePostcard();
+    const host=$("recapCardImg");
+    host.innerHTML="";
+    const img=new Image();img.src=URL.createObjectURL(blob);
+    img.style.cssText="width:100%;border-radius:12px;border:2px solid var(--line-2);display:block";
+    img.alt="Today's postcard";
+    host.appendChild(img);
+    const row=document.createElement("div");row.className="btnrow";row.style.marginTop=".55rem";
+    row.innerHTML='<button class="btn sm brass" id="pcShare">&#128228; Send the postcard</button>';
+    host.appendChild(row);
+    $("pcShare").addEventListener("click",async()=>{
+      const file=new File([postcardBlob],"day-"+(tripDayIndex()>=0?DAYS[tripDayIndex()].n:"x")+"-postcard.jpg",{type:"image/jpeg"});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        try{await navigator.share({files:[file],text:recapHome()});return}catch(e){}
+      }
+      const a=document.createElement("a");a.href=URL.createObjectURL(postcardBlob);a.download=file.name;a.click();
+      toast("&#11015;&#65039; Saved &mdash; attach it to the family text");
+    });
+    addFeed("milestone","&#127912;","Made today's postcard","");bump("postcards");
+  }finally{btn.disabled=false;btn.innerHTML="&#127912; Make today&#39;s postcard"}
+}
+$("recapPostcard").addEventListener("click",showPostcard);
+
 function renderRecap(){
   const el=$("recapCard");if(!el)return;
   const ex=todayExperience();
@@ -4310,19 +4499,35 @@ function renderRecap(){
   el.style.display="";
   const evening=new Date().getHours()>=17;
   $("recapTitle").textContent=evening?"Tonight's Recap":"Today So Far";
+  const td=todayTrail();
   const rows=[];
   rows.push(`<div class="stats">
-    <div class="stat"><div class="n">${Math.round(ex.mi).toLocaleString()}</div><div class="l">Miles today</div></div>
-    <div class="stat"><div class="n">${ex.places.length}</div><div class="l">Places seen</div></div>
+    <div class="stat"><div class="n">${fmtMiles(ex.mi)}</div><div class="l">Miles today</div></div>
+    <div class="stat"><div class="n">${td?(((td.last-td.first)/3600000)<1?Math.round((td.last-td.first)/60000)+"m":((td.last-td.first)/3600000).toFixed(1)+"h"):"&mdash;"}</div><div class="l">On the road</div></div>
+    <div class="stat"><div class="n">${td&&td.hi!=null&&td.hi>1000?td.hi.toLocaleString():ex.places.length}</div><div class="l">${td&&td.hi!=null&&td.hi>1000?"High point (ft)":"Places seen"}</div></div>
     <div class="stat"><div class="n">${ex.photos.length}</div><div class="l">Photos</div></div>
-    <div class="stat"><div class="n">${ex.feed.length}</div><div class="l">Moments</div></div>
   </div>`);
-  const hl=ex.places.slice(0,3).map(p=>esc(p.title)).join(" &middot; ");
-  if(hl)rows.push(`<div class="small muted" style="margin-top:.7rem"><b>Highlights:</b> ${hl}</div>`);
+  /* the day, written by itself */
+  const story=dayStory();
+  if(story)rows.push(`<p class="small" style="margin:.8rem 0 0;line-height:1.55">${story}</p>`);
   if(!any)rows.push(`<p class="small muted" style="margin:.7rem 0 0">Nothing logged yet — drive, pin a spot or add a photo and today's story builds itself.</p>`);
   $("recapBody").innerHTML=rows.join("");
+  /* today's photos, loved first, right there in the card */
+  const strip=$("recapPhotos");
+  if(strip){
+    const ph=todayPhotos().sort((a,b)=>favNames(b.id).length-favNames(a.id).length).slice(0,6);
+    strip.innerHTML=ph.map(m=>{
+      const at=media.indexOf(m);
+      return `<figure data-open="${at}"><img src="${m.src}" alt="">${isFav(m.id)?'<span class="gal-fav">&#10084;&#65039;</span>':""}</figure>`;
+    }).join("");
+  }
   renderRecapNudge();
 }
+/* the recap photo strip opens the same lightbox as the album */
+$("recapPhotos").addEventListener("click",e=>{
+  const f=e.target.closest("[data-open]");
+  if(f)openShot(+f.dataset.open);
+});
 $("recapFilm").addEventListener("click",()=>{
   const ex=todayExperience();
   location.hash="#/memories";
@@ -4356,7 +4561,11 @@ function recapHome(){
   if(d&&d.r)L.push(d.r);
   const day=trailDays().find(x=>x.k===todayISO());
   const bits=[];
-  if(ex.mi>1)bits.push(Math.round(ex.mi).toLocaleString()+" miles driven");
+  if(ex.mi>1)bits.push(fmtMiles(ex.mi)+" miles driven");
+  if(day){
+    const hrs=(day.last-day.first)/3600000;
+    if(hrs>=1)bits.push(hrs.toFixed(1).replace(".0","")+" hours on the road");
+  }
   if(day&&day.hi!=null&&day.hi>4000)bits.push("topped out at "+day.hi.toLocaleString()+" ft");
   if(ex.places.length)bits.push(ex.places.length+" place"+(ex.places.length===1?"":"s")+" seen");
   if(ex.photos.length)bits.push(ex.photos.length+" photo"+(ex.photos.length===1?"":"s")+" taken");
