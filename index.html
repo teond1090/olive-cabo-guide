@@ -1337,7 +1337,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="dropzone" id="mediaDrop" tabindex="0" role="button">
         <div style="font-size:2.4rem">&#128247;</div>
         <b>Add photos &amp; videos</b>
-        <div class="small muted">Tap here and pick up to 10 at once &mdash; they go into everything below</div>
+        <div class="small muted">Tap here and pick up to 10 at once &mdash; they land in whichever album you have open</div>
       </div>
       <input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden>
       <div class="btnrow" style="margin-top:.6rem">
@@ -1355,7 +1355,8 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
       <!-- ALBUM -->
       <div id="pix-album" class="pixpane">
-        <div id="mediaGal" class="gal" style="margin-top:.9rem"></div>
+        <div class="pills" id="colStrip" style="margin-top:.9rem"></div>
+        <div id="mediaGal" class="gal" style="margin-top:.7rem"></div>
         <p class="small muted" style="margin-top:.5rem">Tap any picture to see it big, love it &#10084;&#65039;, caption it or save it.</p>
         <div id="albumStats"></div>
         <div id="pixShareRow" style="margin-top:.6rem"></div>
@@ -1688,7 +1689,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w43-2026-08-20";
+const OLIVE_BUILD="w44-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2938,6 +2939,7 @@ const HELP=[
  {ic:"&#127917;",t:"Change the look",s:"Old Western, Silent, Scrapbook, Comic pop - film and pages",go:"memories",fold:"album",pix:"film",q:"look western sepia black white scrapbook comic style theme"},
  {ic:"&#128444;&#65039;",t:"Make the printed pages",s:"Designed album pages you can text or print",go:"memories",fold:"album",pix:"pages",q:"album pages postcard print book layout photo pages"},
  {ic:"&#128228;",t:"Share photos with the crew",s:"Everyone's shots land in everyone's film",go:"memories",fold:"album",q:"share crew family everyone sync photos together"},
+ {ic:"&#128193;",t:"Make several albums & films",s:"Split the trip up - one film per place or per person",go:"memories",fold:"album",pix:"album",q:"albums collections multiple many separate several split group organize new album another film"},
  /* miles & map */
  {ic:"&#128663;",t:"See today's miles",s:"Live on the Today page and the dashboard",go:"today",fold:"dash",q:"miles today odometer distance far driven track tracking dashboard"},
  {ic:"&#9998;",t:"Fix the trip miles",s:"Credit the missed days or set the car's total",go:"today",fold:"dash",q:"fix miles wrong missing repair odometer adjust correct total"},
@@ -5389,6 +5391,100 @@ const PIX_URL="https://ntfy.sh/olive-pix-"+ROOM_SUFFIX;   /* the family's own pr
    sender mints it and passes it along with the upload, so a heart from
    Mom's phone lands on the right photo on everyone else's. */
 function newMid(){return DEV_ID+"-"+Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36)}
+
+/* ============================================================
+   COLLECTIONS - more than one album, more than one film
+   One shared pile of photos makes every film the whole trip. A
+   collection is just a name and a set of pictures: "Yellowstone",
+   "Sarah's shots", "The bison". Whichever one is selected is what the
+   Album shows, what the Film cuts, and what the Pages print - so the
+   family can make as many of each as they like. "All photos" is always
+   there and is simply no filter at all.
+   ============================================================ */
+function collections(){return store.get("cols",[])}
+function curCol(){const c=store.get("curCol",null);return collections().some(x=>x.id===c)?c:null}
+function colName(id){const c=collections().find(x=>x.id===id);return c?c.n:"All photos"}
+function inCol(m,id){return !id||(m.cols&&m.cols.indexOf(id)>=0)}
+function colMedia(id){return media.filter(m=>inCol(m,id))}
+function setCol(id){store.set("curCol",id||null);renderCols();renderGal();
+  if(typeof renderVidEmpty==="function")renderVidEmpty();
+  if($("vidCanvas")&&colMedia(curCol()).length)drawFrame(0,0);}
+function colAdd(m,id){
+  if(!id)return;
+  m.cols=Array.from(new Set((m.cols||[]).concat([id])));
+  store.set("media",media.filter(x=>x.k==="i"));
+}
+function colRemove(m,id){
+  if(!id||!m.cols)return;
+  m.cols=m.cols.filter(x=>x!==id);
+  store.set("media",media.filter(x=>x.k==="i"));
+}
+function renderCols(){
+  const el=$("colStrip");if(!el)return;
+  const cur=curCol(),cols=collections();
+  el.innerHTML='<button class="pill'+(cur?"":" on")+'" data-col="">&#128248; All photos &middot; '+media.length+"</button>"+
+    cols.map(c=>'<button class="pill'+(cur===c.id?" on":"")+'" data-col="'+c.id+'">'+esc(c.n)+" &middot; "+colMedia(c.id).length+"</button>").join("")+
+    '<button class="pill gold" data-col="+">&#10133; New album</button>'+
+    (cur?'<button class="pill" data-col="~">&#9998; Rename / delete</button>':"");
+}
+$("colStrip").addEventListener("click",e=>{
+  const b=e.target.closest("[data-col]");if(!b)return;
+  const v=b.dataset.col;
+  if(v==="+")return newColSheet();
+  if(v==="~")return editColSheet();
+  setCol(v||null);
+});
+function newColSheet(){
+  openSheet("New album",`
+    <p class="small muted">Give it a name, and choose what goes in to start with. You can add or remove pictures any time by tapping them.</p>
+    <div class="field"><label class="fld" for="colName">Name</label>
+      <input type="text" id="colName" maxlength="34" placeholder="e.g. Yellowstone, or Grandpa's shots"></div>
+    <div class="field"><label class="fld" for="colSeed">Start it with</label>
+      <select id="colSeed">
+        <option value="none">Nothing &mdash; I'll pick them myself</option>
+        <option value="today">Today's photos</option>
+        <option value="fav">The &#10084;&#65039; favorites</option>
+        <option value="all">Every photo so far</option>
+      </select></div>
+    <div class="btnrow"><button class="btn brass" id="colMake">Create it</button></div>`);
+  $("colMake").addEventListener("click",()=>{
+    const n=$("colName").value.trim();
+    if(!n)return toast("Give it a name");
+    const id="c"+Date.now().toString(36)+Math.floor(Math.random()*9999).toString(36);
+    const cols=collections();cols.push({id,n,t:Date.now()});store.set("cols",cols);
+    const seed=$("colSeed").value;
+    let picks=[];
+    if(seed==="all")picks=media.slice();
+    else if(seed==="fav")picks=media.filter(m=>isFav(m.id));
+    else if(seed==="today"){const c0=new Date();c0.setHours(0,0,0,0);picks=media.filter(m=>m.t>=c0.getTime())}
+    picks.forEach(m=>colAdd(m,id));
+    closeSheet();setCol(id);
+    toast("&#128248; "+esc(n)+" created"+(picks.length?" with "+picks.length+" photo"+(picks.length===1?"":"s"):""));
+  });
+}
+function editColSheet(){
+  const id=curCol();if(!id)return;
+  const c=collections().find(x=>x.id===id);if(!c)return;
+  openSheet("Album settings",`
+    <div class="field"><label class="fld" for="colRen">Name</label>
+      <input type="text" id="colRen" maxlength="34" value="${esc(c.n)}"></div>
+    <div class="btnrow"><button class="btn brass" id="colSaveN">Save name</button></div>
+    <hr class="hr">
+    <p class="small muted">Deleting an album does not delete any photos &mdash; they stay in All photos.</p>
+    <div class="btnrow"><button class="btn ghost" id="colDel">&#128465;&#65039; Delete this album</button></div>`);
+  $("colSaveN").addEventListener("click",()=>{
+    const n=$("colRen").value.trim();if(!n)return toast("Give it a name");
+    const cols=collections();const t=cols.find(x=>x.id===id);if(t)t.n=n;
+    store.set("cols",cols);closeSheet();renderCols();toast("Renamed");
+  });
+  $("colDel").addEventListener("click",()=>{
+    if(!confirm("Delete the album \""+c.n+"\"? The photos themselves are kept."))return;
+    store.set("cols",collections().filter(x=>x.id!==id));
+    media.forEach(m=>{if(m.cols)m.cols=m.cols.filter(x=>x!==id)});
+    store.set("media",media.filter(x=>x.k==="i"));
+    closeSheet();setCol(null);toast("Album deleted &mdash; photos kept");
+  });
+}
 function pixFavs(){return store.get("pix-favs",{})}
 function favNames(mid){return (pixFavs()[mid]||[])}
 function isFav(mid){return favNames(mid).length>0}
@@ -5575,6 +5671,10 @@ function renderPhotoHow(){
 
 function addMedia(m,fromCrew){
   if(!m.id)m.id=newMid();
+  /* photos added while an album is open belong to it - that is what the
+     person was looking at when they pressed add. Crew arrivals stay
+     uncategorised; they are somebody else's idea of the trip. */
+  if(!fromCrew&&curCol())m.cols=[curCol()];
   media.unshift(m);
   /* anything added on this phone goes to the crew album; anything that
      arrived FROM the crew must not bounce back out again */
@@ -5585,19 +5685,30 @@ function addMedia(m,fromCrew){
   renderRecap();               /* today's photo count feeds the recap card */
 }
 function renderGal(){
-  $("mediaGal").innerHTML=media.map((m,i)=>
+  const cur=curCol();
+  const shown=media.map((m,i)=>({m,i})).filter(x=>inCol(x.m,cur));
+  renderCols();
+  $("mediaGal").innerHTML=shown.map(({m,i})=>
     `<figure data-open="${i}">${m.k==="v"?`<video src="${m.src}" muted playsinline></video>`:`<img src="${m.src}" alt="">`}
      ${isFav(m.id)?`<span class="gal-fav">&#10084;&#65039;</span>`:""}
      ${m.k==="v"?`<span class="gal-clip">&#9654;</span>`:""}
      ${m.by?`<figcaption class="gal-by">${esc(m.by)}</figcaption>`:""}
-     <button class="del" data-mi="${i}" aria-label="Remove">&#10005;</button></figure>`).join("");
-  $("vidControls").style.display=media.length?"block":"none";
-  const ve=$("vidEmpty");
-  if(ve)ve.innerHTML=media.length?"":"Nothing to cut together yet &mdash; use <b>Add photos &amp; videos</b> at the top of this card.";
-  const lr=$("pixLookRow");
-  if(lr&&store.get("pixTab","album")!=="album")lr.style.display=media.length?"block":"none";
-  if(media.length)drawFrame(0,0);
+     <button class="del" data-mi="${i}" aria-label="Remove">&#10005;</button></figure>`).join("")
+     ||'<p class="small muted" style="margin:.6rem 0">Nothing in this album yet &mdash; tap a picture in <b>All photos</b> to put it here.</p>';
+  renderVidEmpty();
+  if(shown.length)drawFrame(0,0);
   renderAlbumStats();
+}
+/* the film and the pages work from whichever album is selected */
+function renderVidEmpty(){
+  const n=colMedia(curCol()).length;
+  $("vidControls").style.display=n?"block":"none";
+  const ve=$("vidEmpty");
+  if(ve)ve.innerHTML=n?"":(curCol()
+    ?"Nothing in <b>"+esc(colName(curCol()))+"</b> yet &mdash; add pictures to it on the Album tab."
+    :"Nothing to cut together yet &mdash; use <b>Add photos &amp; videos</b> at the top of this card.");
+  const lr=$("pixLookRow");
+  if(lr&&store.get("pixTab","album")!=="album")lr.style.display=n?"block":"none";
 }
 $("mediaGal").addEventListener("click",e=>{
   const b=e.target.closest("[data-mi]");
@@ -5619,6 +5730,7 @@ function openShot(i){
     </div>
     <div class="small muted" style="margin-top:.6rem">${when}${m.by?" &middot; by "+esc(m.by):""}</div>
     <div id="shotFavs" class="small" style="margin-top:.3rem">${favs.length?"&#10084;&#65039; Loved by "+favs.map(esc).join(", "):""}</div>
+    <div id="shotCols" style="margin-top:.6rem"></div>
     <div class="field" style="margin-top:.8rem"><label class="fld" for="shotCap">Caption &mdash; shows in the film</label>
       <input type="text" id="shotCap" maxlength="60" placeholder="e.g. First bison of the trip!" value="${esc(m.cap||"")}"></div>
     <div class="btnrow" style="margin-top:.8rem">
@@ -5626,6 +5738,24 @@ function openShot(i){
       <button class="btn ghost" id="shotSave">&#11015;&#65039; Save to phone</button>
       <button class="btn ghost" id="shotDel">&#128465;&#65039; Remove</button>
     </div>`);
+  /* put this picture in any album, or take it out - one tap per album */
+  function paintCols(){
+    const box=$("shotCols");if(!box)return;
+    const cols=collections();
+    box.innerHTML=cols.length
+      ? '<div class="small muted" style="margin-bottom:.3rem">In these albums:</div><div class="pills">'+
+        cols.map(c=>'<button class="pill'+((m.cols||[]).indexOf(c.id)>=0?" on":"")+'" data-shotcol="'+c.id+'">'+
+          ((m.cols||[]).indexOf(c.id)>=0?"&#10003; ":"&#10133; ")+esc(c.n)+"</button>").join("")+"</div>"
+      : '<div class="small muted">Make an album on the Album tab and you can file this picture into it.</div>';
+  }
+  paintCols();
+  const colBox=$("shotCols");
+  if(colBox)colBox.addEventListener("click",ev=>{
+    const b=ev.target.closest("[data-shotcol]");if(!b)return;
+    const id=b.dataset.shotcol;
+    if((m.cols||[]).indexOf(id)>=0)colRemove(m,id); else colAdd(m,id);
+    paintCols();renderGal();
+  });
   $("shotCap").addEventListener("change",()=>{
     m.cap=$("shotCap").value.trim().slice(0,60);
     store.set("media",media.filter(x=>x.k==="i"));
@@ -5660,13 +5790,14 @@ function openShot(i){
 /* ---------- who has added what ---------- */
 function renderAlbumStats(){
   const el=$("albumStats");if(!el)return;
-  if(!media.length){el.innerHTML='<div class="small muted" style="margin-top:.6rem">Nothing in the album yet &mdash; the first photo starts it.</div>';return}
+  const set=colMedia(curCol());
+  if(!set.length){el.innerHTML='<div class="small muted" style="margin-top:.6rem">Nothing here yet &mdash; the first photo starts it.</div>';return}
   const byWho={};let clips=0,favs=0;
-  media.forEach(m=>{const w=m.by||"You";byWho[w]=(byWho[w]||0)+1;if(m.k==="v")clips++;if(isFav(m.id))favs++});
+  set.forEach(m=>{const w=m.by||"You";byWho[w]=(byWho[w]||0)+1;if(m.k==="v")clips++;if(isFav(m.id))favs++});
   const pills=Object.entries(byWho).sort((a,b)=>b[1]-a[1])
     .map(([w,n])=>`<span class="pill">${esc(w)} &middot; ${n}</span>`).join("");
   el.innerHTML=`<div class="pills" style="margin-top:.7rem">
-    <span class="pill gold">${media.length-clips} photo${media.length-clips===1?"":"s"}</span>
+    <span class="pill gold">${set.length-clips} photo${set.length-clips===1?"":"s"}</span>
     ${clips?`<span class="pill gold">${clips} clip${clips===1?"":"s"}</span>`:""}
     ${favs?`<span class="pill danger">&#10084;&#65039; ${favs}</span>`:""}
     ${pills}</div>`;
@@ -6029,7 +6160,7 @@ function abSlots(n,top,bottom){
           [L,top+(H2+GAP)/2,(W2-GAP)/2,(H2-GAP)/2],[L+(W2+GAP)/2,top+(H2+GAP)/2,(W2-GAP)/2,(H2-GAP)/2]];
 }
 function abPhotoPick(){
-  let pics=media.filter(m=>m.k==="i");
+  let pics=colMedia(curCol()).filter(m=>m.k==="i");
   const who=$("abWho").value;
   if(who==="fav")pics=pics.filter(m=>isFav(m.id));
   else if(who==="today"){const cut=new Date();cut.setHours(0,0,0,0);pics=pics.filter(m=>m.t>=cut.getTime())}
@@ -6058,7 +6189,8 @@ async function abBuild(){
         g.fillText(lk==="silent"?"AMERICAN WEST":"American West",AB_W/2,262);}
       g.font=lk==="scrapbook"?"italic 600 34px Fraunces, Georgia, serif":"600 32px Inter, sans-serif";
       g.fillStyle=lk==="pop"?"#111":st.ink;
-      g.fillText(lk==="western"?"★  AUGUST 17 – 31, 2026  ★":"August 17 – 31, 2026",AB_W/2,AB_H-280);
+      const sub=curCol()?colName(curCol()):"August 17 – 31, 2026";
+      g.fillText(lk==="western"?"★  "+sub.toUpperCase()+"  ★":sub,AB_W/2,AB_H-280);
       const s=stats(),nSt=statesSoFar().length,nPk=store.get("parks",[]).length;
       g.font="600 28px Inter, sans-serif";
       g.fillText(Math.round(s.mi).toLocaleString()+" miles  ·  "+nSt+" state"+(nSt===1?"":"s")+"  ·  "+nPk+" national park"+(nPk===1?"":"s"),AB_W/2,AB_H-220);
@@ -6129,7 +6261,8 @@ $("abBuild").addEventListener("click",abBuild);
 
 $("abSave").addEventListener("click",async()=>{
   if(!abBlobs.length)return;
-  const files=abBlobs.map((b,i)=>new File([b],"album-page-"+String(i+1).padStart(2,"0")+".jpg",{type:"image/jpeg"}));
+  const slug=(curCol()?colName(curCol()):"great-american-west").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"album";
+  const files=abBlobs.map((b,i)=>new File([b],slug+"-page-"+String(i+1).padStart(2,"0")+".jpg",{type:"image/jpeg"}));
   if(navigator.canShare&&navigator.canShare({files})){
     try{await navigator.share({files,title:"Our Great American West album"});return}catch(e){}
   }
@@ -6484,7 +6617,7 @@ function titleCard(a){
   vx.font="900 74px Fraunces, Georgia, serif";
   vx.fillText("The Great American West",vc.width/2,300);
   vx.font="500 34px Inter, sans-serif";
-  vx.fillText("August 17 - 31, 2026",vc.width/2,360);
+  vx.fillText(curCol()?colName(curCol()):"August 17 - 31, 2026",vc.width/2,360);
   vx.font="700 30px Inter, sans-serif";
   vx.fillText(statsLine,vc.width/2,450);
 }
@@ -6576,7 +6709,7 @@ function styleCfg(){
 function activePics(){return activeMedia().filter(m=>m.k==="i")}
 /* photos AND video clips, oldest first so the film runs in trip order */
 function activeMedia(){
-  let items=media.slice();
+  let items=colMedia(curCol());
   const style=$("vidStyle").value;
   if(style==="daily"){
     const cutoff=Date.now()-24*3600*1000;
@@ -6755,7 +6888,8 @@ $("vidMake").addEventListener("click",async()=>{
     const blob=new Blob(chunks,{type:mime||"video/webm"});
     const url=URL.createObjectURL(blob);
     const ext=(mime.indexOf("mp4")>=0)?"mp4":"webm";
-    const a=document.createElement("a");a.href=url;a.download="great-american-west."+ext;a.click();
+    const vslug=(curCol()?colName(curCol()):"great-american-west").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"film";
+    const a=document.createElement("a");a.href=url;a.download=vslug+"."+ext;a.click();
     btn.disabled=false;btn.innerHTML="&#127916; Create video";
     const items=activeMedia(),pics=items.filter(m=>m.k==="i").length,clips=items.length-pics;
     const what=pics+" photo"+(pics===1?"":"s")+(clips?" and "+clips+" clip"+(clips===1?"":"s"):"");
@@ -9532,7 +9666,7 @@ function boot(){
      produces no fixes, and a green light that never changes is a lie */
   setInterval(()=>{if($("view-journey").classList.contains("active"))renderTrailLog()},20000);
   renderAltitude();renderWild();renderFuelGauge();renderRange();renderRecapNudge();
-  renderPhotoHow();renderPixShare();pixTab(store.get("pixTab","album"));
+  renderPhotoHow();renderPixShare();renderCols();pixTab(store.get("pixTab","album"));
   importShared();                  /* photos handed in from the phone's Photos app */
   pixSubscribe();                  /* the crew album flows in like the chat does */
   /* the evening nudge home - checked on the minute, fires once a day */
