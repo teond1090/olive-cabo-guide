@@ -1338,11 +1338,20 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
-    <div class="card a-sun fold" data-fold="vid">
-      <div class="card-h"><span class="ic">&#127916;</span><h3>Automatic Video Creator</h3><span class="hint">photos in, film out</span></div>
+    <!-- ---------- THE CREW ALBUM ---------- -->
+    <div class="card a-gold fold" data-fold="album">
+      <div class="card-h"><span class="ic">&#128248;</span><h3>Crew Album</h3><span class="hint">everyone&rsquo;s shots, one film</span></div>
       <div class="foldbody">
-      <p class="small muted">Add photos and video clips &mdash; Olive cuts them together into one film, slow pans on the stills, your clips playing inside it, trip stats on the title card. With crew sharing on, everyone&rsquo;s shots land in everyone&rsquo;s film.</p>
+      <p class="small muted">One shared album for your whole group. Anyone you invite can drop in photos and clips from their own phone, and every phone gets the lot &mdash; so the trip film has everybody&rsquo;s eyes on it, not just one person&rsquo;s.</p>
+      <div id="albumRoomBox"></div>
       <div id="pixShareRow"></div>
+      </div>
+    </div>
+
+    <div class="card a-sun fold" data-fold="vid">
+      <div class="card-h"><span class="ic">&#127916;</span><h3>Automatic Video Creator</h3><span class="hint">photos &amp; clips in, film out</span></div>
+      <div class="foldbody">
+      <p class="small muted">Add photos and video clips &mdash; Olive cuts them together into one film, slow pans on the stills, your clips playing inside it, day chapters, trip stats on the title card and everyone who filmed in the credits.</p>
       <div id="photoHow"></div>
       <div class="dropzone" id="mediaDrop" tabindex="0" role="button">
         <div style="font-size:2.4rem">&#128247;</div>
@@ -4763,7 +4772,32 @@ let media=store.get("media",[]);
    everything; a phone left off for a day misses those and just keeps
    its own. Clips share when they are small enough to carry (~14MB).
    ============================================================ */
-const PIX_TOPIC="olive-pix-"+ROOM_SUFFIX, PIX_URL="https://ntfy.sh/"+PIX_TOPIC;
+/* ---- trip albums: each group gets its own private room ----
+   The Anderson family's original room is the default, so nothing changes
+   for them mid-trip. Any other group starts a fresh album with one tap
+   and invites the rest by link, QR or a short code. */
+function albumRoom(){return store.get("albumRoom",ROOM_SUFFIX)}
+function pixTopic(){const r=albumRoom();return r===ROOM_SUFFIX?"olive-pix-"+ROOM_SUFFIX:"olive-pix-trip-"+r}
+function pixUrl(){return "https://ntfy.sh/"+pixTopic()}
+function newAlbumCode(){
+  /* short enough to read out loud across a campsite, long enough that
+     nobody lands in it by accident */
+  const A="ABCDEFGHJKMNPQRSTUVWXYZ23456789";let c="";
+  const buf=new Uint32Array(8);crypto.getRandomValues(buf);
+  for(let i=0;i<8;i++)c+=A[buf[i]%A.length];
+  return c.slice(0,4)+"-"+c.slice(4);
+}
+function albumLink(){return location.origin+location.pathname+"?album="+encodeURIComponent(albumRoom())}
+function switchAlbum(code){
+  const norm=String(code||"").trim().toUpperCase().replace(/[^A-Z0-9-]/g,"");
+  if(!norm)return false;
+  store.set("albumRoom",norm);
+  pixSeen=new Set();store.set("pix-seen",[]);      /* new room, fresh history */
+  try{if(pixEs)pixEs.close()}catch(e){}
+  pixSubscribe();
+  renderPixShare();
+  return true;
+}
 const DEV_ID=(function(){let d=store.get("devId","");if(!d){d=Math.random().toString(36).slice(2,10);store.set("devId",d)}return d})();
 let pixSeen=new Set(store.get("pix-seen",[]));
 function pixSharing(){return store.get("pix-share",true)}
@@ -4774,7 +4808,7 @@ async function sharePix(m){
     const blob=await (await fetch(m.src)).blob();
     if(blob.size>14*1024*1024){toast("That clip is too big to share with the crew &mdash; it stays in your own film");return}
     const name=(m.name||"photo").replace(/[^\w.\-]+/g,"_").slice(0,60)||"photo";
-    await fetch(PIX_URL+"?filename="+encodeURIComponent(name)+
+    await fetch(pixUrl()+"?filename="+encodeURIComponent(name)+
                 "&title="+encodeURIComponent(chatName||"Crew")+
                 "&message="+encodeURIComponent(DEV_ID),{method:"PUT",body:blob});
   }catch(e){}                       /* no signal - it simply stays local */
@@ -4814,8 +4848,8 @@ function handlePix(line){
 let pixEs=null;
 function pixSubscribe(){
   try{
-    pixEs=new EventSource(PIX_URL+"/sse");
-    pixEs.onopen=()=>{fetch(PIX_URL+"/json?poll=1&since=all").then(r=>r.text())
+    pixEs=new EventSource(pixUrl()+"/sse");
+    pixEs.onopen=()=>{fetch(pixUrl()+"/json?poll=1&since=all").then(r=>r.text())
       .then(t=>t.split("\n").filter(Boolean).forEach(handlePix)).catch(()=>{})};
     pixEs.onmessage=ev=>handlePix(ev.data);
     pixEs.onerror=()=>{try{pixEs.close()}catch(e){};setTimeout(pixSubscribe,8000)};
