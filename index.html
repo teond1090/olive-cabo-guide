@@ -503,6 +503,8 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 .gal img,.gal video{width:100%;height:100%;object-fit:cover}
 .gal .del{position:absolute;top:.22rem;right:.22rem;width:1.7rem;height:1.7rem;border-radius:50%;border:0;background:rgba(42,31,22,.75);color:#fff;font-size:.78rem;cursor:pointer;line-height:1}
 .gal .gal-by{position:absolute;left:0;right:0;bottom:0;padding:.18rem .4rem;font-size:.68rem;font-weight:700;color:#F6EFE3;background:linear-gradient(transparent,rgba(42,31,22,.78));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pills.seg{gap:.3rem}
+.pills.seg .pill{flex:1;justify-content:center;text-align:center;padding:.5rem .3rem;font-weight:800}
 .gal .gal-fav{position:absolute;top:.22rem;left:.22rem;font-size:.85rem;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
 .gal .gal-clip{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:2rem;height:2rem;border-radius:50%;background:rgba(42,31,22,.65);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;pointer-events:none}
 .gal figure{cursor:pointer}
@@ -1326,26 +1328,105 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
-    <!-- ---------- THE CREW ALBUM : the one home for pictures ---------- -->
+    <!-- ============ PHOTOS & FILM : one home, three simple tabs ============ -->
     <div class="card a-gold fold open" data-fold="album">
-      <div class="card-h"><span class="ic">&#128248;</span><h3>Crew Album</h3><span class="hint">add &middot; see &middot; share</span></div>
+      <div class="card-h"><span class="ic">&#128248;</span><h3>Photos &amp; Film</h3><span class="hint">add &middot; watch &middot; print</span></div>
       <div class="foldbody">
-      <p class="small muted">All the trip&rsquo;s pictures live here &mdash; yours and everyone else&rsquo;s, in one place. Two ways in:</p>
+
+      <!-- ---- 1. ADD: always visible, the thing everyone came to do ---- -->
       <div class="dropzone" id="mediaDrop" tabindex="0" role="button">
         <div style="font-size:2.4rem">&#128247;</div>
-        <b>Add photos &amp; videos from your phone</b>
-        <div class="small muted">Tap here and pick up to 10 at once &mdash; or more. They go straight into the album, the film and the photo pages.</div>
+        <b>Add photos &amp; videos</b>
+        <div class="small muted">Tap here and pick up to 10 at once &mdash; they go into everything below</div>
       </div>
       <input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden>
-      <div class="btnrow" style="margin-top:.7rem">
-        <button class="btn sm ghost" id="openCamera">&#128248; Or take one now with the Trail Camera</button>
+      <div class="btnrow" style="margin-top:.6rem">
+        <button class="btn sm ghost" id="openCamera">&#128248; Take one now</button>
+        <button class="btn sm ghost" id="pixShareBtn">&#128101; Crew sharing</button>
       </div>
-      <div id="photoHow" style="margin-top:.8rem"></div>
-      <div id="mediaGal" class="gal" style="margin-top:.9rem"></div>
-      <p class="small muted" style="margin-top:.5rem">Tap any picture to see it big, love it &#10084;&#65039;, caption it or save it.</p>
-      <div id="albumStats"></div>
-      <hr class="hr">
-      <div id="pixShareRow"></div>
+      <div id="photoHow" style="margin-top:.7rem"></div>
+
+      <!-- ---- 2. the three things you can do with them ---- -->
+      <div class="pills seg" id="pixTabs" style="margin-top:.9rem">
+        <button class="pill on" data-pix="album">&#128248; Album</button>
+        <button class="pill" data-pix="film">&#127916; Film</button>
+        <button class="pill" data-pix="pages">&#128444;&#65039; Printed pages</button>
+      </div>
+
+      <!-- ALBUM -->
+      <div id="pix-album" class="pixpane">
+        <div id="mediaGal" class="gal" style="margin-top:.9rem"></div>
+        <p class="small muted" style="margin-top:.5rem">Tap any picture to see it big, love it &#10084;&#65039;, caption it or save it.</p>
+        <div id="albumStats"></div>
+        <div id="pixShareRow" style="margin-top:.6rem"></div>
+      </div>
+
+      <!-- FILM -->
+      <div id="pix-film" class="pixpane" style="display:none">
+        <p class="small muted" style="margin-top:.9rem">Every photo and clip cut into one movie &mdash; slow pans on the stills, your clips playing inside, trip stats on the title card, everyone in the credits.</p>
+        <div id="vidEmpty" class="small muted"></div>
+        <div id="vidControls" style="display:none">
+          <div class="field">
+            <label class="fld" for="vidStyle">Pace</label>
+            <select id="vidStyle">
+              <option value="highlight">Highlight reel &mdash; fast and punchy</option>
+              <option value="slideshow" selected>Slideshow &mdash; relaxed, easy to watch</option>
+              <option value="daily">Daily recap &mdash; today's photos only</option>
+              <option value="best">Best of the trip &mdash; just the &#10084;&#65039; favorites</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="fld" for="vidMusic">Music</label>
+            <select id="vidMusic">
+              <option value="none">No music</option>
+              <option value="open" selected>Open Road &mdash; warm and easy</option>
+              <option value="big">Big Sky &mdash; slow and wide</option>
+              <option value="custom">Use a song from my phone&hellip;</option>
+            </select>
+          </div>
+          <input type="file" id="musicInput" accept="audio/*" hidden>
+          <canvas id="vidCanvas" width="1280" height="720"></canvas>
+          <div class="btnrow" style="margin-top:.8rem">
+            <button class="btn" id="vidPreview">&#9654;&#65039; Preview</button>
+            <button class="btn sage" id="vidMake">&#127916; Create video</button>
+            <button class="btn sm ghost" id="vidShare" style="display:none">&#128228; Share</button>
+          </div>
+          <div id="vidStatus" class="small muted" style="margin-top:.6rem"></div>
+        </div>
+      </div>
+
+      <!-- PRINTED PAGES -->
+      <div id="pix-pages" class="pixpane" style="display:none">
+        <p class="small muted" style="margin-top:.9rem">The same photos laid out as album pages &mdash; a cover, a page per day, captions and hearts where you left them. Save them as pictures you can text or print.</p>
+        <div class="field"><label class="fld" for="abWho">Which photos</label>
+          <select id="abWho">
+            <option value="all">Everything in the album</option>
+            <option value="fav">Just the &#10084;&#65039; favorites</option>
+            <option value="today">Today only</option>
+          </select></div>
+        <div class="btnrow">
+          <button class="btn sage" id="abBuild">&#128444;&#65039; Make the pages</button>
+          <button class="btn sm ghost" id="abSave" style="display:none">&#11015;&#65039; Save them</button>
+        </div>
+        <div id="abStatus" class="small muted" style="margin-top:.6rem"></div>
+        <div id="abPages" class="stack" style="margin-top:.9rem"></div>
+      </div>
+
+      <!-- ---- 3. one look, shared by the film and the pages ---- -->
+      <div id="pixLookRow" style="display:none">
+        <hr class="hr">
+        <div class="field" style="margin-bottom:0">
+          <label class="fld" for="vidLook">The look &mdash; used by both the film and the pages</label>
+          <select id="vidLook">
+            <option value="classic">Classic &mdash; clean and warm</option>
+            <option value="western">Old Western &mdash; sepia, grain and flicker</option>
+            <option value="silent">Silent movie &mdash; black &amp; white, 1920s</option>
+            <option value="scrapbook">Scrapbook &mdash; snapshots on paper</option>
+            <option value="pop">Comic pop &mdash; loud, bright, bouncy</option>
+          </select>
+        </div>
+      </div>
+
       </div>
     </div>
 
@@ -1397,81 +1478,6 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 
 
     <!-- ---------- PHOTO ALBUM MAKER ---------- -->
-    <div class="card a-sage fold" data-fold="book">
-      <div class="card-h"><span class="ic">&#128444;&#65039;</span><h3>Photo Album</h3><span class="hint">drop photos in, pages come out</span></div>
-      <div class="foldbody">
-      <p class="small muted">Same photos, a different keepsake: Olive lays the crew&rsquo;s shots out into designed album pages &mdash; a cover, a page per day, captions and hearts where you left them, everyone in the credits. Pick a look, tap once, save the pages as pictures you can text, print or set as a slideshow.</p>
-      <div class="field"><label class="fld" for="abLook">The look</label>
-        <select id="abLook">
-          <option value="classic">Classic &mdash; clean gallery pages</option>
-          <option value="western">Old Western &mdash; parchment &amp; brass</option>
-          <option value="silent">Silent movie &mdash; black &amp; white</option>
-          <option value="scrapbook">Scrapbook &mdash; snapshots &amp; tape</option>
-          <option value="pop">Comic pop &mdash; loud and bright</option>
-        </select></div>
-      <div class="field"><label class="fld" for="abWho">Which photos</label>
-        <select id="abWho">
-          <option value="all">Everything in the album</option>
-          <option value="fav">Just the &#10084;&#65039; favorites</option>
-          <option value="today">Today only</option>
-        </select></div>
-      <div class="btnrow">
-        <button class="btn sage" id="abBuild">&#128444;&#65039; Make the album</button>
-        <button class="btn sm ghost" id="abSave" style="display:none">&#11015;&#65039; Save the pages</button>
-      </div>
-      <div id="abStatus" class="small muted" style="margin-top:.6rem"></div>
-      <div id="abPages" class="stack" style="margin-top:.9rem"></div>
-      </div>
-    </div>
-
-    <div class="card a-sun fold" data-fold="vid">
-      <div class="card-h"><span class="ic">&#127916;</span><h3>Automatic Video Creator</h3><span class="hint">photos &amp; clips in, film out</span></div>
-      <div class="foldbody">
-      <p class="small muted">Everything in the Crew Album, cut into one film &mdash; slow pans on the stills, your clips playing inside it, trip stats on the title card and everyone who filmed in the credits. Pick a look, pick a pace, press create.</p>
-      <div id="vidEmpty" class="small muted"></div>
-
-      <div id="vidControls" style="display:none;margin-top:1rem">
-        <hr class="hr">
-        <div class="field">
-          <label class="fld" for="vidLook">The look</label>
-          <select id="vidLook">
-            <option value="classic">Classic &mdash; clean and warm</option>
-            <option value="western">Old Western &mdash; sepia, grain and flicker</option>
-            <option value="silent">Silent movie &mdash; black &amp; white, 1920s</option>
-            <option value="scrapbook">Scrapbook &mdash; snapshots on paper</option>
-            <option value="pop">Comic pop &mdash; loud, bright, bouncy</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="fld" for="vidStyle">Pace</label>
-          <select id="vidStyle">
-            <option value="highlight">Highlight reel &mdash; fast and punchy</option>
-            <option value="slideshow" selected>Slideshow &mdash; relaxed, easy to watch</option>
-            <option value="daily">Daily recap &mdash; today's photos only</option>
-            <option value="best">Best of the trip &mdash; just the &#10084;&#65039; favorites</option>
-          </select>
-        </div>
-        <div class="field">
-          <label class="fld" for="vidMusic">Music</label>
-          <select id="vidMusic">
-            <option value="none">No music</option>
-            <option value="open" selected>Open Road &mdash; warm and easy</option>
-            <option value="big">Big Sky &mdash; slow and wide</option>
-            <option value="custom">Use a song from my phone&hellip;</option>
-          </select>
-        </div>
-        <input type="file" id="musicInput" accept="audio/*" hidden>
-        <canvas id="vidCanvas" width="1280" height="720"></canvas>
-        <div class="btnrow" style="margin-top:.8rem">
-          <button class="btn" id="vidPreview">&#9654;&#65039; Preview</button>
-          <button class="btn sage" id="vidMake">&#127916; Create video</button>
-          <button class="btn ghost sm" id="vidShare" style="display:none">&#128228; Share</button>
-        </div>
-        <div id="vidStatus" class="small muted" style="margin-top:.6rem"></div>
-      </div>
-      </div>
-    </div>
-
     <!-- ---------- TRIP YEARBOOK ---------- -->
     <div class="card a-sky fold" data-fold="yb">
       <div class="card-h"><span class="ic">&#128214;</span><h3>Trip Yearbook</h3><span class="hint">one page to text home</span></div>
@@ -1682,7 +1688,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w42-2026-08-20";
+const OLIVE_BUILD="w43-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2928,13 +2934,14 @@ const HELP=[
  {ic:"&#128247;",t:"Add photos or videos",s:"Up to 10 at once, straight from your phone",go:"memories",fold:"album",q:"photo picture video upload add camera roll import pictures"},
  {ic:"&#128248;",t:"Take a photo with the Trail Camera",s:"A camera with looks baked in",go:"memories",fold:"cam",q:"camera take photo booth selfie picture"},
  {ic:"&#10084;&#65039;",t:"Love a photo / see it big",s:"Tap any picture - heart it, caption it, save it",go:"memories",fold:"album",q:"heart love favorite favourite caption save picture lightbox big download"},
- {ic:"&#127916;",t:"Make the film",s:"Photos and clips cut into one movie",go:"memories",fold:"vid",q:"film video movie create montage highlight reel make"},
- {ic:"&#127917;",t:"Change the film's look",s:"Old Western, Silent movie, Scrapbook, Comic pop",go:"memories",fold:"vid",q:"look western sepia black white scrapbook comic style theme"},
- {ic:"&#128444;&#65039;",t:"Make the photo album pages",s:"Designed pages you can text or print",go:"memories",fold:"book",q:"album pages postcard print book layout photo pages"},
+ {ic:"&#127916;",t:"Make the film",s:"Photos and clips cut into one movie",go:"memories",fold:"album",pix:"film",q:"film video movie create montage highlight reel make"},
+ {ic:"&#127917;",t:"Change the look",s:"Old Western, Silent, Scrapbook, Comic pop - film and pages",go:"memories",fold:"album",pix:"film",q:"look western sepia black white scrapbook comic style theme"},
+ {ic:"&#128444;&#65039;",t:"Make the printed pages",s:"Designed album pages you can text or print",go:"memories",fold:"album",pix:"pages",q:"album pages postcard print book layout photo pages"},
  {ic:"&#128228;",t:"Share photos with the crew",s:"Everyone's shots land in everyone's film",go:"memories",fold:"album",q:"share crew family everyone sync photos together"},
  /* miles & map */
  {ic:"&#128663;",t:"See today's miles",s:"Live on the Today page and the dashboard",go:"today",fold:"dash",q:"miles today odometer distance far driven track tracking dashboard"},
  {ic:"&#9998;",t:"Fix the trip miles",s:"Credit the missed days or set the car's total",go:"today",fold:"dash",q:"fix miles wrong missing repair odometer adjust correct total"},
+ {ic:"&#129514;",t:"Miles aren't counting - what's wrong?",s:"Olive asks the phone and tells you the fix",go:"today",fold:"dash",q:"miles not counting tracking broken zero stuck wrong gps problem help diagnose"},
  {ic:"&#129517;",t:"See everywhere you've been",s:"Your trail on the real map, a colour per day",go:"journey",fold:"trail",q:"trail map been route history track where drove path days"},
  {ic:"&#128218;",t:"The Journey Log",s:"Every stop, every day, recorded by itself - and shareable",go:"journey",fold:"jlog",q:"journey log diary visited stops landmarks record history share story family text"},
  {ic:"&#128205;",t:"The live moving map",s:"You, the trail, the crew and every stop",go:"nearby",fold:null,q:"map live follow me gps position moving nearby"},
@@ -2960,6 +2967,7 @@ function helpGo(e){
   location.hash="#/"+e.go;
   setTimeout(()=>{
     if(e.fold)foldOpen(e.fold);
+    if(e.pix&&typeof pixTab==="function")pixTab(e.pix);
     const target=e.fold?document.querySelector('.card.fold[data-fold="'+e.fold+'"]')
                        :(e.scroll?$(e.scroll):null);
     if(target)setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"start"}),150);
@@ -3176,6 +3184,75 @@ function renderDash(){
    past days from the itinerary's planned mileage, or set the total to
    match the car's own odometer. Estimated days are marked as such.
    ------------------------------------------------------------ */
+/* ============================================================
+   WHY AREN'T MY MILES COUNTING?
+   Remote-diagnosing a phone by guesswork wastes days. This asks the
+   phone itself and reports, in plain words, the one thing that is
+   actually wrong - stale cached build, permission blocked, location
+   switched off, app closed while driving - each with its fix.
+   ============================================================ */
+async function milesDoctor(){
+  const R=[];
+  const ok=(t,s)=>R.push({s:"ok",t,d:s});
+  const bad=(t,s)=>R.push({s:"bad",t,d:s});
+  const warn=(t,s)=>R.push({s:"warn",t,d:s});
+
+  /* 1. is this phone even running the current app? */
+  let live=null;
+  try{
+    const r=await fetch("index.html",{cache:"no-store"});
+    const m=(await r.text()).match(/OLIVE_BUILD="([^"]+)"/);
+    live=m?m[1]:null;
+  }catch(e){}
+  if(live&&live!==OLIVE_BUILD)
+    bad("This phone is running an old copy","You have build "+OLIVE_BUILD+", the current one is "+live+". <b>This is almost certainly the problem.</b> Fully close Olive &mdash; swipe it out of the app switcher, not just back to the home screen &mdash; then open it again.");
+  else if(live)ok("Running the current version","Build "+OLIVE_BUILD+".");
+  else warn("Could not check the version","No signal right now. If miles are missing, a full close-and-reopen is still worth doing.");
+
+  /* 2. permission */
+  let perm="unknown";
+  try{if(navigator.permissions)perm=(await navigator.permissions.query({name:"geolocation"})).state}catch(e){}
+  if(perm==="denied")bad("Location is blocked for this site","<b>iPhone:</b> Settings &rarr; Safari &rarr; Location &rarr; Allow. <b>Android:</b> tap the lock icon in the address bar &rarr; Permissions &rarr; Location &rarr; Allow. Then reload.");
+  else if(perm==="granted")ok("Location permission granted","");
+  else warn("Location not granted yet","Olive will ask the next time you open it &mdash; tap Allow.");
+
+  /* 3. the switch */
+  if(store.get("gps",true)===false)bad("Location is switched off in Olive","Turn <b>Follow my journey</b> back on, on this page.");
+  else ok("Location is switched on in Olive","");
+
+  /* 4. is the watch alive and hearing anything? */
+  if(watchId==null)bad("Not currently listening for position","Reload Olive. If it keeps happening, close it fully and reopen.");
+  else if(!here)warn("No fix yet","Normal indoors, in a canyon or a tunnel. It picks up outside.");
+  else{
+    const age=Date.now()-here.t;
+    if(age>5*60*1000)warn("Last position was "+ago(age),"The phone stopped reporting. Olive restarts it automatically when it is on screen.");
+    else ok("Position is live","Last fix "+ago(age)+(here.acc!=null?", "+fmtAcc(here.acc):"")+".");
+  }
+
+  /* 5. the mile counter switch */
+  if(store.get("autoTrack",true)===false)bad("Mile counting is switched off","Settings on the Toolkit tab &rarr; <b>Track miles automatically</b>.");
+  else ok("Mile counting is on","");
+
+  /* 6. what is actually recorded */
+  const s=stats(),tt=trail().filter(p=>new Date(p[2]).toLocaleDateString("en-CA")===todayISO());
+  if(tt.length>1)ok("Recording today","Olive has "+tt.length+" points and "+fmtMiles(milesToday())+" miles for today.");
+  else if(s.mi>1)warn("Nothing recorded today yet","Trip total is "+Math.round(s.mi).toLocaleString()+" miles. Today starts counting once you drive with Olive open.");
+  else bad("Nothing recorded yet at all","If everything above is green, drive a mile with Olive open on screen and check again.");
+
+  /* 7. the honest platform limit, always worth repeating */
+  warn("Olive only counts while it is open on screen","No web app can track from a pocket or behind another app. Prop the phone on the dash &mdash; Olive keeps the screen awake itself.");
+
+  return R;
+}
+async function showMilesDoctor(){
+  const host=$("odoDoc");if(!host)return;
+  host.innerHTML='<p class="small muted" style="margin:.6rem 0">Asking the phone&hellip;</p>';
+  const R=await milesDoctor();
+  host.innerHTML='<hr class="hr"><div class="small" style="font-weight:800;margin-bottom:.4rem">What the phone says</div>'+
+    R.map(x=>'<div class="row"><div class="ic">'+(x.s==="ok"?"&#9989;":x.s==="bad"?"&#10060;":"&#9888;&#65039;")+'</div>'+
+      '<div class="bd"><div class="t">'+x.t+'</div>'+(x.d?'<div class="s">'+x.d+"</div>":"")+"</div></div>").join("");
+}
+
 function odoSheet(){
   const s=stats();
   const t=todayISO();
@@ -3192,8 +3269,11 @@ function odoSheet(){
       <div class="btnrow" style="margin-top:.6rem"><button class="btn sm brass" id="odoFill">&#10133; Credit those days from the plan</button></div></div>`:""}
     <div class="field"><label class="fld" for="odoSet">Or set the trip total yourself (from the car&rsquo;s odometer)</label>
       <input type="number" id="odoSet" inputmode="numeric" min="0" max="9000" placeholder="e.g. ${Math.round(missedMi+s.mi)||850}"></div>
-    <div class="btnrow"><button class="btn sm" id="odoSave">Set total</button></div>
+    <div class="btnrow"><button class="btn sm" id="odoSave">Set total</button>
+      <button class="btn sm ghost" id="odoCheck">&#129514; Why aren&rsquo;t my miles counting?</button></div>
+    <div id="odoDoc"></div>
     ${estDays?`<p class="small muted" style="margin-top:.8rem">${estDays} day${estDays===1?" is":"s are"} credited from the plan rather than measured.</p>`:""}`);
+  $("odoCheck").addEventListener("click",showMilesDoctor);
   const fill=$("odoFill");
   if(fill)fill.addEventListener("click",()=>{
     const st=stats();st.days=st.days||{};st.est=st.est||{};
@@ -4713,6 +4793,7 @@ $("recapPhotos").addEventListener("click",e=>{
 $("recapFilm").addEventListener("click",()=>{
   const ex=todayExperience();
   location.hash="#/memories";
+  foldOpen("album");pixTab("film");
   if($("vidStyle"))$("vidStyle").value="daily";
   if(!ex.photos.length){
     toast("Add a photo or two first &mdash; then one tap makes the film");
@@ -5512,7 +5593,9 @@ function renderGal(){
      <button class="del" data-mi="${i}" aria-label="Remove">&#10005;</button></figure>`).join("");
   $("vidControls").style.display=media.length?"block":"none";
   const ve=$("vidEmpty");
-  if(ve)ve.innerHTML=media.length?"":"Nothing to cut together yet &mdash; add pictures in the <b>Crew Album</b> just above, and the film builds from those.";
+  if(ve)ve.innerHTML=media.length?"":"Nothing to cut together yet &mdash; use <b>Add photos &amp; videos</b> at the top of this card.";
+  const lr=$("pixLookRow");
+  if(lr&&store.get("pixTab","album")!=="album")lr.style.display=media.length?"block":"none";
   if(media.length)drawFrame(0,0);
   renderAlbumStats();
 }
@@ -5840,7 +5923,34 @@ const AB_STYLE={
   scrapbook:{bg:"#EFE4CE", ink:"#4A3826", accent:"#A63A24", frame:"#FDFBF4", head:'italic 900 {s}px Fraunces, Georgia, serif'},
   pop:      {bg:"#FFE14D", ink:"#111111", accent:"#E4572E", frame:"#FFFFFF", head:'900 {s}px Inter, sans-serif'}
 };
-function abLook(){return $("abLook").value}
+/* ---- Photos & Film: three panes, one shared Look ----
+   The look control belongs to the film and the pages alike, so it lives
+   once at the bottom of the card and hides on the Album pane where it
+   means nothing. abLook() still answers "which look" for the page
+   renderer, it just reads the shared control now. */
+function abLook(){return $("vidLook")?$("vidLook").value:"classic"}
+function pixTab(which){
+  ["album","film","pages"].forEach(k=>{
+    const p=$("pix-"+k); if(p)p.style.display=(k===which)?"block":"none";
+  });
+  $$("#pixTabs [data-pix]").forEach(b=>b.classList.toggle("on",b.dataset.pix===which));
+  const look=$("pixLookRow");
+  if(look)look.style.display=(which==="album")?"none":"block";
+  store.set("pixTab",which);
+  if(which==="film"&&media.length)drawFrame(0,0);
+}
+$("pixTabs").addEventListener("click",e=>{
+  const b=e.target.closest("[data-pix]");if(!b)return;
+  pixTab(b.dataset.pix);
+});
+/* the crew-sharing switch is one tap away rather than always on screen */
+$("pixShareBtn").addEventListener("click",()=>{
+  pixTab("album");
+  const row=$("pixShareRow");
+  if(row){row.scrollIntoView({behavior:"smooth",block:"center"});
+    row.style.outline="2px solid var(--brass)";row.style.borderRadius="10px";
+    setTimeout(()=>{row.style.outline=""},1600);}
+});
 function abSt(){return AB_STYLE[abLook()]||AB_STYLE.classic}
 function abFont(sz){return abSt().head.replace("{s}",sz)}
 
@@ -6016,8 +6126,7 @@ async function abBuild(){
   }finally{btn.disabled=false;btn.innerHTML="&#128444;&#65039; Make the album"}
 }
 $("abBuild").addEventListener("click",abBuild);
-$("abLook").value=store.get("vidLook","classic");     /* start matched to the film's look */
-$("abLook").addEventListener("change",()=>{if(abBlobs.length)abBuild()});
+
 $("abSave").addEventListener("click",async()=>{
   if(!abBlobs.length)return;
   const files=abBlobs.map((b,i)=>new File([b],"album-page-"+String(i+1).padStart(2,"0")+".jpg",{type:"image/jpeg"}));
@@ -6585,6 +6694,7 @@ $("vidLook").value=store.get("vidLook","classic");
 $("vidLook").addEventListener("change",e=>{
   store.set("vidLook",e.target.value);
   drawFrame(0,0);                       /* show the new look on the spot */
+  if(abBlobs.length)abBuild();          /* and restyle any pages already made */
   toast(LOOKS[e.target.value].n+" it is");
 });
 $("vidMusic").addEventListener("change",e=>{if(e.target.value==="custom")$("musicInput").click()});
@@ -9422,7 +9532,7 @@ function boot(){
      produces no fixes, and a green light that never changes is a lie */
   setInterval(()=>{if($("view-journey").classList.contains("active"))renderTrailLog()},20000);
   renderAltitude();renderWild();renderFuelGauge();renderRange();renderRecapNudge();
-  renderPhotoHow();renderPixShare();
+  renderPhotoHow();renderPixShare();pixTab(store.get("pixTab","album"));
   importShared();                  /* photos handed in from the phone's Photos app */
   pixSubscribe();                  /* the crew album flows in like the chat does */
   /* the evening nudge home - checked on the minute, fires once a day */
