@@ -958,6 +958,14 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <button class="btn sm ghost" id="trailKml">&#127758; Export for Google Earth</button>
         <button class="btn sm ghost" id="trailClear">&#128465;&#65039; Clear trail</button>
       </div>
+      <div class="note small" style="margin-top:.8rem"><b>Keep it recording:</b> a phone only shares its location with an app that is open and on screen. Prop Olive on the dash while you drive &mdash; it keeps the screen awake itself &mdash; and it also drops a point every time you open it, so even quick checks build the trail.</div>
+      <hr class="hr">
+      <p class="small muted"><b>The whole journey, one file.</b> Trail, miles, photos, hearts, captions, journal, pins, bookings &mdash; everything Olive knows &mdash; saved as a single file. Keep it somewhere safe, send it to each other, or bring a phone that lost everything right back.</p>
+      <div class="btnrow">
+        <button class="btn sm sage" id="jrnSave">&#128190; Save my journey file</button>
+        <button class="btn sm ghost" id="jrnLoad">&#128194; Restore from a file</button>
+      </div>
+      <input type="file" id="jrnFile" accept=".olive,.json,application/json" hidden>
       <div id="trailStats" class="small muted" style="margin-top:.7rem"></div>
       <div id="trailLog" style="margin-top:.9rem"></div>
       </div>
@@ -1629,7 +1637,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w36-2026-08-20";
+const OLIVE_BUILD="w37-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -3082,7 +3090,16 @@ function reviveGPS(){
   if(document.hidden)return;
   if(store.get("gps",true)===false)return;
   keepAwake();                     /* a wake lock is always lost on backgrounding */
-  if(watchId==null)autoStartGPS();
+  if(watchId==null){autoStartGPS();return}
+  /* the zombie case: the watch id is alive but the phone quietly stopped
+     delivering fixes (radio sleep, permission hiccup, browser bug). If we
+     are visible and have heard nothing for 3 minutes, tear it down and
+     start fresh - a restart costs nothing, a dead watch costs the trail. */
+  if(here&&Date.now()-here.t>3*60*1000){
+    try{navigator.geolocation.clearWatch(watchId)}catch(e){}
+    watchId=null;
+    startGPS();
+  }
 }
 /* ---------------------------------------------------------------
    KEEPING THE LOG ALIVE WHILE YOU DRIVE
@@ -6437,6 +6454,47 @@ function drawTrail(){
     <span class="pill sky">&#9679; You</span>`;
 }
 
+/* ---------- the journey file: everything, in one piece ----------
+   Every ol-* key in storage IS the journey - trail, stats, media,
+   hearts, journal, pins, bookings, settings. Dumping and restoring
+   them wholesale is the one backup that cannot drift out of date as
+   features get added. */
+function journeyDump(){
+  const out={_olive:"journey",_v:1,_saved:new Date().toISOString(),_build:OLIVE_BUILD,keys:{}};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.indexOf("ol-")===0)out.keys[k]=localStorage.getItem(k);
+  }
+  return out;
+}
+$("jrnSave").addEventListener("click",()=>{
+  const d=journeyDump(),n=Object.keys(d.keys).length;
+  const blob=new Blob([JSON.stringify(d)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="great-american-west-journey-"+todayISO()+".olive.json";
+  a.click();
+  toast("&#128190; Journey saved &mdash; "+n+" records, "+Math.round(blob.size/1024).toLocaleString()+" KB");
+  addFeed("note","&#128190;","Saved the journey file",n+" records");
+});
+$("jrnLoad").addEventListener("click",()=>$("jrnFile").click());
+$("jrnFile").addEventListener("change",e=>{
+  const f=e.target.files&&e.target.files[0];
+  e.target.value="";
+  if(!f)return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    let d;try{d=JSON.parse(rd.result)}catch(err){toast("That file is not a journey file");return}
+    if(!d||d._olive!=="journey"||!d.keys){toast("That file is not a journey file");return}
+    const n=Object.keys(d.keys).length;
+    if(!confirm("Restore the journey saved "+new Date(d._saved).toLocaleString()+"?\n\n"+n+" records. This REPLACES what is on this phone."))return;
+    for(const k of Object.keys(d.keys)){try{localStorage.setItem(k,d.keys[k])}catch(err){}}
+    toast("&#9989; Journey restored &mdash; reloading");
+    setTimeout(()=>location.reload(),900);
+  };
+  rd.readAsText(f);
+});
+
 /* ---------- exports ---------- */
 function download(name,text,mime){
   const b=new Blob([text],{type:mime});
@@ -8668,6 +8726,11 @@ $("updateBar").addEventListener("click",()=>location.reload(true));
    BOOT
    ============================================================ */
 function boot(){
+  /* Everything Olive knows lives on this phone. Persistent storage stops
+     the browser from quietly evicting it after days without wifi - which
+     is exactly what this trip looks like. Best-effort: some browsers just
+     say no, and installed PWAs mostly get it automatically. */
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}
   syncVoiceBtn();
   renderHero();renderDays();renderScenic();renderBucket();renderDash();
   renderHealth();renderResv();renderMed();
