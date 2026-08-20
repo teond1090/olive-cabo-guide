@@ -950,9 +950,12 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <div class="card a-canyon fold" data-fold="trail">
       <div class="card-h"><span class="ic">&#129517;</span><h3>Your Trail</h3><span class="hint">map &middot; miles &middot; export</span></div>
       <div class="foldbody">
-      <p class="small muted">Every mile you drive gets recorded. Drop a pin anywhere worth remembering, then take the whole trail with you &mdash; Google Maps, Google Earth, anywhere.</p>
+      <p class="small muted">Every mile you drive gets drawn on the real map below &mdash; each day in its own colour. Tap a day to zoom right into it, drop a pin anywhere worth remembering, and take the whole trail with you &mdash; Google Maps, Google Earth, anywhere.</p>
       <div id="trailLive"></div>
       <canvas id="trailCanvas" width="900" height="620" aria-label="Map of your journey"></canvas>
+      <div class="btnrow" style="margin-top:.6rem">
+        <a class="btn sm sage" href="#/nearby">&#128205; Watch it live on the moving map</a>
+      </div>
       <div class="pills" style="margin-top:.7rem" id="trailLegend"></div>
       <div class="btnrow" style="margin-top:.8rem">
         <button class="btn sm ghost" id="trailGpx">&#128229; Export trail (GPX)</button>
@@ -1032,8 +1035,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <div class="card a-canyon" style="padding:0;overflow:hidden">
       <div id="mapWrap">
         <div id="mapTiles"></div>
-        <svg id="mapTrail"><polyline id="mapTrailLine" fill="none" stroke="#A63A24" stroke-width="4"
-             stroke-linejoin="round" stroke-linecap="round" opacity=".9"/></svg>
+        <svg id="mapTrail"></svg>
         <div id="mapMarkers"></div>
         <div id="mapYou" style="display:none">
           <div class="ping"></div><div class="cone" id="mapCone" style="display:none"></div><div class="dot"></div>
@@ -1054,6 +1056,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
         <div id="radarBar"></div>
         <div class="map-attr" id="mapAttr"></div>
       </div>
+      <div id="mapDays" class="pills" style="margin-top:.55rem"></div>
       <div id="mapBar">
         <span class="small muted" id="mapInfo">Finding you&hellip;</span>
         <span class="sp"></span>
@@ -1064,8 +1067,8 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     </div>
 
     <div class="card a-canyon">
-      <div class="card-h"><span class="ic">&#128205;</span><h3>What's Around You</h3></div>
-      <div id="nearbyStatus" class="muted small">Finding you&hellip; this list re-sorts itself as you drive.</div>
+      <div class="card-h"><span class="ic">&#128205;</span><h3>The Map</h3></div>
+      <div id="nearbyStatus" class="muted small">You, your trail day by day, the crew, and everything worth stopping for &mdash; one map, following you as you drive.</div>
       <div class="pills" id="nearFilters" style="margin-top:.9rem">
         <button class="pill on" data-cat="all">&#127758; Everything</button>
         <button class="pill" data-cat="food">&#127869;&#65039; Eat</button>
@@ -1645,7 +1648,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w38-2026-08-20";
+const OLIVE_BUILD="w39-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2843,7 +2846,7 @@ function showView(v){
   const mt=$("moreTab");if(mt)mt.classList.toggle("on",["radio","toolkit","tour"].includes(v));
   scrollTabIntoView(v);
   window.scrollTo({top:0,behavior:"instant"});
-  if(v==="nearby"){renderNearby();drawMap();loadFacts()}
+  if(v==="nearby"){renderNearby();drawMap();renderMapDays(null);loadFacts()}
   if(v==="memories"){renderFeed();renderBucket();if(typeof renderStory==="function")renderStory()}
   if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();if(!podList.length)loadPods();}
   if(v==="journey"){drawTrail();renderTrailLog();renderStays()}
@@ -6438,101 +6441,162 @@ $("pinList").addEventListener("click",async e=>{
 
 /* ---------- the drawn map ---------- */
 const tc=$("trailCanvas"),tx=tc.getContext("2d");
+/* ============================================================
+   THE TRAIL, ON A REAL MAP
+   The old card drew a parchment sketch of the whole West - honest, but
+   a day's driving was a one-inch squiggle and it read as broken. Now
+   the card renders real map tiles (same sources and cache as the live
+   map) fitted to the recorded trail, with each day in its own colour.
+   Offline with nothing cached, the parchment comes back - with roads
+   you have driven still there, because their tiles are cached.
+   ============================================================ */
+let trailScope=null;                 /* null = whole trip, or "YYYY-MM-DD" */
+const TRAIL_DAY_COLORS=["#A63A24","#2E5A78","#6E8058","#C8912C","#5B2A4A","#B95C2B","#4A6FA5","#556B2F","#8B4557","#3A6B6B","#996515","#703030","#4F5D75","#7A5C3E","#5C4E7A"];
+function trailDayColor(k){
+  const d0=new Date(TRIP_START+"T12:00"), d1=new Date(k+"T12:00");
+  const i=Math.round((d1-d0)/86400000);
+  return TRAIL_DAY_COLORS[((i%TRAIL_DAY_COLORS.length)+TRAIL_DAY_COLORS.length)%TRAIL_DAY_COLORS.length];
+}
+const tTiles=new Map();              /* url -> {im, ok} */
+let tRedraw=false;
+function tTile(url){
+  let e=tTiles.get(url);
+  if(e)return e;
+  e={im:new Image(),ok:false};
+  e.im.decoding="async";
+  e.im.onload=()=>{e.ok=true;if(!tRedraw){tRedraw=true;requestAnimationFrame(()=>{tRedraw=false;
+    if($("view-journey").classList.contains("active"))drawTrail()})}};
+  e.im.onerror=()=>{};
+  e.im.src=url;
+  tTiles.set(url,e);
+  if(tTiles.size>260){const k=tTiles.keys().next().value;tTiles.delete(k)}   /* stay flat on memory */
+  return e;
+}
 function drawTrail(){
-  const t=trail(),p=pins();
-  const W=tc.width,H=tc.height,PAD=44;
+  const p=pins();
+  let t=trail();
+  if(trailScope)t=t.filter(x=>new Date(x[2]).toLocaleDateString("en-CA")===trailScope);
+  const W=tc.width,H=tc.height,PAD=54;
   tx.clearRect(0,0,W,H);
-  /* parchment */
   tx.fillStyle="#F7ECD6";tx.fillRect(0,0,W,H);
 
-  /* bounds: the whole route by default, tightened to your trail once you have one */
+  /* ---- fit: the recorded trail, else the planned route ---- */
   const route=POI.filter(x=>!x.r66);
-  let pts=t.map(x=>[x[0],x[1]]).concat(p.map(x=>[x.lat,x.lng]));
-  if(here)pts.push([here.lat,here.lng]);
-  const basis=pts.length>3?pts:route.map(x=>[x.lat,x.lng]);
+  let pts=t.map(x=>[x[0],x[1]]);
+  if(!trailScope){pts=pts.concat(p.map(x=>[x.lat,x.lng]));if(here)pts.push([here.lat,here.lng])}
+  const live=pts.length>1;
+  const basis=live?pts:route.map(x=>[x.lat,x.lng]);
   let minLa=Math.min(...basis.map(x=>x[0])),maxLa=Math.max(...basis.map(x=>x[0]));
   let minLo=Math.min(...basis.map(x=>x[1])),maxLo=Math.max(...basis.map(x=>x[1]));
-  const padLa=(maxLa-minLa)*.12+.15,padLo=(maxLo-minLo)*.12+.15;
-  minLa-=padLa;maxLa+=padLa;minLo-=padLo;maxLo+=padLo;
-  /* keep the aspect roughly true for the latitude we are at */
-  const midLa=(minLa+maxLa)/2, kx=Math.cos(midLa*Math.PI/180);
-  const spanLo=(maxLo-minLo)*kx, spanLa=(maxLa-minLa);
-  const sc=Math.min((W-PAD*2)/spanLo,(H-PAD*2)/spanLa);
-  const ox=(W-spanLo*sc)/2, oy=(H-spanLa*sc)/2;
-  const X=lo=>ox+(lo-minLo)*kx*sc;
-  const Y=la=>oy+(maxLa-la)*sc;
+  if(maxLa-minLa<0.01){minLa-=0.02;maxLa+=0.02}
+  if(maxLo-minLo<0.01){minLo-=0.02;maxLo+=0.02}
 
-  /* graticule */
-  tx.strokeStyle="rgba(168,132,80,.22)";tx.lineWidth=1;
-  for(let la=Math.ceil(minLa);la<maxLa;la++){tx.beginPath();tx.moveTo(0,Y(la));tx.lineTo(W,Y(la));tx.stroke()}
-  for(let lo=Math.ceil(minLo);lo<maxLo;lo++){tx.beginPath();tx.moveTo(X(lo),0);tx.lineTo(X(lo),H);tx.stroke()}
+  /* ---- pick the deepest zoom that still fits the box ---- */
+  let z=4;
+  for(let cand=15;cand>=4;cand--){
+    const w=(lon2x(maxLo,cand)-lon2x(minLo,cand))*TILE;
+    const hh=(lat2y(minLa,cand)-lat2y(maxLa,cand))*TILE;
+    if(w<=W-PAD*2&&hh<=H-PAD*2){z=cand;break}
+  }
+  const cx=(lon2x(minLo,z)+lon2x(maxLo,z))/2, cy=(lat2y(maxLa,z)+lat2y(minLa,z))/2;
+  const ox=cx*TILE-W/2, oy=cy*TILE-H/2;
+  const X=lo=>lon2x(lo,z)*TILE-ox, Y=la=>lat2y(la,z)*TILE-oy;
 
-  /* state labels from the POI set */
-  const byState={};
-  route.forEach(r=>{(byState[r.st]=byState[r.st]||[]).push(r)});
-  tx.font="700 15px Inter, sans-serif";tx.fillStyle="rgba(122,69,38,.35)";tx.textAlign="center";
-  Object.keys(byState).forEach(st=>{
-    const g=byState[st];
-    const la=g.reduce((a,b)=>a+b.lat,0)/g.length, lo=g.reduce((a,b)=>a+b.lng,0)/g.length;
-    if(la>minLa&&la<maxLa&&lo>minLo&&lo<maxLo)tx.fillText(ST_NAMES[st]||st,X(lo),Y(la));
-  });
+  /* ---- real tiles, drawn under everything ---- */
+  const L=LAYERS[mapLayer]||LAYERS.topo, n=Math.pow(2,z);
+  let drawn=0;
+  const x0=Math.floor(ox/TILE),x1=Math.floor((ox+W)/TILE),y0=Math.floor(oy/TILE),y1=Math.floor((oy+H)/TILE);
+  for(let xx=x0;xx<=x1;xx++)for(let yy=y0;yy<=y1;yy++){
+    if(yy<0||yy>=n)continue;
+    const e=tTile(L.u(z,((xx%n)+n)%n,yy));
+    if(e.ok){try{tx.drawImage(e.im,xx*TILE-ox,yy*TILE-oy,TILE,TILE);drawn++}catch(err){}}
+  }
+  if(drawn){    /* a soft parchment wash keeps the card's warmth over raw tiles */
+    tx.fillStyle="rgba(247,236,214,.14)";tx.fillRect(0,0,W,H);
+  }else{
+    /* no tiles at all (offline, nothing cached): the old sketch backdrop */
+    tx.strokeStyle="rgba(168,132,80,.22)";tx.lineWidth=1;
+    for(let la=Math.ceil(minLa);la<maxLa;la++){tx.beginPath();tx.moveTo(0,Y(la));tx.lineTo(W,Y(la));tx.stroke()}
+    for(let lo=Math.ceil(minLo);lo<maxLo;lo++){tx.beginPath();tx.moveTo(X(lo),0);tx.lineTo(X(lo),H);tx.stroke()}
+    route.forEach(r=>{
+      if(r.lat<minLa||r.lat>maxLa||r.lng<minLo||r.lng>maxLo)return;
+      tx.beginPath();tx.arc(X(r.lng),Y(r.lat),r.c==="park"?4:2.4,0,7);
+      tx.fillStyle=r.c==="park"?"rgba(110,128,88,.75)":"rgba(168,132,80,.5)";tx.fill();
+    });
+  }
 
-  /* route landmarks as faint dots */
-  route.forEach(r=>{
-    if(r.lat<minLa||r.lat>maxLa||r.lng<minLo||r.lng>maxLo)return;
-    tx.beginPath();tx.arc(X(r.lng),Y(r.lat),r.c==="park"?4:2.4,0,7);
-    tx.fillStyle=r.c==="park"?"rgba(110,128,88,.75)":"rgba(168,132,80,.5)";tx.fill();
-  });
-
-  /* the trail itself */
+  /* ---- the trail, one colour per day, halo underneath for contrast ---- */
   if(t.length>1){
-    tx.strokeStyle="#A63A24";tx.lineWidth=4;tx.lineJoin="round";tx.lineCap="round";
-    tx.shadowColor="rgba(58,29,13,.3)";tx.shadowBlur=5;
-    tx.beginPath();
-    t.forEach((pt,i)=>{const x=X(pt[1]),y=Y(pt[0]);i?tx.lineTo(x,y):tx.moveTo(x,y)});
-    tx.stroke();tx.shadowBlur=0;
+    for(const pass of [0,1]){
+      let day=null;
+      tx.lineJoin="round";tx.lineCap="round";
+      tx.beginPath();
+      for(let i=0;i<t.length;i++){
+        const k=new Date(t[i][2]).toLocaleDateString("en-CA");
+        const gap=i>0&&dist(t[i-1][0],t[i-1][1],t[i][0],t[i][1])>60;   /* teleports break the line */
+        if(k!==day||gap){
+          if(day!==null){tx.stroke()}
+          tx.beginPath();
+          if(pass===0){tx.strokeStyle="rgba(255,249,237,.9)";tx.lineWidth=7}
+          else{tx.strokeStyle=trailDayColor(k);tx.lineWidth=4}
+          day=k;
+          tx.moveTo(X(t[i][1]),Y(t[i][0]));
+        }else tx.lineTo(X(t[i][1]),Y(t[i][0]));
+      }
+      tx.stroke();
+    }
+    /* start of the scope gets a flag */
+    tx.font="20px sans-serif";tx.textAlign="center";
+    tx.fillText("\u{1F6A9}",X(t[0][1]),Y(t[0][0])-4);
   }
   /* pins */
-  p.forEach(x=>{
-    if(x.lat<minLa||x.lat>maxLa||x.lng<minLo||x.lng>maxLo)return;
+  if(!trailScope)p.forEach(x=>{
+    if(x.lat<minLa-1||x.lat>maxLa+1||x.lng<minLo-1||x.lng>maxLo+1)return;
     const px=X(x.lng),py=Y(x.lat);
     tx.beginPath();tx.moveTo(px,py);tx.lineTo(px-6,py-15);tx.lineTo(px+6,py-15);tx.closePath();
     tx.fillStyle="#C8912C";tx.fill();tx.strokeStyle="#3A1D0D";tx.lineWidth=1.5;tx.stroke();
     tx.beginPath();tx.arc(px,py-18,6,0,7);tx.fillStyle="#C8912C";tx.fill();tx.stroke();
   });
-  /* you */
-  if(here){
+  /* you - same denim dot as the live map */
+  if(here&&!trailScope){
     const px=X(here.lng),py=Y(here.lat);
-    tx.beginPath();tx.arc(px,py,11,0,7);tx.fillStyle="rgba(46,90,120,.28)";tx.fill();
-    tx.beginPath();tx.arc(px,py,6,0,7);tx.fillStyle="#2E5A78";tx.fill();
+    tx.beginPath();tx.arc(px,py,12,0,7);tx.fillStyle="rgba(46,90,120,.25)";tx.fill();
+    tx.beginPath();tx.arc(px,py,6.5,0,7);tx.fillStyle="#2E5A78";tx.fill();
     tx.strokeStyle="#FFF9ED";tx.lineWidth=2.5;tx.stroke();
   }
-  /* compass rose */
-  tx.save();tx.translate(W-46,46);
-  tx.strokeStyle="#7A4526";tx.lineWidth=2;tx.beginPath();tx.arc(0,0,17,0,7);tx.stroke();
-  tx.beginPath();tx.moveTo(0,-15);tx.lineTo(4,3);tx.lineTo(0,0);tx.lineTo(-4,3);tx.closePath();
-  tx.fillStyle="#A63A24";tx.fill();
-  tx.fillStyle="#5A3018";tx.font="800 11px Inter, sans-serif";tx.textAlign="center";tx.fillText("N",0,-20);
-  tx.restore();
 
   /* scale bar */
-  const milesAcross=dist(midLa,minLo,midLa,maxLo);
-  const nice=[10,25,50,100,250,500].find(v=>v>milesAcross/5)||500;
-  const barPx=(nice/milesAcross)*(W-0);
-  tx.fillStyle="#5A3018";tx.fillRect(PAD,H-26,barPx,4);
-  tx.font="700 12px Inter, sans-serif";tx.textAlign="left";
-  tx.fillText(nice+" mi",PAD,H-32);
+  const midLa=(minLa+maxLa)/2;
+  const milesAcross=dist(midLa,x2lon(ox/TILE,z),midLa,x2lon((ox+W)/TILE,z));
+  const nice=[1,2,5,10,25,50,100,250,500].find(v=>v>milesAcross/5)||500;
+  const barPx=(nice/milesAcross)*W;
+  tx.fillStyle="#5A3018";tx.fillRect(14,H-22,barPx,4);
+  tx.font="700 13px Inter, sans-serif";tx.textAlign="left";
+  tx.fillText(nice+" mi",14,H-28);
 
-  const miles=t.length>1?t.reduce((a,pt,i)=>i?a+dist(t[i-1][0],t[i-1][1],pt[0],pt[1]):0,0):0;
-  $("trailStats").innerHTML=t.length?
-    `<b>${t.length}</b> trail points · <b>${Math.round(miles).toLocaleString()}</b> miles of recorded trail · <b>${p.length}</b> saved spots`+
-    (t.length?` · started ${new Date(t[0][2]).toLocaleDateString()}`:""):
-    "No trail yet. Turn on <b>Follow my journey</b> and Olive draws your route as you drive.";
-  $("trailLegend").innerHTML=`<span class="pill danger">&#9473; Your trail</span>
-    <span class="pill gold">&#128204; Saved spots</span>
-    <span class="pill sage">&#9679; National parks</span>
-    <span class="pill sky">&#9679; You</span>`;
+  /* stats + legend */
+  const all=trail();
+  const miles=all.length>1?all.reduce((a,pt,i)=>i?a+Math.min(dist(all[i-1][0],all[i-1][1],pt[0],pt[1]),600):0,0):0;
+  $("trailStats").innerHTML=all.length?
+    `<b>${all.length}</b> trail points &middot; <b>${Math.round(miles).toLocaleString()}</b> miles of recorded trail &middot; <b>${p.length}</b> saved spots`+
+    ` &middot; started ${new Date(all[0][2]).toLocaleDateString()}`:
+    "No trail yet. Drive with Olive open and she draws your route as you go - on the real map.";
+  const days=trailDays();
+  $("trailLegend").innerHTML=
+    (trailScope?`<button class="pill on" data-tscope="">&larr; Whole trip</button>`:"")+
+    days.slice(0,15).map(d=>{
+      const dy=DAYS.find(v=>v.d===d.k);
+      return `<button class="pill${trailScope===d.k?" on":""}" data-tscope="${d.k}" style="border-color:${trailDayColor(d.k)}">`+
+        `<span style="display:inline-block;width:.65em;height:.65em;border-radius:50%;background:${trailDayColor(d.k)};margin-right:.3em"></span>`+
+        (dy?"Day "+dy.n:new Date(d.k+"T12:00").toLocaleDateString([],{month:"short",day:"numeric"}))+"</button>";
+    }).join("")+
+    `<span class="pill gold">&#128204; Spots</span><span class="pill sky">&#9679; You</span>`;
 }
+$("trailLegend").addEventListener("click",e=>{
+  const b=e.target.closest("[data-tscope]");if(!b)return;
+  trailScope=b.dataset.tscope||null;
+  drawTrail();
+});
 
 /* ---------- the journey file: everything, in one piece ----------
    Every ol-* key in storage IS the journey - trail, stats, media,
@@ -7378,15 +7442,27 @@ function drawTiles(o){
 }
 
 function drawOverlay(o){
-  /* --- your trail --- */
-  const t=trail();
+  /* --- your trail, one colour per day, with a light halo for contrast ---
+     A long trip is thousands of points; decimate for display so panning
+     stays smooth, but never below the shape of the drive. */
+  let t=trail();
   const svg=$("mapTrail");
   svg.setAttribute("viewBox","0 0 "+o.w+" "+o.h);
   svg.setAttribute("width",o.w); svg.setAttribute("height",o.h);
+  const step=Math.max(1,Math.ceil(t.length/1400));
+  if(step>1)t=t.filter((p,i)=>i%step===0||i===t.length-1);
   if(t.length>1){
-    const pts=t.map(p=>{const q=toPx(p[0],p[1],o);return q.x.toFixed(1)+","+q.y.toFixed(1)}).join(" ");
-    $("mapTrailLine").setAttribute("points",pts);
-  }else $("mapTrailLine").setAttribute("points","");
+    const segs=[];let cur=null,day=null;
+    for(let i=0;i<t.length;i++){
+      const k=new Date(t[i][2]).toLocaleDateString("en-CA");
+      const gap=i>0&&dist(t[i-1][0],t[i-1][1],t[i][0],t[i][1])>60;
+      if(k!==day||gap){cur=[];segs.push({k,pts:cur});day=k}
+      const q=toPx(t[i][0],t[i][1],o);
+      cur.push(q.x.toFixed(1)+","+q.y.toFixed(1));
+    }
+    svg.innerHTML=segs.map(s=>'<polyline fill="none" stroke="#FFF9ED" stroke-width="7" stroke-linejoin="round" stroke-linecap="round" opacity=".85" points="'+s.pts.join(" ")+'"/>').join("")+
+      segs.map(s=>'<polyline fill="none" stroke="'+trailDayColor(s.k)+'" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" opacity=".95" points="'+s.pts.join(" ")+'"/>').join("");
+  }else svg.innerHTML="";
 
   /* --- what's around you --- */
   const pad=90;
@@ -7432,6 +7508,13 @@ function drawOverlay(o){
       html.push('<button class="mk crew" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px" title="'+esc(e.by)+'">&#128100;</button>');
       html.push('<div class="mk-lbl" style="left:'+q.x.toFixed(0)+'px;top:'+(q.y+17).toFixed(0)+'px"><b>'+esc(e.by.slice(0,14))+'</b></div>');
     });
+  }
+  /* where it all started */
+  const t0=trail()[0];
+  if(t0){
+    const q=toPx(t0[0],t0[1],o);
+    if(q.x>-40&&q.x<o.w+40&&q.y>-40&&q.y<o.h+40)
+      html.push('<div class="mk-lbl" style="left:'+q.x.toFixed(0)+'px;top:'+q.y.toFixed(0)+'px;font-size:1.05rem">&#128681;</div>');
   }
   $("mapMarkers").innerHTML=html.join("");
 
@@ -7527,6 +7610,47 @@ function setZoom(z){
   if(typeof clearRadar==='function')clearRadar();
   drawMap();
 }
+/* ---- fly the live map to a day of the trail (or the whole thing) ---- */
+function fitTrail(dayKey){
+  let t=trail();
+  if(dayKey)t=t.filter(p=>new Date(p[2]).toLocaleDateString("en-CA")===dayKey);
+  if(t.length<2)return toast("Nothing recorded for that day yet");
+  let minLa=1e9,maxLa=-1e9,minLo=1e9,maxLo=-1e9;
+  t.forEach(p=>{minLa=Math.min(minLa,p[0]);maxLa=Math.max(maxLa,p[0]);minLo=Math.min(minLo,p[1]);maxLo=Math.max(maxLo,p[1])});
+  if(maxLa-minLa<0.01){minLa-=0.02;maxLa+=0.02}
+  if(maxLo-minLo<0.01){minLo-=0.02;maxLo+=0.02}
+  const s=mapSize();
+  let z=4;
+  for(let cand=15;cand>=4;cand--){
+    const w=(lon2x(maxLo,cand)-lon2x(minLo,cand))*TILE;
+    const hh=(lat2y(minLa,cand)-lat2y(maxLa,cand))*TILE;
+    if(w<=s.w-70&&hh<=s.h-70){z=cand;break}
+  }
+  mapZ=Math.min(z,LAYERS[mapLayer].max);
+  mapC={lat:(minLa+maxLa)/2,lng:(minLo+maxLo)/2};
+  store.set("mapZ",mapZ);store.set("mapC",mapC);
+  setFollow(false);
+  renderMapDays(dayKey);
+  drawMap();
+}
+function renderMapDays(activeKey){
+  const el=$("mapDays");if(!el)return;
+  const days=trailDays();
+  if(!days.length){el.innerHTML="";return}
+  el.innerHTML='<button class="pill'+(activeKey?"":" on")+'" data-mday="all">&#129517; Whole trail</button>'+
+    days.slice(0,15).map(d=>{
+      const dy=DAYS.find(v=>v.d===d.k);
+      return '<button class="pill'+(activeKey===d.k?" on":"")+'" data-mday="'+d.k+'" style="border-color:'+trailDayColor(d.k)+'">'+
+        '<span style="display:inline-block;width:.6em;height:.6em;border-radius:50%;background:'+trailDayColor(d.k)+';margin-right:.3em"></span>'+
+        (dy?"Day "+dy.n:new Date(d.k+"T12:00").toLocaleDateString([],{month:"short",day:"numeric"}))+
+        " &middot; "+Math.round(d.mi)+" mi</button>";
+    }).join("");
+}
+$("mapDays").addEventListener("click",e=>{
+  const b=e.target.closest("[data-mday]");if(!b)return;
+  if(b.dataset.mday==="all")fitTrail(null); else fitTrail(b.dataset.mday);
+});
+
 function setFollow(on){
   mapFollow=on;
   $("mapFollow").classList.toggle("on",on);
