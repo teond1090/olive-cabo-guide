@@ -1351,6 +1351,34 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
+    <!-- ---------- PHOTO ALBUM MAKER ---------- -->
+    <div class="card a-sage fold" data-fold="book">
+      <div class="card-h"><span class="ic">&#128444;&#65039;</span><h3>Photo Album</h3><span class="hint">drop photos in, pages come out</span></div>
+      <div class="foldbody">
+      <p class="small muted">Same photos, a different keepsake: Olive lays the crew&rsquo;s shots out into designed album pages &mdash; a cover, a page per day, captions and hearts where you left them, everyone in the credits. Pick a look, tap once, save the pages as pictures you can text, print or set as a slideshow.</p>
+      <div class="field"><label class="fld" for="abLook">The look</label>
+        <select id="abLook">
+          <option value="classic">Classic &mdash; clean gallery pages</option>
+          <option value="western">Old Western &mdash; parchment &amp; brass</option>
+          <option value="silent">Silent movie &mdash; black &amp; white</option>
+          <option value="scrapbook">Scrapbook &mdash; snapshots &amp; tape</option>
+          <option value="pop">Comic pop &mdash; loud and bright</option>
+        </select></div>
+      <div class="field"><label class="fld" for="abWho">Which photos</label>
+        <select id="abWho">
+          <option value="all">Everything in the album</option>
+          <option value="fav">Just the &#10084;&#65039; favorites</option>
+          <option value="today">Today only</option>
+        </select></div>
+      <div class="btnrow">
+        <button class="btn sage" id="abBuild">&#128444;&#65039; Make the album</button>
+        <button class="btn sm ghost" id="abSave" style="display:none">&#11015;&#65039; Save the pages</button>
+      </div>
+      <div id="abStatus" class="small muted" style="margin-top:.6rem"></div>
+      <div id="abPages" class="stack" style="margin-top:.9rem"></div>
+      </div>
+    </div>
+
     <div class="card a-sun fold" data-fold="vid">
       <div class="card-h"><span class="ic">&#127916;</span><h3>Automatic Video Creator</h3><span class="hint">photos &amp; clips in, film out</span></div>
       <div class="foldbody">
@@ -5300,6 +5328,215 @@ $("camBooth").addEventListener("click",async()=>{
 /* walking away from Memories turns the camera off - no silent recording */
 window.addEventListener("hashchange",()=>{if(!location.hash.includes("memories"))camStop()});
 setTimeout(renderCamChips,0);   /* after the whole script has parsed */
+
+/* ============================================================
+   PHOTO ALBUM MAKER
+   The same shots the film uses, laid out as designed pages instead:
+   a cover, a page per day in collage layouts, and a back cover with
+   everyone in the credits. Drawn on canvas in the same five looks as
+   the film, saved as ordinary pictures - textable, printable, and
+   they open anywhere with nothing installed.
+   ============================================================ */
+const AB_W=1080, AB_H=1400;
+let abBlobs=[];
+const AB_STYLE={
+  classic:  {bg:"#FBF6EA", ink:"#2A1F16", accent:"#A63A24", frame:"#FFFFFF", head:'900 {s}px Fraunces, Georgia, serif'},
+  western:  {bg:"#E8D3A8", ink:"#4A2513", accent:"#8A5A2C", frame:"#F7ECD6", head:'900 {s}px Fraunces, Georgia, serif'},
+  silent:   {bg:"#0E0E0E", ink:"#F0EBE1", accent:"#C9C2B4", frame:"#F5F1E8", head:'900 {s}px Fraunces, Georgia, serif'},
+  scrapbook:{bg:"#EFE4CE", ink:"#4A3826", accent:"#A63A24", frame:"#FDFBF4", head:'italic 900 {s}px Fraunces, Georgia, serif'},
+  pop:      {bg:"#FFE14D", ink:"#111111", accent:"#E4572E", frame:"#FFFFFF", head:'900 {s}px Inter, sans-serif'}
+};
+function abLook(){return $("abLook").value}
+function abSt(){return AB_STYLE[abLook()]||AB_STYLE.classic}
+function abFont(sz){return abSt().head.replace("{s}",sz)}
+
+/* page scaffold: background, texture, border - the look's stationery */
+function abPage(){
+  const c=document.createElement("canvas");c.width=AB_W;c.height=AB_H;
+  const g=c.getContext("2d"),lk=abLook(),st=abSt();
+  g.fillStyle=st.bg;g.fillRect(0,0,AB_W,AB_H);
+  if(lk==="western"||lk==="silent")abGrain(g,.10);
+  if(lk==="scrapbook"){
+    g.strokeStyle="rgba(160,130,90,.15)";g.lineWidth=2;
+    for(let y=70;y<AB_H;y+=72){g.beginPath();g.moveTo(0,y);g.lineTo(AB_W,y);g.stroke()}
+  }
+  if(lk==="pop"){
+    if(!dotTile)halftoneInit();
+    g.save();g.globalAlpha=.12;g.fillStyle=g.createPattern(dotTile,"repeat");
+    g.fillRect(0,0,AB_W,AB_H*.22);g.fillRect(0,AB_H*.78,AB_W,AB_H*.22);g.restore();
+  }
+  if(lk==="western"){g.strokeStyle="#5A3018";g.lineWidth=10;g.strokeRect(30,30,AB_W-60,AB_H-60);
+    g.strokeStyle="#8A5A2C";g.lineWidth=3;g.strokeRect(48,48,AB_W-96,AB_H-96)}
+  if(lk==="silent"){g.strokeStyle="rgba(240,235,225,.85)";g.lineWidth=4;
+    g.strokeRect(40,40,AB_W-80,AB_H-80);g.strokeRect(56,56,AB_W-112,AB_H-112)}
+  return c;
+}
+function abGrain(g,alpha){
+  if(!grainTile)grain(0);            /* builds the shared tile */
+  g.save();g.globalAlpha=alpha;g.globalCompositeOperation="overlay";
+  for(let x=0;x<AB_W;x+=256)for(let y=0;y<AB_H;y+=256)g.drawImage(grainTile,x,y);
+  g.restore();
+}
+function halftoneInit(){
+  dotTile=document.createElement("canvas");dotTile.width=dotTile.height=28;
+  const g=dotTile.getContext("2d");g.fillStyle="#000";
+  g.beginPath();g.arc(7,7,3,0,7);g.fill();g.beginPath();g.arc(21,21,3,0,7);g.fill();
+}
+/* one framed photo on a page, styled per look, hearts and caption included */
+function abPhoto(g,im,m,x,y,w,hh,idx){
+  const lk=abLook(),st=abSt();
+  const iw=im.naturalWidth||im.width, ih=im.naturalHeight||im.height;
+  if(!iw||!ih)return;
+  const rot=lk==="scrapbook"?((idx%2?1:-1)*(1.5+(idx%3)*0.8))*Math.PI/180
+           :lk==="pop"?((idx%2?1:-1)*1.2)*Math.PI/180:0;
+  const mat=lk==="scrapbook"?18:lk==="pop"?14:10;
+  g.save();
+  g.translate(x+w/2,y+hh/2);g.rotate(rot);
+  g.shadowColor="rgba(30,20,10,.35)";g.shadowBlur=22;g.shadowOffsetY=8;
+  g.fillStyle=lk==="pop"?POP_COLORS[idx%POP_COLORS.length]:st.frame;
+  g.fillRect(-w/2-mat,-hh/2-mat,w+mat*2,hh+mat*2+(lk==="scrapbook"?30:0));
+  g.shadowBlur=0;g.shadowOffsetY=0;
+  /* cover-crop into the slot */
+  const sc=Math.max(w/iw,hh/ih);
+  const sw=w/sc, sh=hh/sc, sx=(iw-sw)/2, sy=(ih-sh)/2;
+  if(canFilter&&LOOKS[lk]&&LOOKS[lk].filter!=="none")g.filter=LOOKS[lk].filter;
+  g.drawImage(im,sx,sy,sw,sh,-w/2,-hh/2,w,hh);
+  g.filter="none";
+  if(lk==="scrapbook"){g.save();g.rotate(-.3);g.fillStyle="rgba(220,200,150,.8)";g.fillRect(-w/2-30,-hh/2-mat-14,96,30);g.restore()}
+  if(isFav(m.id)){g.font="34px sans-serif";g.textAlign="left";g.fillText("\u2764\uFE0F",-w/2+10,-hh/2+42)}
+  if(m.cap){
+    g.textAlign="center";g.fillStyle=lk==="silent"?"#111":st.ink;
+    g.font=(lk==="scrapbook"?"italic 700 26px Fraunces, Georgia, serif":"700 24px Inter, sans-serif");
+    if(lk==="scrapbook")g.fillText(m.cap.slice(0,34),0,hh/2+mat+12);
+    else{g.save();g.fillStyle="rgba(0,0,0,.55)";g.fillRect(-w/2,hh/2-46,w,46);
+      g.fillStyle="#F6EFE3";g.fillText(m.cap.slice(0,34),0,hh/2-14);g.restore()}
+  }
+  g.restore();
+}
+/* the collage layouts, by how many shots the page holds */
+function abSlots(n,top,bottom){
+  const L=90,R=AB_W-90,W2=R-L,H2=bottom-top,GAP=34;
+  if(n===1)return [[L,top,W2,H2]];
+  if(n===2)return [[L,top,W2,(H2-GAP)/2],[L,top+(H2+GAP)/2,W2,(H2-GAP)/2]];
+  if(n===3)return [[L,top,W2,(H2-GAP)*.56],
+                   [L,top+(H2-GAP)*.56+GAP,(W2-GAP)/2,(H2-GAP)*.44],
+                   [L+(W2+GAP)/2,top+(H2-GAP)*.56+GAP,(W2-GAP)/2,(H2-GAP)*.44]];
+  return [[L,top,(W2-GAP)/2,(H2-GAP)/2],[L+(W2+GAP)/2,top,(W2-GAP)/2,(H2-GAP)/2],
+          [L,top+(H2+GAP)/2,(W2-GAP)/2,(H2-GAP)/2],[L+(W2+GAP)/2,top+(H2+GAP)/2,(W2-GAP)/2,(H2-GAP)/2]];
+}
+function abPhotoPick(){
+  let pics=media.filter(m=>m.k==="i");
+  const who=$("abWho").value;
+  if(who==="fav")pics=pics.filter(m=>isFav(m.id));
+  else if(who==="today"){const cut=new Date();cut.setHours(0,0,0,0);pics=pics.filter(m=>m.t>=cut.getTime())}
+  return pics.sort((a,b)=>(a.t||0)-(b.t||0));
+}
+async function abBuild(){
+  const btn=$("abBuild");
+  const pics=abPhotoPick();
+  if(!pics.length){toast($("abWho").value==="fav"?"No favorites yet &mdash; open a photo and tap &#9825; first":"Add some photos first");return}
+  btn.disabled=true;btn.innerHTML="&#9203; Laying out the pages&hellip;";
+  try{
+    const lk=abLook(),st=abSt();
+    const pages=[];
+    /* --- cover: the most loved shot carries it --- */
+    {
+      const hero=pics.slice().sort((a,b)=>favNames(b.id).length-favNames(a.id).length)[0];
+      const c=abPage(),g=c.getContext("2d");
+      const im=await getImg(hero.src);
+      if(im)abPhoto(g,im,hero,150,340,AB_W-300,640,0);
+      g.textAlign="center";g.fillStyle=st.ink;
+      g.font=abFont(84);
+      if(lk==="pop"){g.save();g.translate(AB_W/2,190);g.rotate(-.03);
+        g.lineWidth=12;g.strokeStyle="#111";g.strokeText("THE WEST!",0,0);
+        g.fillStyle="#FFF";g.fillText("THE WEST!",0,0);g.restore();}
+      else{g.fillText(lk==="silent"?"THE GREAT":"The Great",AB_W/2,170);
+        g.fillText(lk==="silent"?"AMERICAN WEST":"American West",AB_W/2,262);}
+      g.font=lk==="scrapbook"?"italic 600 34px Fraunces, Georgia, serif":"600 32px Inter, sans-serif";
+      g.fillStyle=lk==="pop"?"#111":st.ink;
+      g.fillText(lk==="western"?"★  AUGUST 17 – 31, 2026  ★":"August 17 – 31, 2026",AB_W/2,AB_H-280);
+      const s=stats(),nSt=statesSoFar().length,nPk=store.get("parks",[]).length;
+      g.font="600 28px Inter, sans-serif";
+      g.fillText(Math.round(s.mi).toLocaleString()+" miles  ·  "+nSt+" state"+(nSt===1?"":"s")+"  ·  "+nPk+" national park"+(nPk===1?"":"s"),AB_W/2,AB_H-220);
+      pages.push(c);
+    }
+    /* --- a page (or more) per day --- */
+    const byDay={};
+    pics.forEach(p=>{const k=new Date(p.t).toLocaleDateString("en-CA");(byDay[k]=byDay[k]||[]).push(p)});
+    for(const k of Object.keys(byDay).sort()){
+      const day=DAYS.find(d=>d.d===k);
+      const shots=byDay[k];
+      for(let off=0;off<shots.length;off+=4){
+        const batch=shots.slice(off,off+4);
+        const c=abPage(),g=c.getContext("2d");
+        g.textAlign="center";g.fillStyle=abSt().ink;
+        g.font=abFont(52);
+        const hd=day?"Day "+day.n:new Date(k+"T12:00").toLocaleDateString([],{weekday:"long"});
+        g.fillText(hd,AB_W/2,150);
+        g.font=(lk==="scrapbook"?"italic ":"")+"600 30px "+(lk==="pop"?"Inter, sans-serif":"Fraunces, Georgia, serif");
+        const sub=(day?day.t:"")+"  ·  "+new Date(k+"T12:00").toLocaleDateString([],{month:"long",day:"numeric"});
+        g.fillText(sub.slice(0,52),AB_W/2,206);
+        if(lk!=="silent"){g.strokeStyle=abSt().accent;g.lineWidth=4;
+          g.beginPath();g.moveTo(AB_W/2-130,240);g.lineTo(AB_W/2+130,240);g.stroke()}
+        const slots=abSlots(batch.length,300,AB_H-185);
+        for(let i=0;i<batch.length;i++){
+          const im=await getImg(batch[i].src);
+          if(im)abPhoto(g,im,batch[i],slots[i][0],slots[i][1],slots[i][2],slots[i][3],off+i);
+        }
+        /* who shot this page */
+        const whos=Array.from(new Set(batch.map(b=>b.by||chatName||"us")));
+        g.textAlign="center";g.fillStyle=abSt().ink;g.globalAlpha=.75;
+        g.font="600 24px Inter, sans-serif";
+        g.fillText("photos: "+whos.join(", "),AB_W/2,AB_H-72);g.globalAlpha=1;
+        pages.push(c);
+      }
+    }
+    /* --- back cover: the credits --- */
+    {
+      const c=abPage(),g=c.getContext("2d");
+      g.textAlign="center";g.fillStyle=st.ink;
+      g.font=abFont(64);
+      g.fillText(lk==="pop"?"THE END!":lk==="silent"?"FIN":"…and home again",AB_W/2,AB_H/2-90);
+      const who=filmCredits();
+      g.font=(lk==="scrapbook"?"italic ":"")+"600 32px "+(lk==="pop"?"Inter, sans-serif":"Fraunces, Georgia, serif");
+      if(who.length)g.fillText("Photographs by "+who.join(", "),AB_W/2,AB_H/2);
+      g.font="600 26px Inter, sans-serif";g.globalAlpha=.7;
+      g.fillText("Made with Olive on the road",AB_W/2,AB_H/2+70);g.globalAlpha=1;
+      pages.push(c);
+    }
+    /* --- render out --- */
+    abBlobs=[];
+    const host=$("abPages");host.innerHTML="";
+    for(let i=0;i<pages.length;i++){
+      const blob=await new Promise(r=>pages[i].toBlob(r,"image/jpeg",.9));
+      abBlobs.push(blob);
+      const img=new Image();img.src=URL.createObjectURL(blob);
+      img.style.cssText="width:100%;border-radius:12px;border:2px solid var(--line-2);display:block";
+      img.alt="Album page "+(i+1);
+      host.appendChild(img);
+    }
+    $("abSave").style.display="inline-flex";
+    $("abStatus").innerHTML="&#9989; <b>"+pages.length+" pages.</b> "+pics.length+" photo"+(pics.length===1?"":"s")+
+      " in the "+(LOOKS[lk]?LOOKS[lk].n:lk)+" look. Save them below, or long-press any page to share just that one.";
+    addFeed("milestone","&#128444;&#65039;","Made a photo album",pages.length+" pages, "+pics.length+" photos");bump("albums");
+  }finally{btn.disabled=false;btn.innerHTML="&#128444;&#65039; Make the album"}
+}
+$("abBuild").addEventListener("click",abBuild);
+$("abLook").value=store.get("vidLook","classic");     /* start matched to the film's look */
+$("abLook").addEventListener("change",()=>{if(abBlobs.length)abBuild()});
+$("abSave").addEventListener("click",async()=>{
+  if(!abBlobs.length)return;
+  const files=abBlobs.map((b,i)=>new File([b],"album-page-"+String(i+1).padStart(2,"0")+".jpg",{type:"image/jpeg"}));
+  if(navigator.canShare&&navigator.canShare({files})){
+    try{await navigator.share({files,title:"Our Great American West album"});return}catch(e){}
+  }
+  /* no share sheet: download one after another */
+  for(const f of files){
+    const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=f.name;a.click();
+    await new Promise(r=>setTimeout(r,350));
+  }
+  toast("&#11015;&#65039; "+files.length+" pages saved to downloads");
+});
 
 /* ============================================================
    TRIP YEARBOOK
