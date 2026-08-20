@@ -979,6 +979,21 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
+    <!-- ---------- THE JOURNEY LOG ---------- -->
+    <div class="card a-sun fold" data-fold="jlog">
+      <div class="card-h"><span class="ic">&#128218;</span><h3>The Journey Log</h3><span class="hint">written by the road itself</span></div>
+      <div class="foldbody">
+      <p class="small muted">The whole trip, day by day, recorded automatically: where you drove, every landmark you actually stopped at (with how long you stayed), the photos, the pins. Nobody writes anything &mdash; the GPS and the camera do it. One tap shares the story with the family.</p>
+      <div id="jlogBody"></div>
+      <div class="btnrow" style="margin-top:.9rem">
+        <button class="btn sm brass" id="jlogSms">&#128172; Text the story</button>
+        <button class="btn sm" id="jlogShare">&#128228; Share it</button>
+        <button class="btn sm ghost" id="jlogCopy">&#128203; Copy</button>
+      </div>
+      <p class="small muted" style="margin-top:.6rem">Want it beautiful? The <b>Trip Yearbook</b> in Memories turns this into a single page with the map and the photos.</p>
+      </div>
+    </div>
+
     <div class="card a-gold fold" data-fold="pins">
       <div class="card-h"><span class="ic">&#128204;</span><h3>Saved Places</h3><span class="hint">your pinned spots</span></div>
       <div class="foldbody">
@@ -1667,7 +1682,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w41-2026-08-20";
+const OLIVE_BUILD="w42-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2808,7 +2823,7 @@ applyFS();
    and health reminders wait quietly until they're wanted. */
 const FOLD_DEFAULT={
   /* Today */    ride:true,dash:true,health:false,sky:true,alerts:true,brief:true,ask:true,
-  /* Journey */  trail:true,pins:false,stays:true,scenic:false,passes:false,clear:false,
+  /* Journey */  trail:true,jlog:true,pins:false,stays:true,scenic:false,passes:false,clear:false,
   /* Nearby */   events:false,fuel:false,find:true,facts:true,factsrc:false,wild:true,
   /* Radio */    stations:true,pods:false,noaa:false,tis:false,radioabout:false,
   /* Memories */ story:true,album:true,cam:true,book:false,vid:true,feed:true,favs:false,yb:false,journal:true,bucket:true,
@@ -2868,7 +2883,7 @@ function showView(v){
   if(v==="nearby"){renderNearby();drawMap();renderMapDays(null);loadFacts()}
   if(v==="memories"){renderFeed();renderBucket();if(typeof renderStory==="function")renderStory()}
   if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();if(!podList.length)loadPods();}
-  if(v==="journey"){drawTrail();renderTrailLog();renderStays()}
+  if(v==="journey"){drawTrail();renderTrailLog();renderJourneyLog();renderStays()}
   if(v==="crew"){unread=0;}
   if(v==="tour"){mountTour();renderHelpAll();store.set("tour-seen",true);syncTourPrompt()}
   else stopTour();
@@ -2921,6 +2936,7 @@ const HELP=[
  {ic:"&#128663;",t:"See today's miles",s:"Live on the Today page and the dashboard",go:"today",fold:"dash",q:"miles today odometer distance far driven track tracking dashboard"},
  {ic:"&#9998;",t:"Fix the trip miles",s:"Credit the missed days or set the car's total",go:"today",fold:"dash",q:"fix miles wrong missing repair odometer adjust correct total"},
  {ic:"&#129517;",t:"See everywhere you've been",s:"Your trail on the real map, a colour per day",go:"journey",fold:"trail",q:"trail map been route history track where drove path days"},
+ {ic:"&#128218;",t:"The Journey Log",s:"Every stop, every day, recorded by itself - and shareable",go:"journey",fold:"jlog",q:"journey log diary visited stops landmarks record history share story family text"},
  {ic:"&#128205;",t:"The live moving map",s:"You, the trail, the crew and every stop",go:"nearby",fold:null,q:"map live follow me gps position moving nearby"},
  {ic:"&#128190;",t:"Save the whole journey to a file",s:"Everything Olive knows, restorable anywhere",go:"journey",fold:"trail",q:"backup save journey file export restore lost phone gpx kml"},
  /* daily life */
@@ -3229,6 +3245,7 @@ $("logFuel").addEventListener("click",()=>{
 let here=null, watchId=null, lastFix=null, lastWx=null;
 let odoAnchor=null;      /* last position the odometer actually counted */
 let cruise=null;         /* smoothed speed, mph */
+let spdRef=null;         /* baseline for inferring speed without device help */
 let alerted=new Set(store.get("alerted",[]));
 function saveAlerted(){store.set("alerted",Array.from(alerted).slice(-400))}
 
@@ -3363,9 +3380,17 @@ function onFix(pos){
     let inst=null;
     const ps=pos.coords.speed;
     if(ps!=null&&!isNaN(ps)&&ps>=0)inst=ps*2.23694;
-    else if(prev){
-      const dP=dist(prev.lat,prev.lng,lat,lng), dtP=(here.t-prev.t)/1000;
-      if(dtP>0.5&&dP<25)inst=dP/(dtP/3600);
+    else{
+      /* No device speed: infer it over an ~8 second baseline, never fix to
+         fix. One second of parked GPS jitter computes as highway speed;
+         eight seconds separates real motion from wobble unmistakably. */
+      if(!spdRef||here.t-spdRef.t>20000)spdRef={la:lat,lo:lng,t:here.t};
+      const dtR=(here.t-spdRef.t)/1000;
+      if(dtR>=8){
+        const dR=dist(spdRef.la,spdRef.lo,lat,lng);
+        inst=dR<Math.max(0.012,(acc||0)/1609.34)?0:dR/(dtR/3600);
+        spdRef={la:lat,lo:lng,t:here.t};
+      }
     }
     if(inst!=null&&inst<=95)cruise=(cruise==null)?inst:cruise*0.6+inst*0.4;
   }
@@ -3421,6 +3446,7 @@ function onFix(pos){
   loadElevation();                   /* terrain height, cached hard - cheap to call */
   renderAltitude();
   rangeWatch();
+  visitWatch();                      /* stopped at a landmark? that goes in the log */
   followRadio();                     /* stations follow you down the road */
   mapOnFix();
   if(typeof spotlightWatch==='function')spotlightWatch();
@@ -3460,6 +3486,61 @@ function nearest(limit,cats,maxMi){
   const r=pool.filter(p=>(!cats||cats.includes(p.c))&&(!maxMi||p._d<=maxMi))
               .sort((a,b)=>a._d-b._d);
   return limit?r.slice(0,limit):r;
+}
+
+/* ============================================================
+   VISITS - the difference between passing and being there
+   The proximity alerts already notice a landmark going by the window.
+   This notices the family actually STOPPING: within short walking
+   range of a known place, barely moving, for long enough that it can
+   only mean they got out. That is a visit, and it goes in the journey
+   log by itself - with the arrival time and, once they drive off, how
+   long they stayed. Nobody writes anything down.
+   ============================================================ */
+let VISIT_MS=8*60*1000;            /* stationary this long = a real stop */
+const VISIT_NEAR=0.45, VISIT_GONE=0.7;   /* miles: inside / definitely left */
+let visitState=null;               /* {n,c,lat,lng,t0,lastNear} */
+function visits(){return store.get("visits",[])}
+function visitWatch(){
+  if(!here)return;
+  const slow=(here.mph==null||here.mph<5);
+  const near=nearest(1,null,VISIT_NEAR)[0]||null;
+  const now=Date.now();
+  if(visitState){
+    const d=dist(here.lat,here.lng,visitState.lat,visitState.lng);
+    if(d<VISIT_GONE&&slow){visitState.lastNear=now}
+    else if(d>=VISIT_GONE){
+      commitVisit();                       /* they have driven off */
+      visitState=null;
+    }
+  }
+  if(!visitState&&near&&slow){
+    visitState={n:near.n,c:near.c,lat:near.lat,lng:near.lng,t0:now,lastNear:now};
+  }
+  /* once the stay is real, log it - and keep the duration growing while
+     they are still there, so a phone that dies mid-visit loses nothing */
+  if(visitState&&visitState.lastNear-visitState.t0>=VISIT_MS)commitVisit();
+}
+function commitVisit(){
+  if(!visitState)return;
+  const dur=visitState.lastNear-visitState.t0;
+  if(dur<VISIT_MS)return;
+  const day=new Date(visitState.t0).toLocaleDateString("en-CA");
+  const v=visits();
+  let e=v.find(x=>x.n===visitState.n&&x.d===day);
+  if(e){ if(dur>e.dur){e.dur=dur;store.set("visits",v)} return }
+  e={n:visitState.n,c:visitState.c,d:day,at:visitState.t0,dur,lat:visitState.lat,lng:visitState.lng};
+  v.push(e);store.set("visits",v.slice(-200));
+  addFeed("milestone","&#127963;&#65039;","Visited "+visitState.n,"logged in the journey automatically");
+  pushAlert({ic:"&#128218;",cls:"",t:"Added to your journey: "+visitState.n,
+             s:"Olive noticed you stopped here and wrote it down. The whole log is on the Journey tab."});
+  if($("view-journey").classList.contains("active"))renderJourneyLog();
+}
+function fmtDur(ms){
+  const m=Math.round(ms/60000);
+  if(m<60)return m+" min";
+  const hh=Math.floor(m/60),mm=m%60;
+  return hh+"h"+(mm?" "+mm+"m":"");
 }
 
 /* ============================================================
@@ -4447,7 +4528,10 @@ function dayStory(){
     if(td.top>40)extremes.push("touched "+td.top+" mph");
     if(extremes.length)bits.push("You "+extremes.join(" and ")+".");
   }
-  const places=ex.places.map(p=>String(p.title||"").replace(/^(Passed near|Arrived at|Stopped at) /,"")).filter(Boolean);
+  const vToday=visits().filter(v=>v.d===todayISO()).sort((a,b)=>a.at-b.at);
+  if(vToday.length)bits.push("You stopped at "+vToday.slice(0,3).map(v=>v.n+" ("+fmtDur(v.dur)+")").join(", ")+(vToday.length>3?" and more":"")+".");
+  const stopped=new Set(vToday.map(v=>v.n));
+  const places=ex.places.map(p=>String(p.title||"").replace(/^(Passed near|Arrived at|Stopped at) /,"")).filter(p=>p&&!stopped.has(p));
   if(places.length)bits.push("Along the way: "+places.slice(0,4).join(", ")+(places.length>4?" and "+(places.length-4)+" more":"")+".");
   const ph=todayPhotos();
   if(ph.length){
@@ -4670,8 +4754,11 @@ function recapHome(){
   if(bits.length)L.push(bits.join(", ")+".");
   /* feed titles are written for the journal ("Passed near X"); the family
      back home just wants the place */
-  const hl=ex.places.slice(0,4).map(p=>String(p.title||"").replace(/^(Passed near|Arrived at|Stopped at) /,""));
-  if(hl.length)L.push("Highlights: "+hl.join(", ")+".");
+  const vT=visits().filter(v=>v.d===todayISO()).sort((a,b)=>a.at-b.at);
+  if(vT.length)L.push("We stopped at "+vT.slice(0,4).map(v=>v.n+" ("+fmtDur(v.dur)+")").join(", ")+".");
+  const seen=new Set(vT.map(v=>v.n));
+  const hl=ex.places.map(p=>String(p.title||"").replace(/^(Passed near|Arrived at|Stopped at) /,"")).filter(p=>p&&!seen.has(p)).slice(0,3);
+  if(hl.length)L.push("Also passed: "+hl.join(", ")+".");
   if(d&&d.stay)L.push("Tonight we are in "+d.stay+".");
   L.push("— sent from Olive");
   return L.join("\n");
@@ -6689,6 +6776,74 @@ function ago(ms){
   return Math.round(m/60)+" hr ago";
 }
 function pins(){return store.get("pins",[])}
+
+/* ============================================================
+   THE JOURNEY LOG - the trip, day by day, from what was recorded
+   ============================================================ */
+function journeyDayData(){
+  const td=trailDays();                       /* miles/hours/high per day, newest first */
+  const vs=visits();
+  const p=pins();
+  const t0=k=>new Date(k+"T00:00").getTime(), t1=k=>t0(k)+864e5;
+  const days={};
+  const dayOf=t=>new Date(t).toLocaleDateString("en-CA");
+  td.forEach(d=>{days[d.k]=days[d.k]||{};days[d.k].trail=d});
+  vs.forEach(v=>{(days[v.d]=days[v.d]||{}).visits=(days[v.d].visits||[]).concat(v)});
+  p.forEach(x=>{const k=dayOf(x.t);(days[k]=days[k]||{}).pins=(days[k].pins||[]).concat(x)});
+  media.filter(m=>m.k==="i").forEach(m=>{const k=dayOf(m.t);
+    (days[k]=days[k]||{}).photos=((days[k].photos)||0)+1});
+  return Object.keys(days).sort().reverse().map(k=>({k,plan:DAYS.find(d=>d.d===k)||null,...days[k]}));
+}
+function renderJourneyLog(){
+  const el=$("jlogBody");if(!el)return;
+  const data=journeyDayData();
+  if(!data.length){el.innerHTML='<p class="small muted" style="margin:0">Day one writes itself the moment you start driving.</p>';return}
+  el.innerHTML=data.map(d=>{
+    const head=(d.plan?"Day "+d.plan.n:"")+" &middot; "+new Date(d.k+"T12:00").toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"});
+    const pills=[];
+    if(d.trail&&d.trail.mi>=0.5)pills.push('<span class="pill">'+fmtMiles(d.trail.mi)+" mi</span>");
+    if(d.trail){const hrs=(d.trail.last-d.trail.first)/3600000;
+      if(hrs>=0.5)pills.push('<span class="pill">'+(hrs<1?Math.round(hrs*60)+" min":hrs.toFixed(1).replace(".0","")+" hr")+"</span>")}
+    if(d.trail&&d.trail.hi!=null&&d.trail.hi>4000)pills.push('<span class="pill sky">high '+d.trail.hi.toLocaleString()+" ft</span>");
+    if(d.photos)pills.push('<span class="pill gold">&#128247; '+d.photos+"</span>");
+    const stops=(d.visits||[]).sort((a,b)=>a.at-b.at).map(v=>
+      '<div class="row"><div class="ic">'+(CAT_IC[v.c]||"&#127963;&#65039;")+'</div><div class="bd">'+
+      '<div class="t">'+esc(v.n)+'</div>'+
+      '<div class="s">arrived '+new Date(v.at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"})+
+      ' &middot; stayed '+fmtDur(v.dur)+"</div></div></div>").join("");
+    const pinRows=(d.pins||[]).map(x=>
+      '<div class="row"><div class="ic">'+x.k+'</div><div class="bd"><div class="t">'+esc(x.n)+'</div>'+
+      (x.note?'<div class="s">'+esc(x.note)+"</div>":"")+"</div></div>").join("");
+    return '<div style="margin-top:1rem"><div class="small" style="font-weight:800">'+head+
+      (d.plan?'<span class="muted" style="font-weight:500"> &mdash; '+esc(d.plan.t)+"</span>":"")+"</div>"+
+      (pills.length?'<div class="pills" style="margin:.35rem 0 .3rem">'+pills.join("")+"</div>":"")+
+      stops+pinRows+
+      (!stops&&!pinRows&&!(d.trail&&d.trail.mi>0.5)?'<div class="small muted">A quiet day.</div>':"")+
+      "</div>";
+  }).join("");
+}
+/* the same log, as words the family can read in a text message */
+function journeyText(){
+  const data=journeyDayData().slice().reverse();      /* oldest first reads as a story */
+  const L=["Our Great American West journey so far:"];
+  data.forEach(d=>{
+    const parts=[];
+    if(d.trail&&d.trail.mi>=1)parts.push(fmtMiles(d.trail.mi)+" miles");
+    const vs=(d.visits||[]).sort((a,b)=>a.at-b.at);
+    if(vs.length)parts.push("stopped at "+vs.map(v=>v.n+" ("+fmtDur(v.dur)+")").join(", "));
+    if(d.photos)parts.push(d.photos+" photo"+(d.photos===1?"":"s"));
+    if(!parts.length)return;
+    L.push((d.plan?"Day "+d.plan.n:new Date(d.k+"T12:00").toLocaleDateString([],{month:"short",day:"numeric"}))+
+      (d.plan?" ("+d.plan.t+")":"")+": "+parts.join("; ")+".");
+  });
+  const s=stats();
+  L.push("Total so far: "+Math.round(s.mi).toLocaleString()+" miles across "+statesSoFar().length+" states.");
+  L.push("— from Olive, riding along");
+  return L.join("\n");
+}
+$("jlogSms").addEventListener("click",()=>shareSMS(journeyText()));
+$("jlogShare").addEventListener("click",()=>shareAny("Our Great American West journey",journeyText()));
+$("jlogCopy").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(journeyText());toast("&#128203; Copied — paste it anywhere")}catch(e){toast("Could not copy")}});
 
 function savePin(){
   if(!here)return toast("Turn on location first");
