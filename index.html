@@ -1574,6 +1574,15 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 <!-- ========================== HOW IT WORKS ========================= -->
 <div class="view" id="view-tour">
   <div class="stack">
+
+    <!-- ---------- FIND HOW TO DO ANYTHING ---------- -->
+    <div class="card a-sky">
+      <div class="card-h"><span class="ic">&#128269;</span><h3>How Do I&hellip;?</h3></div>
+      <p class="small muted" style="margin-top:0">Type what you&rsquo;re trying to do &mdash; <i>photos</i>, <i>miles</i>, <i>send home</i>, <i>fuel</i> &mdash; and Olive takes you straight to the right spot.</p>
+      <div class="field"><input type="search" id="helpQ" placeholder="e.g. add photos &middot; make the film &middot; fix the miles" autocomplete="off"></div>
+      <div id="helpResults"></div>
+    </div>
+
     <div class="card a-gold">
       <div class="card-h"><span class="ic">&#127916;</span><h3>How This App Works</h3></div>
       <p style="margin:0">A short tour, about three minutes, narrated by Clara. It walks through every tab and the few things worth doing before you leave Denver. Press <b>Preview</b> to watch it here, or <b>Create the video</b> to save it as a file you can text to anyone.</p>
@@ -1581,6 +1590,12 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     </div>
     <div id="tourHost" class="tour-host">
       <div class="card"><p class="muted" style="margin:0">Loading the tour&hellip;</p></div>
+    </div>
+
+    <!-- ---------- JUMP TO ANY PART ---------- -->
+    <div class="card">
+      <div class="card-h"><span class="ic">&#128220;</span><h3>Jump To Any Part</h3><span class="hint">every feature, one tap</span></div>
+      <div id="helpAll"></div>
     </div>
   </div>
 </div>
@@ -1652,7 +1667,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w40-2026-08-20";
+const OLIVE_BUILD="w41-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2855,7 +2870,7 @@ function showView(v){
   if(v==="radio"){if(radioSrc==="live")loadLiveStations();else renderRadio();if(!podList.length)loadPods();}
   if(v==="journey"){drawTrail();renderTrailLog();renderStays()}
   if(v==="crew"){unread=0;}
-  if(v==="tour"){mountTour();store.set("tour-seen",true);syncTourPrompt()}
+  if(v==="tour"){mountTour();renderHelpAll();store.set("tour-seen",true);syncTourPrompt()}
   else stopTour();
   /* an aliased link means the person asked for that section - scroll to it,
      and if it is folded shut, open it for them */
@@ -2887,6 +2902,89 @@ function scrollTabIntoView(v){
   const max=s.scrollWidth-s.clientWidth;
   s.scrollLeft=Math.max(0,Math.min(max,want));
 }
+/* ============================================================
+   HOW DO I...? - the searchable guide to everything
+   Every feature in the app, findable by the words a person would
+   actually type, and one tap lands them on the real card with its
+   fold already open. Grouped by tab when nothing is typed.
+   ============================================================ */
+const HELP=[
+ /* photos & film */
+ {ic:"&#128247;",t:"Add photos or videos",s:"Up to 10 at once, straight from your phone",go:"memories",fold:"album",q:"photo picture video upload add camera roll import pictures"},
+ {ic:"&#128248;",t:"Take a photo with the Trail Camera",s:"A camera with looks baked in",go:"memories",fold:"cam",q:"camera take photo booth selfie picture"},
+ {ic:"&#10084;&#65039;",t:"Love a photo / see it big",s:"Tap any picture - heart it, caption it, save it",go:"memories",fold:"album",q:"heart love favorite favourite caption save picture lightbox big download"},
+ {ic:"&#127916;",t:"Make the film",s:"Photos and clips cut into one movie",go:"memories",fold:"vid",q:"film video movie create montage highlight reel make"},
+ {ic:"&#127917;",t:"Change the film's look",s:"Old Western, Silent movie, Scrapbook, Comic pop",go:"memories",fold:"vid",q:"look western sepia black white scrapbook comic style theme"},
+ {ic:"&#128444;&#65039;",t:"Make the photo album pages",s:"Designed pages you can text or print",go:"memories",fold:"book",q:"album pages postcard print book layout photo pages"},
+ {ic:"&#128228;",t:"Share photos with the crew",s:"Everyone's shots land in everyone's film",go:"memories",fold:"album",q:"share crew family everyone sync photos together"},
+ /* miles & map */
+ {ic:"&#128663;",t:"See today's miles",s:"Live on the Today page and the dashboard",go:"today",fold:"dash",q:"miles today odometer distance far driven track tracking dashboard"},
+ {ic:"&#9998;",t:"Fix the trip miles",s:"Credit the missed days or set the car's total",go:"today",fold:"dash",q:"fix miles wrong missing repair odometer adjust correct total"},
+ {ic:"&#129517;",t:"See everywhere you've been",s:"Your trail on the real map, a colour per day",go:"journey",fold:"trail",q:"trail map been route history track where drove path days"},
+ {ic:"&#128205;",t:"The live moving map",s:"You, the trail, the crew and every stop",go:"nearby",fold:null,q:"map live follow me gps position moving nearby"},
+ {ic:"&#128190;",t:"Save the whole journey to a file",s:"Everything Olive knows, restorable anywhere",go:"journey",fold:"trail",q:"backup save journey file export restore lost phone gpx kml"},
+ /* daily life */
+ {ic:"&#9981;",t:"Fuel - can we make it?",s:"Tap the gauge, Olive does the arithmetic",go:"nearby",fold:"fuel",q:"fuel gas tank range empty station gap fill up"},
+ {ic:"&#129454;",t:"When to see wildlife",s:"Bison, bears, wolves - and the golden light",go:"nearby",fold:"wild",q:"wildlife bison bear wolf animals golden hour photo light sunrise sunset"},
+ {ic:"&#9928;&#65039;",t:"Storm warnings",s:"Building weather, hours ahead, on exposed passes",go:"today",fold:"sky",q:"storm weather thunder rain wind warning forecast lightning"},
+ {ic:"&#9968;&#65039;",t:"Altitude advice",s:"What the elevation asks of this crew",go:"today",fold:"health",q:"altitude elevation breath headache height mountain sick"},
+ {ic:"&#127909;",t:"Tonight's recap & the postcard",s:"The day writes itself - one tap sends it home",go:"today",fold:null,scroll:"recapCard",q:"recap tonight summary postcard day story send home family update text"},
+ {ic:"&#128233;",t:"Send the nightly update home",s:"Who gets it, and when Olive nudges you",go:"today",fold:null,scroll:"recapCard",q:"send home nightly update text email family sarah recipients"},
+ /* trip admin */
+ {ic:"&#128716;&#65039;",t:"Tonight's stay & bookings",s:"Every night, with confirmations",go:"journey",fold:"stays",q:"hotel stay booking reservation night sleep airbnb"},
+ {ic:"&#128739;&#65039;",t:"Scenic routes & passes",s:"The better road, and what the climbs ask",go:"journey",fold:"scenic",q:"scenic route pass grade mountain drive road"},
+ {ic:"&#128251;",t:"Radio & podcasts",s:"Stations that follow you down the road",go:"radio",fold:null,q:"radio station music podcast noaa frequency"},
+ {ic:"&#128172;",t:"Crew chat & family map",s:"Talk, and see where everyone is",go:"crew",fold:null,q:"chat message crew family map where location share talk"},
+ {ic:"&#127973;",t:"Medical & emergency",s:"Hospitals on the route - and always 911",go:"toolkit",fold:"med",q:"medical hospital emergency doctor 911 help sick hurt"},
+ {ic:"&#128246;",t:"Works without signal",s:"What keeps working when the bars vanish",go:"toolkit",fold:"offline",q:"offline signal no service dead zone cache save"},
+ {ic:"&#127908;",t:"Ask Olive out loud",s:"The microphone at the top - just talk",go:"today",fold:"ask",q:"ask voice microphone talk speak question olive"},
+ {ic:"&#9749;",t:"The morning briefing",s:"Today in a minute, read aloud",go:"today",fold:"brief",q:"briefing morning today plan summary listen"}
+];
+function helpGo(e){
+  location.hash="#/"+e.go;
+  setTimeout(()=>{
+    if(e.fold)foldOpen(e.fold);
+    const target=e.fold?document.querySelector('.card.fold[data-fold="'+e.fold+'"]')
+                       :(e.scroll?$(e.scroll):null);
+    if(target)setTimeout(()=>target.scrollIntoView({behavior:"smooth",block:"start"}),150);
+  },200);
+}
+function helpRow(e){
+  return '<div class="row clickable" data-help="'+HELP.indexOf(e)+'" style="cursor:pointer">'+
+    '<div class="ic">'+e.ic+'</div><div class="bd"><div class="t">'+e.t+'</div><div class="s">'+e.s+'</div></div>'+
+    '<div class="rt">&#8594;</div></div>';
+}
+function renderHelp(){
+  const q=($("helpQ").value||"").trim().toLowerCase();
+  const out=$("helpResults");
+  if(!q){out.innerHTML="";renderHelpAll();return}
+  const words=q.split(/\s+/).filter(Boolean);
+  const scored=HELP.map(e=>{
+    const hay=(e.t+" "+e.s+" "+e.q).toLowerCase();
+    let sc=0;
+    words.forEach(w=>{if(hay.includes(w))sc+=w.length>3?2:1;if(e.t.toLowerCase().includes(w))sc+=2});
+    return {e,sc};
+  }).filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc).slice(0,8);
+  out.innerHTML=scored.length?scored.map(x=>helpRow(x.e)).join("")
+    :'<p class="small muted" style="margin:.6rem 0 0">Nothing for that &mdash; try a different word, or ask Olive out loud on the Today tab.</p>';
+}
+const HELP_TABS={today:"Today",journey:"Journey",nearby:"Nearby",radio:"Radio",memories:"Memories",crew:"Crew",toolkit:"Toolkit"};
+function renderHelpAll(){
+  const el=$("helpAll");if(!el)return;
+  let html="";
+  Object.keys(HELP_TABS).forEach(tab=>{
+    const items=HELP.filter(e=>e.go===tab);
+    if(!items.length)return;
+    html+='<div class="small muted" style="margin:.8rem 0 .3rem"><b>'+HELP_TABS[tab]+'</b></div>'+items.map(helpRow).join("");
+  });
+  el.innerHTML=html;
+}
+$("helpQ").addEventListener("input",renderHelp);
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-help]");if(!b)return;
+  helpGo(HELP[+b.dataset.help]);
+});
+
 /* The tour is the training page shown inside the app. It is loaded the first
    time the tab is opened, not on boot - it pulls eleven narration files and
    nobody should pay for that just by starting the app. */
