@@ -502,6 +502,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 .gal figure{margin:0;position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;border:2px solid var(--line-2);background:var(--card-2)}
 .gal img,.gal video{width:100%;height:100%;object-fit:cover}
 .gal .del{position:absolute;top:.22rem;right:.22rem;width:1.7rem;height:1.7rem;border-radius:50%;border:0;background:rgba(42,31,22,.75);color:#fff;font-size:.78rem;cursor:pointer;line-height:1}
+.gal .gal-by{position:absolute;left:0;right:0;bottom:0;padding:.18rem .4rem;font-size:.68rem;font-weight:700;color:#F6EFE3;background:linear-gradient(transparent,rgba(42,31,22,.78));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dropzone{border:3px dashed var(--line-2);border-radius:var(--r);padding:1.7rem 1rem;text-align:center;background:var(--card-2);cursor:pointer;transition:.15s}
 .dropzone:hover,.dropzone.over{border-color:var(--rust);background:#FBEEE7}
 #vidCanvas,#trailCanvas{width:100%;border-radius:var(--r-sm);display:block;border:2px solid var(--line-2)}
@@ -1340,7 +1341,8 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <div class="card a-sun fold" data-fold="vid">
       <div class="card-h"><span class="ic">&#127916;</span><h3>Automatic Video Creator</h3><span class="hint">photos in, film out</span></div>
       <div class="foldbody">
-      <p class="small muted">Add your photos and Olive builds a highlight reel &mdash; slow pans, gentle fades, your trip stats on the title card.</p>
+      <p class="small muted">Add photos and video clips &mdash; Olive cuts them together into one film, slow pans on the stills, your clips playing inside it, trip stats on the title card. With crew sharing on, everyone&rsquo;s shots land in everyone&rsquo;s film.</p>
+      <div id="pixShareRow"></div>
       <div id="photoHow"></div>
       <div class="dropzone" id="mediaDrop" tabindex="0" role="button">
         <div style="font-size:2.4rem">&#128247;</div>
@@ -1576,7 +1578,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w34-2026-08-20";
+const OLIVE_BUILD="w35-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -4748,6 +4750,84 @@ $("brRead").addEventListener("click",()=>{
    MEDIA STUDIO + VIDEO CREATOR
    ============================================================ */
 let media=store.get("media",[]);
+
+/* ============================================================
+   THE CREW ALBUM
+   Photos are better when everyone's end up in one place. Each phone
+   publishes what it adds to the crew's private room (the same free
+   ntfy.sh room the chat uses - no accounts), and every phone folds
+   what arrives into its own gallery. So four people shoot the day,
+   and one film has all of it.
+   Honest limits, stated where it matters: the relay holds a photo for
+   a few hours, so phones that open Olive the same evening get
+   everything; a phone left off for a day misses those and just keeps
+   its own. Clips share when they are small enough to carry (~14MB).
+   ============================================================ */
+const PIX_TOPIC="olive-pix-"+ROOM_SUFFIX, PIX_URL="https://ntfy.sh/"+PIX_TOPIC;
+const DEV_ID=(function(){let d=store.get("devId","");if(!d){d=Math.random().toString(36).slice(2,10);store.set("devId",d)}return d})();
+let pixSeen=new Set(store.get("pix-seen",[]));
+function pixSharing(){return store.get("pix-share",true)}
+
+async function sharePix(m){
+  if(!pixSharing())return;
+  try{
+    const blob=await (await fetch(m.src)).blob();
+    if(blob.size>14*1024*1024){toast("That clip is too big to share with the crew &mdash; it stays in your own film");return}
+    const name=(m.name||"photo").replace(/[^\w.\-]+/g,"_").slice(0,60)||"photo";
+    await fetch(PIX_URL+"?filename="+encodeURIComponent(name)+
+                "&title="+encodeURIComponent(chatName||"Crew")+
+                "&message="+encodeURIComponent(DEV_ID),{method:"PUT",body:blob});
+  }catch(e){}                       /* no signal - it simply stays local */
+}
+function handlePix(line){
+  let j;try{j=JSON.parse(line)}catch(e){return}
+  if(j.event&&j.event!=="message")return;
+  if(!j.attachment||!j.id||pixSeen.has(j.id))return;
+  pixSeen.add(j.id);store.set("pix-seen",Array.from(pixSeen).slice(-600));
+  if((j.message||"").indexOf(DEV_ID)>=0)return;         /* our own upload, echoed back */
+  const att=j.attachment, type=att.type||"";
+  if(!/^image\/|^video\//.test(type))return;
+  const who=String(j.title||"Crew").slice(0,24);
+  fetch(att.url).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>{
+    const rd=new FileReader();
+    rd.onload=()=>{
+      if(/^video\//.test(type)){
+        addMedia({k:"v",src:rd.result,t:(j.time||0)*1000||Date.now(),name:att.name,by:who},true);
+        renderGal();toast("&#127916; "+esc(who)+" added a clip to the crew album");
+      }else{
+        /* downscale exactly like a local add, so storage stays survivable */
+        const im=new Image();
+        im.onload=()=>{
+          const max=1280,sc=Math.min(1,max/Math.max(im.width,im.height));
+          const c=document.createElement("canvas");
+          c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
+          c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+          addMedia({k:"i",src:c.toDataURL("image/jpeg",.82),t:(j.time||0)*1000||Date.now(),name:att.name,by:who},true);
+          renderGal();toast("&#128247; "+esc(who)+" added a photo to the crew album");
+        };
+        im.src=rd.result;
+      }
+    };
+    rd.readAsDataURL(b);
+  }).catch(()=>{});                 /* expired at the relay - the sender still has it */
+}
+let pixEs=null;
+function pixSubscribe(){
+  try{
+    pixEs=new EventSource(PIX_URL+"/sse");
+    pixEs.onopen=()=>{fetch(PIX_URL+"/json?poll=1&since=all").then(r=>r.text())
+      .then(t=>t.split("\n").filter(Boolean).forEach(handlePix)).catch(()=>{})};
+    pixEs.onmessage=ev=>handlePix(ev.data);
+    pixEs.onerror=()=>{try{pixEs.close()}catch(e){};setTimeout(pixSubscribe,8000)};
+  }catch(e){}
+}
+function renderPixShare(){
+  const el=$("pixShareRow");if(!el)return;
+  el.innerHTML=`<label class="switch" style="margin-bottom:.8rem"><input type="checkbox" id="pixShare" ${pixSharing()?"checked":""}><span class="track"></span>
+    <span><b>Share with the crew</b><br><span class="small muted">Photos and small clips you add appear in everyone&rsquo;s album${chatName?"":" &mdash; join the Crew chat so your name is on your shots"}. Reaches phones that open Olive within a few hours.</span></span></label>`;
+  $("pixShare").addEventListener("change",e=>{store.set("pix-share",e.target.checked);
+    toast(e.target.checked?"Sharing on":"Sharing off &mdash; your photos stay on this phone")});
+}
 $("mediaDrop").addEventListener("click",()=>$("mediaInput").click());
 $("mediaDrop").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ")$("mediaInput").click()});
 ["dragover","dragenter"].forEach(ev=>$("mediaDrop").addEventListener(ev,e=>{e.preventDefault();$("mediaDrop").classList.add("over")}));
@@ -4838,8 +4918,11 @@ function renderPhotoHow(){
   el.innerHTML='<div class="note '+(s.supported&&s.installed?"":"warn")+' small" style="margin:0 0 .8rem">&#128247; '+body+"</div>";
 }
 
-function addMedia(m){
+function addMedia(m,fromCrew){
   media.unshift(m);
+  /* anything added on this phone goes to the crew album; anything that
+     arrived FROM the crew must not bounce back out again */
+  if(!fromCrew)sharePix(m);
   /* keep localStorage under control - videos are kept in memory only */
   try{store.set("media",media.filter(x=>x.k==="i").slice(0,40))}
   catch(e){media=media.slice(0,20);try{store.set("media",media.filter(x=>x.k==="i").slice(0,20))}catch(e2){toast("Storage full — older photos dropped")}}
@@ -4848,6 +4931,7 @@ function addMedia(m){
 function renderGal(){
   $("mediaGal").innerHTML=media.map((m,i)=>
     `<figure>${m.k==="v"?`<video src="${m.src}" muted playsinline></video>`:`<img src="${m.src}" alt="">`}
+     ${m.by?`<figcaption class="gal-by">${esc(m.by)}</figcaption>`:""}
      <button class="del" data-mi="${i}" aria-label="Remove">&#10005;</button></figure>`).join("");
   $("vidControls").style.display=media.length?"block":"none";
   if(media.length)drawFrame(0,0);
@@ -5213,9 +5297,12 @@ function getImg(src){
 }
 function coverDraw(im,t,zoomFrom,zoomTo,panX){
   if(!im)return;
+  /* photos measure themselves in width/height, video elements in videoWidth */
+  const iw=im.videoWidth||im.naturalWidth||im.width, ih=im.videoHeight||im.naturalHeight||im.height;
+  if(!iw||!ih)return;
   const z=zoomFrom+(zoomTo-zoomFrom)*t;
-  const s=Math.max(vc.width/im.width,vc.height/im.height)*z;
-  const w=im.width*s,h=im.height*s;
+  const s=Math.max(vc.width/iw,vc.height/ih)*z;
+  const w=iw*s,h=ih*s;
   const x=(vc.width-w)/2+panX*t*vc.width*.05;
   const y=(vc.height-h)/2;
   vx.drawImage(im,x,y,w,h);
@@ -5273,54 +5360,106 @@ function styleCfg(){
   if(s==="daily")return {per:2600,fade:600};
   return {per:3200,fade:700};
 }
-function activePics(){
-  let pics=media.filter(m=>m.k==="i");
+function activePics(){return activeMedia().filter(m=>m.k==="i")}
+/* photos AND video clips, oldest first so the film runs in trip order */
+function activeMedia(){
+  let items=media.slice();
   if($("vidStyle").value==="daily"){
     const cutoff=Date.now()-24*3600*1000;
-    const today=pics.filter(p=>p.t>cutoff);
-    if(today.length)pics=today;
+    const today=items.filter(p=>p.t>cutoff);
+    if(today.length)items=today;
   }
-  return pics;
+  return items.slice().sort((a,b)=>(a.t||0)-(b.t||0));
+}
+const CLIP_MAX=6000;          /* a clip plays up to six seconds in the film */
+function getVid(src){
+  return new Promise(res=>{
+    const v=document.createElement("video");
+    v.muted=true;v.playsInline=true;v.preload="auto";v.crossOrigin="anonymous";
+    let done=false;const ok=()=>{if(!done){done=true;res(v)}};
+    v.onloadeddata=ok;
+    v.onerror=()=>{if(!done){done=true;res(null)}};
+    setTimeout(()=>{if(!done){done=true;res(v.readyState>=2?v:null)}},6000);
+    v.src=src;
+  });
+}
+/* Build the timeline up front: photos get the style's pace, each clip gets
+   its own real length (capped), so the show and the recording agree on
+   exactly how long everything runs. */
+async function buildSegments(){
+  const items=activeMedia(),cfg=styleCfg(),TITLE=2400,END=2000;
+  const segs=[];let at=TITLE;
+  for(const m of items){
+    if(m.k==="v"){
+      const el=await getVid(m.src);
+      if(!el)continue;                            /* a clip that will not decode is skipped, not fatal */
+      let dur=(isFinite(el.duration)&&el.duration>0)?Math.min(el.duration*1000,CLIP_MAX):4000;
+      if(dur<600)dur=600;
+      segs.push({m,el,start:at,dur,vid:true});at+=dur;
+    }else{
+      segs.push({m,start:at,dur:cfg.per,vid:false});at+=cfg.per;
+    }
+  }
+  return {segs,TITLE,END,total:at+END};
+}
+function segCaption(m){
+  const d=new Date(m.t).toLocaleDateString([],{month:"long",day:"numeric"});
+  return m.by?d+"  ·  "+m.by:d;      /* whose shot it was, when the crew shares */
 }
 function runShow(onDone,onTick){
-  const pics=activePics();
-  if(!pics.length){toast("Add some photos first");return null}
+  if(!activeMedia().length){toast("Add some photos first");return null}
   const cfg=styleCfg();
-  const TITLE=2400,END=2000;
-  const total=TITLE+pics.length*cfg.per+END;
-  const t0=performance.now();
   playing=true;
-  (async function loop(){
-    if(!playing)return;
-    const el=performance.now()-t0;
-    if(el>=total){playing=false;onDone&&onDone();return}
-    if(el<TITLE){
-      titleCard(Math.min(1,Math.min(el,TITLE-el)/400));
-    }else if(el<TITLE+pics.length*cfg.per){
-      const rel=el-TITLE, idx=Math.floor(rel/cfg.per), t=(rel%cfg.per)/cfg.per;
-      const im=await getImg(pics[idx].src);
-      vx.fillStyle="#111";vx.fillRect(0,0,vc.width,vc.height);
-      vx.globalAlpha=1;
-      coverDraw(im,t,1.0,1.13,(idx%2?1:-1));
-      /* crossfade into the next image */
-      const into=cfg.per-(rel%cfg.per);
-      if(into<cfg.fade&&pics[idx+1]){
-        const nx=await getImg(pics[idx+1].src);
-        vx.globalAlpha=1-(into/cfg.fade);
-        coverDraw(nx,0,1.0,1.13,((idx+1)%2?1:-1));
-        vx.globalAlpha=1;
+  (async()=>{
+    const {segs,TITLE,END,total}=await buildSegments();
+    if(!segs.length){playing=false;toast("Nothing that will play — try different files");onDone&&onDone();return}
+    const t0=performance.now();
+    let cur=-1;
+    (async function loop(){
+      if(!playing){segs.forEach(s=>{if(s.vid)try{s.el.pause()}catch(e){}});return}
+      const el=performance.now()-t0;
+      if(el>=total){
+        playing=false;segs.forEach(s=>{if(s.vid)try{s.el.pause()}catch(e){}});
+        onDone&&onDone();return;
       }
-      vignette();
-      const d=new Date(pics[idx].t);
-      stampCaption(d.toLocaleDateString([],{month:"long",day:"numeric"}));
-    }else{
-      const e2=el-(TITLE+pics.length*cfg.per);
-      endCard(Math.min(1,Math.min(e2,END-e2)/400));
-    }
-    onTick&&onTick(el/total);
-    requestAnimationFrame(loop);
+      if(el<TITLE){
+        titleCard(Math.min(1,Math.min(el,TITLE-el)/400));
+      }else if(el<total-END){
+        let idx=segs.findIndex(s=>el<s.start+s.dur); if(idx<0)idx=segs.length-1;
+        const s=segs[idx], rel=el-s.start, t=rel/s.dur;
+        if(idx!==cur){
+          /* entering a new segment: start its clip, stop the last one */
+          if(cur>=0&&segs[cur].vid)try{segs[cur].el.pause()}catch(e){}
+          if(s.vid){try{s.el.currentTime=0}catch(e){};s.el.play().catch(()=>{})}
+          cur=idx;
+        }
+        vx.fillStyle="#111";vx.fillRect(0,0,vc.width,vc.height);
+        vx.globalAlpha=1;
+        if(s.vid){
+          coverDraw(s.el,0,1.0,1.0,0);            /* clips play flat - no pan on live footage */
+        }else{
+          const im=await getImg(s.m.src);
+          coverDraw(im,t,1.0,1.13,(idx%2?1:-1));
+          /* crossfade, photo into photo only - fading into a moving clip looks like a glitch */
+          const into=s.dur-rel, nx=segs[idx+1];
+          if(into<cfg.fade&&nx&&!nx.vid){
+            const ni=await getImg(nx.m.src);
+            vx.globalAlpha=1-(into/cfg.fade);
+            coverDraw(ni,0,1.0,1.13,((idx+1)%2?1:-1));
+            vx.globalAlpha=1;
+          }
+        }
+        vignette();
+        stampCaption(segCaption(s.m));
+      }else{
+        const e2=el-(total-END);
+        endCard(Math.min(1,Math.min(e2,END-e2)/400));
+      }
+      onTick&&onTick(el/total);
+      requestAnimationFrame(loop);
+    })();
   })();
-  return total;
+  return true;
 }
 $("vidPreview").addEventListener("click",()=>{
   if(playing){playing=false;$("vidPreview").innerHTML="&#9654;&#65039; Preview";return}
@@ -5355,7 +5494,7 @@ function buildAudio(ctx,dest,style){
   return master;
 }
 $("vidMake").addEventListener("click",async()=>{
-  if(!activePics().length)return toast("Add some photos first");
+  if(!activeMedia().length)return toast("Add some photos or clips first");
   if(!window.MediaRecorder||!vc.captureStream)return toast("This browser can't record video — try Chrome");
   const btn=$("vidMake");btn.disabled=true;btn.innerHTML="&#9210; Recording…";
   $("vidShare").style.display="none";
@@ -5391,10 +5530,11 @@ $("vidMake").addEventListener("click",async()=>{
     const ext=(mime.indexOf("mp4")>=0)?"mp4":"webm";
     const a=document.createElement("a");a.href=url;a.download="great-american-west."+ext;a.click();
     btn.disabled=false;btn.innerHTML="&#127916; Create video";
-    const pics=activePics().length;
-    $("vidStatus").innerHTML="&#9989; <b>Your video is ready.</b> "+pics+" photos, "+
+    const items=activeMedia(),pics=items.filter(m=>m.k==="i").length,clips=items.length-pics;
+    const what=pics+" photo"+(pics===1?"":"s")+(clips?" and "+clips+" clip"+(clips===1?"":"s"):"");
+    $("vidStatus").innerHTML="&#9989; <b>Your video is ready.</b> "+what+", "+
       Math.round(stats().mi).toLocaleString()+" miles, "+store.get("parks",[]).length+" national parks. Saved to your downloads.";
-    addFeed("milestone","&#127916;","Made a highlight video",pics+" photos");bump("films");
+    addFeed("milestone","&#127916;","Made a highlight video",what);bump("films");
     $("vidShare").style.display="inline-flex";
     $("vidShare").onclick=async()=>{
       const file=new File([blob],"great-american-west."+ext,{type:blob.type});
@@ -7930,8 +8070,9 @@ function boot(){
      produces no fixes, and a green light that never changes is a lie */
   setInterval(()=>{if($("view-journey").classList.contains("active"))renderTrailLog()},20000);
   renderAltitude();renderWild();renderFuelGauge();renderRange();renderRecapNudge();
-  renderPhotoHow();
+  renderPhotoHow();renderPixShare();
   importShared();                  /* photos handed in from the phone's Photos app */
+  pixSubscribe();                  /* the crew album flows in like the chat does */
   /* the evening nudge home - checked on the minute, fires once a day */
   recapNudgeCheck();
   setInterval(recapNudgeCheck,60000);
