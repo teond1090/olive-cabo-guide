@@ -1576,7 +1576,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w33-2026-08-19";
+const OLIVE_BUILD="w34-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2975,6 +2975,8 @@ $("logFuel").addEventListener("click",()=>{
    GPS ENGINE
    ============================================================ */
 let here=null, watchId=null, lastFix=null, lastWx=null;
+let odoAnchor=null;      /* last position the odometer actually counted */
+let cruise=null;         /* smoothed speed, mph */
 let alerted=new Set(store.get("alerted",[]));
 function saveAlerted(){store.set("alerted",Array.from(alerted).slice(-400))}
 
@@ -2986,6 +2988,10 @@ $("gpsToggle").addEventListener("change",e=>{
 function stopGPS(){
   if(watchId!=null){navigator.geolocation.clearWatch(watchId);watchId=null}
   releaseAwake();
+  /* drop the anchor too: miles driven with location deliberately off are not
+     ours to claim, and a stale anchor would book them all in one jump when
+     it comes back on somewhere else */
+  odoAnchor=null;cruise=null;
   store.set("gps",false);
   gpsStatus("Location is off. Turn it on to unlock landmark alerts, hidden gems, fuel and the right radio stations for where you are.");
   $("gpsToggle").checked=false;
@@ -3089,16 +3095,41 @@ function onFix(pos){
   if(pos.coords.heading!=null&&!isNaN(pos.coords.heading))heading=pos.coords.heading;
   else if(prev&&dist(prev.lat,prev.lng,lat,lng)>0.05)heading=bearingDeg(prev.lat,prev.lng,lat,lng);
 
+  /* --- speed, smoothed ---
+     The device's own figure when it offers one, otherwise inferred from the
+     last leg. A single EMA keeps it steady enough to read on screen. */
+  {
+    let inst=null;
+    const ps=pos.coords.speed;
+    if(ps!=null&&!isNaN(ps)&&ps>=0)inst=ps*2.23694;
+    else if(prev){
+      const dP=dist(prev.lat,prev.lng,lat,lng), dtP=(here.t-prev.t)/1000;
+      if(dtP>0.5&&dP<25)inst=dP/(dtP/3600);
+    }
+    if(inst!=null&&inst<=95)cruise=(cruise==null)?inst:cruise*0.6+inst*0.4;
+  }
+  here.mph=cruise==null?null:Math.round(cruise);
+  /* callers ask "are we actually rolling?" against 0.05. Expressing the
+     answer as miles-per-minute keeps that threshold meaning ~3 mph. */
+  here._lastMoveDist=(cruise||0)/60;
+
   /* --- accumulate miles ---
-     Filter on implied SPEED, not raw distance: watchPosition gaps (tunnels,
-     no signal, phone asleep) legitimately span 40+ miles, but a 40-mile jump
-     between two fixes seconds apart is a GPS glitch. --- */
-  if(prev){
-    const d=dist(prev.lat,prev.lng,lat,lng);
-    const dt=(here.t-prev.t)/1000;                      /* seconds between fixes */
-    here._lastMoveDist=d;
-    const ok = d>0.03 && d<600 && (dt<5 ? d<25 : (d/(dt/3600))<95);
-    if(ok){
+     Measured from the last point actually counted, never from the previous
+     fix. A phone delivers a fix about once a second, and one second at
+     highway speed is 0.02 miles - below any threshold low enough to also
+     reject GPS jitter. Comparing fix-to-fix therefore threw away every mile
+     of real driving. An anchor fixes both ends: jitter while parked never
+     travels far enough from the anchor to count, and real movement always
+     does, however fast the fixes arrive. --- */
+  if(odoAnchor){
+    const d=dist(odoAnchor.lat,odoAnchor.lng,lat,lng);
+    const dt=(here.t-odoAnchor.t)/1000;
+    /* the jitter floor scales with how good this fix claims to be */
+    const floor=Math.max(0.02,(acc||0)/1609.34);
+    /* a watchPosition gap (tunnel, no signal, phone asleep) legitimately
+       spans 40+ miles; the same jump in seconds is a glitch */
+    const plausible = d<600 && (dt<5 ? d<25 : (d/(dt/3600))<95);
+    if(d>floor&&plausible){
       /* The odometer is optional - the breadcrumb trail is not. Someone who
          pauses mile counting still wants to see where they went, so the two
          are recorded independently. */
@@ -3108,10 +3139,11 @@ function onFix(pos){
         s.days[todayISO()]=(s.days[todayISO()]||0)+d;
         saveStats(s);
       }
-      if(dt>0)here.mph=Math.round(d/(dt/3600));       /* implied speed, for the trail log */
       trailPush(lat,lng,pos);
+      odoAnchor={lat,lng,t:here.t};
     }
   }else{
+    odoAnchor={lat,lng,t:here.t};
     trailPush(lat,lng,pos);        /* the trail has to start somewhere */
   }
   /* --- where are we actually? real geography, not "nearest landmark" --- */
@@ -4118,7 +4150,7 @@ function recapText(){
   if(ex.photos.length)bits.push(ex.photos.length+" photo"+(ex.photos.length===1?"":"s"));
   let txt=(ex.day?"Day "+ex.day.n+" of our Great American West trip — "+ex.day.t:"Our Great American West trip today");
   if(bits.length)txt+=". "+bits.join(", ")+".";
-  const hl=ex.places.slice(0,3).map(p=>p.title).join(" · ");
+  const hl=ex.places.slice(0,3).map(p=>String(p.title||"").replace(/^(Passed near|Arrived at|Stopped at) /,"")).join(" · ");
   if(hl)txt+=" Highlights: "+hl+".";
   return txt;
 }
