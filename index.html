@@ -503,6 +503,9 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
 .gal img,.gal video{width:100%;height:100%;object-fit:cover}
 .gal .del{position:absolute;top:.22rem;right:.22rem;width:1.7rem;height:1.7rem;border-radius:50%;border:0;background:rgba(42,31,22,.75);color:#fff;font-size:.78rem;cursor:pointer;line-height:1}
 .gal .gal-by{position:absolute;left:0;right:0;bottom:0;padding:.18rem .4rem;font-size:.68rem;font-weight:700;color:#F6EFE3;background:linear-gradient(transparent,rgba(42,31,22,.78));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gal .gal-fav{position:absolute;top:.22rem;left:.22rem;font-size:.85rem;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.gal .gal-clip{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:2rem;height:2rem;border-radius:50%;background:rgba(42,31,22,.65);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8rem;pointer-events:none}
+.gal figure{cursor:pointer}
 .dropzone{border:3px dashed var(--line-2);border-radius:var(--r);padding:1.7rem 1rem;text-align:center;background:var(--card-2);cursor:pointer;transition:.15s}
 .dropzone:hover,.dropzone.over{border-color:var(--rust);background:#FBEEE7}
 #vidCanvas,#trailCanvas{width:100%;border-radius:var(--r-sm);display:block;border:2px solid var(--line-2)}
@@ -1343,8 +1346,8 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="card-h"><span class="ic">&#128248;</span><h3>Crew Album</h3><span class="hint">everyone&rsquo;s shots, one film</span></div>
       <div class="foldbody">
       <p class="small muted">One shared album for your whole group. Anyone you invite can drop in photos and clips from their own phone, and every phone gets the lot &mdash; so the trip film has everybody&rsquo;s eyes on it, not just one person&rsquo;s.</p>
-      <div id="albumRoomBox"></div>
       <div id="pixShareRow"></div>
+      <div id="albumStats"></div>
       </div>
     </div>
 
@@ -1364,11 +1367,22 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div id="vidControls" style="display:none;margin-top:1rem">
         <hr class="hr">
         <div class="field">
-          <label class="fld" for="vidStyle">Video style</label>
+          <label class="fld" for="vidLook">The look</label>
+          <select id="vidLook">
+            <option value="classic">Classic &mdash; clean and warm</option>
+            <option value="western">Old Western &mdash; sepia, grain and flicker</option>
+            <option value="silent">Silent movie &mdash; black &amp; white, 1920s</option>
+            <option value="scrapbook">Scrapbook &mdash; snapshots on paper</option>
+            <option value="pop">Comic pop &mdash; loud, bright, bouncy</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="fld" for="vidStyle">Pace</label>
           <select id="vidStyle">
             <option value="highlight">Highlight reel &mdash; fast and punchy</option>
             <option value="slideshow" selected>Slideshow &mdash; relaxed, easy to watch</option>
             <option value="daily">Daily recap &mdash; today's photos only</option>
+            <option value="best">Best of the trip &mdash; just the &#10084;&#65039; favorites</option>
           </select>
         </div>
         <div class="field">
@@ -1587,7 +1601,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w35-2026-08-20";
+const OLIVE_BUILD="w36-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -4772,31 +4786,24 @@ let media=store.get("media",[]);
    everything; a phone left off for a day misses those and just keeps
    its own. Clips share when they are small enough to carry (~14MB).
    ============================================================ */
-/* ---- trip albums: each group gets its own private room ----
-   The Anderson family's original room is the default, so nothing changes
-   for them mid-trip. Any other group starts a fresh album with one tap
-   and invites the rest by link, QR or a short code. */
-function albumRoom(){return store.get("albumRoom",ROOM_SUFFIX)}
-function pixTopic(){const r=albumRoom();return r===ROOM_SUFFIX?"olive-pix-"+ROOM_SUFFIX:"olive-pix-trip-"+r}
-function pixUrl(){return "https://ntfy.sh/"+pixTopic()}
-function newAlbumCode(){
-  /* short enough to read out loud across a campsite, long enough that
-     nobody lands in it by accident */
-  const A="ABCDEFGHJKMNPQRSTUVWXYZ23456789";let c="";
-  const buf=new Uint32Array(8);crypto.getRandomValues(buf);
-  for(let i=0;i<8;i++)c+=A[buf[i]%A.length];
-  return c.slice(0,4)+"-"+c.slice(4);
-}
-function albumLink(){return location.origin+location.pathname+"?album="+encodeURIComponent(albumRoom())}
-function switchAlbum(code){
-  const norm=String(code||"").trim().toUpperCase().replace(/[^A-Z0-9-]/g,"");
-  if(!norm)return false;
-  store.set("albumRoom",norm);
-  pixSeen=new Set();store.set("pix-seen",[]);      /* new room, fresh history */
-  try{if(pixEs)pixEs.close()}catch(e){}
-  pixSubscribe();
-  renderPixShare();
-  return true;
+const PIX_URL="https://ntfy.sh/olive-pix-"+ROOM_SUFFIX;   /* the family's own private album room */
+
+/* Every shot gets one id that is the same on all three phones - the
+   sender mints it and passes it along with the upload, so a heart from
+   Mom's phone lands on the right photo on everyone else's. */
+function newMid(){return DEV_ID+"-"+Date.now().toString(36)+Math.floor(Math.random()*1e6).toString(36)}
+function pixFavs(){return store.get("pix-favs",{})}
+function favNames(mid){return (pixFavs()[mid]||[])}
+function isFav(mid){return favNames(mid).length>0}
+function myName(){return chatName||"Someone"}
+function setFav(mid,on,by,broadcast){
+  const f=pixFavs(),cur=new Set(f[mid]||[]);
+  if(on)cur.add(by); else cur.delete(by);
+  if(cur.size)f[mid]=Array.from(cur).slice(0,8); else delete f[mid];
+  store.set("pix-favs",f);
+  if(broadcast)fetch(PIX_URL+"?title="+encodeURIComponent(by),
+    {method:"POST",body:JSON.stringify({kind:"fav",mid,on:!!on,by})}).catch(()=>{});
+  renderGal();renderAlbumStats();
 }
 const DEV_ID=(function(){let d=store.get("devId","");if(!d){d=Math.random().toString(36).slice(2,10);store.set("devId",d)}return d})();
 let pixSeen=new Set(store.get("pix-seen",[]));
@@ -4808,17 +4815,30 @@ async function sharePix(m){
     const blob=await (await fetch(m.src)).blob();
     if(blob.size>14*1024*1024){toast("That clip is too big to share with the crew &mdash; it stays in your own film");return}
     const name=(m.name||"photo").replace(/[^\w.\-]+/g,"_").slice(0,60)||"photo";
-    await fetch(pixUrl()+"?filename="+encodeURIComponent(name)+
+    await fetch(PIX_URL+"?filename="+encodeURIComponent(name)+
                 "&title="+encodeURIComponent(chatName||"Crew")+
-                "&message="+encodeURIComponent(DEV_ID),{method:"PUT",body:blob});
+                "&message="+encodeURIComponent(DEV_ID+":"+(m.id||"")),{method:"PUT",body:blob});
   }catch(e){}                       /* no signal - it simply stays local */
 }
 function handlePix(line){
   let j;try{j=JSON.parse(line)}catch(e){return}
   if(j.event&&j.event!=="message")return;
-  if(!j.attachment||!j.id||pixSeen.has(j.id))return;
+  if(!j.id||pixSeen.has(j.id))return;
+  /* hearts travel as tiny notes on the same room, no attachment */
+  if(!j.attachment){
+    let meta;try{meta=JSON.parse(j.message||"")}catch(e){return}
+    if(!meta||meta.kind!=="fav"||!meta.mid)return;
+    pixSeen.add(j.id);store.set("pix-seen",Array.from(pixSeen).slice(-600));
+    const by=String(meta.by||j.title||"Someone").slice(0,24);
+    if(by===myName())return;                            /* our own heart, echoed back */
+    setFav(String(meta.mid).slice(0,60),!!meta.on,by,false);
+    const m=media.find(x=>x.id===meta.mid);
+    if(meta.on&&m)toast("&#10084;&#65039; "+esc(by)+" loved "+(m.by||m.name?"a shot":"a photo"));
+    return;
+  }
   pixSeen.add(j.id);store.set("pix-seen",Array.from(pixSeen).slice(-600));
   if((j.message||"").indexOf(DEV_ID)>=0)return;         /* our own upload, echoed back */
+  const mid=String((j.message||"").split(":")[1]||"").slice(0,60)||("relay-"+j.id);
   const att=j.attachment, type=att.type||"";
   if(!/^image\/|^video\//.test(type))return;
   const who=String(j.title||"Crew").slice(0,24);
@@ -4826,7 +4846,7 @@ function handlePix(line){
     const rd=new FileReader();
     rd.onload=()=>{
       if(/^video\//.test(type)){
-        addMedia({k:"v",src:rd.result,t:(j.time||0)*1000||Date.now(),name:att.name,by:who},true);
+        addMedia({k:"v",id:mid,src:rd.result,t:(j.time||0)*1000||Date.now(),name:att.name,by:who},true);
         renderGal();toast("&#127916; "+esc(who)+" added a clip to the crew album");
       }else{
         /* downscale exactly like a local add, so storage stays survivable */
@@ -4836,7 +4856,7 @@ function handlePix(line){
           const c=document.createElement("canvas");
           c.width=Math.round(im.width*sc);c.height=Math.round(im.height*sc);
           c.getContext("2d").drawImage(im,0,0,c.width,c.height);
-          addMedia({k:"i",src:c.toDataURL("image/jpeg",.82),t:(j.time||0)*1000||Date.now(),name:att.name,by:who},true);
+          addMedia({k:"i",id:mid,src:c.toDataURL("image/jpeg",.82),t:(j.time||0)*1000||Date.now(),name:att.name,by:who},true);
           renderGal();toast("&#128247; "+esc(who)+" added a photo to the crew album");
         };
         im.src=rd.result;
@@ -4848,8 +4868,8 @@ function handlePix(line){
 let pixEs=null;
 function pixSubscribe(){
   try{
-    pixEs=new EventSource(pixUrl()+"/sse");
-    pixEs.onopen=()=>{fetch(pixUrl()+"/json?poll=1&since=all").then(r=>r.text())
+    pixEs=new EventSource(PIX_URL+"/sse");
+    pixEs.onopen=()=>{fetch(PIX_URL+"/json?poll=1&since=all").then(r=>r.text())
       .then(t=>t.split("\n").filter(Boolean).forEach(handlePix)).catch(()=>{})};
     pixEs.onmessage=ev=>handlePix(ev.data);
     pixEs.onerror=()=>{try{pixEs.close()}catch(e){};setTimeout(pixSubscribe,8000)};
@@ -4953,6 +4973,7 @@ function renderPhotoHow(){
 }
 
 function addMedia(m,fromCrew){
+  if(!m.id)m.id=newMid();
   media.unshift(m);
   /* anything added on this phone goes to the crew album; anything that
      arrived FROM the crew must not bounce back out again */
@@ -4964,16 +4985,87 @@ function addMedia(m,fromCrew){
 }
 function renderGal(){
   $("mediaGal").innerHTML=media.map((m,i)=>
-    `<figure>${m.k==="v"?`<video src="${m.src}" muted playsinline></video>`:`<img src="${m.src}" alt="">`}
+    `<figure data-open="${i}">${m.k==="v"?`<video src="${m.src}" muted playsinline></video>`:`<img src="${m.src}" alt="">`}
+     ${isFav(m.id)?`<span class="gal-fav">&#10084;&#65039;</span>`:""}
+     ${m.k==="v"?`<span class="gal-clip">&#9654;</span>`:""}
      ${m.by?`<figcaption class="gal-by">${esc(m.by)}</figcaption>`:""}
      <button class="del" data-mi="${i}" aria-label="Remove">&#10005;</button></figure>`).join("");
   $("vidControls").style.display=media.length?"block":"none";
   if(media.length)drawFrame(0,0);
+  renderAlbumStats();
 }
 $("mediaGal").addEventListener("click",e=>{
-  const b=e.target.closest("[data-mi]");if(!b)return;
-  media.splice(+b.dataset.mi,1);store.set("media",media.filter(x=>x.k==="i"));renderGal();
+  const b=e.target.closest("[data-mi]");
+  if(b){media.splice(+b.dataset.mi,1);store.set("media",media.filter(x=>x.k==="i"));renderGal();return}
+  const f=e.target.closest("[data-open]");
+  if(f)openShot(+f.dataset.open);
 });
+
+/* ---------- the lightbox: one shot, big, with its story ---------- */
+function openShot(i){
+  const m=media[i];if(!m)return;
+  const favs=favNames(m.id), mine=favs.includes(myName());
+  const when=new Date(m.t).toLocaleString([],{weekday:"short",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+  openSheet(m.by?esc(m.by)+"&rsquo;s "+(m.k==="v"?"clip":"photo"):"Your "+(m.k==="v"?"clip":"photo"),`
+    <div style="border-radius:12px;overflow:hidden;background:#111">
+    ${m.k==="v"
+      ?`<video src="${m.src}" controls playsinline style="width:100%;max-height:60vh;display:block"></video>`
+      :`<img src="${m.src}" alt="" style="width:100%;max-height:60vh;object-fit:contain;display:block">`}
+    </div>
+    <div class="small muted" style="margin-top:.6rem">${when}${m.by?" &middot; by "+esc(m.by):""}</div>
+    <div id="shotFavs" class="small" style="margin-top:.3rem">${favs.length?"&#10084;&#65039; Loved by "+favs.map(esc).join(", "):""}</div>
+    <div class="field" style="margin-top:.8rem"><label class="fld" for="shotCap">Caption &mdash; shows in the film</label>
+      <input type="text" id="shotCap" maxlength="60" placeholder="e.g. First bison of the trip!" value="${esc(m.cap||"")}"></div>
+    <div class="btnrow" style="margin-top:.8rem">
+      <button class="btn ${mine?"brass":"ghost"}" id="shotFav">${mine?"&#10084;&#65039; Loved":"&#9825; Love it"}</button>
+      <button class="btn ghost" id="shotSave">&#11015;&#65039; Save to phone</button>
+      <button class="btn ghost" id="shotDel">&#128465;&#65039; Remove</button>
+    </div>`);
+  $("shotCap").addEventListener("change",()=>{
+    m.cap=$("shotCap").value.trim().slice(0,60);
+    store.set("media",media.filter(x=>x.k==="i"));
+  });
+  $("shotFav").addEventListener("click",()=>{
+    const now=!favNames(m.id).includes(myName());
+    setFav(m.id,now,myName(),true);
+    $("shotFav").className="btn "+(now?"brass":"ghost");
+    $("shotFav").innerHTML=now?"&#10084;&#65039; Loved":"&#9825; Love it";
+    const f=favNames(m.id);
+    $("shotFavs").innerHTML=f.length?"&#10084;&#65039; Loved by "+f.map(esc).join(", "):"";
+  });
+  $("shotSave").addEventListener("click",async()=>{
+    try{
+      const blob=await (await fetch(m.src)).blob();
+      const name=(m.name||(m.k==="v"?"clip.webm":"photo.jpg")).replace(/[^\w.\-]+/g,"_");
+      const file=new File([blob],name,{type:blob.type});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        await navigator.share({files:[file]});return;      /* lands in the phone's own Photos */
+      }
+      const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();
+      toast("&#11015;&#65039; Saved to downloads");
+    }catch(e){toast("Could not save that one")}
+  });
+  $("shotDel").addEventListener("click",()=>{
+    const at=media.indexOf(m);if(at>=0)media.splice(at,1);
+    store.set("media",media.filter(x=>x.k==="i"));
+    closeSheet();renderGal();toast("Removed from this phone");
+  });
+}
+
+/* ---------- who has added what ---------- */
+function renderAlbumStats(){
+  const el=$("albumStats");if(!el)return;
+  if(!media.length){el.innerHTML='<div class="small muted" style="margin-top:.6rem">Nothing in the album yet &mdash; the first photo starts it.</div>';return}
+  const byWho={};let clips=0,favs=0;
+  media.forEach(m=>{const w=m.by||"You";byWho[w]=(byWho[w]||0)+1;if(m.k==="v")clips++;if(isFav(m.id))favs++});
+  const pills=Object.entries(byWho).sort((a,b)=>b[1]-a[1])
+    .map(([w,n])=>`<span class="pill">${esc(w)} &middot; ${n}</span>`).join("");
+  el.innerHTML=`<div class="pills" style="margin-top:.7rem">
+    <span class="pill gold">${media.length-clips} photo${media.length-clips===1?"":"s"}</span>
+    ${clips?`<span class="pill gold">${clips} clip${clips===1?"":"s"}</span>`:""}
+    ${favs?`<span class="pill danger">&#10084;&#65039; ${favs}</span>`:""}
+    ${pills}</div>`;
+}
 
 /* ============================================================
    TRAIL CAMERA
@@ -5329,6 +5421,146 @@ function getImg(src){
     const im=new Image();im.onload=()=>{imgCache[src]=im;res(im)};im.onerror=()=>res(null);im.src=src;
   });
 }
+/* ============================================================
+   LOOKS - the personality of the film
+   One choice restyles everything: the grade on every shot, how each
+   one enters, the caption plate, the grain, and the title and end
+   cards. All of it is canvas, so it records exactly as previewed.
+   ============================================================ */
+const LOOKS={
+  classic:  {n:"Classic",  filter:"none"},
+  western:  {n:"Old Western", filter:"sepia(.62) contrast(1.14) brightness(.97) saturate(1.05)"},
+  silent:   {n:"Silent movie", filter:"grayscale(1) contrast(1.28) brightness(1.03)"},
+  scrapbook:{n:"Scrapbook", filter:"saturate(1.22) brightness(1.05) contrast(.97)"},
+  pop:      {n:"Comic pop", filter:"saturate(1.85) contrast(1.35)"}
+};
+function curLook(){return LOOKS[$("vidLook")?$("vidLook").value:"classic"]||LOOKS.classic}
+function lookKey(){return $("vidLook")?$("vidLook").value:"classic"}
+const canFilter=(function(){try{const c=document.createElement("canvas").getContext("2d");c.filter="grayscale(1)";return c.filter==="grayscale(1)"}catch(e){return false}})();
+
+/* animated film grain: one noise tile, drawn at a random offset each frame */
+let grainTile=null;
+function grain(alpha){
+  if(!grainTile){
+    grainTile=document.createElement("canvas");grainTile.width=grainTile.height=256;
+    const g=grainTile.getContext("2d"),d=g.createImageData(256,256);
+    for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255}
+    g.putImageData(d,0,0);
+  }
+  vx.save();vx.globalAlpha=alpha;vx.globalCompositeOperation="overlay";
+  const ox=-Math.floor(Math.random()*256),oy=-Math.floor(Math.random()*256);
+  for(let x=ox;x<vc.width;x+=256)for(let y=oy;y<vc.height;y+=256)vx.drawImage(grainTile,x,y);
+  vx.restore();
+}
+/* comic halftone: a dot screen laid over the corners */
+let dotTile=null;
+function halftone(alpha){
+  if(!dotTile){
+    dotTile=document.createElement("canvas");dotTile.width=dotTile.height=28;
+    const g=dotTile.getContext("2d");g.fillStyle="#000";
+    g.beginPath();g.arc(7,7,3,0,7);g.fill();g.beginPath();g.arc(21,21,3,0,7);g.fill();
+  }
+  vx.save();vx.globalAlpha=alpha;
+  const p=vx.createPattern(dotTile,"repeat");vx.fillStyle=p;
+  const w=vc.width,hh=vc.height;
+  vx.fillRect(0,0,w*.35,hh*.35);vx.fillRect(w*.65,hh*.65,w*.35,hh*.35);
+  vx.restore();
+}
+function flicker(){vx.save();vx.globalAlpha=.05+Math.random()*.08;vx.fillStyle=Math.random()<.5?"#000":"#fff";vx.fillRect(0,0,vc.width,vc.height);vx.restore()}
+const POP_COLORS=["#E4572E","#F3A712","#29B0C4","#A846A0","#5FAD41"];
+
+/* draw one photo/clip in the chosen look. entry: 0..1 arrival animation */
+function lookDraw(im,t,idx,entry){
+  const lk=lookKey();
+  if(canFilter&&curLook().filter!=="none")vx.filter=curLook().filter;
+  if(lk==="scrapbook"){
+    /* a snapshot dropped onto paper: white mat, slight tilt, slides in */
+    vx.fillStyle="#EFE4CE";vx.fillRect(0,0,vc.width,vc.height);
+    vx.filter="none";
+    /* faint ruled paper texture */
+    vx.strokeStyle="rgba(160,130,90,.14)";vx.lineWidth=2;
+    for(let y=60;y<vc.height;y+=64){vx.beginPath();vx.moveTo(0,y);vx.lineTo(vc.width,y);vx.stroke()}
+    const iw=im.videoWidth||im.naturalWidth||im.width, ih=im.videoHeight||im.naturalHeight||im.height;
+    if(!iw||!ih)return;
+    const maxW=vc.width*.78,maxH=vc.height*.74;
+    const sc=Math.min(maxW/iw,maxH/ih);
+    const w=iw*sc,hh=ih*sc,mat=26;
+    const rot=((idx%2?1:-1)*(1.6+(idx%3)*0.7))*Math.PI/180;
+    const slide=(1-easeOut(entry))*vc.height*.25;
+    vx.save();
+    vx.translate(vc.width/2,vc.height/2+slide);vx.rotate(rot*easeOut(entry));
+    vx.shadowColor="rgba(40,25,10,.4)";vx.shadowBlur=26;vx.shadowOffsetY=10;
+    vx.fillStyle="#FDFBF4";vx.fillRect(-w/2-mat,-hh/2-mat,w+mat*2,hh+mat*2+34);
+    vx.shadowBlur=0;vx.shadowOffsetY=0;
+    if(canFilter)vx.filter=curLook().filter;
+    vx.drawImage(im,-w/2,-hh/2,w,hh);
+    vx.filter="none";
+    /* a strip of tape at the top corner */
+    vx.save();vx.rotate(-.35);vx.fillStyle="rgba(220,200,150,.75)";vx.fillRect(-w/2-40,-hh/2-mat-16,110,34);vx.restore();
+    vx.restore();
+    return;
+  }
+  if(lk==="pop"){
+    /* burst onto screen with a bounce and a loud border */
+    const over=1+(1-easeOut(entry))*.22;
+    vx.save();
+    vx.translate(vc.width/2,vc.height/2);vx.scale(over,over);vx.translate(-vc.width/2,-vc.height/2);
+    coverDraw(im,t,1.0,1.10,(idx%2?1:-1));
+    vx.restore();
+    vx.filter="none";
+    vx.strokeStyle=POP_COLORS[idx%POP_COLORS.length];vx.lineWidth=26;
+    vx.strokeRect(13,13,vc.width-26,vc.height-26);
+    halftone(.10);
+    return;
+  }
+  /* classic, western, silent share the cover-fill draw */
+  coverDraw(im,t,1.0,1.13,(idx%2?1:-1));
+  vx.filter="none";
+  if(lk==="western"){grain(.12);flicker();vignette();vignette()}    /* doubled: deep corners */
+  else if(lk==="silent"){grain(.16);flicker();vignette();vignette()}
+  else vignette();
+}
+function easeOut(p){return 1-Math.pow(1-Math.min(1,Math.max(0,p)),3)}
+
+/* caption plates per look */
+function lookCaption(txt){
+  const lk=lookKey();
+  if(!txt)return;
+  if(lk==="silent"){
+    /* an intertitle strip, like the pictures Grandma saw */
+    vx.save();vx.fillStyle="rgba(0,0,0,.82)";
+    vx.fillRect(0,vc.height-118,vc.width,86);
+    vx.strokeStyle="rgba(246,239,227,.5)";vx.lineWidth=2;
+    vx.strokeRect(14,vc.height-112,vc.width-28,74);
+    vx.fillStyle="#F6EFE3";vx.textAlign="center";
+    vx.font="italic 600 34px Fraunces, Georgia, serif";
+    vx.fillText(txt,vc.width/2,vc.height-66);vx.restore();return;
+  }
+  if(lk==="western"){
+    vx.save();vx.textAlign="left";
+    vx.font="800 32px Fraunces, Georgia, serif";
+    const w=vx.measureText(txt).width;
+    vx.fillStyle="rgba(58,29,13,.78)";vx.fillRect(40,vc.height-96,w+34,56);
+    vx.strokeStyle="#C8912C";vx.lineWidth=3;vx.strokeRect(40,vc.height-96,w+34,56);
+    vx.fillStyle="#F3E6CE";vx.fillText(txt,56,vc.height-58);vx.restore();return;
+  }
+  if(lk==="pop"){
+    vx.save();vx.textAlign="left";
+    vx.font="900 34px Inter, sans-serif";
+    const w=vx.measureText(txt).width;
+    vx.fillStyle="#FFFFFF";vx.strokeStyle="#111";vx.lineWidth=5;
+    roundRect(44,vc.height-102,w+36,60,16);vx.fill();vx.stroke();
+    vx.fillStyle="#111";vx.fillText(txt,62,vc.height-60);vx.restore();return;
+  }
+  if(lk==="scrapbook"){
+    vx.save();vx.textAlign="center";
+    vx.font="italic 700 34px Fraunces, Georgia, serif";
+    vx.fillStyle="#4A3826";vx.fillText(txt,vc.width/2,vc.height-40);vx.restore();return;
+  }
+  stampCaption(txt);
+}
+function roundRect(x,y,w,hh,r){vx.beginPath();vx.moveTo(x+r,y);vx.arcTo(x+w,y,x+w,y+hh,r);vx.arcTo(x+w,y+hh,x,y+hh,r);vx.arcTo(x,y+hh,x,y,r);vx.arcTo(x,y,x+w,y,r);vx.closePath()}
+
 function coverDraw(im,t,zoomFrom,zoomTo,panX){
   if(!im)return;
   /* photos measure themselves in width/height, video elements in videoWidth */
@@ -5342,35 +5574,142 @@ function coverDraw(im,t,zoomFrom,zoomTo,panX){
   vx.drawImage(im,x,y,w,h);
 }
 function titleCard(a){
+  const lk=lookKey(),s=stats();
+  const statsLine=Math.round(s.mi).toLocaleString()+" miles   ·   "+statesSoFar().length+" states   ·   "+
+              store.get("parks",[]).length+" national parks";
+  vx.textAlign="center";
+  if(lk==="western"){
+    vx.fillStyle="#E8D3A8";vx.fillRect(0,0,vc.width,vc.height);
+    grain(.10);
+    vx.globalAlpha=a;
+    vx.strokeStyle="#5A3018";vx.lineWidth=10;vx.strokeRect(36,36,vc.width-72,vc.height-72);
+    vx.strokeStyle="#8A5A2C";vx.lineWidth=3;vx.strokeRect(56,56,vc.width-112,vc.height-112);
+    vx.fillStyle="#4A2513";
+    vx.font="800 30px Fraunces, Georgia, serif";vx.fillText("★  THE ANDERSON FAMILY PRESENT  ★",vc.width/2,180);
+    vx.font="900 88px Fraunces, Georgia, serif";vx.fillText("The Great",vc.width/2,310);
+    vx.fillText("American West",vc.width/2,405);
+    vx.font="700 30px Fraunces, Georgia, serif";vx.fillText("AUGUST 17 – 31, 2026",vc.width/2,490);
+    vx.font="600 26px Fraunces, Georgia, serif";vx.fillText(statsLine.replace(/·/g,"—"),vc.width/2,560);
+    vx.globalAlpha=1;flicker();return;
+  }
+  if(lk==="silent"){
+    vx.fillStyle="#0A0A0A";vx.fillRect(0,0,vc.width,vc.height);
+    grain(.14);
+    vx.globalAlpha=a;
+    vx.strokeStyle="rgba(240,235,225,.85)";vx.lineWidth=4;vx.strokeRect(48,48,vc.width-96,vc.height-96);
+    vx.strokeRect(64,64,vc.width-128,vc.height-128);
+    vx.fillStyle="#F0EBE1";
+    vx.font="italic 600 30px Fraunces, Georgia, serif";vx.fillText("A moving picture in "+["one","two","three","four","five","six","seven"][Math.min(6,Math.max(0,statesSoFar().length-1))]+" states",vc.width/2,220);
+    vx.font="900 84px Fraunces, Georgia, serif";vx.fillText("THE GREAT",vc.width/2,340);
+    vx.fillText("AMERICAN WEST",vc.width/2,430);
+    vx.font="italic 500 28px Fraunces, Georgia, serif";vx.fillText("· 1926 ·  we mean 2026",vc.width/2,520);
+    vx.globalAlpha=1;flicker();return;
+  }
+  if(lk==="scrapbook"){
+    vx.fillStyle="#EFE4CE";vx.fillRect(0,0,vc.width,vc.height);
+    vx.strokeStyle="rgba(160,130,90,.14)";vx.lineWidth=2;
+    for(let y=60;y<vc.height;y+=64){vx.beginPath();vx.moveTo(0,y);vx.lineTo(vc.width,y);vx.stroke()}
+    vx.globalAlpha=a;
+    vx.save();vx.translate(vc.width/2,vc.height/2-20);vx.rotate(-.02);
+    vx.shadowColor="rgba(40,25,10,.35)";vx.shadowBlur=24;vx.shadowOffsetY=8;
+    vx.fillStyle="#FDFBF4";vx.fillRect(-420,-190,840,380);
+    vx.shadowBlur=0;vx.shadowOffsetY=0;
+    vx.fillStyle="rgba(220,200,150,.8)";vx.fillRect(-70,-215,140,44);
+    vx.fillStyle="#4A3826";
+    vx.font="italic 900 64px Fraunces, Georgia, serif";vx.fillText("Our Great American West",0,-40);
+    vx.font="italic 600 32px Fraunces, Georgia, serif";vx.fillText("summer 2026 — the whole crew",0,30);
+    vx.font="600 26px Inter, sans-serif";vx.fillText(statsLine,0,110);
+    vx.restore();vx.globalAlpha=1;return;
+  }
+  if(lk==="pop"){
+    for(let i=0;i<9;i++){vx.fillStyle=POP_COLORS[i%POP_COLORS.length];
+      vx.save();vx.translate(vc.width/2,vc.height/2);vx.rotate(i*Math.PI/4.5);
+      vx.fillRect(-40,-vc.height,80,vc.height*2);vx.restore()}
+    vx.globalAlpha=a;
+    vx.save();vx.translate(vc.width/2,vc.height/2);vx.rotate(-.05);
+    vx.font="900 100px Inter, sans-serif";
+    vx.lineWidth=14;vx.strokeStyle="#111";vx.strokeText("WEST!",0,-40);
+    vx.fillStyle="#FFF";vx.fillText("WEST!",0,-40);
+    vx.font="900 40px Inter, sans-serif";
+    vx.lineWidth=8;vx.strokeText("THE GREAT AMERICAN ROAD TRIP",0,50);
+    vx.fillStyle="#FFE14D";vx.fillText("THE GREAT AMERICAN ROAD TRIP",0,50);
+    vx.font="800 30px Inter, sans-serif";
+    vx.lineWidth=6;vx.strokeText(statsLine,0,130);vx.fillStyle="#fff";vx.fillText(statsLine,0,130);
+    vx.restore();vx.globalAlpha=1;halftone(.12);return;
+  }
   const g=vx.createLinearGradient(0,0,vc.width,vc.height);
   g.addColorStop(0,"#A9472F");g.addColorStop(1,"#6E2C1B");
   vx.fillStyle=g;vx.fillRect(0,0,vc.width,vc.height);
   vx.fillStyle="rgba(246,239,227,"+a+")";
-  vx.textAlign="center";
   vx.font="900 74px Fraunces, Georgia, serif";
   vx.fillText("The Great American West",vc.width/2,300);
   vx.font="500 34px Inter, sans-serif";
   vx.fillText("August 17 - 31, 2026",vc.width/2,360);
-  const s=stats();
   vx.font="700 30px Inter, sans-serif";
-  vx.fillText(Math.round(s.mi).toLocaleString()+" miles   ·   "+statesSoFar().length+" states   ·   "+
-              store.get("parks",[]).length+" national parks",vc.width/2,450);
+  vx.fillText(statsLine,vc.width/2,450);
+}
+function filmCredits(){
+  const names=Array.from(new Set(media.map(m=>m.by).filter(Boolean)));
+  if(media.some(m=>!m.by))names.unshift(chatName||"You");
+  return names.slice(0,6);
 }
 function endCard(a){
+  const lk=lookKey(),who=filmCredits();
+  const credit=who.length>1?"Filmed by "+who.slice(0,-1).join(", ")+" & "+who[who.length-1]
+               :who.length?"Filmed by "+who[0]:"";
+  vx.textAlign="center";
+  if(lk==="western"){
+    vx.fillStyle="#E8D3A8";vx.fillRect(0,0,vc.width,vc.height);grain(.10);
+    vx.globalAlpha=a;vx.fillStyle="#4A2513";
+    vx.strokeStyle="#5A3018";vx.lineWidth=10;vx.strokeRect(36,36,vc.width-72,vc.height-72);
+    vx.font="900 84px Fraunces, Georgia, serif";vx.fillText("THE END",vc.width/2,vc.height/2-40);
+    vx.font="700 30px Fraunces, Georgia, serif";
+    if(credit)vx.fillText(credit,vc.width/2,vc.height/2+40);
+    vx.fillText("— every mile of it —",vc.width/2,vc.height/2+95);
+    vx.globalAlpha=1;flicker();return;
+  }
+  if(lk==="silent"){
+    vx.fillStyle="#0A0A0A";vx.fillRect(0,0,vc.width,vc.height);grain(.14);
+    vx.globalAlpha=a;vx.fillStyle="#F0EBE1";
+    vx.strokeStyle="rgba(240,235,225,.85)";vx.lineWidth=4;vx.strokeRect(48,48,vc.width-96,vc.height-96);
+    vx.font="900 90px Fraunces, Georgia, serif";vx.fillText("FIN",vc.width/2,vc.height/2-20);
+    vx.font="italic 600 30px Fraunces, Georgia, serif";
+    if(credit)vx.fillText(credit,vc.width/2,vc.height/2+60);
+    vx.globalAlpha=1;flicker();return;
+  }
+  if(lk==="scrapbook"){
+    vx.fillStyle="#EFE4CE";vx.fillRect(0,0,vc.width,vc.height);
+    vx.globalAlpha=a;vx.fillStyle="#4A3826";
+    vx.font="italic 900 70px Fraunces, Georgia, serif";vx.fillText("…and home again",vc.width/2,vc.height/2-20);
+    vx.font="italic 600 32px Fraunces, Georgia, serif";
+    if(credit)vx.fillText(credit,vc.width/2,vc.height/2+50);
+    vx.globalAlpha=1;return;
+  }
+  if(lk==="pop"){
+    vx.fillStyle="#111";vx.fillRect(0,0,vc.width,vc.height);
+    vx.globalAlpha=a;
+    vx.save();vx.translate(vc.width/2,vc.height/2);vx.rotate(-.04);
+    vx.font="900 110px Inter, sans-serif";
+    vx.lineWidth=14;vx.strokeStyle="#FFE14D";vx.strokeText("BAM!",0,0);
+    vx.fillStyle="#E4572E";vx.fillText("BAM!",0,0);
+    vx.font="800 32px Inter, sans-serif";vx.fillStyle="#fff";
+    if(credit)vx.fillText(credit,0,90);
+    vx.restore();vx.globalAlpha=1;halftone(.12);return;
+  }
   vx.fillStyle="#2B2724";vx.fillRect(0,0,vc.width,vc.height);
-  vx.fillStyle="rgba(246,239,227,"+a+")";vx.textAlign="center";
+  vx.fillStyle="rgba(246,239,227,"+a+")";
   vx.font="900 60px Fraunces, Georgia, serif";
-  vx.fillText("Every mile of it",vc.width/2,vc.height/2-10);
+  vx.fillText("Every mile of it",vc.width/2,vc.height/2-30);
   vx.font="500 30px Inter, sans-serif";
-  vx.fillText("Made with Olive",vc.width/2,vc.height/2+50);
+  if(credit)vx.fillText(credit,vc.width/2,vc.height/2+30);
+  vx.fillText("Made with Olive",vc.width/2,vc.height/2+80);
 }
 async function drawFrame(idx,t){
   const pics=media.filter(m=>m.k==="i");
   vx.fillStyle="#111";vx.fillRect(0,0,vc.width,vc.height);
   if(!pics.length)return;
   const im=await getImg(pics[idx%pics.length].src);
-  coverDraw(im,t,1.0,1.12,(idx%2?1:-1));
-  vignette();
+  lookDraw(im,t,idx,1);
 }
 function vignette(){
   const g=vx.createRadialGradient(vc.width/2,vc.height/2,vc.height*.35,vc.width/2,vc.height/2,vc.height*.78);
@@ -5398,10 +5737,15 @@ function activePics(){return activeMedia().filter(m=>m.k==="i")}
 /* photos AND video clips, oldest first so the film runs in trip order */
 function activeMedia(){
   let items=media.slice();
-  if($("vidStyle").value==="daily"){
+  const style=$("vidStyle").value;
+  if(style==="daily"){
     const cutoff=Date.now()-24*3600*1000;
     const today=items.filter(p=>p.t>cutoff);
     if(today.length)items=today;
+  }else if(style==="best"){
+    const loved=items.filter(p=>isFav(p.id));
+    if(loved.length)items=loved;
+    else toast("No favorites yet &mdash; open a photo and tap &#9825; first");
   }
   return items.slice().sort((a,b)=>(a.t||0)-(b.t||0));
 }
@@ -5438,7 +5782,8 @@ async function buildSegments(){
 }
 function segCaption(m){
   const d=new Date(m.t).toLocaleDateString([],{month:"long",day:"numeric"});
-  return m.by?d+"  ·  "+m.by:d;      /* whose shot it was, when the crew shares */
+  const base=m.by?d+"  ·  "+m.by:d;      /* whose shot it was, when the crew shares */
+  return m.cap?base+"  —  “"+m.cap+"”":base;
 }
 function runShow(onDone,onTick){
   if(!activeMedia().length){toast("Add some photos first");return null}
@@ -5469,22 +5814,23 @@ function runShow(onDone,onTick){
         }
         vx.fillStyle="#111";vx.fillRect(0,0,vc.width,vc.height);
         vx.globalAlpha=1;
+        const entry=rel/450;
         if(s.vid){
-          coverDraw(s.el,0,1.0,1.0,0);            /* clips play flat - no pan on live footage */
+          lookDraw(s.el,0,idx,entry);              /* clips play flat inside the look */
         }else{
           const im=await getImg(s.m.src);
-          coverDraw(im,t,1.0,1.13,(idx%2?1:-1));
-          /* crossfade, photo into photo only - fading into a moving clip looks like a glitch */
+          lookDraw(im,t,idx,entry);
+          /* crossfade suits the classic look; the others have their own
+             entrances - a fade over sprocket-flicker just reads as a glitch */
           const into=s.dur-rel, nx=segs[idx+1];
-          if(into<cfg.fade&&nx&&!nx.vid){
+          if(lookKey()==="classic"&&into<cfg.fade&&nx&&!nx.vid){
             const ni=await getImg(nx.m.src);
             vx.globalAlpha=1-(into/cfg.fade);
-            coverDraw(ni,0,1.0,1.13,((idx+1)%2?1:-1));
+            lookDraw(ni,0,idx+1,1);
             vx.globalAlpha=1;
           }
         }
-        vignette();
-        stampCaption(segCaption(s.m));
+        lookCaption(segCaption(s.m));
       }else{
         const e2=el-(total-END);
         endCard(Math.min(1,Math.min(e2,END-e2)/400));
@@ -5504,6 +5850,12 @@ $("vidPreview").addEventListener("click",()=>{
 
 /* ---- music ---- */
 let customMusic=null;
+$("vidLook").value=store.get("vidLook","classic");
+$("vidLook").addEventListener("change",e=>{
+  store.set("vidLook",e.target.value);
+  drawFrame(0,0);                       /* show the new look on the spot */
+  toast(LOOKS[e.target.value].n+" it is");
+});
 $("vidMusic").addEventListener("change",e=>{if(e.target.value==="custom")$("musicInput").click()});
 $("musicInput").addEventListener("change",e=>{
   const f=e.target.files[0];if(!f)return;
