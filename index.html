@@ -888,6 +888,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       <div class="card-h"><span class="ic">&#128202;</span><h3>Trip Dashboard</h3><span class="hint">miles &middot; states &middot; parks</span></div>
       <div class="foldbody">
       <div class="stats" id="dashStats"></div>
+      <div id="dashToday"></div>
       <div style="margin-top:.9rem">
         <div class="small muted" style="display:flex;justify-content:space-between"><span>Trip progress</span><span id="progTxt"></span></div>
         <div class="bar" style="margin-top:.35rem"><i id="progBar" style="width:0"></i></div>
@@ -1303,6 +1304,29 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
+    <!-- ---------- THE CREW ALBUM : the one home for pictures ---------- -->
+    <div class="card a-gold fold open" data-fold="album">
+      <div class="card-h"><span class="ic">&#128248;</span><h3>Crew Album</h3><span class="hint">add &middot; see &middot; share</span></div>
+      <div class="foldbody">
+      <p class="small muted">All the trip&rsquo;s pictures live here &mdash; yours and everyone else&rsquo;s, in one place. Two ways in:</p>
+      <div class="dropzone" id="mediaDrop" tabindex="0" role="button">
+        <div style="font-size:2.4rem">&#128247;</div>
+        <b>Add photos &amp; videos from your phone</b>
+        <div class="small muted">Tap here and pick up to 10 at once &mdash; or more. They go straight into the album, the film and the photo pages.</div>
+      </div>
+      <input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden>
+      <div class="btnrow" style="margin-top:.7rem">
+        <button class="btn sm ghost" id="openCamera">&#128248; Or take one now with the Trail Camera</button>
+      </div>
+      <div id="photoHow" style="margin-top:.8rem"></div>
+      <div id="mediaGal" class="gal" style="margin-top:.9rem"></div>
+      <p class="small muted" style="margin-top:.5rem">Tap any picture to see it big, love it &#10084;&#65039;, caption it or save it.</p>
+      <div id="albumStats"></div>
+      <hr class="hr">
+      <div id="pixShareRow"></div>
+      </div>
+    </div>
+
     <!-- ---------- TRAIL CAMERA ---------- -->
     <div class="card a-canyon fold" data-fold="cam">
       <div class="card-h"><span class="ic">&#128247;</span><h3>Trail Camera</h3><span class="hint">filters &middot; postcards &middot; booth</span></div>
@@ -1349,15 +1373,6 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
       </div>
     </div>
 
-    <!-- ---------- THE CREW ALBUM ---------- -->
-    <div class="card a-gold fold" data-fold="album">
-      <div class="card-h"><span class="ic">&#128248;</span><h3>Crew Album</h3><span class="hint">everyone&rsquo;s shots, one film</span></div>
-      <div class="foldbody">
-      <p class="small muted">One shared album for your whole group. Anyone you invite can drop in photos and clips from their own phone, and every phone gets the lot &mdash; so the trip film has everybody&rsquo;s eyes on it, not just one person&rsquo;s.</p>
-      <div id="pixShareRow"></div>
-      <div id="albumStats"></div>
-      </div>
-    </div>
 
     <!-- ---------- PHOTO ALBUM MAKER ---------- -->
     <div class="card a-sage fold" data-fold="book">
@@ -1390,15 +1405,8 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
     <div class="card a-sun fold" data-fold="vid">
       <div class="card-h"><span class="ic">&#127916;</span><h3>Automatic Video Creator</h3><span class="hint">photos &amp; clips in, film out</span></div>
       <div class="foldbody">
-      <p class="small muted">Add photos and video clips &mdash; Olive cuts them together into one film, slow pans on the stills, your clips playing inside it, day chapters, trip stats on the title card and everyone who filmed in the credits.</p>
-      <div id="photoHow"></div>
-      <div class="dropzone" id="mediaDrop" tabindex="0" role="button">
-        <div style="font-size:2.4rem">&#128247;</div>
-        <b>Add photos from your camera roll</b>
-        <div class="small muted">Tap to open your phone's photos &mdash; pick as many as you like</div>
-      </div>
-      <input type="file" id="mediaInput" accept="image/*,video/*" multiple hidden>
-      <div id="mediaGal" class="gal" style="margin-top:.9rem"></div>
+      <p class="small muted">Everything in the Crew Album, cut into one film &mdash; slow pans on the stills, your clips playing inside it, trip stats on the title card and everyone who filmed in the credits. Pick a look, pick a pace, press create.</p>
+      <div id="vidEmpty" class="small muted"></div>
 
       <div id="vidControls" style="display:none;margin-top:1rem">
         <hr class="hr">
@@ -1637,7 +1645,7 @@ button.pill{cursor:pointer;min-height:2.6rem;font-family:inherit}
    OLIVE - GREAT AMERICAN WEST RV COMPANION
    Build stamp: bump on every deploy so phones see the update bar.
    ============================================================ */
-const OLIVE_BUILD="w37-2026-08-20";
+const OLIVE_BUILD="w38-2026-08-20";
 const ROOM_SUFFIX="west7c41b9e2";          /* fresh room for this trip */
 const TRIP_START="2026-08-17", TRIP_END="2026-08-31";
 const LODGING_TOTAL=4365.19;   /* from Terry's FINAL planning sheet, Aug 2026 */
@@ -2779,9 +2787,9 @@ applyFS();
 const FOLD_DEFAULT={
   /* Today */    ride:true,dash:false,health:false,sky:true,alerts:true,brief:true,ask:true,
   /* Journey */  trail:true,pins:false,stays:true,scenic:false,passes:false,clear:false,
-  /* Nearby */   events:false,fuel:false,find:true,facts:true,factsrc:false,
+  /* Nearby */   events:false,fuel:false,find:true,facts:true,factsrc:false,wild:true,
   /* Radio */    stations:true,pods:false,noaa:false,tis:false,radioabout:false,
-  /* Memories */ story:true,cam:true,vid:true,feed:true,favs:false,yb:false,journal:true,bucket:true,
+  /* Memories */ story:true,album:true,cam:true,book:false,vid:true,feed:true,favs:false,yb:false,journal:true,bucket:true,
   /* Crew */     fam:false,notifs:false,
   /* Toolkit */  res:true,med:false,stories:false,set:false,offline:false
 };
@@ -2996,19 +3004,84 @@ function stName(s){
   return s;
 }
 
+function milesToday(){const s=stats();return (s.days&&s.days[todayISO()])||0}
 function renderDash(){
-  const s=stats(),feed=store.get("feed",[]),parks=store.get("parks",[]);
+  const s=stats(),parks=store.get("parks",[]);
   const i=tripDayIndex();
   const dayN=i>=0?DAYS[i].n:(daysBetween(TRIP_START,todayISO())>0?15:0);
+  const today=milesToday();
   $("dashStats").innerHTML=`
+    <div class="stat"><div class="n">${Math.round(today).toLocaleString()}</div><div class="l">Miles today</div></div>
+    <div class="stat" id="dashTotal" style="cursor:pointer"><div class="n">${Math.round(s.mi).toLocaleString()}</div><div class="l">Trip miles &#9998;</div></div>
     <div class="stat"><div class="n">${dayN}</div><div class="l">Day of trip</div></div>
-    <div class="stat"><div class="n">${Math.round(s.mi).toLocaleString()}</div><div class="l">Miles tracked</div></div>
-    <div class="stat"><div class="n">${statesSoFar().length}</div><div class="l">States</div></div>
-    <div class="stat"><div class="n">${parks.length}</div><div class="l">Parks visited</div></div>`;
+    <div class="stat"><div class="n">${statesSoFar().length}</div><div class="l">States</div></div>`;
+  const t=$("dashTotal");if(t)t.addEventListener("click",odoSheet);
+  /* today's drive against what the plan expected of it */
+  const planned=i>=0?DAYS[i].mi:0;
+  const el=$("dashToday");
+  if(el){
+    if(planned>0){
+      const pc=Math.max(0,Math.min(100,Math.round(today/planned*100)));
+      el.innerHTML=`<div class="small muted" style="display:flex;justify-content:space-between;margin-top:.9rem">
+          <span>Today's drive &middot; ${esc(DAYS[i].r||"")}</span><span><b>${Math.round(today)}</b> of ~${planned} mi</span></div>
+        <div class="bar" style="margin-top:.35rem"><i style="width:${pc}%"></i></div>`;
+    }else if(today>0.5){
+      el.innerHTML=`<div class="small muted" style="margin-top:.9rem">Driven today: <b>${Math.round(today).toLocaleString()} miles</b></div>`;
+    }else el.innerHTML="";
+  }
   const pct=Math.max(0,Math.min(100,Math.round((dayN/15)*100)));
   $("progBar").style.width=pct+"%";
   $("progTxt").textContent=pct+"%";
   renderRecap();
+}
+/* ------------------------------------------------------------
+   FIXING THE ODOMETER'S PAST
+   The mile counter had a bug for the first days of the trip, so the
+   totals under-count what was really driven. The fix going forward is
+   deployed; this gives them a way to repair the record: fill the empty
+   past days from the itinerary's planned mileage, or set the total to
+   match the car's own odometer. Estimated days are marked as such.
+   ------------------------------------------------------------ */
+function odoSheet(){
+  const s=stats();
+  const t=todayISO();
+  const missed=DAYS.filter(d=>d.d<t&&d.d>=TRIP_START&&d.mi>0&&!((s.days||{})[d.d]>1));
+  const missedMi=missed.reduce((a,d)=>a+d.mi,0);
+  const estDays=Object.keys(s.est||{}).length;
+  openSheet("Trip miles",`
+    <p class="small muted">Olive counts miles from GPS while she&rsquo;s open on screen. If days are missing &mdash; the app was closed, or from before the mile-counter fix &mdash; repair the record here.</p>
+    <div class="stats" style="margin:0 0 .9rem">
+      <div class="stat"><div class="n">${Math.round(s.mi).toLocaleString()}</div><div class="l">Counted so far</div></div>
+      <div class="stat"><div class="n">${missed.length}</div><div class="l">Days with no miles</div></div>
+    </div>
+    ${missed.length?`<div class="note small" style="margin-bottom:.9rem"><b>${missed.length} past day${missed.length===1?"":"s"} ha${missed.length===1?"s":"ve"} no recorded miles</b> &mdash; ${missed.map(d=>"Day "+d.n).join(", ")}. The plan called for about <b>${missedMi.toLocaleString()} miles</b> across ${missed.length===1?"it":"them"}.
+      <div class="btnrow" style="margin-top:.6rem"><button class="btn sm brass" id="odoFill">&#10133; Credit those days from the plan</button></div></div>`:""}
+    <div class="field"><label class="fld" for="odoSet">Or set the trip total yourself (from the car&rsquo;s odometer)</label>
+      <input type="number" id="odoSet" inputmode="numeric" min="0" max="9000" placeholder="e.g. ${Math.round(missedMi+s.mi)||850}"></div>
+    <div class="btnrow"><button class="btn sm" id="odoSave">Set total</button></div>
+    ${estDays?`<p class="small muted" style="margin-top:.8rem">${estDays} day${estDays===1?" is":"s are"} credited from the plan rather than measured.</p>`:""}`);
+  const fill=$("odoFill");
+  if(fill)fill.addEventListener("click",()=>{
+    const st=stats();st.days=st.days||{};st.est=st.est||{};
+    let add=0;
+    missed.forEach(d=>{st.days[d.d]=d.mi;st.est[d.d]=true;add+=d.mi});
+    st.mi+=add;saveStats(st);
+    closeSheet();renderDash();drawTrail&&drawTrail();
+    toast("&#9989; "+add.toLocaleString()+" planned miles credited to "+missed.length+" day"+(missed.length===1?"":"s"));
+    addFeed("note","&#128663;","Odometer repaired",add.toLocaleString()+" miles credited from the plan for "+missed.map(d=>"Day "+d.n).join(", "));
+  });
+  $("odoSave").addEventListener("click",()=>{
+    const v=+$("odoSet").value;
+    if(!v||v<0||v>9000)return toast("Enter the trip miles so far");
+    const st=stats();
+    const delta=v-st.mi;
+    st.mi=v;
+    /* park the correction on today so per-day history stays sane */
+    if(delta>0){st.days=st.days||{};st.est=st.est||{};}
+    saveStats(st);
+    closeSheet();renderDash();
+    toast("&#9989; Trip total set to "+v.toLocaleString()+" miles");
+  });
 }
 $("logFuel").addEventListener("click",()=>{
   openSheet("Log a fuel stop",`
@@ -3222,7 +3295,8 @@ function onFix(pos){
 
   gpsStatus("&#128205; Tracking "+(here.acc!=null?"("+fmtAcc(here.acc)+")":"")+" &middot; "+
             (near&&near._d<150?"near <b>"+esc(near.n)+"</b> ("+fmtMi(near._d)+")":"off the planned route")+
-            " &middot; "+Math.round(stats().mi).toLocaleString()+" mi tracked","muted");
+            " &middot; <b>"+Math.round(milesToday()).toLocaleString()+" mi today</b> &middot; "+
+            Math.round(stats().mi).toLocaleString()+" total","muted");
   renderDash();renderHero();
   checkAlerts();
   renderNearby();
@@ -4928,6 +5002,10 @@ function renderPixShare(){
     toast(e.target.checked?"Sharing on":"Sharing off &mdash; your photos stay on this phone")});
 }
 $("mediaDrop").addEventListener("click",()=>$("mediaInput").click());
+$("openCamera").addEventListener("click",()=>{
+  const cam=document.querySelector('[data-fold="cam"]');
+  if(cam){cam.classList.add("open");cam.scrollIntoView({behavior:"smooth",block:"start"})}
+});
 $("mediaDrop").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ")$("mediaInput").click()});
 ["dragover","dragenter"].forEach(ev=>$("mediaDrop").addEventListener(ev,e=>{e.preventDefault();$("mediaDrop").classList.add("over")}));
 ["dragleave","drop"].forEach(ev=>$("mediaDrop").addEventListener(ev,e=>{e.preventDefault();$("mediaDrop").classList.remove("over")}));
@@ -5036,6 +5114,8 @@ function renderGal(){
      ${m.by?`<figcaption class="gal-by">${esc(m.by)}</figcaption>`:""}
      <button class="del" data-mi="${i}" aria-label="Remove">&#10005;</button></figure>`).join("");
   $("vidControls").style.display=media.length?"block":"none";
+  const ve=$("vidEmpty");
+  if(ve)ve.innerHTML=media.length?"":"Nothing to cut together yet &mdash; add pictures in the <b>Crew Album</b> just above, and the film builds from those.";
   if(media.length)drawFrame(0,0);
   renderAlbumStats();
 }
